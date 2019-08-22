@@ -1,4 +1,10 @@
-
+/* 
+configuration section containing
+    - definition of output format (XES and potentially CSV)
+    - for XES the global, extension, classifier elements
+    - for CSV the delimiter (that is a todo)
+    - the exception handling (print, ignore, determine)
+*/
 CONFIGURATION {
     EXPORT TO XES {
         XESExtension("name", "prefix", "uri", "pid0", "pid1");
@@ -8,51 +14,74 @@ CONFIGURATION {
     EXCEPTION HANDLING (PRINT);
 }
 
-address[] augurAddresses = {0x1780,0x9980};
-//address augurAddress = 0x1780;
-string test = "0x80";
-bytes32 test2 = 0x1234454acf;
-ufixed40x80 test3 = 123;
-bool test4 = false;
-uint test5 = 23489;
 
-BLOCKS (var,PENDING) {
-    TRANSACTIONS (ANY) (ANY) {
-        LOG ENTRY (MarketCreated(address indexed universe)) {
-            SCRIPT {
-                
-            }
-        }
-        SCRIPT {
-            test4 = false;
-            uint8 age = calculateAge(universe);
-            age = calculateAge(age);
-            test4 = age;
-            bool checkpoint = false;
-        }
-    }
-    SMART CONTRACTS(0xdeadbeef) {
-        LOG ENTRY (MarketCreated(address indexed universe)) {
-            SCRIPT {
-                
-                EMIT IF (test AND test) {
-                    EVENT (universe AS XDATE unit);
+
+
+/*
+global variables section
+    - variables to e.g., store the smart contract addresses that are queried
+    - variables contain no 
+    - no limit to the imagination here :)
+*/
+address[] augurAddresses = {0x1780};
+
+
+
+/*
+scope section containing
+    - scopes following the basic structure 
+        BLOCKS* { 
+            TRANSACTIONS* { 
+                LOG ENTRY {
+                    SCRIPT
                 }
-                EMIT {
-                    TRACE (universe);
+            } 
+            SMART CONTRACTS {
+                LOG ENTRY {
+                    SCRIPT
                 }
-            }
+            }             
         }
-        SCRIPT {
-            
-        }
-    }
-    LOG ENTRY (MarketCreated(address indexed universe)) {
-        SCRIPT {
-            
-        }
-    }
+*/
+BLOCKS (5000000,PENDING) {
     SCRIPT {
+        address ident:pid = "network process"; 
+	    address ident:piid = "block creation";
+		string ident:eid = block.number; 
+		uint256 time:timestamp = block.timestamp;
+        EMIT {
+            EVENT (ident:pid, ident:piid, ident:eid, timestamp AS XDATE time:timestamp);
+        }
+    }
 
+    TRANSACTIONS (ANY) (ANY) {
+        SCRIPT {
+            EMIT {
+                EVENT ("network process" AS ident:pid, block.number AS ident:piid, transaction.number AS ident:eid, transaction.value AS price);
+            }
+        }        
+    }
+
+    SMART CONTRACTS(augurAddresses) {
+        LOG ENTRY (AugurUpdated(address indexed newAddress)) {
+            SCRIPT {                
+                replaceExistingValues(augurAddresses,newAddress);
+            }
+        }
+    }
+
+    SMART CONTRACTS(augurAddresses) {
+        LOG ENTRY (string indexed sign, address indexed universe, _, address market, address creator, ...) {
+            SCRIPT {                
+                address ident:pid = universe; 
+				address ident:piid = market;
+				string ident:eid = "Created";
+				uint256 reputation = stateQuery(0xe99, getReputation, creator);
+                EMIT IF (isEven(block.number) AND sign == 0xe63e61) {
+                    EVENT(ident:pid, ident:piid, ident:eid, activityName);
+				    TRACE(ident:pid, ident:piid, creator, reputation);
+                }
+            }
+        }
     }
 }

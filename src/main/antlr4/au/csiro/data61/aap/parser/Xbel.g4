@@ -42,7 +42,7 @@ exceptionHandlingStmt
 // GLOBAL VARIABLES
 
 globalVariableStmts
-    : (variableDefinitionWithValueAssignment ';')*
+    : (globalVariableDefinitions ';')*
     ;
 
 
@@ -155,11 +155,9 @@ scriptScope
     ;
 
 scriptStmt
-    : variableDefinitionWithValueAssignment ';'
-    | variableDefinitionWithVariableReference ';'
-    | variableDefinitionWithMethodCall ';'
+    : variableName '=' (BOOLEAN_VALUE|BYTE_AND_ADDRESS_VALUE|FIXED_VALUE|INT_VALUE|STRING_VALUE|arrayValue|methodCall|variableName) ';'
+    | solType variableName '=' (BOOLEAN_VALUE|BYTE_AND_ADDRESS_VALUE|FIXED_VALUE|INT_VALUE|STRING_VALUE|arrayValue|methodCall|variableName) ';'
     | methodCall ';'
-    | variableValueAssignment ';'
     ;
 
 emitBlock 
@@ -173,6 +171,12 @@ emitCondition
 boolExpr
     : variableName
     | methodCall
+    | arrayValue
+    | BOOLEAN_VALUE
+    | BYTE_AND_ADDRESS_VALUE
+    | FIXED_VALUE
+    | INT_VALUE
+    | STRING_VALUE
     | variableName KEY_IN '[' INT_VALUE ',' INT_VALUE ']'
     | variableName KEY_IN '[' FIXED_VALUE ',' FIXED_VALUE ']'
     | variableName KEY_IN arrayValue
@@ -194,6 +198,12 @@ emitStmt
 
 emitVariable
     : variableName (KEY_AS xesVariable)?
+    | BOOLEAN_VALUE KEY_AS (xesType)? variableName
+    | BYTE_AND_ADDRESS_VALUE (xesType)? variableName
+    | STRING_VALUE KEY_AS (xesType)? variableName
+    | FIXED_VALUE KEY_AS (xesType)? variableName
+    | INT_VALUE KEY_AS (xesType)? variableName
+    | arrayValue KEY_AS (xesType)? variableName
     ;
 
 xesVariable
@@ -250,7 +260,7 @@ variableName
     | Identifier '.' Identifier
     ; 
 
-variableDefinitionWithValueAssignment
+globalVariableDefinitions
     : SOL_ADDRESS_TYPE variableName '=' BYTE_AND_ADDRESS_VALUE
     | SOL_BOOL_TYPE variableName '=' BOOLEAN_VALUE
     | SOL_BYTE_TYPES variableName '=' BYTE_AND_ADDRESS_VALUE
@@ -264,20 +274,18 @@ variableDefinitionWithValueAssignment
     | SOL_INT_ARRAY_TYPE variableName '=' intArrayValue
     ;
 
-variableDefinitionWithVariableReference
-    : solType variableName '=' variableName
-    ;
-
-variableDefinitionWithMethodCall
-    : solType variableName '=' methodCall
-    ;
-
-variableValueAssignment
-    : variableName '=' (BOOLEAN_VALUE|BYTE_AND_ADDRESS_VALUE|FIXED_VALUE|INT_VALUE|STRING_VALUE|arrayValue|methodCall|variableName)
-    ;
-
 methodCall
-    : methodName=Identifier '(' (variableName (',' variableName)*)? ')'
+    : methodName=Identifier '(' (methodParameter (',' methodParameter)* )? ')'
+    ;
+
+methodParameter
+    : variableName
+    | STRING_VALUE
+    | BOOLEAN_VALUE
+    | BYTE_AND_ADDRESS_VALUE
+    | FIXED_VALUE
+    | INT_VALUE
+    | arrayValue
     ;
 
 KEY_CONFIGURATION : C O N F I G U R A T I O N;
