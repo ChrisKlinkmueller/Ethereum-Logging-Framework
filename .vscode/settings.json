@@ -1,0 +1,8 @@
+{
+    "java.configuration.updateBuildConfiguration": "automatic",
+    "antlr4.generation" : {
+        "mode" : "internal",
+        "package" : "au.csiro.data61.aap.parser",
+        "outputDir" : "target/generated-sources/antlr4"
+    }
+}

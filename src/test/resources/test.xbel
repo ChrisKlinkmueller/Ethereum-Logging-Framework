@@ -1,0 +1,58 @@
+
+CONFIGURATION {
+    EXPORT TO XES {
+        XESExtension("name", "prefix", "uri", "pid0", "pid1");
+        XESGlobal("name", "type", "value", "scope");
+        XESClassifier("name", "keys", "scope", "pid0");
+    }
+    EXCEPTION HANDLING (PRINT);
+}
+
+address[] augurAddresses = {0x1780,0x9980};
+//address augurAddress = 0x1780;
+string test = "0x80";
+bytes32 test2 = 0x1234454acf;
+ufixed40x80 test3 = 123;
+bool test4 = false;
+uint test5 = 23489;
+
+BLOCKS (var,PENDING) {
+    TRANSACTIONS (ANY) (ANY) {
+        LOG ENTRY (MarketCreated(address indexed universe)) {
+            SCRIPT {
+                
+            }
+        }
+        SCRIPT {
+            test4 = false;
+            uint8 age = calculateAge(universe);
+            age = calculateAge(age);
+            test4 = age;
+            bool checkpoint = false;
+        }
+    }
+    SMART CONTRACTS(0xdeadbeef) {
+        LOG ENTRY (MarketCreated(address indexed universe)) {
+            SCRIPT {
+                
+                EMIT IF (test AND test) {
+                    EVENT (universe AS XDATE unit);
+                }
+                EMIT {
+                    TRACE (universe);
+                }
+            }
+        }
+        SCRIPT {
+            
+        }
+    }
+    LOG ENTRY (MarketCreated(address indexed universe)) {
+        SCRIPT {
+            
+        }
+    }
+    SCRIPT {
+
+    }
+}

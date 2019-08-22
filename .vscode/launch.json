@@ -1,0 +1,14 @@
+{
+    "configurations": [
+        {
+            "name": "Xbel Test",
+            "type": "antlr-debug",
+            "request": "launch",
+            "input": "src/test/resources/test.xbel",
+            "grammar": "src/main/antlr4/au/csiro/data61/aap/parser/Xbel.g4",
+            "startRule": "document",
+            "printParseTree": true,
+            "visualParseTree": true
+        }
+    ]
+}
