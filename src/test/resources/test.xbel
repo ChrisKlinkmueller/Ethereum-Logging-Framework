@@ -45,8 +45,8 @@ scope section containing
 */
 BLOCKS (5000000,PENDING) {
     SCRIPT {
-        address ident:pid = "network process"; 
-	    address ident:piid = "block creation";
+        string ident:pid = "network process"; 
+	    string ident:piid = "block creation";
 		string ident:eid = block.number; 
 		uint256 time:timestamp = block.timestamp;
         EMIT {
@@ -71,10 +71,17 @@ BLOCKS (5000000,PENDING) {
     }
 
     SMART CONTRACTS(augurAddresses) {
+        SCRIPT {
+            uint256 reputationTokens = stateQuery(smartContract, getReputationSum);
+            EMIT {
+                EVENT("reputation" AS ident:pid, smartContract AS ident:piid, block.number AS ident:eid, reputationTokens AS XINT reputation);
+            } 
+        }
+
         LOG ENTRY (string indexed sign, address indexed universe, _, address market, address creator, ...) {
             SCRIPT {                
-                address ident:pid = universe; 
-				address ident:piid = market;
+                string ident:pid = universe; 
+				string ident:piid = market;
 				string ident:eid = "Created";
 				uint256 reputation = stateQuery(0xe99, getReputation, creator);
                 EMIT IF (isEven(block.number) AND sign == 0xe63e61) {
