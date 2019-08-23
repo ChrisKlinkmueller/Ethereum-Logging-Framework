@@ -27,18 +27,21 @@ address[] augurAddresses = {0x1780};
 
 
 
+
 /*
 scope section containing
     - scopes following the basic structure 
         BLOCKS* { 
+            SCRIPT*
             TRANSACTIONS* { 
-                LOG ENTRY {
-                    SCRIPT
+                SCRIPT*
+                LOG ENTRY* {
+                    SCRIPT*
                 }
             } 
-            SMART CONTRACTS {
-                LOG ENTRY {
-                    SCRIPT
+            SMART CONTRACTS* {
+                LOG ENTRY* {
+                    SCRIPT*
                 }
             }             
         }

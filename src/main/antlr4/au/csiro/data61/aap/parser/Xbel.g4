@@ -42,7 +42,21 @@ exceptionHandlingStmt
 // GLOBAL VARIABLES
 
 globalVariableStmts
-    : (globalVariableDefinitions ';')*
+    : (variableDefinitionStmt)*
+    ;
+
+globalVariableDefinitions
+    : SOL_ADDRESS_TYPE variableName '=' BYTE_AND_ADDRESS_VALUE
+    | SOL_BOOL_TYPE variableName '=' BOOLEAN_VALUE
+    | SOL_BYTE_TYPES variableName '=' BYTE_AND_ADDRESS_VALUE
+    | SOL_FIXED_TYPES variableName '=' (FIXED_VALUE|INT_VALUE)
+    | SOL_INT_TYPES variableName '=' INT_VALUE
+    | SOL_STRING_TYPE variableName '=' STRING_VALUE
+    | SOL_ADDRESS_ARRAY_TYPE variableName '=' byteAndAddressArrayValue
+    | SOL_BOOL_ARRAY_TYPE variableName '=' booleanArrayValue
+    | SOL_BYTE_ARRAY_TYPE variableName '=' byteAndAddressArrayValue
+    | SOL_FIXED_ARRAY_TYPE variableName '=' fixedArrayValue
+    | SOL_INT_ARRAY_TYPE variableName '=' intArrayValue
     ;
 
 
@@ -155,9 +169,36 @@ scriptScope
     ;
 
 scriptStmt
-    : variableName '=' (BOOLEAN_VALUE|BYTE_AND_ADDRESS_VALUE|FIXED_VALUE|INT_VALUE|STRING_VALUE|arrayValue|methodCall|variableName) ';'
-    | solType variableName '=' (BOOLEAN_VALUE|BYTE_AND_ADDRESS_VALUE|FIXED_VALUE|INT_VALUE|STRING_VALUE|arrayValue|methodCall|variableName) ';'
+    : variableAssignmentStmt
+    | variableDefinitionStmt
     | methodCall ';'
+    ;
+
+variableAssignmentStmt
+    : variableName '=' valueAssignment ';'
+    ;
+
+variableDefinitionStmt
+    : solType variableName '=' valueAssignment ';'
+    ;
+
+valueAssignment
+    : staticValue
+    | methodCall
+    | variableName
+    ;
+
+staticValue
+    : BOOLEAN_VALUE
+    | BYTE_AND_ADDRESS_VALUE
+    | FIXED_VALUE
+    | INT_VALUE
+    | STRING_VALUE
+    | arrayValue
+    ;
+
+variableReference
+    : variableName
     ;
 
 emitBlock 
@@ -259,20 +300,6 @@ variableName
     | Identifier ':' Identifier
     | Identifier '.' Identifier
     ; 
-
-globalVariableDefinitions
-    : SOL_ADDRESS_TYPE variableName '=' BYTE_AND_ADDRESS_VALUE
-    | SOL_BOOL_TYPE variableName '=' BOOLEAN_VALUE
-    | SOL_BYTE_TYPES variableName '=' BYTE_AND_ADDRESS_VALUE
-    | SOL_FIXED_TYPES variableName '=' (FIXED_VALUE|INT_VALUE)
-    | SOL_INT_TYPES variableName '=' INT_VALUE
-    | SOL_STRING_TYPE variableName '=' STRING_VALUE
-    | SOL_ADDRESS_ARRAY_TYPE variableName '=' byteAndAddressArrayValue
-    | SOL_BOOL_ARRAY_TYPE variableName '=' booleanArrayValue
-    | SOL_BYTE_ARRAY_TYPE variableName '=' byteAndAddressArrayValue
-    | SOL_FIXED_ARRAY_TYPE variableName '=' fixedArrayValue
-    | SOL_INT_ARRAY_TYPE variableName '=' intArrayValue
-    ;
 
 methodCall
     : methodName=Identifier '(' (methodParameter (',' methodParameter)* )? ')'
