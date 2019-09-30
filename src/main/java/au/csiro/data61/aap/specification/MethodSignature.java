@@ -1,19 +1,22 @@
 package au.csiro.data61.aap.specification;
 
 import java.util.Arrays;
+import java.util.stream.Collectors;
 import java.util.stream.Stream;
+
+import au.csiro.data61.aap.library.types.SolidityType;
 
 /**
  * Method
  */
 public class MethodSignature {
-    private final String returnType;
+    private final SolidityType<?> returnType;
     private final String name;
-    private final String[] parameterTypes;    
+    private final SolidityType<?>[] parameterTypes;    
 
-    public MethodSignature(String name, String returnType, String[] parameterTypes) {
+    public MethodSignature(String name, SolidityType<?> returnType, SolidityType<?>[] parameterTypes) {
         assert name != null && !name.trim().isEmpty();
-        assert returnType != null && !returnType.trim().isEmpty();
+        assert returnType != null;
         assert parameterTypes != null && Arrays.stream(parameterTypes).allMatch(t -> t != null);
         this.name = name;
         this.returnType = returnType;
@@ -24,7 +27,7 @@ public class MethodSignature {
         return this.name;
     }
 
-    public String getReturnType() {
+    public SolidityType<?> getReturnType() {
         return this.returnType;
     }
 
@@ -32,12 +35,12 @@ public class MethodSignature {
         return this.parameterTypes.length;
     }
 
-    public String getParameterType(int index) {
+    public SolidityType<?> getParameterType(int index) {
         assert 0 <= index && index < this.parameterTypes.length;
         return this.parameterTypes[index];
     }
 
-    public Stream<String> paramaterTypeStream() {
+    public Stream<SolidityType<?>> paramaterTypeStream() {
         return Arrays.stream(this.parameterTypes);
     }
 
@@ -69,10 +72,16 @@ public class MethodSignature {
         int hash = 43;
         hash += prime * hash + this.name.hashCode();
         hash += prime * hash + this.returnType.hashCode();
-        for (String param : this.parameterTypes) {
+        for (SolidityType<?> param : this.parameterTypes) {
             hash += prime * hash + param.hashCode();
         }
 
         return super.hashCode();
+    }
+
+    @Override
+    public String toString() {
+        final String parameterList = Arrays.stream(this.parameterTypes).map(param -> param.getTypeName()).collect(Collectors.joining(", "));
+        return String.format("%s %s(%s))", this.returnType, this.name, parameterList);
     }
 }

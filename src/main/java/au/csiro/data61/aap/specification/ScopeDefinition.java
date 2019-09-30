@@ -8,8 +8,8 @@ import java.util.Map.Entry;
  * ScopeDefinition
  */
 public class ScopeDefinition {
-    public static String BLOCK_FROM = "from";
-    public static String BLOCK_TO = "to";    
+    public static String BLOCK_RANGE_FROM = "from";
+    public static String BLOCK_RANGE_TO = "to";    
     public static String TRANSACTION_SENDERS = "senders";
     public static String TRANSACTION_RECIPIENTS = "recipients";
     public static String SMART_CONTRACTS_ADDRESSES = "addresses";

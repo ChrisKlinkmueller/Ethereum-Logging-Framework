@@ -5,136 +5,53 @@
 grammar Xbel;
 
 document 
-    : configurationBlock globalVariableStmts scopes EOF
+    : blockBody EOF
     ;
 
-// Configuration section
-
-configurationBlock
-    : KEY_CONFIGURATION '{' exportBlock (exceptionHandlingStmt)? '}'
+block 
+    : blockHead '{' blockBody '}'
     ;
 
-exportBlock
-    : KEY_EXPORT_TO exportMode ('{' (xesConceptStmt)* '}')?
+// block header
+
+blockHead
+    : blockRangeHead
+    | transactionsHead
+    | smartContractsHead
+    | logEntriesHead
+    | emitHead
     ;
 
-exportMode
-    : KEY_XES
-    | KEY_CSV
+blockRangeHead
+    : KEY_BLOCK_RANGE '(' from=blockRangeNumber ',' to=blockRangeNumber ')'
     ;
 
-xesConceptStmt
-    : KEY_XES_CLASSIFIER '(' name=STRING_VALUE ',' keys=STRING_VALUE ',' scope=STRING_VALUE  exportPids ')' ';'
-    | KEY_XES_GLOBAL '(' name=STRING_VALUE ',' type=STRING_VALUE ',' value=STRING_VALUE ',' scope=STRING_VALUE  exportPids ')' ';'
-    | KEY_XES_EXTENSION '(' name=STRING_VALUE ',' prefix=STRING_VALUE ',' uri=STRING_VALUE  exportPids ')' ';'
-    ;
-
-exportPids
-    : (',' STRING_VALUE)*
-    ;
-
-exceptionHandlingStmt
-    : KEY_EXCEPTION_HANDLING '(' exceptionMode=(KEY_EXCEPTION_DETERMINE|KEY_EXCEPTION_IGNORE|KEY_EXCEPTION_PRINT) ')' ';'
-    ;
-
-
-
-// GLOBAL VARIABLES
-
-globalVariableStmts
-    : (variableDefinitionStmt)*
-    ;
-
-globalVariableDefinitions
-    : SOL_ADDRESS_TYPE variableName '=' BYTE_AND_ADDRESS_VALUE
-    | SOL_BOOL_TYPE variableName '=' BOOLEAN_VALUE
-    | SOL_BYTE_TYPES variableName '=' BYTE_AND_ADDRESS_VALUE
-    | SOL_FIXED_TYPES variableName '=' (FIXED_VALUE|INT_VALUE)
-    | SOL_INT_TYPES variableName '=' INT_VALUE
-    | SOL_STRING_TYPE variableName '=' STRING_VALUE
-    | SOL_ADDRESS_ARRAY_TYPE variableName '=' byteAndAddressArrayValue
-    | SOL_BOOL_ARRAY_TYPE variableName '=' booleanArrayValue
-    | SOL_BYTE_ARRAY_TYPE variableName '=' byteAndAddressArrayValue
-    | SOL_FIXED_ARRAY_TYPE variableName '=' fixedArrayValue
-    | SOL_INT_ARRAY_TYPE variableName '=' intArrayValue
-    ;
-
-
-
-// SCOPES 
-// TODO: scope parameters can also be function calls
-
-scopes
-    : blocksScope*
-    ;
-
-blocksScope
-    : blocksScopeHead '{' blockScopeElement* '}'
-    ;
-
-blocksScopeHead
-    : KEY_BLOCKS  '(' fromBlock=blockNumber ',' toBlock=blockNumber ')'
-    ;
-
-blockNumber
+blockRangeNumber
     : INT_VALUE
-    | KEY_EARLIEST
     | KEY_CURRENT
+    | KEY_EARLIEST
     | KEY_PENDING
     | variableName
+    | methodCall
     ;
 
-blockScopeElement
-    : transactionsScope
-    | smartContractScope
-    | logEntryScope
-    | scriptScope
+transactionsHead
+    : KEY_TRANSACTIONS '(' addressList ')' '(' addressList ')'
     ;
 
-transactionsScope 
-    : transactionsScopeHead '{' transactionScopeElement* '}' 
+smartContractsHead
+    : KEY_SMART_CONTRACTS '(' addressList ')'
     ;
 
-transactionsScopeHead
-    : KEY_TRANSACTIONS '(' (transactionSenders=transactionsParties)? ')' '(' (transactionRecipients=transactionsParties)? ')'
-    ;
-
-transactionsParties
-    : KEY_ANY
-    | BYTE_AND_ADDRESS_VALUE (',' BYTE_AND_ADDRESS_VALUE)
+addressList
+    : BYTE_AND_ADDRESS_VALUE (',' BYTE_AND_ADDRESS_VALUE)*
+    | KEY_ANY
     | variableName
+    | methodCall
     ;
 
-transactionScopeElement
-    : scriptScope
-    | logEntryScope
-    ;
-
-smartContractScope
-    : smartContractScopeHead '{' smartContractScopeElement* '}'
-    ;
-
-smartContractScopeHead
-    : KEY_SMART_CONTRACTS '(' contracts=smartContractAddresses ')'
-    ;
-
-smartContractAddresses
-    : KEY_ANY
-    | BYTE_AND_ADDRESS_VALUE (',' BYTE_AND_ADDRESS_VALUE)*
-    | variableName
-    ;
-
-smartContractScopeElement
-    : logEntryScope
-    | scriptScope
-    ;
-
-logEntryScope
-    : logEntryScopeHead '{' logEntryScopeElement* '}'
-    ;
-
-logEntryScopeHead 
-    : KEY_LOG_ENTRY '(' logEntrySpecification ')'
+logEntriesHead
+    : KEY_LOG_ENTRIES '(' logEntrySpecification ')'
     ;
 
 logEntrySpecification
@@ -160,49 +77,8 @@ solSkipVariable
     | KEY_SKIP_DATA
     ;
 
-logEntryScopeElement
-    : scriptScope 
-    ;
-
-scriptScope
-    : KEY_SCRIPT '{' scriptStmt* emitBlock* '}'
-    ;
-
-scriptStmt
-    : variableAssignmentStmt
-    | variableDefinitionStmt
-    | methodCall ';'
-    ;
-
-variableAssignmentStmt
-    : variableName '=' valueAssignment ';'
-    ;
-
-variableDefinitionStmt
-    : solType variableName '=' valueAssignment ';'
-    ;
-
-valueAssignment
-    : staticValue
-    | methodCall
-    | variableName
-    ;
-
-staticValue
-    : BOOLEAN_VALUE
-    | BYTE_AND_ADDRESS_VALUE
-    | FIXED_VALUE
-    | INT_VALUE
-    | STRING_VALUE
-    | arrayValue
-    ;
-
-variableReference
-    : variableName
-    ;
-
-emitBlock 
-    : KEY_EMIT (emitCondition)? '{' emitStmt+ '}'
+emitHead
+    : KEY_EMIT emitCondition?
     ;
 
 emitCondition
@@ -233,8 +109,36 @@ boolExpr
     | boolExpr '>' boolExpr
     ;
 
-emitStmt
-    : type=(KEY_EVENT|KEY_TRACE) '(' emitVariable (',' emitVariable )* ')' ';'
+
+// BLOCK BODY
+
+blockBody
+    : blockBodyElements*
+    ;
+
+blockBodyElements
+    : block
+    | statement ';'
+    ;
+
+statement
+    : (leftStatementSide '=')? rightStatementSide 
+    ;
+
+leftStatementSide
+    : solType variableName
+    | variableName
+    ;
+
+rightStatementSide
+    : variableName
+    | methodCall
+    | boolExpr
+    | emitCall
+    ;
+
+emitCall
+    : type=(KEY_EVENT|KEY_TRACE) '(' emitVariable (',' emitVariable )* ')'
     ;
 
 emitVariable
@@ -262,15 +166,16 @@ xesType
     | KEY_XSTRING
     ;
 
-KEY_BLOCKS : B L O C K S;
+// KEY WORD SECTION
+
+KEY_BLOCK_RANGE : B L O C K ' ' R A N G E;
 KEY_EARLIEST : E A R L I E S T;
 KEY_CURRENT : C U R R E N T;
 KEY_PENDING : P E N D I N G;
-KEY_TRANSACTIONS : T R A N S A C T I O N S;
 KEY_ANY : A N Y;
+KEY_TRANSACTIONS : T R A N S A C T I O N S;
 KEY_SMART_CONTRACTS : S M A R T ' ' C O N T R A C T S;
-KEY_LOG_ENTRY : L O G ' ' E N T R Y;
-KEY_SCRIPT : S C R I P T;
+KEY_LOG_ENTRIES : L O G ' ' E N T R I E S ;
 KEY_ANONYMOUS : 'anonymous';
 KEY_VAR_ARGS : '...';
 KEY_INDEXED : 'indexed';
@@ -278,6 +183,10 @@ KEY_SKIP_INDEXED : '_indexed_';
 KEY_SKIP_DATA : '_';
 KEY_EMIT : E M I T;
 KEY_IF : I F;
+KEY_IN : I N;
+KEY_NOT : N O T;
+KEY_AND : A N D;
+KEY_OR : O R;
 KEY_EVENT : E V E N T;
 KEY_TRACE : T R A C E;
 KEY_AS : A S;
@@ -287,11 +196,6 @@ KEY_XSTRING : X S T R I N G;
 KEY_XFLOAT : X F L O A T;
 KEY_XID : X I D;
 KEY_XBOOLEAN : X B O O L E A N;
-KEY_AND : A N D;
-KEY_NOT : N O T;
-KEY_IN : I N;
-KEY_OR : O R;
-
 
 // GENERAL VARIABLE DEFINITIONS
 
@@ -340,13 +244,38 @@ solType :
     | SOL_ADDRESS_ARRAY_TYPE
     | SOL_BOOL_ARRAY_TYPE
     | SOL_BOOL_TYPE
-    | SOL_BYTE_ARRAY_TYPE
-    | SOL_BYTE_TYPES
-    | SOL_FIXED_ARRAY_TYPE
-    | SOL_FIXED_TYPES
-    | SOL_INT_ARRAY_TYPE
-    | SOL_INT_TYPES
+    | solBytesArrayTypes
+    | solBytesType
+    | solFixedArrayTypes
+    | solFixedTypes
+    | solIntArrayTypes
+    | solIntTypes
     | SOL_STRING_TYPE
+    ;
+
+solFixedArrayTypes
+    : solFixedTypes '[' ']'
+    ;
+
+solFixedTypes
+    : (SOL_UNSIGNED)? 'fixed'(SOL_NUMBER_LENGTH'x'SOL_FIXED_N)?
+    ;
+
+solBytesArrayTypes
+    : solBytesType '[' ']'
+    | 'bytes' 
+    ;
+
+solBytesType 
+    : 'byte' (SOL_BYTES_SUFFIX SOL_BYTES_LENGTH)?
+    ;
+
+solIntArrayTypes
+    : solIntTypes '[' ']'
+    ;
+
+solIntTypes
+    : SOL_UNSIGNED 'int' SOL_NUMBER_LENGTH?
     ;
 
 SOL_ADDRESS_ARRAY_TYPE 
@@ -365,29 +294,24 @@ SOL_BOOL_TYPE
     : 'bool'
     ; 
 
-SOL_BYTE_ARRAY_TYPE
-    : SOL_BYTE_TYPES '[' ']'
+SOL_BYTES_SUFFIX 
+    : 's'
     ;
 
-SOL_BYTE_TYPES 
-    : 'byte'
-    | 'bytes'([1-9]|[1-2][0-9]|'30'|'31'|'32')?
+SOL_BYTES_LENGTH
+    : [1-9]|[1-2][0-9]|[3][0-2]
     ;
 
-SOL_FIXED_ARRAY_TYPE
-    : SOL_FIXED_TYPES '[' ']'
+SOL_UNSIGNED 
+    : 'u'
     ;
 
-SOL_FIXED_TYPES
-    : ('ufixed'|'fixed')(('8'|'16'|'24'|'32'|'40'|'48'|'56'|'64'|'72'|'80'|'88'|'96'|'104'|'112'|'120'|'128'|'136'|'144'|'152'|'160'|'168'|'176'|'184'|'192'|'200'|'208'|'216'|'224'|'232'|'240'|'248'|'256')'x'([1-7]?[0-9]|'80'|'81'))?
+SOL_NUMBER_LENGTH
+    : '8'|'16'|'24'|'32'|'40'|'48'|'56'|'64'|'72'|'80'|'88'|'96'|'104'|'112'|'120'|'128'|'136'|'144'|'152'|'160'|'168'|'176'|'184'|'192'|'200'|'208'|'216'|'224'|'232'|'240'|'248'|'256'
     ;
 
-SOL_INT_ARRAY_TYPE
-    : SOL_INT_TYPES '[' ']'
-    ;
-
-SOL_INT_TYPES
-    : ('uint'|'ufixed')('8'|'16'|'24'|'32'|'40'|'48'|'56'|'64'|'72'|'80'|'88'|'96'|'104'|'112'|'120'|'128'|'136'|'144'|'152'|'160'|'168'|'176'|'184'|'192'|'200'|'208'|'216'|'224'|'232'|'240'|'248'|'256')?
+SOL_FIXED_N
+    : [1-7]?[0-9]|[8][0-1]
     ;
 
 SOL_STRING_TYPE

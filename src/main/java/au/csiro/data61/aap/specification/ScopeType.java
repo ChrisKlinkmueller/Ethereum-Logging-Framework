@@ -5,9 +5,9 @@ package au.csiro.data61.aap.specification;
  */
 public enum ScopeType {
     GLOBAL_SCOPE,
-    BLOCKS_SCOPE,
+    BLOCK_RANGE_SCOPE,
     TRANSCATIONS_SCOPE,
     SMART_CONTRACTS_SCOPE,
-    LOG_ENTRY_SCOPE,
+    LOG_ENTRIES_SCOPE,
     EMIT_SCOPE
 }

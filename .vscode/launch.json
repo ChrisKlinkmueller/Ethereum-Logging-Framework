@@ -1,13 +1,27 @@
 {
     "configurations": [
         {
+            "type": "java",
+            "name": "CodeLens (Launch) - SpecificationParserTestApp",
+            "request": "launch",
+            "mainClass": "au.csiro.data61.aap.SpecificationParserTestApp",
+            "projectName": "xes-blockchain"
+        },
+        {
+            "type": "java",
+            "name": "CodeLens (Launch) - test",
+            "request": "launch",
+            "mainClass": "au.csiro.data61.aap.test",
+            "projectName": "xes-blockchain"
+        },
+        {
             "name": "Xbel Test",
             "type": "antlr-debug",
             "request": "launch",
             "input": "src/test/resources/test.xbel",
             "grammar": "src/main/antlr4/au/csiro/data61/aap/parser/Xbel.g4",
             "startRule": "document",
-            "printParseTree": false,
+            "printParseTree": true,
             "visualParseTree": true
         }
     ]

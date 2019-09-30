@@ -3,6 +3,8 @@ package au.csiro.data61.aap.specification;
 import java.util.Arrays;
 import java.util.stream.Stream;
 
+import au.csiro.data61.aap.library.types.SolidityType;
+
 /**
  * MethodCall
  */
@@ -18,8 +20,8 @@ public class MethodCall implements ValueSource {
     }
 
     @Override
-    public String getReturnType() {
-        return this.method.getName();
+    public SolidityType<?> getReturnType() {
+        return this.method.getReturnType();
     }
 
     public MethodSignature getMethod() {

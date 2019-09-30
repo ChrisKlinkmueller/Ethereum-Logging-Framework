@@ -5,16 +5,11 @@ configuration section containing
     - for CSV the delimiter (that is a todo)
     - the exception handling (print, ignore, determine)
 */
-CONFIGURATION {
-    EXPORT TO XES {
-        XESExtension("name", "prefix", "uri", "pid0", "pid1");
-        XESGlobal("name", "type", "value", "scope");
-        XESClassifier("name", "keys", "scope", "pid0");
-    }
-    EXCEPTION HANDLING (PRINT);
-}
 
-
+addExportMode("xes");
+registerXESExtension("name", "prefix", "uri", "pid0", "pid1");
+registerXESGlobal("name", "type", "value", "scope");
+registerXESClassifier("name", "keys", "scope", "pid0");
 
 
 /*
@@ -23,8 +18,8 @@ global variables section
     - variables contain no 
     - no limit to the imagination here :)
 */
+exceptionHandling = "PRINT";
 address[] augurAddresses = {0x1780};
-
 
 
 
@@ -46,51 +41,42 @@ scope section containing
             }             
         }
 */
-BLOCKS (5000000,PENDING) {
-    SCRIPT {
-        string ident:pid = "network process"; 
-	    string ident:piid = "block creation";
-		string ident:eid = block.number; 
-		uint256 time:timestamp = block.timestamp;
-        EMIT {
-            EVENT (ident:pid, ident:piid, ident:eid, timestamp AS XDATE time:timestamp);
-        }
+BLOCK RANGE (5000000,PENDING) {
+    string ident:pid = "network process"; 
+	string ident:piid = "block creation";
+	string ident:eid = block.number; 
+	uint256 time:timestamp = block.timestamp;
+    EMIT {
+        event(ident:pid, ident:piid, ident:eid, timestamp AS XDATE time:timestamp);
     }
 
     TRANSACTIONS (ANY) (ANY) {
-        SCRIPT {
-            EMIT {
-                EVENT ("network process" AS ident:pid, block.number AS ident:piid, transaction.number AS ident:eid, transaction.value AS price);
-            }
+        EMIT {
+            EVENT ("network process" AS ident:pid, block.number AS ident:piid, transaction.number AS ident:eid, transaction.value AS price);
         }        
     }
 
     SMART CONTRACTS(augurAddresses) {
-        LOG ENTRY (AugurUpdated(address indexed newAddress)) {
-            SCRIPT {                
-                replaceExistingValues(augurAddresses,newAddress);
-            }
+        LOG ENTRIES (AugurUpdated(address indexed newAddress)) {
+            replaceExistingValues(augurAddresses,newAddress);
         }
     }
 
     SMART CONTRACTS(augurAddresses) {
-        SCRIPT {
-            uint256 reputationTokens = stateQuery(smartContract, getReputationSum);
-            EMIT {
-                EVENT("reputation" AS ident:pid, smartContract AS ident:piid, block.number AS ident:eid, reputationTokens AS XINT reputation);
-            } 
+        uint8 reputationTokens = stateQuery(smartContract, getReputationSum);
+        EMIT {
+            EVENT("reputation" AS ident:pid, smartContract AS ident:piid, block.number AS ident:eid, reputationTokens AS XINT reputation);
         }
 
-        LOG ENTRY (string indexed sign, address indexed universe, _, address market, address creator, ...) {
-            SCRIPT {                
-                string ident:pid = universe; 
-				string ident:piid = market;
-				string ident:eid = "Created";
-				uint256 reputation = stateQuery(0xe99, getReputation, creator);
-                EMIT IF (isEven(block.number) AND sign == 0xe63e61) {
-                    EVENT(ident:pid, ident:piid, ident:eid, activityName);
-				    TRACE(ident:pid, ident:piid, creator, reputation);
-                }
+        LOG ENTRIES (string indexed sign, address indexed universe, _, address market, address creator, ...) {
+            string ident:pid = universe; 
+		    string ident:piid = market;
+			string ident:eid = "Created";
+			uint256 reputation = stateQuery(0xe99, getReputation, creator);
+        
+            EMIT IF (isEven(block.number) AND sign == 0xe63e61) {
+                EVENT(ident:pid, ident:piid, ident:eid, activityName);
+			    TRACE(ident:pid, ident:piid, creator, reputation);
             }
         }
     }

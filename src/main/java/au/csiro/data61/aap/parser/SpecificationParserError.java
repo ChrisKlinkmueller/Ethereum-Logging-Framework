@@ -38,4 +38,9 @@ public class SpecificationParserError {
     public String getErrorMessage() {
         return this.errorMessage;
     }
+
+    @Override
+    public String toString() {
+        return String.format("Ln %s, Col %s: %s", this.line, this.column, this.errorMessage);
+    }
 }

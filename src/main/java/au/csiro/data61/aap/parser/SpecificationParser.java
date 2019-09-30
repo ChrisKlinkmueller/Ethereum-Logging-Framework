@@ -9,11 +9,10 @@ import java.util.logging.Level;
 import java.util.logging.Logger;
 
 import org.antlr.v4.runtime.CharStream;
-import org.antlr.v4.runtime.CharStreams;
 import org.antlr.v4.runtime.CommonTokenStream;
 import org.antlr.v4.runtime.tree.ParseTree;
+import org.antlr.v4.runtime.tree.ParseTreeWalker;
 
-import au.csiro.data61.aap.specification.Specification;
 import au.csiro.data61.aap.util.MethodResult;
 
 /**
@@ -22,12 +21,12 @@ import au.csiro.data61.aap.util.MethodResult;
 public class SpecificationParser {
     private static final Logger LOG = Logger.getLogger(SpecificationParser.class.getName());
 
-    public SpecificationParserResult parse(String filepath) {
+    public SpecificationParserResult parse(Path filepath) {
         if (filepath == null) {
             return SpecificationParserResult.ofSingleError("Parameter 'filepath' is empty.");
         }
 
-        final File file = new File(filepath);
+        final File file = filepath.toFile();
         final Path path = file.toPath();
         if (!Files.exists(path) || !Files.isRegularFile(path)) {
             return SpecificationParserResult.ofSingleError("Parameter 'filepath' does not specify a valid path.");
@@ -44,7 +43,7 @@ public class SpecificationParser {
     }   
     
     public SpecificationParserResult parse(InputStream is) {
-        final MethodResult<CharStream> charStreamResult = this.fromInputStream(is);
+        final MethodResult<CharStream> charStreamResult = SpecificationParserUtil.charStreamfromInputStream(is);
         if (!charStreamResult.isSuccessful()) {
             return SpecificationParserResult.ofUnsuccessfulMethodResult(charStreamResult);
         }
@@ -55,19 +54,27 @@ public class SpecificationParser {
         lexer.addErrorListener(errorReporter);
 
         final CommonTokenStream tokens = new CommonTokenStream(lexer);        
-        final XbelParser parser = new XbelParser(tokens);
-        parser.removeErrorListeners();
-        parser.addErrorListener(errorReporter);
+        final XbelParser syntacticParser = new XbelParser(tokens);
+        syntacticParser.removeErrorListeners();
+        syntacticParser.addErrorListener(errorReporter);
 
-        final ParseTree tree = parser.document();
-        
+        final ParseTree tree = syntacticParser.document();        
         if (errorReporter.hasErrors()) {
             return SpecificationParserResult.ofErrorReporter(errorReporter);
         }
 
-        final ParseTreeTransformer transformer = new ParseTreeTransformer();
-        final Specification specification = transformer.visit(tree);
+        final ParseTreeWalker walker = new ParseTreeWalker();
+        final SemanticParser semanticParser = new SemanticParser();
+        walker.walk(semanticParser, tree);
+        if (!semanticParser.isSuccessful()) {
+            return SpecificationParserResult.ofErrors(semanticParser.getErrors());
+        }
 
+        // TODO: convert to specification object
+        return null;
+
+        /*
+        TODO: change to listener
         final SemanticAnalyser analyser = new SemanticAnalyser();
         final SpecificationParserError[] semanticErrors = analyser.analyze(specification);
         if (semanticErrors.length == 0) {
@@ -77,18 +84,8 @@ public class SpecificationParser {
             return new SpecificationParserResult(semanticErrors);
         }
 
-    }
+        return null;*/
 
-    private MethodResult<CharStream> fromInputStream(InputStream is) {
-        try {
-            final CharStream charStream = CharStreams.fromStream(is);
-            return MethodResult.ofResult(charStream);
-        }
-        catch (Exception ex) {
-            final String message = "Error processing the file content.";
-            LOG.log(Level.SEVERE, message, ex);
-            return MethodResult.ofError(message, ex);
-        }
     }
 
 

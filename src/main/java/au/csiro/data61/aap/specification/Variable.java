@@ -1,14 +1,16 @@
 package au.csiro.data61.aap.specification;
 
+import au.csiro.data61.aap.library.types.SolidityType;
+
 /**
  * Variable
  */
 public class Variable implements ValueSource {
     private final String name;
-    private final String type;
+    private final SolidityType<?> type;
 
-    public Variable(String type, String name) {
-        assert type != null && !type.trim().isEmpty();
+    public Variable(SolidityType<?> type, String name) {
+        assert type != null;
         assert name != null && !name.trim().isEmpty();
         this.name = name;
         this.type = type;
@@ -19,7 +21,7 @@ public class Variable implements ValueSource {
     }
 
     @Override
-    public String getReturnType() {
+    public SolidityType<?> getReturnType() {
         return this.type;
     }
 
@@ -43,4 +45,8 @@ public class Variable implements ValueSource {
                var.type.equals(this.type);
     }
     
+    @Override
+    public String toString() {
+        return String.format("%s %s", this.type.getTypeName(), this.name);
+    }
 }

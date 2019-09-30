@@ -1,21 +1,23 @@
 package au.csiro.data61.aap.specification;
 
+import au.csiro.data61.aap.library.types.SolidityType;
+
 /**
  * StaticValue
  */
 public class StaticValue implements ValueSource {
-    private final String type;
+    private final SolidityType<?> type;
     private final String value;    
 
-    public StaticValue(String type, String value) {
-        assert type != null && !type.trim().isEmpty();
+    public StaticValue(SolidityType<?> type, String value) {
+        assert type != null;
         assert value != null && !value.trim().isEmpty();
         this.type = type;
         this.value = value;
     }
 
     @Override
-    public String getReturnType() {
+    public SolidityType<?> getReturnType() {
         return this.type;
     }
 
