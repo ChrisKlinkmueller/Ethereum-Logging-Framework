@@ -18,7 +18,8 @@ global variables section
     - variables contain no 
     - no limit to the imagination here :)
 */
-exceptionHandling = "PRINT";
+setExceptionHandling("PRINT");
+
 address[] augurAddresses = {0x1780};
 
 
@@ -56,7 +57,7 @@ BLOCK RANGE (5000000,PENDING) {
         }        
     }
 
-    SMART CONTRACTS(augurAddresses) {
+    SMART CONTRACTS (augurAddresses) {
         LOG ENTRIES (AugurUpdated(address indexed newAddress)) {
             replaceExistingValues(augurAddresses,newAddress);
         }

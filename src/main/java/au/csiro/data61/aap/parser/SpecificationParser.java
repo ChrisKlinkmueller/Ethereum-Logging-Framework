@@ -10,8 +10,6 @@ import java.util.logging.Logger;
 
 import org.antlr.v4.runtime.CharStream;
 import org.antlr.v4.runtime.CommonTokenStream;
-import org.antlr.v4.runtime.tree.ParseTree;
-import org.antlr.v4.runtime.tree.ParseTreeWalker;
 
 import au.csiro.data61.aap.util.MethodResult;
 
@@ -21,7 +19,7 @@ import au.csiro.data61.aap.util.MethodResult;
 public class SpecificationParser {
     private static final Logger LOG = Logger.getLogger(SpecificationParser.class.getName());
 
-    public SpecificationParserResult parse(Path filepath) {
+    public <T> SpecificationParserResult<T> parse(Path filepath) {
         if (filepath == null) {
             return SpecificationParserResult.ofSingleError("Parameter 'filepath' is empty.");
         }
@@ -42,7 +40,7 @@ public class SpecificationParser {
         }
     }   
     
-    public SpecificationParserResult parse(InputStream is) {
+    public <T> SpecificationParserResult<T> parse(InputStream is) {
         final MethodResult<CharStream> charStreamResult = SpecificationParserUtil.charStreamfromInputStream(is);
         if (!charStreamResult.isSuccessful()) {
             return SpecificationParserResult.ofUnsuccessfulMethodResult(charStreamResult);
@@ -58,7 +56,7 @@ public class SpecificationParser {
         syntacticParser.removeErrorListeners();
         syntacticParser.addErrorListener(errorReporter);
 
-        final ParseTree tree = syntacticParser.document();        
+         /*final ParseTree tree = syntacticParser.document();        
         if (errorReporter.hasErrors()) {
             return SpecificationParserResult.ofErrorReporter(errorReporter);
         }
@@ -68,24 +66,9 @@ public class SpecificationParser {
         walker.walk(semanticParser, tree);
         if (!semanticParser.isSuccessful()) {
             return SpecificationParserResult.ofErrors(semanticParser.getErrors());
-        }
+        }*/
 
-        // TODO: convert to specification object
         return null;
-
-        /*
-        TODO: change to listener
-        final SemanticAnalyser analyser = new SemanticAnalyser();
-        final SpecificationParserError[] semanticErrors = analyser.analyze(specification);
-        if (semanticErrors.length == 0) {
-            return new SpecificationParserResult(specification);
-        }
-        else {
-            return new SpecificationParserResult(semanticErrors);
-        }
-
-        return null;*/
-
     }
 
 
