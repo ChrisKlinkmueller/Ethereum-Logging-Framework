@@ -1,13 +1,16 @@
 package au.csiro.data61.aap.library.types;
 
+import java.util.Objects;
+
 /**
  * AddressType
  */
 public class AddressType extends BytesType {
     private static final int ARRAY_LENGTH = 20;
     private static final String NAME = "address";
+    private static final AddressType INSTANCE = new AddressType();
 
-    public AddressType() {
+    AddressType() {
         super(ARRAY_LENGTH);
     }
 
@@ -18,9 +21,7 @@ public class AddressType extends BytesType {
 
     @Override
     public int hashCode() {
-        final int prime = 53;
-        final int hash = 59;
-        return hash + prime * hash + NAME.hashCode();
+        return Objects.hash(NAME);
     }
 
     @Override
@@ -29,6 +30,17 @@ public class AddressType extends BytesType {
             return false;
         }
 
+        if (obj == this) {
+            return true;
+        }
+
         return obj instanceof AddressType;
+    }
+
+    static SolidityType<?> createAddressType(String keyWord) {
+        if (keyWord.equals(NAME)) {
+            return INSTANCE;
+        }
+        return null;
     }
 }

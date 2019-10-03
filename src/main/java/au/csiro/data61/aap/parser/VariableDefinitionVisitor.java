@@ -1,5 +1,6 @@
 package au.csiro.data61.aap.parser;
 
+import au.csiro.data61.aap.library.types.SolidityType;
 import au.csiro.data61.aap.parser.XbelParser.VariableDefinitionContext;
 import au.csiro.data61.aap.specification.Variable;
 
@@ -15,7 +16,7 @@ class VariableDefinitionVisitor extends XbelBaseVisitor<SpecificationParserResul
             return SpecificationParserResult.ofError(ctx.start, "The variable definition doesn't contain a name.");
         }
 
-        final SpecificationParserResult<String> typeResult = VisitorRepository.getSolidityTypeVisitor().visitSolType(ctx.solType());
+        final SpecificationParserResult<SolidityType<?>> typeResult = VisitorRepository.getSolidityTypeVisitor().visitSolType(ctx.solType());
         if (!typeResult.isSuccessful()) {
             return SpecificationParserResult.ofUnsuccessfulParserResult(typeResult);
         }

@@ -1,19 +1,23 @@
 package au.csiro.data61.aap.library.types;
 
 import java.math.BigInteger;
+import java.util.Objects;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
 import au.csiro.data61.aap.util.MethodResult;
+import au.csiro.data61.aap.util.StringUtil;
 
 public class IntegerType extends SolidityType<BigInteger> {
     private static final Logger LOG = Logger.getLogger(IntegerType.class.getName());
     private static final String NAME = "int";
+    private static final String UNSIGNED_PREFIX = "u";
+    private static final int DEFAULT_LENGTH = 256;
 
     private final boolean signed;
     private final int bitLength;
     
-    public IntegerType(boolean signed, int bitLength) {
+    IntegerType(boolean signed, int bitLength) {
         this.bitLength = bitLength;
         this.signed = signed;
     }
@@ -66,22 +70,44 @@ public class IntegerType extends SolidityType<BigInteger> {
 
     @Override
     public int hashCode() {
-        final int prime = 23;
-        int hash = 19;
-        hash += prime * hash + NAME.hashCode();
-        hash += prime * hash + Boolean.hashCode(this.signed);
-        hash += prime * hash + Integer.hashCode(this.bitLength);
-        return hash;
+        return Objects.hash(NAME, this.signed, this.bitLength);
     }
 
     @Override
     public boolean equals(Object obj) {
-        if (obj != null && obj instanceof FixedType) {
+        if (obj == null) {
+            return false;
+        }
+
+        if (obj == this) {
+            return true;
+        }
+
+        if (obj instanceof IntegerType) {
             final IntegerType type = (IntegerType)obj;
             return type.signed == this.signed && type.bitLength == this.bitLength;
         }
         
         return false;
+    }
+
+    static SolidityType<?> createIntegerType(String keyword) {
+        final boolean unsigned = keyword.startsWith(UNSIGNED_PREFIX);
+        if (unsigned) {
+            keyword = keyword.replaceFirst(UNSIGNED_PREFIX, "");
+        }
+
+        if (!keyword.startsWith(NAME)) {
+            return null;
+        }
+
+        keyword = keyword.replaceFirst(NAME, "");
+        if (keyword.isEmpty()) {
+            return new IntegerType(!unsigned, DEFAULT_LENGTH);
+        }
+
+        final MethodResult<Integer> lengthResult = StringUtil.parseInt(keyword);
+        return lengthResult.isSuccessful() ? new IntegerType(!unsigned, lengthResult.getResult()) : null;
     }
     
 }

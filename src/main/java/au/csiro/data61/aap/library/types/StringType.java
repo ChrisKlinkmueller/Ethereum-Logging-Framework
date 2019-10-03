@@ -1,9 +1,12 @@
 package au.csiro.data61.aap.library.types;
 
+import java.util.Objects;
+
 public class StringType extends BytesType {
     private static final String NAME = "string";
+    private static final StringType INSTANCE = new StringType();
 
-    public StringType() {
+    StringType() {
         super();
     }
 
@@ -14,14 +17,24 @@ public class StringType extends BytesType {
 
     @Override
     public int hashCode() {
-        final int prime = 257;
-        int hash = 283;
-        return hash + prime * hash + NAME.hashCode();
+        return Objects.hash(NAME);
     }
 
     @Override
     public boolean equals(Object obj) {
-        return obj != null && obj instanceof StringType;
+        if (obj == null) {
+            return false;
+        }
+
+        if (obj == this) {
+            return true;
+        }
+
+        return obj instanceof StringType;
+    }
+
+    static SolidityType<?> createStringType(String keyword) {
+        return keyword.equals(NAME) ? INSTANCE : null;
     }
         
 }

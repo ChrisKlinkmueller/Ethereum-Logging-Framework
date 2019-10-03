@@ -2,21 +2,23 @@ package au.csiro.data61.aap.specification;
 
 import java.util.Objects;
 
+import au.csiro.data61.aap.library.types.SolidityType;
+
 /**
  * Variable
  */
 public class Variable {
-    private final String type;
+    private final SolidityType<?> type;
     private final String name;
 
-    public Variable(String type, String name) {
+    public Variable(SolidityType<?> type, String name) {
         assert type != null;
         assert name != null;
         this.type = type;
         this.name = name;
     }
 
-    public String getType() {
+    public SolidityType<?> getType() {
         return this.type;
     }
 

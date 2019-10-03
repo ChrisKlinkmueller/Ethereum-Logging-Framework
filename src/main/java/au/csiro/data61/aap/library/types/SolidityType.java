@@ -1,5 +1,9 @@
 package au.csiro.data61.aap.library.types;
 
+import java.util.Arrays;
+import java.util.List;
+import java.util.function.Function;
+
 import au.csiro.data61.aap.util.MethodResult;
 
 public abstract class SolidityType<T> {
@@ -16,4 +20,33 @@ public abstract class SolidityType<T> {
     public String toString() {
         return this.getTypeName();
     }
+
+    public static SolidityType<?> createType(String keyword) {
+        if (keyword == null) {
+            return null;
+        }
+
+        for (Function<String, SolidityType<?>> factoryMethod : FACTORY_METHODS) {
+            final SolidityType<?> type = factoryMethod.apply(keyword);
+            if (type != null) {
+                return type;
+            }
+        }
+
+        return null;
+    }
+    
+    private static final List<Function<String, SolidityType<?>>> FACTORY_METHODS = Arrays.asList(
+        AddressType::createAddressType,
+        ArrayType::createArrayType,
+        BoolType::createBoolType,
+        BytesType::createBytesType,
+        FixedType::createFixedType,
+        IntegerType::createIntegerType,
+        StringType::createStringType
+    );
+
+
+
+    
 }

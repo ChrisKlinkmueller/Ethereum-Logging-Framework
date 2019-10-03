@@ -2,6 +2,7 @@ package au.csiro.data61.aap.library.types;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Objects;
 
 import au.csiro.data61.aap.util.MethodResult;
 
@@ -10,8 +11,10 @@ import au.csiro.data61.aap.util.MethodResult;
  */
 public class ArrayType<T> extends SolidityType<List<T>> {
     private final SolidityType<T> baseType;
+    private static final String REGEX = "[a-zA-Z0-9]*\\[\\]"; 
+    private static final String SUFFIX = "[]";
 
-    public ArrayType(SolidityType<T> baseType) {
+    ArrayType(SolidityType<T> baseType) {
         assert baseType != null;
         this.baseType = baseType;
     }
@@ -54,9 +57,7 @@ public class ArrayType<T> extends SolidityType<List<T>> {
 
     @Override
     public int hashCode() {
-        final int prime = 127;
-        final int hash = 113;
-        return hash + prime * hash + this.baseType.hashCode();
+        return Objects.hash(this.baseType, SUFFIX);
     }
 
     @Override
@@ -65,11 +66,25 @@ public class ArrayType<T> extends SolidityType<List<T>> {
             return false;
         }
 
+        if (obj == this) {
+            return true;
+        }
+
         if (obj instanceof ArrayType) {
             final ArrayType<?> arrayType = (ArrayType<?>)obj;
             return this.baseType.equals(arrayType.baseType);
         }
 
         return false;
+    }
+
+    static SolidityType<?> createArrayType(String keyword) {
+        if (!keyword.matches(REGEX)) {
+            return null;
+        }
+
+        final String baseKeyword = keyword.substring(0, keyword.length() - SUFFIX.length());
+        final SolidityType<?> baseType = SolidityType.createType(baseKeyword);
+        return baseType == null ? null : new ArrayType<>(baseType);
     }
 }

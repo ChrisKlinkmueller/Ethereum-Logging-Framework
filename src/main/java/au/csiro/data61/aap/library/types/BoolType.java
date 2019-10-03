@@ -1,9 +1,14 @@
 package au.csiro.data61.aap.library.types;
 
+import java.util.Objects;
+
 import au.csiro.data61.aap.util.MethodResult;
 
 public class BoolType extends SolidityType<Boolean> {
     private static final String NAME = "bool";
+    private static final BoolType INSTANCE = new BoolType();
+
+    private BoolType() {}
 
     @Override
     public MethodResult<Boolean> cast(Object obj) {
@@ -37,15 +42,15 @@ public class BoolType extends SolidityType<Boolean> {
 
     @Override
     public int hashCode() {
-        final int prime = 241;
-        final int hash = 239;
-        return hash + prime * hash + NAME.hashCode();
+        return Objects.hash(NAME);
     }
 
     @Override
     public boolean equals(Object obj) {
-        return obj != null && obj instanceof BoolType;
+        return obj != null && (obj == this || obj instanceof BoolType);
     }
 
-    
+    static SolidityType<?> createBoolType(String keyword) {
+        return keyword.equals(NAME) ? INSTANCE : null;
+    }
 }

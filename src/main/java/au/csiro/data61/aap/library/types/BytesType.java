@@ -1,21 +1,27 @@
 package au.csiro.data61.aap.library.types;
 
+import java.util.Objects;
+
 import au.csiro.data61.aap.util.MethodResult;
+import au.csiro.data61.aap.util.StringUtil;
 
 /**
  * BytesType
  */
 public class BytesType extends SolidityType<String> {
-    private final static String NAME = "bytes";
+    private final static String PREFIX = "byte";
+    private final static String DYNAMIC_SUFFIX = "s";
     private final static int DYNAMIC = Integer.MAX_VALUE;
+    private final static int MIN_STATIC_LENGTH = 1;
+    private final static int MAX_STATIC_LENGTH = 32;
+    private final static int DEFAULT_LENGTH = 1;
+    
     private final int length;
-
-    public BytesType() {
+    BytesType() {
         this.length = DYNAMIC;
     }
 
-    public BytesType(int length) {
-        assert 1 <= length && length <= 32;
+    BytesType(int length) {
         this.length = length;
     }
 
@@ -26,7 +32,7 @@ public class BytesType extends SolidityType<String> {
     @Override
     public String getTypeName() {
         final String lengthSuffix = this.length == DYNAMIC ? "" : Integer.toString(this.length);
-        return String.format("%S%s", NAME, lengthSuffix);
+        return String.format("%S%s", PREFIX, lengthSuffix);
     }
 
     @Override
@@ -56,20 +62,45 @@ public class BytesType extends SolidityType<String> {
 
     @Override
     public int hashCode() {
-        final int prime = 73;
-        int hash = 71;
-        hash += prime * hash + NAME.hashCode();
-        hash += prime * hash + Integer.hashCode(this.length);
-        return hash;
+        return Objects.hash(PREFIX, this.length);
     }
 
     @Override
     public boolean equals(Object obj) {
-        if (obj != null && obj instanceof BytesType) {
+        if (obj == null) {
+            return false;
+        }
+
+        if (obj == this) {
+            return true;
+        }
+
+        if (obj instanceof BytesType) {
             final BytesType type = (BytesType)obj;
             return type.length == this.length;
         }
         
         return false;
+    }
+
+
+    static SolidityType<?> createBytesType(String keyword) {
+        if (!keyword.startsWith(PREFIX)) {
+            return null;
+        }
+
+        final String suffix = keyword.replaceFirst(PREFIX, "");
+        if (suffix.isEmpty()) {
+            return new BytesType(DEFAULT_LENGTH);
+        }
+        else if (suffix.equals(DYNAMIC_SUFFIX)) {
+            return new BytesType();
+        }
+
+        final MethodResult<Integer> valueResult = StringUtil.parseInt(suffix);
+        if (!valueResult.isSuccessful() || valueResult.getResult() < MIN_STATIC_LENGTH || MAX_STATIC_LENGTH < valueResult.getResult()) {
+            return null;
+        }              
+        return new BytesType(valueResult.getResult());
     }
 }
