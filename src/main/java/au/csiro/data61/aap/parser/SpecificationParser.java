@@ -1,16 +1,17 @@
 package au.csiro.data61.aap.parser;
 
-import java.io.File;
-import java.io.FileInputStream;
 import java.io.InputStream;
-import java.nio.file.Files;
-import java.nio.file.Path;
-import java.util.logging.Level;
+import java.util.function.Function;
 import java.util.logging.Logger;
 
 import org.antlr.v4.runtime.CharStream;
 import org.antlr.v4.runtime.CommonTokenStream;
+import org.antlr.v4.runtime.tree.ErrorNode;
+import org.antlr.v4.runtime.tree.ParseTree;
+import org.antlr.v4.runtime.tree.ParseTreeWalker;
+import org.antlr.v4.runtime.tree.TerminalNode;
 
+import au.csiro.data61.aap.specification.Variable;
 import au.csiro.data61.aap.util.MethodResult;
 
 /**
@@ -19,30 +20,19 @@ import au.csiro.data61.aap.util.MethodResult;
 public class SpecificationParser {
     private static final Logger LOG = Logger.getLogger(SpecificationParser.class.getName());
 
-    public <T> SpecificationParserResult<T> parse(Path filepath) {
-        if (filepath == null) {
-            return SpecificationParserResult.ofSingleError("Parameter 'filepath' is empty.");
-        }
-
-        final File file = filepath.toFile();
-        final Path path = file.toPath();
-        if (!Files.exists(path) || !Files.isRegularFile(path)) {
-            return SpecificationParserResult.ofSingleError("Parameter 'filepath' does not specify a valid path.");
-        }
-
-        try (FileInputStream stream = new FileInputStream(file)) {
-            return parse(stream);
-        }
-        catch (Exception ex) {
-            final String message = String.format("Error reading file '%s'", filepath);
-            LOG.log(Level.SEVERE, message, ex);
-            return SpecificationParserResult.ofSingleError(message, ex);
-        }
-    }   
+    public SpecificationParserResult<Variable> parseVariableDefinition(InputStream is) {
+        return this.parse(is, XbelParser::variableDefinition, VisitorRepository.getVariableDefinitionVisitor());
+    }    
     
-    public <T> SpecificationParserResult<T> parse(InputStream is) {
+    private <T> SpecificationParserResult<T> parse(InputStream is, Function<XbelParser, ParseTree> rule, XbelBaseVisitor<SpecificationParserResult<T>> visitor) {
+        if (is == null) {
+            LOG.severe("The 'is' parameter was null.");
+            return SpecificationParserResult.ofError("The 'is' parameter was null.");
+        }
+
         final MethodResult<CharStream> charStreamResult = SpecificationParserUtil.charStreamfromInputStream(is);
         if (!charStreamResult.isSuccessful()) {
+            LOG.severe("Creation of CharStream failed.");
             return SpecificationParserResult.ofUnsuccessfulMethodResult(charStreamResult);
         }
 
@@ -56,19 +46,33 @@ public class SpecificationParser {
         syntacticParser.removeErrorListeners();
         syntacticParser.addErrorListener(errorReporter);
 
-         /*final ParseTree tree = syntacticParser.document();        
+        final ParseTree tree = rule.apply(syntacticParser);      
+        logParseTree(tree);       
+        
         if (errorReporter.hasErrors()) {
+            LOG.severe("Errors during syntactic parsing.");
             return SpecificationParserResult.ofErrorReporter(errorReporter);
         }
 
-        final ParseTreeWalker walker = new ParseTreeWalker();
-        final SemanticParser semanticParser = new SemanticParser();
-        walker.walk(semanticParser, tree);
-        if (!semanticParser.isSuccessful()) {
-            return SpecificationParserResult.ofErrors(semanticParser.getErrors());
-        }*/
+        return visitor.visit(tree);
+    }
 
-        return null;
+    private void logParseTree(ParseTree tree) {
+        final ParseTreeWalker walker = new ParseTreeWalker();
+        walker.walk(new PrintParseTreeListener(), tree);
+    }
+
+    private static class PrintParseTreeListener extends XbelBaseListener {
+
+        @Override
+        public void visitErrorNode(ErrorNode node) {
+            LOG.info(node.getText().replaceAll("\\s+", " "));
+        }
+
+        @Override
+        public void visitTerminal(TerminalNode node) {
+            LOG.info(node.getText().replaceAll("\\s+", " "));
+        }
     }
 
 

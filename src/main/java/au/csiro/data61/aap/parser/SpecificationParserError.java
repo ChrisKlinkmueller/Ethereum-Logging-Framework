@@ -1,5 +1,7 @@
 package au.csiro.data61.aap.parser;
 
+import org.antlr.v4.runtime.Token;
+
 /**
  * SpecificationParserErrors
  */
@@ -9,11 +11,21 @@ public class SpecificationParserError {
     private final String errorMessage;
     private final Throwable errorCause;
 
-    public SpecificationParserError(int line, int column, String errorMessage) {
+    
+    SpecificationParserError(Token token, String errorMessage) {
+        assert token != null;
+        assert errorMessage != null && !errorMessage.trim().isEmpty();
+        this.line = token.getLine();
+        this.column = token.getStartIndex();
+        this.errorMessage = errorMessage;
+        this.errorCause = null;
+    }
+
+    SpecificationParserError(int line, int column, String errorMessage) {
         this(line, column, errorMessage, null);
     }
 
-    public SpecificationParserError(int line, int column, String errorMessage, Throwable errorCause) {
+    SpecificationParserError(int line, int column, String errorMessage, Throwable errorCause) {
         assert 0 <= line;
         assert 0 <= column;
         assert errorMessage != null && !errorMessage.trim().isEmpty();

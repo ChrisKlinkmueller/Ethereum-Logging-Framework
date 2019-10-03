@@ -21,7 +21,7 @@ global variables section
 setExceptionHandling("PRINT");
 
 address[] augurAddresses = {0x1780};
-
+ufixed8x28 test = 0;
 
 
 /*
@@ -81,4 +81,6 @@ BLOCK RANGE (5000000,PENDING) {
             }
         }
     }
+
+    uint7 test = 9;
 }

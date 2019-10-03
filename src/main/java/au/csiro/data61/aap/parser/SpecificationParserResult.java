@@ -4,6 +4,8 @@ import java.util.Arrays;
 import java.util.Collection;
 import java.util.stream.Stream;
 
+import org.antlr.v4.runtime.Token;
+
 import au.csiro.data61.aap.util.MethodResult;
 
 /**
@@ -16,11 +18,15 @@ public class SpecificationParserResult<T> {
     private SpecificationParserResult(T result, SpecificationParserError[] errors) {
         assert result == null ? errors != null && 0 <= errors.length && Arrays.stream(errors).allMatch(error -> error != null) : errors == null;
         this.result = result;
-        this.errors = errors == null ? new SpecificationParserError[0] : errors;
+        this.errors = errors == null ? new SpecificationParserError[0] : Arrays.copyOf(errors, errors.length);
     }
 
     public boolean isSuccessful() {
         return this.result != null;
+    }
+
+    public T getResult() {
+        return this.result;
     }
 
     public int errorCount() {
@@ -36,14 +42,22 @@ public class SpecificationParserResult<T> {
         return Arrays.stream(this.errors);
     }
     
-    static <T> SpecificationParserResult<T> ofSingleError(String message) {
-        return ofSingleError(message, null);
+    static <T> SpecificationParserResult<T> ofError(String message) {
+        return ofError(message, null);
     }
 
-    static <T> SpecificationParserResult<T> ofSingleError(String message, Throwable cause) {
+    static <T> SpecificationParserResult<T> ofError(String message, Throwable cause) {
         assert message != null && !message.trim().isEmpty();
         final SpecificationParserError[] errors = new SpecificationParserError[1];
         errors[0] = new SpecificationParserError(0, 0, message, cause);
+        return new SpecificationParserResult<T>(null, errors);
+    }    
+
+    static <T> SpecificationParserResult<T> ofError(Token token, String message) {
+        assert token != null;
+        assert message != null && !message.trim().isEmpty();
+        final SpecificationParserError[] errors = new SpecificationParserError[1];
+        errors[0] = new SpecificationParserError(token, message);
         return new SpecificationParserResult<T>(null, errors);
     }
 
@@ -52,9 +66,18 @@ public class SpecificationParserResult<T> {
         return new SpecificationParserResult<T>(null, errors.toArray(new SpecificationParserError[0]));
     }
 
+    static <T> SpecificationParserResult<T> ofErrors(SpecificationParserError... errors) {
+        return ofErrors(Arrays.asList(errors));
+    }
+
+    static <T> SpecificationParserResult<T> ofUnsuccessfulParserResult(SpecificationParserResult<?> result) {
+        assert result != null;
+        return new SpecificationParserResult<T>(null, result.errors);
+    }
+
     static <T> SpecificationParserResult<T> ofUnsuccessfulMethodResult(MethodResult<?> result) {
         assert result != null && !result.isSuccessful();
-        return ofSingleError(result.getErrorMessage(), result.getErrorCause());
+        return ofError(result.getErrorMessage(), result.getErrorCause());
     }
 
     static <T> SpecificationParserResult<T> ofErrorReporter(AntlrErrorReporter reporter) {
@@ -62,7 +85,7 @@ public class SpecificationParserResult<T> {
         return new SpecificationParserResult<T>(null, reporter.errorStream().toArray(SpecificationParserError[]::new));
     } 
 
-    static <T> SpecificationParserResult<T> ofGlobalScope(T result) {
+    static <T> SpecificationParserResult<T> ofResult(T result) {
         assert result != null;
         return new SpecificationParserResult<T>(result, null);
     }
