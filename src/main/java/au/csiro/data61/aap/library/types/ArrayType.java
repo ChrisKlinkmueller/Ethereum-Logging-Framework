@@ -24,6 +24,10 @@ public class ArrayType<T> extends SolidityType<List<T>> {
         return String.format("%s[]", this.baseType.getTypeName());
     }
 
+    public SolidityType<T> getBaseType() {
+        return this.baseType;
+    }
+
     @Override
     public MethodResult<List<T>> cast(Object obj) {
         if (obj == null) {

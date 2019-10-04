@@ -2,6 +2,7 @@ package au.csiro.data61.aap.parser;
 
 import au.csiro.data61.aap.library.types.SolidityType;
 import au.csiro.data61.aap.parser.XbelParser.VariableDefinitionContext;
+import au.csiro.data61.aap.parser.XbelParser.VariableDefinitionStartRuleContext;
 import au.csiro.data61.aap.specification.Variable;
 
 /**
@@ -9,6 +10,11 @@ import au.csiro.data61.aap.specification.Variable;
  */
 class VariableDefinitionVisitor extends XbelBaseVisitor<SpecificationParserResult<Variable>> {
     
+    @Override
+    public SpecificationParserResult<Variable> visitVariableDefinitionStartRule(VariableDefinitionStartRuleContext ctx) {
+        return this.visitVariableDefinition(ctx.variableDefinition());
+    }
+
     @Override
     public SpecificationParserResult<Variable> visitVariableDefinition(VariableDefinitionContext ctx) {
         final String name = ctx.variableName().getText();        
@@ -21,7 +27,6 @@ class VariableDefinitionVisitor extends XbelBaseVisitor<SpecificationParserResul
             return SpecificationParserResult.ofUnsuccessfulParserResult(typeResult);
         }
 
-        System.out.println(typeResult.getResult());
         final Variable variable = new Variable(typeResult.getResult(), name);
         return SpecificationParserResult.ofResult(variable);
     }

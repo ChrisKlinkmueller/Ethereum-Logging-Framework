@@ -133,6 +133,10 @@ variableDefinition
     : solType variableName
     ;
 
+variableDefinitionStartRule
+    : variableDefinition EOF
+    ;
+
 rightStatementSide
     : variableName
     | methodCall
@@ -293,7 +297,13 @@ BOOLEAN_VALUE
 BYTE_AND_ADDRESS_VALUE : ('0x')? [0-9a-fA-F]+;
 
 
-solType :
+
+solTypeStartRule
+    : solType EOF
+    ;
+    
+solType 
+    :
     | SOL_ADDRESS_TYPE
     | SOL_ADDRESS_ARRAY_TYPE
     | SOL_BOOL_ARRAY_TYPE

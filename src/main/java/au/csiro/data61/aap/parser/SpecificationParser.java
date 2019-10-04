@@ -11,6 +11,7 @@ import org.antlr.v4.runtime.tree.ParseTree;
 import org.antlr.v4.runtime.tree.ParseTreeWalker;
 import org.antlr.v4.runtime.tree.TerminalNode;
 
+import au.csiro.data61.aap.library.types.SolidityType;
 import au.csiro.data61.aap.specification.Variable;
 import au.csiro.data61.aap.util.MethodResult;
 
@@ -21,8 +22,12 @@ public class SpecificationParser {
     private static final Logger LOG = Logger.getLogger(SpecificationParser.class.getName());
 
     public SpecificationParserResult<Variable> parseVariableDefinition(InputStream is) {
-        return this.parse(is, XbelParser::variableDefinition, VisitorRepository.getVariableDefinitionVisitor());
+        return this.parse(is, XbelParser::variableDefinitionStartRule, VisitorRepository.getVariableDefinitionVisitor());
     }    
+
+    public SpecificationParserResult<SolidityType<?>> parseSolidityType(InputStream is) {
+        return this.parse(is, XbelParser::solTypeStartRule, VisitorRepository.getSolidityTypeVisitor());
+    }
     
     private <T> SpecificationParserResult<T> parse(InputStream is, Function<XbelParser, ParseTree> rule, XbelBaseVisitor<SpecificationParserResult<T>> visitor) {
         if (is == null) {

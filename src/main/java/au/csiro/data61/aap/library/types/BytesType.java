@@ -29,6 +29,10 @@ public class BytesType extends SolidityType<String> {
         return this.length == DYNAMIC;
     }
 
+    public int getBytesLength() {
+        return this.length;
+    }
+
     @Override
     public String getTypeName() {
         final String lengthSuffix = this.length == DYNAMIC ? "" : Integer.toString(this.length);
@@ -89,15 +93,22 @@ public class BytesType extends SolidityType<String> {
             return null;
         }
 
-        final String suffix = keyword.replaceFirst(PREFIX, "");
-        if (suffix.isEmpty()) {
+        keyword = keyword.replaceFirst(PREFIX, "");
+        if (keyword.isEmpty()) {
             return new BytesType(DEFAULT_LENGTH);
         }
-        else if (suffix.equals(DYNAMIC_SUFFIX)) {
+        
+        if (!keyword.startsWith(DYNAMIC_SUFFIX)) {
+            return null;
+        }
+
+        keyword = keyword.replaceFirst(DYNAMIC_SUFFIX, "");
+
+        if (keyword.isEmpty()) {
             return new BytesType();
         }
 
-        final MethodResult<Integer> valueResult = StringUtil.parseInt(suffix);
+        final MethodResult<Integer> valueResult = StringUtil.parseInt(keyword);
         if (!valueResult.isSuccessful() || valueResult.getResult() < MIN_STATIC_LENGTH || MAX_STATIC_LENGTH < valueResult.getResult()) {
             return null;
         }              

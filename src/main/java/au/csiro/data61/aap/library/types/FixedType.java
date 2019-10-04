@@ -26,6 +26,18 @@ public class FixedType extends SolidityType<BigDecimal> {
         this.n = n;
     }
 
+    public boolean isUnsigned() {
+        return !this.signed;
+    }
+
+    public int getM() {
+        return this.m;
+    }
+
+    public int getN() {
+        return this.n;
+    }
+
     @Override
     public MethodResult<BigDecimal> cast(Object obj) {
         if (obj == null) {

@@ -22,6 +22,14 @@ public class IntegerType extends SolidityType<BigInteger> {
         this.signed = signed;
     }
 
+    public boolean isUnsigned() {
+        return !this.signed;
+    }
+
+    public int getLength() {
+        return this.bitLength;
+    }
+
     @Override
     public MethodResult<BigInteger> cast(Object obj) {
         if (obj == null) {

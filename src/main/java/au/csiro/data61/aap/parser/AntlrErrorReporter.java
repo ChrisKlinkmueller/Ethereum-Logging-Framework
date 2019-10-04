@@ -20,7 +20,6 @@ class AntlrErrorReporter extends BaseErrorListener {
 
     @Override
     public void syntaxError(Recognizer<?, ?> recognizer, Object offendingSymbol, int line, int charPositionInLine, String msg, RecognitionException e) {
-        System.out.println("Syntax error");
         final SpecificationParserError error = new SpecificationParserError(line, charPositionInLine, msg, e);
         this.errors.add(error);
     }
