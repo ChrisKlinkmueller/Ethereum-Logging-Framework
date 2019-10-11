@@ -15,11 +15,20 @@ public class FixedType extends SolidityType<BigDecimal> {
     private static final String M_N_DIVIDER = "x";
     private static final int DEFAULT_M = 128;
     private static final int DEFAULT_N = 18;
+    private static final int MIN_M = 8;
+    private static final int MAX_M = 256;
+    private static final int MIN_N = 0;
+    private static final int MAX_N = 80;
     
+    private static final FixedType DEFAULT_INSTANCE = new FixedType(true, MAX_M, MAX_N);
+    public static FixedType defaultInstance() {
+        return DEFAULT_INSTANCE;
+    }
+
+
     private final int m;
     private final int n;
     private final boolean signed;
-
     FixedType(boolean signed, int m, int n) {
         this.signed = signed;
         this.m = m;
@@ -147,11 +156,11 @@ public class FixedType extends SolidityType<BigDecimal> {
     }
 
     private static boolean isValidMValue(int value) {
-        return value % 8 == 0 && 8 <= value && value <= 256;
+        return value % 8 == 0 && MIN_M <= value && value <= MAX_M;
     }
 
     private static boolean isValidNValue(int value) {
-        return 0 <= value && value <= 80;
+        return MIN_N <= value && value <= MAX_N;
     }
     
 }

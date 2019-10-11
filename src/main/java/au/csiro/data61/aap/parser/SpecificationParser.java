@@ -12,6 +12,7 @@ import org.antlr.v4.runtime.tree.ParseTreeWalker;
 import org.antlr.v4.runtime.tree.TerminalNode;
 
 import au.csiro.data61.aap.specification.types.SolidityType;
+import au.csiro.data61.aap.specification.Block;
 import au.csiro.data61.aap.specification.Variable;
 import au.csiro.data61.aap.util.MethodResult;
 
@@ -27,6 +28,10 @@ public class SpecificationParser {
 
     public SpecificationParserResult<SolidityType<?>> parseSolidityType(InputStream is) {
         return this.parse(is, XbelParser::solTypeStartRule, VisitorRepository.getSolidityTypeVisitor());
+    }
+
+    public SpecificationParserResult<Block> parseBlock(InputStream is) {
+        return this.parse(is, XbelParser::blockStartRule, VisitorRepository.getBlockVisitor());
     }
     
     private <T> SpecificationParserResult<T> parse(InputStream is, Function<XbelParser, ParseTree> rule, XbelBaseVisitor<SpecificationParserResult<T>> visitor) {

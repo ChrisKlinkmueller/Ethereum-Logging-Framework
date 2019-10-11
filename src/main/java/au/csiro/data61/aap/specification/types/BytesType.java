@@ -11,22 +11,23 @@ import au.csiro.data61.aap.util.StringUtil;
 public class BytesType extends SolidityType<String> {
     private final static String PREFIX = "byte";
     private final static String DYNAMIC_SUFFIX = "s";
-    private final static int DYNAMIC = Integer.MAX_VALUE;
+    protected final static int DYNAMIC_LENGTH = Integer.MAX_VALUE;
     private final static int MIN_STATIC_LENGTH = 1;
     private final static int MAX_STATIC_LENGTH = 32;
     private final static int DEFAULT_LENGTH = 1;
+
+    private static final BytesType DEFAULT_INSTANCE = new BytesType(DYNAMIC_LENGTH);
+    public static BytesType defaultInstance() {
+        return DEFAULT_INSTANCE;
+    }
     
     private final int length;
-    BytesType() {
-        this.length = DYNAMIC;
-    }
-
     BytesType(int length) {
         this.length = length;
     }
 
     public boolean isDynamic() {
-        return this.length == DYNAMIC;
+        return this.length == DYNAMIC_LENGTH;
     }
 
     public int getBytesLength() {
@@ -35,7 +36,7 @@ public class BytesType extends SolidityType<String> {
 
     @Override
     public String getTypeName() {
-        final String lengthSuffix = this.length == DYNAMIC ? "" : Integer.toString(this.length);
+        final String lengthSuffix = this.length == DYNAMIC_LENGTH ? "" : Integer.toString(this.length);
         return String.format("%S%s", PREFIX, lengthSuffix);
     }
 
@@ -105,7 +106,7 @@ public class BytesType extends SolidityType<String> {
         keyword = keyword.replaceFirst(DYNAMIC_SUFFIX, "");
 
         if (keyword.isEmpty()) {
-            return new BytesType();
+            return DEFAULT_INSTANCE;
         }
 
         final MethodResult<Integer> valueResult = StringUtil.parseInt(keyword);

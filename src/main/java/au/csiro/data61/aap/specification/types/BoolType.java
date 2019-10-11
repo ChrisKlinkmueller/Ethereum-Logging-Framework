@@ -8,6 +8,10 @@ public class BoolType extends SolidityType<Boolean> {
     private static final String NAME = "bool";
     private static final BoolType INSTANCE = new BoolType();
 
+    public static final BoolType defaultInstance() {
+        return INSTANCE;
+    }
+
     private BoolType() {}
 
     @Override

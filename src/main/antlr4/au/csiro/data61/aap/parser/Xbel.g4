@@ -8,6 +8,10 @@ document
     : blockBody EOF
     ;
 
+blockStartRule
+    : block EOF
+    ;
+
 block 
     : blockHead '{' blockBody '}'
     ;
@@ -32,6 +36,7 @@ blockRangeNumber
     | KEY_EARLIEST
     | KEY_PENDING
     | variableName
+    | methodCall
     ;
 
 transactionsHead
@@ -140,7 +145,6 @@ variableDefinitionStartRule
 rightStatementSide
     : variableName
     | methodCall
-    | boolExpr
     | emitCall
     | value
     ;

@@ -6,8 +6,12 @@ public class StringType extends BytesType {
     private static final String NAME = "string";
     private static final StringType INSTANCE = new StringType();
 
+    public static StringType defaultInstance() {
+        return INSTANCE;
+    }
+
     StringType() {
-        super();
+        super(DYNAMIC_LENGTH);
     }
 
     @Override

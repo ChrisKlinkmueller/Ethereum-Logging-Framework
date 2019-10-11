@@ -10,7 +10,11 @@ public class AddressType extends BytesType {
     private static final String NAME = "address";
     private static final AddressType INSTANCE = new AddressType();
 
-    AddressType() {
+    public static AddressType defaultInstance() {
+        return INSTANCE;
+    }
+
+    private AddressType() {
         super(ARRAY_LENGTH);
     }
 
