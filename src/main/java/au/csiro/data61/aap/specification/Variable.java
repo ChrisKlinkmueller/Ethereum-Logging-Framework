@@ -2,7 +2,7 @@ package au.csiro.data61.aap.specification;
 
 import java.util.Objects;
 
-import au.csiro.data61.aap.library.types.SolidityType;
+import au.csiro.data61.aap.specification.types.SolidityType;
 
 /**
  * Variable

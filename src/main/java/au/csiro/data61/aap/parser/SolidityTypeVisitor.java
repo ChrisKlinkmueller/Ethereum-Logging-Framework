@@ -1,6 +1,6 @@
 package au.csiro.data61.aap.parser;
 
-import au.csiro.data61.aap.library.types.SolidityType;
+import au.csiro.data61.aap.specification.types.SolidityType;
 import au.csiro.data61.aap.parser.XbelParser.SolTypeContext;
 import au.csiro.data61.aap.parser.XbelParser.SolTypeStartRuleContext;
 

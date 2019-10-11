@@ -11,7 +11,7 @@ import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.Arguments;
 import org.junit.jupiter.params.provider.MethodSource;
 
-import au.csiro.data61.aap.library.types.SolidityType;
+import au.csiro.data61.aap.specification.types.SolidityType;
 import au.csiro.data61.aap.specification.Variable;
 import au.csiro.data61.aap.util.StringUtil;
 

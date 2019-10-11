@@ -10,14 +10,14 @@ import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.Arguments;
 import org.junit.jupiter.params.provider.MethodSource;
 
-import au.csiro.data61.aap.library.types.AddressType;
-import au.csiro.data61.aap.library.types.ArrayType;
-import au.csiro.data61.aap.library.types.BoolType;
-import au.csiro.data61.aap.library.types.BytesType;
-import au.csiro.data61.aap.library.types.FixedType;
-import au.csiro.data61.aap.library.types.IntegerType;
-import au.csiro.data61.aap.library.types.SolidityType;
-import au.csiro.data61.aap.library.types.StringType;
+import au.csiro.data61.aap.specification.types.AddressType;
+import au.csiro.data61.aap.specification.types.ArrayType;
+import au.csiro.data61.aap.specification.types.BoolType;
+import au.csiro.data61.aap.specification.types.BytesType;
+import au.csiro.data61.aap.specification.types.FixedType;
+import au.csiro.data61.aap.specification.types.IntegerType;
+import au.csiro.data61.aap.specification.types.SolidityType;
+import au.csiro.data61.aap.specification.types.StringType;
 import au.csiro.data61.aap.util.StringUtil;
 
 /**

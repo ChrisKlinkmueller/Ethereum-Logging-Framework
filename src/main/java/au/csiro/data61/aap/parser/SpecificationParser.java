@@ -11,7 +11,7 @@ import org.antlr.v4.runtime.tree.ParseTree;
 import org.antlr.v4.runtime.tree.ParseTreeWalker;
 import org.antlr.v4.runtime.tree.TerminalNode;
 
-import au.csiro.data61.aap.library.types.SolidityType;
+import au.csiro.data61.aap.specification.types.SolidityType;
 import au.csiro.data61.aap.specification.Variable;
 import au.csiro.data61.aap.util.MethodResult;
 

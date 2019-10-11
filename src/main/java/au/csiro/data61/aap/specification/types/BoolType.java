@@ -1,4 +1,4 @@
-package au.csiro.data61.aap.library.types;
+package au.csiro.data61.aap.specification.types;
 
 import java.util.Objects;
 
