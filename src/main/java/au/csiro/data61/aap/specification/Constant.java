@@ -5,26 +5,23 @@ import java.util.Objects;
 import au.csiro.data61.aap.specification.types.SolidityType;
 
 /**
- * Variable
+ * Constant
  */
-public class Variable extends ValueContainer {
-    
-    public Variable(SolidityType<?> type, String name) {
-       super(type, name);
-    }
+public class Constant extends ValueContainer {
 
-    public void setValue(Object value) {
+    public Constant(SolidityType<?> type, String name, Object value) {
+        super(type, name);
         this.value = value;
     }
 
     @Override
     public String toString() {
-        return String.format("%s %s", this.getType(), this.getName());
+        return String.format("const %s %s", this.getType(), this.getName());
     }
 
     @Override
     public boolean equals(Object obj) {
-        if (obj == null || !(obj instanceof Variable)) {
+        if (obj == null || !(obj instanceof Constant)) {
             return false;
         }
 
@@ -38,7 +35,8 @@ public class Variable extends ValueContainer {
 
     @Override
     public int hashCode() {
-        return Objects.hash(this.getType(), this.getName(), Variable.class);
+        return Objects.hash(this.getType(), this.getName(), Constant.class);
     }
+
     
 }
