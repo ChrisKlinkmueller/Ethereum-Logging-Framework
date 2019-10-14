@@ -10,10 +10,12 @@ import au.csiro.data61.aap.parser.XbelParser.BlockHeadContext;
 import au.csiro.data61.aap.parser.XbelParser.BlockRangeNumberContext;
 import au.csiro.data61.aap.parser.XbelParser.BlockStartRuleContext;
 import au.csiro.data61.aap.parser.XbelParser.BlocksRangeContext;
+import au.csiro.data61.aap.parser.XbelParser.SmartContractsRangeContext;
 import au.csiro.data61.aap.parser.XbelParser.TransactionsRangeContext;
 import au.csiro.data61.aap.specification.Block;
 import au.csiro.data61.aap.specification.BlockRangeBlock;
 import au.csiro.data61.aap.specification.Constant;
+import au.csiro.data61.aap.specification.SmartContractsRangeBlock;
 import au.csiro.data61.aap.specification.TransactionRangeBlock;
 import au.csiro.data61.aap.specification.ValueSource;
 import au.csiro.data61.aap.specification.types.AddressType;
@@ -24,8 +26,7 @@ import au.csiro.data61.aap.specification.types.IntegerType;
  * BlockVisitor
  */
 class BlockVisitor extends XbelBaseVisitor<SpecificationParserResult<Block>> {
-    private static final BigInteger PENDING_BLOCK_NUMBER = new BigInteger(
-            "99999999999999999999999999999999999999999999");
+    private static final BigInteger PENDING_BLOCK_NUMBER = new BigInteger("99999999999999999999999999999999999999999999");
 
     @Override
     public SpecificationParserResult<Block> visitBlockStartRule(BlockStartRuleContext ctx) {
@@ -45,8 +46,12 @@ class BlockVisitor extends XbelBaseVisitor<SpecificationParserResult<Block>> {
     private SpecificationParserResult<Block> mapBlockHeadToBlock(BlockHeadContext ctx) {
         if (ctx.blocksRange() != null) {
             return this.mapBlockRangeToBlock(ctx.blocksRange());
-        } else if (ctx.transactionsRange() != null) {
+        } 
+        else if (ctx.transactionsRange() != null) {
             return this.mapTransactionsRangeToBlock(ctx.transactionsRange());
+        }
+        else if (ctx.smartContractsRange() != null) {
+            return this.mapSmartContractsRangeToBlock(ctx.smartContractsRange());
         }
 
         throw new UnsupportedOperationException("Tests shouldn't reach this point");
@@ -118,15 +123,37 @@ class BlockVisitor extends XbelBaseVisitor<SpecificationParserResult<Block>> {
 
     // #endregion block range mapping
 
-    // #region transaction range mapping
+    
 
+    // #region smart contracts & transaction range mapping
+
+    private static int MODE_TX_SENDERS = 0,
+                       MODE_TX_RECIPIENTS = 1,
+                       MODE_CONTRACTS = 2;
     private SpecificationParserResult<Block> mapTransactionsRangeToBlock(TransactionsRangeContext ctx) {
-        final ValueSource senders = this.mapAddressListToValueSource(ctx.senders, true);
-        final ValueSource recipients = this.mapAddressListToValueSource(ctx.recipients, false);
-        return SpecificationParserResult.ofResult(new TransactionRangeBlock(senders, recipients));
+        final SpecificationParserResult<ValueSource> senders = this.mapAddressListToValueSource(ctx.senders, MODE_TX_SENDERS);
+        if (!senders.isSuccessful()) {
+            return SpecificationParserResult.ofUnsuccessfulParserResult(senders);
+        }
+
+        final SpecificationParserResult<ValueSource> recipients = this.mapAddressListToValueSource(ctx.recipients, MODE_TX_RECIPIENTS);
+        if (!recipients.isSuccessful()) {
+            return SpecificationParserResult.ofUnsuccessfulParserResult(recipients);
+        }
+
+        return SpecificationParserResult.ofResult(new TransactionRangeBlock(senders.getResult(), recipients.getResult()));
+    } 
+    
+    private SpecificationParserResult<Block> mapSmartContractsRangeToBlock(SmartContractsRangeContext ctx) {
+        final SpecificationParserResult<ValueSource> contracts = this.mapAddressListToValueSource(ctx.addressList(), MODE_CONTRACTS);
+        if (!contracts.isSuccessful()) {
+            return SpecificationParserResult.ofUnsuccessfulParserResult(contracts);
+        }
+
+        return SpecificationParserResult.ofResult(new SmartContractsRangeBlock(contracts.getResult()));
     }
 
-    private ValueSource mapAddressListToValueSource(AddressListContext ctx, boolean senders) {
+    private SpecificationParserResult<ValueSource> mapAddressListToValueSource(AddressListContext ctx, int mode) {
         if (ctx.KEY_ANY() != null) {
              // TODO: return lookup of any function needs to be implemented
              throw new UnsupportedOperationException("ANY is currently not supported as a TransactionRange parameter.");
@@ -142,20 +169,32 @@ class BlockVisitor extends XbelBaseVisitor<SpecificationParserResult<Block>> {
         else if (ctx.BYTE_AND_ADDRESS_VALUE() != null) {
             final String[] addresses = new String[ctx.BYTE_AND_ADDRESS_VALUE().size()];
             IntStream.range(0, addresses.length).forEach(i -> addresses[i] = ctx.BYTE_AND_ADDRESS_VALUE(i).getText());
-            return new Constant(ArrayType.defaultInstance(AddressType.defaultInstance()), 
-                                String.format("transaction range %s", senders ? "senders" : "recipients"),
-                                addresses);
+            return SpecificationParserResult.ofResult(new Constant(ArrayType.defaultInstance(AddressType.defaultInstance()), 
+                                addressListModeName(mode),
+                                addresses));
         }
         else {
-            throw new UnsupportedOperationException("This option for specifying block range parameters is not supported.");
+            return SpecificationParserResult.ofError(ctx.start, "This option for specifying block range parameters is not supported.");
         }
     }
 
 
-    // #endregion transaction range mapping
+    // #endregion smart contracts & transaction range mapping
 
 
-    
+
+    private String addressListModeName(int mode) {
+        if (mode == 0) {
+            return String.format("transactionRange.Senders");
+        }
+        else if (mode == 1) {
+            return String.format("transactionRange.Recipients");
+        }
+        else {
+            return String.format("smartContractAddresses");
+        }
+    }
+
     private SpecificationParserResult<Block> addInstructions(Block block, BlockBodyContext ctx) {
         if (!ctx.blockBodyElements().isEmpty()) {
             // TODO: implement mapping nested instructions to block children

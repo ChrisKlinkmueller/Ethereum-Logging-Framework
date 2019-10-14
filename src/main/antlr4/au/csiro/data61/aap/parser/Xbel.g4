@@ -44,7 +44,7 @@ transactionsRange
     ;
 
 smartContractsRange
-    : KEY_SMART_CONTRACTS '(' addressList ')'
+    : KEY_SMART_CONTRACTS '(' contracts=addressList ')'
     ;
 
 addressList

@@ -13,6 +13,7 @@ import org.junit.jupiter.params.provider.MethodSource;
 import au.csiro.data61.aap.specification.Block;
 import au.csiro.data61.aap.specification.BlockRangeBlock;
 import au.csiro.data61.aap.specification.Constant;
+import au.csiro.data61.aap.specification.SmartContractsRangeBlock;
 import au.csiro.data61.aap.specification.TransactionRangeBlock;
 import au.csiro.data61.aap.util.StringUtil;
 
@@ -76,7 +77,24 @@ import au.csiro.data61.aap.util.StringUtil;
 
     private static Stream<Arguments> createInvalidTransactionRangeValues() {        
         return Stream.of(
-            Arguments.of("TRANSACTIONS ()()")
+            Arguments.of("TRANSACTIONS ()() {}")
+        );
+    } 
+
+    @ParameterizedTest
+    @MethodSource("createValidSmartContractRangeValues") 
+    void testValidSmartContractsRangeValues(String code, Class<?> addressClass) {
+        final InputStream is = StringUtil.toStream(code);
+        final SpecificationParserResult<Block> parserResult = this.parser.parseBlock(is);
+        assertTrue(parserResult.isSuccessful(), parserResult.errorStream().map(e -> e.getErrorMessage()).collect(Collectors.joining(", ")));
+        assertTrue(parserResult.getResult() instanceof SmartContractsRangeBlock);
+        final SmartContractsRangeBlock block = (SmartContractsRangeBlock)parserResult.getResult();
+        assertTrue(block.getAddresses().getClass().equals(addressClass));
+    }
+
+    private static Stream<Arguments> createValidSmartContractRangeValues() {        
+        return Stream.of(
+            Arguments.of("SMART CONTRACTS(0xca197948d4ea0f83d752ae71a321e54dbe735bc5,0x5ed78d90326826f54986122500afc139d6333ce3) {}", Constant.class)
         );
     } 
 }
