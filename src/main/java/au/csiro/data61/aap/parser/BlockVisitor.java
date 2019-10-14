@@ -132,11 +132,11 @@ class BlockVisitor extends XbelBaseVisitor<SpecificationParserResult<Block>> {
              throw new UnsupportedOperationException("ANY is currently not supported as a TransactionRange parameter.");
         }
         else if (ctx.variableName() != null) {
-             // TODO: return lookup of any function needs to be implemented
+             // TODO: return lookup of variable needs to be implemented
              throw new UnsupportedOperationException("Variable names are currently not supported as TransactionRange parameters.");
         }
         else if (ctx.methodCall() != null) {
-             // TODO: return lookup of any function needs to be implemented
+             // TODO: return lookup of method call needs to be implemented
              throw new UnsupportedOperationException("Method calls are currently not supported as TransactionRange parameters.");
         }
         else if (ctx.BYTE_AND_ADDRESS_VALUE() != null) {
@@ -154,6 +154,8 @@ class BlockVisitor extends XbelBaseVisitor<SpecificationParserResult<Block>> {
 
     // #endregion transaction range mapping
 
+
+    
     private SpecificationParserResult<Block> addInstructions(Block block, BlockBodyContext ctx) {
         if (!ctx.blockBodyElements().isEmpty()) {
             // TODO: implement mapping nested instructions to block children
