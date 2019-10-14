@@ -23,7 +23,6 @@ blockHead
     | transactionsRange
     | smartContractsRange
     | logEntriesRange
-    | emitHead
     ;
 
 blocksRange
@@ -81,14 +80,6 @@ solSkipVariable
     | KEY_SKIP_DATA
     ;
 
-emitHead
-    : KEY_EMIT emitCondition?
-    ;
-
-emitCondition
-    : KEY_IF '(' boolExpr ')'
-    ;
-
 boolExpr
     : variableName
     | methodCall
@@ -123,6 +114,7 @@ blockBody
 blockBodyElements
     : block
     | statement ';'
+    | emitBlock
     ;
 
 statement
@@ -145,12 +137,23 @@ variableDefinitionStartRule
 rightStatementSide
     : variableName
     | methodCall
-    | emitCall
     | value
     ;
 
+emitBlock
+    : emitHead '{' emitCall* '}'
+    ;
+
+emitHead
+    : KEY_EMIT emitCondition?
+    ;
+
+emitCondition
+    : KEY_IF '(' boolExpr ')'
+    ;
+
 emitCall
-    : type=(KEY_EVENT|KEY_TRACE) '(' emitVariable (',' emitVariable )* ')'
+    : type=(KEY_EVENT|KEY_TRACE) '(' emitVariable (',' emitVariable )* ')' ';'
     ;
 
 emitVariable
