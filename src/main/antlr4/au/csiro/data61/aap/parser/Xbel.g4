@@ -54,12 +54,8 @@ addressList
     ;
 
 logEntriesRange
-    : KEY_LOG_ENTRIES '(' logEntrySpecification ')'
-    ;
-
-logEntrySpecification
-    : eventSignatureSpecification
-    | varArgsSpecification
+    : KEY_LOG_ENTRIES '(' eventSignatureSpecification ')'
+    | KEY_LOG_ENTRIES '(' varArgsSpecification ')'
     ;
 
 eventSignatureSpecification

@@ -10,17 +10,26 @@ import au.csiro.data61.aap.parser.XbelParser.BlockHeadContext;
 import au.csiro.data61.aap.parser.XbelParser.BlockRangeNumberContext;
 import au.csiro.data61.aap.parser.XbelParser.BlockStartRuleContext;
 import au.csiro.data61.aap.parser.XbelParser.BlocksRangeContext;
+import au.csiro.data61.aap.parser.XbelParser.EventSignatureSpecificationContext;
+import au.csiro.data61.aap.parser.XbelParser.LogEntriesRangeContext;
 import au.csiro.data61.aap.parser.XbelParser.SmartContractsRangeContext;
+import au.csiro.data61.aap.parser.XbelParser.SolSkipVariableContext;
+import au.csiro.data61.aap.parser.XbelParser.SolVariableContext;
 import au.csiro.data61.aap.parser.XbelParser.TransactionsRangeContext;
+import au.csiro.data61.aap.parser.XbelParser.VarArgsSpecificationContext;
 import au.csiro.data61.aap.specification.Block;
 import au.csiro.data61.aap.specification.BlockRangeBlock;
 import au.csiro.data61.aap.specification.Constant;
+import au.csiro.data61.aap.specification.LogEntriesBlock;
+import au.csiro.data61.aap.specification.LogEntryDefinition;
+import au.csiro.data61.aap.specification.LogEntryParameter;
 import au.csiro.data61.aap.specification.SmartContractsRangeBlock;
 import au.csiro.data61.aap.specification.TransactionRangeBlock;
 import au.csiro.data61.aap.specification.ValueSource;
 import au.csiro.data61.aap.specification.types.AddressType;
 import au.csiro.data61.aap.specification.types.ArrayType;
 import au.csiro.data61.aap.specification.types.IntegerType;
+import au.csiro.data61.aap.specification.types.SolidityType;
 
 /**
  * BlockVisitor
@@ -53,8 +62,12 @@ class BlockVisitor extends XbelBaseVisitor<SpecificationParserResult<Block>> {
         else if (ctx.smartContractsRange() != null) {
             return this.mapSmartContractsRangeToBlock(ctx.smartContractsRange());
         }
-
-        throw new UnsupportedOperationException("Tests shouldn't reach this point");
+        else if (ctx.logEntriesRange() != null) {
+            return this.mapLogEntriesRangeToBlock(ctx.logEntriesRange());
+        }
+        else { 
+            return SpecificationParserResult.ofError(ctx.start, "This type of block specification is not supported.");
+        }
     }
 
     // #region block range mapping
@@ -117,9 +130,8 @@ class BlockVisitor extends XbelBaseVisitor<SpecificationParserResult<Block>> {
         else if (ctx.KEY_PENDING() != null) {
             return createBlockRangeNumberConstant(PENDING_BLOCK_NUMBER, from);
         } 
-        else {
-            throw new UnsupportedOperationException(
-                    "This option for specifying block range parameters is not supported.");
+        else { 
+            return SpecificationParserResult.ofError(ctx.start, "This option for specifying block range parameters is not supported.");
         }
     }
 
@@ -185,11 +197,6 @@ class BlockVisitor extends XbelBaseVisitor<SpecificationParserResult<Block>> {
         }
     }
 
-
-    // #endregion smart contracts & transaction range mapping
-
-
-
     private String addressListModeName(int mode) {
         if (mode == 0) {
             return String.format("transactionRange.Senders");
@@ -201,6 +208,84 @@ class BlockVisitor extends XbelBaseVisitor<SpecificationParserResult<Block>> {
             return String.format("smartContractAddresses");
         }
     }
+
+
+    // #endregion smart contracts & transaction range mapping
+
+
+
+    //#region log entries mapping
+
+    private SpecificationParserResult<Block> mapLogEntriesRangeToBlock(LogEntriesRangeContext ctx) {
+        if (ctx.eventSignatureSpecification() != null) {
+            return mapEventSignatureToBlock(ctx.eventSignatureSpecification());
+        }
+        else if (ctx.varArgsSpecification() != null) {
+            return mapVarArgsToBlock(ctx.varArgsSpecification());
+        }
+        else {
+            return SpecificationParserResult.ofError(ctx.start, "This option for specifying log entry parameters is not supported."); 
+        }  
+    }
+
+    private SpecificationParserResult<Block> mapEventSignatureToBlock(EventSignatureSpecificationContext ctx) {
+        final LogEntryParameter[] parameters = new LogEntryParameter[ctx.solVariable().size()];
+        for (int i = 0; i < ctx.solVariable().size(); i++) {
+            final SpecificationParserResult<LogEntryParameter> result = this.mapToParameter(ctx.solVariable(i));
+            if (!result.isSuccessful()) {
+                return SpecificationParserResult.ofUnsuccessfulParserResult(result);
+            }
+            parameters[i] = result.getResult();
+        }
+
+        final String name = ctx.methodName.getText();
+        final boolean isAnonymous = ctx.KEY_ANONYMOUS() != null;
+        final LogEntryDefinition def = new LogEntryDefinition(name, isAnonymous, parameters);
+        return SpecificationParserResult.ofResult(new LogEntriesBlock(def));
+    }
+
+    private SpecificationParserResult<Block> mapVarArgsToBlock(VarArgsSpecificationContext ctx) {
+        final LogEntryParameter[] parameters = new LogEntryParameter[ctx.solSkipVariable().size() + (ctx.KEY_VAR_ARGS() == null ? 0 : 1)];
+        for (int i = 0; i < ctx.solSkipVariable().size(); i++) {
+            final SpecificationParserResult<LogEntryParameter> result = this.mapToSkipParameter(ctx.solSkipVariable(i));
+            if (!result.isSuccessful()) {
+                return SpecificationParserResult.ofUnsuccessfulParserResult(result);
+            }
+            parameters[i] = result.getResult();
+        }
+
+        if (ctx.KEY_VAR_ARGS() != null) {
+            parameters[parameters.length - 1] = LogEntryParameter.varEndParameter();
+        }
+
+        return SpecificationParserResult.ofResult(new LogEntriesBlock(new LogEntryDefinition(parameters)));
+    }
+
+    private SpecificationParserResult<LogEntryParameter> mapToSkipParameter(SolSkipVariableContext ctx) {
+        if (ctx.KEY_SKIP_DATA() != null) {
+            return SpecificationParserResult.ofResult(LogEntryParameter.skipDataParameter());
+        }
+        else if (ctx.KEY_SKIP_INDEXED() != null) {
+            return SpecificationParserResult.ofResult(LogEntryParameter.skipIndexedParameter());
+        }
+        else if (ctx.solVariable() != null) {
+            return this.mapToParameter(ctx.solVariable());
+        }
+        else {
+            return SpecificationParserResult.ofError(ctx.start, "This option for parameter specification is not supported.");
+        }
+    }
+
+    private SpecificationParserResult<LogEntryParameter> mapToParameter(SolVariableContext ctx) {
+        final SpecificationParserResult<SolidityType<?>> typeResult = VisitorRepository.getSolidityTypeVisitor().visitSolType(ctx.solType());
+        if (!typeResult.isSuccessful()) {
+            return SpecificationParserResult.ofUnsuccessfulParserResult(typeResult);
+        }
+
+        return SpecificationParserResult.ofResult(LogEntryParameter.of(typeResult.getResult(), ctx.variableName().getText(), ctx.KEY_INDEXED() != null));
+    }
+
+    //#endregion log entries mapping
 
     private SpecificationParserResult<Block> addInstructions(Block block, BlockBodyContext ctx) {
         if (!ctx.blockBodyElements().isEmpty()) {

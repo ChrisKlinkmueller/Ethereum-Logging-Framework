@@ -97,4 +97,23 @@ import au.csiro.data61.aap.util.StringUtil;
             Arguments.of("SMART CONTRACTS(0xca197948d4ea0f83d752ae71a321e54dbe735bc5,0x5ed78d90326826f54986122500afc139d6333ce3) {}", Constant.class)
         );
     } 
+
+    @ParameterizedTest
+    @MethodSource("createValidLogEntriesRangeValues") 
+    void testValidLogEntriesRangeValues(String code) {
+        final InputStream is = StringUtil.toStream(code);
+        final SpecificationParserResult<Block> parserResult = this.parser.parseBlock(is);
+        assertTrue(parserResult.isSuccessful(), parserResult.errorStream().map(e -> e.getErrorMessage()).collect(Collectors.joining(", ")));
+    }
+
+    private static Stream<Arguments> createValidLogEntriesRangeValues() {        
+        return Stream.of(
+            Arguments.of("LOG ENTRIES (AugurUpdated(address indexed newAddress)) {}"),
+            Arguments.of("LOG ENTRIES (AugurUpdated(address indexed newAddress) anonymous) {}"),
+            Arguments.of("LOG ENTRIES (string indexed sign, address indexed universe, address market, address creator) {}"),
+            Arguments.of("LOG ENTRIES (string indexed sign, address indexed universe, _, address market, address creator) {}"),
+            Arguments.of("LOG ENTRIES (string indexed sign, address indexed universe, address market, address creator, ...) {}"),
+            Arguments.of("LOG ENTRIES (string indexed sign, address indexed universe, _, address market, address creator, ...) {}")
+        );
+    } 
 }
