@@ -70,12 +70,19 @@ class BlockVisitor extends XbelBaseVisitor<SpecificationParserResult<Block>> {
                     "EARLIEST isn't a valid value for parameter 'to'");
         }
 
-        final ValueSource from = this.mapBlockRangeNumberToValueSource(ctx.from, true);
-        final ValueSource to = this.mapBlockRangeNumberToValueSource(ctx.to, false);
+        final SpecificationParserResult<ValueSource> from = this.mapBlockRangeNumberToValueSource(ctx.from, true);
+        if (!from.isSuccessful()) {
+            return SpecificationParserResult.ofUnsuccessfulParserResult(from);
+        }
 
-        if (from instanceof Constant && to instanceof Constant) {
-            final BigInteger fromValue = (BigInteger) from.getValue();
-            final BigInteger toValue = (BigInteger) to.getValue();
+        final SpecificationParserResult<ValueSource> to = this.mapBlockRangeNumberToValueSource(ctx.to, false);
+        if (!to.isSuccessful()) {
+            return SpecificationParserResult.ofUnsuccessfulParserResult(to);
+        }
+
+        if (from.getResult() instanceof Constant && to.getResult() instanceof Constant) {
+            final BigInteger fromValue = (BigInteger) from.getResult().getValue();
+            final BigInteger toValue = (BigInteger) to.getResult().getValue();
             if (fromValue.compareTo(toValue) >= 0) {
                 return SpecificationParserResult.ofError(ctx.getStart(),
                         String.format(
@@ -84,10 +91,10 @@ class BlockVisitor extends XbelBaseVisitor<SpecificationParserResult<Block>> {
             }
         }
 
-        return SpecificationParserResult.ofResult(new BlockRangeBlock(from, to));
+        return SpecificationParserResult.ofResult(new BlockRangeBlock(from.getResult(), to.getResult()));
     }
 
-    private ValueSource mapBlockRangeNumberToValueSource(BlockRangeNumberContext ctx, boolean from) {
+    private SpecificationParserResult<ValueSource> mapBlockRangeNumberToValueSource(BlockRangeNumberContext ctx, boolean from) {
         if (ctx.variableName() != null) {
             // TODO: return lookup of variable needs to be implemented
             throw new UnsupportedOperationException("variablenames currently not supported as BlockRange parameters");
@@ -116,9 +123,9 @@ class BlockVisitor extends XbelBaseVisitor<SpecificationParserResult<Block>> {
         }
     }
 
-    private ValueSource createBlockRangeNumberConstant(BigInteger value, boolean from) {
-        return new Constant(IntegerType.getDefaultInstance(),
-                String.format("const block range %s", from ? "from" : "to"), value);
+    private SpecificationParserResult<ValueSource> createBlockRangeNumberConstant(BigInteger value, boolean from) {
+        return SpecificationParserResult.ofResult(new Constant(IntegerType.getDefaultInstance(),
+                String.format("const block range %s", from ? "from" : "to"), value));
     }
 
     // #endregion block range mapping
