@@ -13,6 +13,10 @@ public class ArrayType<T> extends SolidityType<List<T>> {
     private final SolidityType<T> baseType;
     private static final String REGEX = "[a-zA-Z0-9]*\\[\\]"; 
     private static final String SUFFIX = "[]";
+    
+    public static <T> ArrayType<T> defaultInstance(SolidityType<T> type) {
+        return new ArrayType<>(type);
+    }
 
     ArrayType(SolidityType<T> baseType) {
         assert baseType != null;

@@ -19,14 +19,14 @@ block
 // block header
 
 blockHead
-    : blockRangeHead
-    | transactionsHead
-    | smartContractsHead
-    | logEntriesHead
+    : blocksRange
+    | transactionsRange
+    | smartContractsRange
+    | logEntriesRange
     | emitHead
     ;
 
-blockRangeHead
+blocksRange
     : KEY_BLOCK_RANGE '(' from=blockRangeNumber ',' to=blockRangeNumber ')'
     ;
 
@@ -39,11 +39,11 @@ blockRangeNumber
     | methodCall
     ;
 
-transactionsHead
-    : KEY_TRANSACTIONS '(' addressList ')' '(' addressList ')'
+transactionsRange
+    : KEY_TRANSACTIONS '(' senders=addressList ')' '(' recipients=addressList ')'
     ;
 
-smartContractsHead
+smartContractsRange
     : KEY_SMART_CONTRACTS '(' addressList ')'
     ;
 
@@ -54,7 +54,7 @@ addressList
     | methodCall
     ;
 
-logEntriesHead
+logEntriesRange
     : KEY_LOG_ENTRIES '(' logEntrySpecification ')'
     ;
 
