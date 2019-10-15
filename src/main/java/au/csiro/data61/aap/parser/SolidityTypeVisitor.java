@@ -1,14 +1,19 @@
 package au.csiro.data61.aap.parser;
 
 import au.csiro.data61.aap.specification.types.SolidityType;
+import au.csiro.data61.aap.state.ProgramState;
 import au.csiro.data61.aap.parser.XbelParser.SolTypeContext;
 import au.csiro.data61.aap.parser.XbelParser.SolTypeStartRuleContext;
 
 /**
  * SolidityTypeVisitor
  */
-public class SolidityTypeVisitor extends XbelBaseVisitor<SpecificationParserResult<SolidityType<?>>> {
+public class SolidityTypeVisitor extends StatefulVisitor<SpecificationParserResult<SolidityType<?>>> {
     
+    public SolidityTypeVisitor(ProgramState state) {
+        super(state);
+    }
+
     @Override
     public SpecificationParserResult<SolidityType<?>> visitSolTypeStartRule(SolTypeStartRuleContext ctx) {
         return this.visitSolType(ctx.solType());

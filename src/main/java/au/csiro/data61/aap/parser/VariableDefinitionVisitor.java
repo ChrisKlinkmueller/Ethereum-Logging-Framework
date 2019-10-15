@@ -1,6 +1,7 @@
 package au.csiro.data61.aap.parser;
 
 import au.csiro.data61.aap.specification.types.SolidityType;
+import au.csiro.data61.aap.state.ProgramState;
 import au.csiro.data61.aap.parser.XbelParser.VariableDefinitionContext;
 import au.csiro.data61.aap.parser.XbelParser.VariableDefinitionStartRuleContext;
 import au.csiro.data61.aap.specification.Variable;
@@ -8,8 +9,12 @@ import au.csiro.data61.aap.specification.Variable;
 /**
  * VariableDefinitionVisitor
  */
-class VariableDefinitionVisitor extends XbelBaseVisitor<SpecificationParserResult<Variable>> {
+class VariableDefinitionVisitor extends StatefulVisitor<SpecificationParserResult<Variable>> {
     
+    public VariableDefinitionVisitor(ProgramState state) {
+        super(state);
+    }
+
     @Override
     public SpecificationParserResult<Variable> visitVariableDefinitionStartRule(VariableDefinitionStartRuleContext ctx) {
         return this.visitVariableDefinition(ctx.variableDefinition());

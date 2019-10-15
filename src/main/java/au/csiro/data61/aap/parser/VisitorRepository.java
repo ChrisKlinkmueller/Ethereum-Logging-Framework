@@ -1,5 +1,7 @@
 package au.csiro.data61.aap.parser;
 
+import au.csiro.data61.aap.state.ProgramState;
+
 /**
  * VisitorRepository
  */
@@ -9,9 +11,10 @@ class VisitorRepository {
     private static final BlockVisitor blockVisitor;
 
     static {
-        varDefVisitor = new VariableDefinitionVisitor();
-        solTypeVisitor = new SolidityTypeVisitor();
-        blockVisitor = new BlockVisitor();
+        final ProgramState state = new ProgramState();
+        varDefVisitor = new VariableDefinitionVisitor(state);
+        solTypeVisitor = new SolidityTypeVisitor(state);
+        blockVisitor = new BlockVisitor(state);
     }
 
     public static VariableDefinitionVisitor getVariableDefinitionVisitor() {

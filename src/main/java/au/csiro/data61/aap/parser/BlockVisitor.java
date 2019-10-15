@@ -30,12 +30,17 @@ import au.csiro.data61.aap.specification.types.AddressType;
 import au.csiro.data61.aap.specification.types.ArrayType;
 import au.csiro.data61.aap.specification.types.IntegerType;
 import au.csiro.data61.aap.specification.types.SolidityType;
+import au.csiro.data61.aap.state.ProgramState;
 
 /**
  * BlockVisitor
  */
-class BlockVisitor extends XbelBaseVisitor<SpecificationParserResult<Block>> {
+class BlockVisitor extends StatefulVisitor<SpecificationParserResult<Block>> {
     private static final BigInteger PENDING_BLOCK_NUMBER = new BigInteger("99999999999999999999999999999999999999999999");
+
+    public BlockVisitor(ProgramState state) {
+        super(state);
+    }
 
     @Override
     public SpecificationParserResult<Block> visitBlockStartRule(BlockStartRuleContext ctx) {
