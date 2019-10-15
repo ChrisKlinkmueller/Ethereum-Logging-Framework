@@ -32,4 +32,8 @@ public class ProgramState {
     public boolean exitsVariable(String name) {
         return this.variables.containsKey(name);
     }
+
+    public void clearVariables() {
+        this.variables.clear();
+    }
 }

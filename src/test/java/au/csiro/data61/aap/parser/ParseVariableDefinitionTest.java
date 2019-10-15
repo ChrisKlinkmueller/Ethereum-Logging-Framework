@@ -26,7 +26,7 @@ public class ParseVariableDefinitionTest {
     void testValidVariableDefinitions(String input, Variable expectedVariable) {
         final InputStream is = StringUtil.toStream(input);
         final SpecificationParserResult<Variable> result = this.parser.parseVariableDefinition(is);
-        assertTrue(result.isSuccessful());
+        assertTrue(result.isSuccessful(), result.getErrorMessage());
     
         final Variable resultVariable = result.getResult();
         assertEquals(resultVariable.getName(), expectedVariable.getName());

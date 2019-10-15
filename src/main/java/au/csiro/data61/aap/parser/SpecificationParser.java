@@ -23,15 +23,21 @@ public class SpecificationParser {
     private static final Logger LOG = Logger.getLogger(SpecificationParser.class.getName());
 
     public SpecificationParserResult<Variable> parseVariableDefinition(InputStream is) {
-        return this.parse(is, XbelParser::variableDefinitionStartRule, VisitorRepository.getVariableDefinitionVisitor());
+        return this.parseAndClean(is, XbelParser::variableDefinitionStartRule, VisitorRepository.getVariableDefinitionVisitor());
     }    
 
     public SpecificationParserResult<SolidityType<?>> parseSolidityType(InputStream is) {
-        return this.parse(is, XbelParser::solTypeStartRule, VisitorRepository.getSolidityTypeVisitor());
+        return this.parseAndClean(is, XbelParser::solTypeStartRule, VisitorRepository.getSolidityTypeVisitor());
     }
 
     public SpecificationParserResult<Block> parseBlock(InputStream is) {
-        return this.parse(is, XbelParser::blockStartRule, VisitorRepository.getBlockVisitor());
+        return this.parseAndClean(is, XbelParser::blockStartRule, VisitorRepository.getBlockVisitor());
+    }
+
+    private <T> SpecificationParserResult<T> parseAndClean(InputStream is, Function<XbelParser, ParseTree> rule, XbelBaseVisitor<SpecificationParserResult<T>> visitor) {
+        final SpecificationParserResult<T> result = this.parse(is, rule, visitor);
+        VisitorRepository.clearProgramState();
+        return result;
     }
     
     private <T> SpecificationParserResult<T> parse(InputStream is, Function<XbelParser, ParseTree> rule, XbelBaseVisitor<SpecificationParserResult<T>> visitor) {

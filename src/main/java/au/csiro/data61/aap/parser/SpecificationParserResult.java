@@ -2,6 +2,7 @@ package au.csiro.data61.aap.parser;
 
 import java.util.Arrays;
 import java.util.Collection;
+import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
 import org.antlr.v4.runtime.Token;
@@ -12,6 +13,8 @@ import au.csiro.data61.aap.util.MethodResult;
  * SpecificationParserResult
  */
 public class SpecificationParserResult<T> {
+    private static final String ERROR_MESSAGE_JOIN = ", ";
+    
     private final T result;
     private final SpecificationParserError[] errors;
 
@@ -31,6 +34,12 @@ public class SpecificationParserResult<T> {
 
     public int errorCount() {
         return this.errors.length;
+    }
+
+    public String getErrorMessage() {
+        return this.errorStream()
+                   .map(error -> error.getErrorMessage())
+                   .collect(Collectors.joining(ERROR_MESSAGE_JOIN));
     }
 
     public SpecificationParserError getError(int index) {
