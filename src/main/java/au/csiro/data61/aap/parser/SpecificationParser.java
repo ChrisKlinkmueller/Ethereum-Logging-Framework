@@ -82,12 +82,12 @@ public class SpecificationParser {
 
         @Override
         public void visitErrorNode(ErrorNode node) {
-            LOG.info(node.getText().replaceAll("\\s+", " "));
+            //LOG.info(node.getText().replaceAll("\\s+", " "));
         }
 
         @Override
         public void visitTerminal(TerminalNode node) {
-            LOG.info(node.getText().replaceAll("\\s+", " "));
+            //LOG.info(node.getText().replaceAll("\\s+", " "));
         }
     }
 

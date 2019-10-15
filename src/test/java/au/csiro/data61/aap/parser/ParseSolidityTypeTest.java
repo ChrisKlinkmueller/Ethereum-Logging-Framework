@@ -212,7 +212,6 @@ public class ParseSolidityTypeTest {
             Arguments.of("bytes33"),
             Arguments.of("unfixed["),
             Arguments.of("int]"),
-            Arguments.of("bytes[]"),
             Arguments.of("string[]")
         );
         return stream;

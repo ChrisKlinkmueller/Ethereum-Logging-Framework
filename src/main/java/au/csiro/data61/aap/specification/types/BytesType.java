@@ -3,27 +3,23 @@ package au.csiro.data61.aap.specification.types;
 import java.util.Objects;
 
 import au.csiro.data61.aap.util.MethodResult;
-import au.csiro.data61.aap.util.StringUtil;
 
 /**
  * BytesType
  */
 public class BytesType extends SolidityType<String> {
-    private final static String PREFIX = "byte";
-    private final static String DYNAMIC_SUFFIX = "s";
+    private final static String BASE_NAME = "bytes";    
     protected final static int DYNAMIC_LENGTH = Integer.MAX_VALUE;
-    private final static int MIN_STATIC_LENGTH = 1;
-    private final static int MAX_STATIC_LENGTH = 32;
-    private final static int DEFAULT_LENGTH = 1;
+    public final static int MIN_STATIC_LENGTH = 1;
+    public final static int MAX_STATIC_LENGTH = 32;
 
-    private static final BytesType DEFAULT_INSTANCE = new BytesType(DYNAMIC_LENGTH);
-    public static BytesType defaultInstance() {
-        return DEFAULT_INSTANCE;
-    }
-    
     private final int length;
-    BytesType(int length) {
+    public BytesType(int length) {
         this.length = length;
+    }
+
+    public BytesType() {
+        this.length = DYNAMIC_LENGTH;
     }
 
     public boolean isDynamic() {
@@ -37,7 +33,7 @@ public class BytesType extends SolidityType<String> {
     @Override
     public String getTypeName() {
         final String lengthSuffix = this.length == DYNAMIC_LENGTH ? "" : Integer.toString(this.length);
-        return String.format("%S%s", PREFIX, lengthSuffix);
+        return String.format("%s%s", BASE_NAME, lengthSuffix);
     }
 
     @Override
@@ -67,7 +63,7 @@ public class BytesType extends SolidityType<String> {
 
     @Override
     public int hashCode() {
-        return Objects.hash(PREFIX, this.length);
+        return Objects.hash(BASE_NAME, this.length);
     }
 
     @Override
@@ -86,33 +82,5 @@ public class BytesType extends SolidityType<String> {
         }
         
         return false;
-    }
-
-
-    static SolidityType<?> createBytesType(String keyword) {
-        if (!keyword.startsWith(PREFIX)) {
-            return null;
-        }
-
-        keyword = keyword.replaceFirst(PREFIX, "");
-        if (keyword.isEmpty()) {
-            return new BytesType(DEFAULT_LENGTH);
-        }
-        
-        if (!keyword.startsWith(DYNAMIC_SUFFIX)) {
-            return null;
-        }
-
-        keyword = keyword.replaceFirst(DYNAMIC_SUFFIX, "");
-
-        if (keyword.isEmpty()) {
-            return DEFAULT_INSTANCE;
-        }
-
-        final MethodResult<Integer> valueResult = StringUtil.parseInt(keyword);
-        if (!valueResult.isSuccessful() || valueResult.getResult() < MIN_STATIC_LENGTH || MAX_STATIC_LENGTH < valueResult.getResult()) {
-            return null;
-        }              
-        return new BytesType(valueResult.getResult());
     }
 }

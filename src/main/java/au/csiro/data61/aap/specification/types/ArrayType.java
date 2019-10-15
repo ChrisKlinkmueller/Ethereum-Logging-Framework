@@ -11,21 +11,16 @@ import au.csiro.data61.aap.util.MethodResult;
  */
 public class ArrayType<T> extends SolidityType<List<T>> {
     private final SolidityType<T> baseType;
-    private static final String REGEX = "[a-zA-Z0-9]*\\[\\]"; 
     private static final String SUFFIX = "[]";
     
-    public static <T> ArrayType<T> defaultInstance(SolidityType<T> type) {
-        return new ArrayType<>(type);
-    }
-
-    ArrayType(SolidityType<T> baseType) {
+    public ArrayType(SolidityType<T> baseType) {
         assert baseType != null;
         this.baseType = baseType;
     }
 
     @Override
     public String getTypeName() {
-        return String.format("%s[]", this.baseType.getTypeName());
+        return String.format("%s%s", this.baseType.getTypeName(), SUFFIX);
     }
 
     public SolidityType<T> getBaseType() {
@@ -84,15 +79,5 @@ public class ArrayType<T> extends SolidityType<List<T>> {
         }
 
         return false;
-    }
-
-    static SolidityType<?> createArrayType(String keyword) {
-        if (!keyword.matches(REGEX)) {
-            return null;
-        }
-
-        final String baseKeyword = keyword.substring(0, keyword.length() - SUFFIX.length());
-        final SolidityType<?> baseType = SolidityType.createType(baseKeyword);
-        return baseType == null ? null : new ArrayType<>(baseType);
     }
 }

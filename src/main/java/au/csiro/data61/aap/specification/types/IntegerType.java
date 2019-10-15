@@ -2,27 +2,21 @@ package au.csiro.data61.aap.specification.types;
 
 import java.math.BigInteger;
 import java.util.Objects;
-import java.util.logging.Level;
-import java.util.logging.Logger;
 
 import au.csiro.data61.aap.util.MethodResult;
-import au.csiro.data61.aap.util.StringUtil;
 
 public class IntegerType extends SolidityType<BigInteger> {
-    private static final Logger LOG = Logger.getLogger(IntegerType.class.getName());
-    private static final String NAME = "int";
-    private static final String UNSIGNED_PREFIX = "u";
+    private static final String BASE_NAME = "int";
     private static final int DEFAULT_LENGTH = 256;
-
+    
     private final boolean signed;
     private final int bitLength;
 
-    private static final IntegerType defaultInstance = new IntegerType(true, DEFAULT_LENGTH);
-    public static IntegerType getDefaultInstance() {
-        return defaultInstance;
+    public IntegerType(boolean signed) {
+        this(signed, DEFAULT_LENGTH);
     }
-    
-    IntegerType(boolean signed, int bitLength) {
+
+    public IntegerType(boolean signed, int bitLength) {
         this.bitLength = bitLength;
         this.signed = signed;
     }
@@ -62,7 +56,6 @@ public class IntegerType extends SolidityType<BigInteger> {
             }
             catch (NumberFormatException ex) {
                 final String errorMessage = String.format("'%s' is not a valid integer.", obj);
-                LOG.log(Level.SEVERE, errorMessage, ex);
                 return MethodResult.ofError(errorMessage, ex);
             }
         }
@@ -73,7 +66,7 @@ public class IntegerType extends SolidityType<BigInteger> {
     @Override
     public String getTypeName() {
         final String unsignedPrefix = this.signed ? "" : "u";
-        return String.format("%s%s%s", unsignedPrefix, NAME, this.bitLength);
+        return String.format("%s%s%s", unsignedPrefix, BASE_NAME, this.bitLength);
     }
 
     @Override
@@ -83,7 +76,7 @@ public class IntegerType extends SolidityType<BigInteger> {
 
     @Override
     public int hashCode() {
-        return Objects.hash(NAME, this.signed, this.bitLength);
+        return Objects.hash(BASE_NAME, this.signed, this.bitLength);
     }
 
     @Override
@@ -102,25 +95,6 @@ public class IntegerType extends SolidityType<BigInteger> {
         }
         
         return false;
-    }
-
-    static SolidityType<?> createIntegerType(String keyword) {
-        final boolean unsigned = keyword.startsWith(UNSIGNED_PREFIX);
-        if (unsigned) {
-            keyword = keyword.replaceFirst(UNSIGNED_PREFIX, "");
-        }
-
-        if (!keyword.startsWith(NAME)) {
-            return null;
-        }
-
-        keyword = keyword.replaceFirst(NAME, "");
-        if (keyword.isEmpty()) {
-            return new IntegerType(!unsigned, DEFAULT_LENGTH);
-        }
-
-        final MethodResult<Integer> lengthResult = StringUtil.parseInt(keyword);
-        return lengthResult.isSuccessful() ? new IntegerType(!unsigned, lengthResult.getResult()) : null;
     }
     
 }

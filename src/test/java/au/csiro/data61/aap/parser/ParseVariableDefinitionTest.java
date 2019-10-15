@@ -11,7 +11,11 @@ import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.Arguments;
 import org.junit.jupiter.params.provider.MethodSource;
 
-import au.csiro.data61.aap.specification.types.SolidityType;
+import au.csiro.data61.aap.specification.types.ArrayType;
+import au.csiro.data61.aap.specification.types.BoolType;
+import au.csiro.data61.aap.specification.types.FixedType;
+import au.csiro.data61.aap.specification.types.IntegerType;
+import au.csiro.data61.aap.specification.types.StringType;
 import au.csiro.data61.aap.specification.Variable;
 import au.csiro.data61.aap.util.StringUtil;
 
@@ -44,11 +48,11 @@ public class ParseVariableDefinitionTest {
 
     private static Stream<Arguments> createValidVariableDefinitions() {        
         Stream<Arguments> stream = Stream.of(
-            Arguments.of("string test", new Variable(SolidityType.createType("string"), "test")),
-            Arguments.of("uint8[] test", new Variable(SolidityType.createType("uint8[]"), "test")),
-            Arguments.of("fixed8x29 test", new Variable(SolidityType.createType("fixed8x29"), "test")),
-            Arguments.of("string test.test", new Variable(SolidityType.createType("string"), "test.test")),
-            Arguments.of("string test:test", new Variable(SolidityType.createType("string"), "test:test"))
+            Arguments.of("string test", new Variable(new StringType(), "test")),
+            Arguments.of("uint8[] test", new Variable(new ArrayType<>(new IntegerType(false, 8)), "test")),
+            Arguments.of("fixed8x29 test", new Variable(new FixedType(true, 8, 29), "test")),
+            Arguments.of("string test.test", new Variable(new StringType(), "test.test")),
+            Arguments.of("bool test:test", new Variable(new BoolType(), "test:test"))
         );
         return stream;
     }  

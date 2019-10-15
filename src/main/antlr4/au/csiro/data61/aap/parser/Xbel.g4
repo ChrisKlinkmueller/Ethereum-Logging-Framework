@@ -330,11 +330,11 @@ SOL_FIXED_TYPE
 
 SOL_BYTE_ARRAY_TYPE
     : SOL_BYTE_TYPE '[' ']'
-    | 'bytes' 
     ;
 
 SOL_BYTE_TYPE 
-    : 'byte' (SOL_BYTES_SUFFIX SOL_BYTES_LENGTH)?
+    : 'byte' ('s' SOL_BYTES_LENGTH)?
+    | 'bytes'
     ;
 
 SOL_INT_ARRAY_TYPE
@@ -360,10 +360,6 @@ SOL_BOOL_ARRAY_TYPE
 SOL_BOOL_TYPE
     : 'bool'
     ; 
-
-SOL_BYTES_SUFFIX 
-    : 's'
-    ;
 
 SOL_BYTES_LENGTH
     : [1-9]|[1-2][0-9]|[3][0-2]

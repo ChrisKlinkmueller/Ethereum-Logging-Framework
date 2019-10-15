@@ -138,7 +138,7 @@ class BlockVisitor extends StatefulVisitor<SpecificationParserResult<Block>> {
     }
 
     private SpecificationParserResult<ValueSource> createBlockRangeNumberConstant(BigInteger value, boolean from) {
-        return SpecificationParserResult.ofResult(new Constant(IntegerType.getDefaultInstance(),
+        return SpecificationParserResult.ofResult(new Constant(new IntegerType(false),
                 String.format("const block range %s", from ? "from" : "to"), value));
     }
 
@@ -202,7 +202,7 @@ class BlockVisitor extends StatefulVisitor<SpecificationParserResult<Block>> {
         else if (ctx.BYTE_AND_ADDRESS_VALUE() != null) {
             final String[] addresses = new String[ctx.BYTE_AND_ADDRESS_VALUE().size()];
             IntStream.range(0, addresses.length).forEach(i -> addresses[i] = ctx.BYTE_AND_ADDRESS_VALUE(i).getText());
-            return SpecificationParserResult.ofResult(new Constant(ArrayType.defaultInstance(AddressType.defaultInstance()), 
+            return SpecificationParserResult.ofResult(new Constant(new ArrayType<String>(new AddressType()), 
                                 addressListModeName(mode),
                                 addresses));
         }

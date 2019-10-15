@@ -7,25 +7,20 @@ import java.util.Objects;
  */
 public class AddressType extends BytesType {
     private static final int ARRAY_LENGTH = 20;
-    private static final String NAME = "address";
-    private static final AddressType INSTANCE = new AddressType();
-
-    public static AddressType defaultInstance() {
-        return INSTANCE;
-    }
-
-    private AddressType() {
+    private static final String BASE_NAME = "address";
+    
+    public AddressType() {
         super(ARRAY_LENGTH);
     }
 
     @Override
     public String getTypeName() {
-        return NAME;
+        return BASE_NAME;
     }
 
     @Override
     public int hashCode() {
-        return Objects.hash(NAME);
+        return Objects.hash(BASE_NAME);
     }
 
     @Override
@@ -39,12 +34,5 @@ public class AddressType extends BytesType {
         }
 
         return obj instanceof AddressType;
-    }
-
-    static SolidityType<?> createAddressType(String keyWord) {
-        if (keyWord.equals(NAME)) {
-            return INSTANCE;
-        }
-        return null;
     }
 }

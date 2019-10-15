@@ -3,25 +3,20 @@ package au.csiro.data61.aap.specification.types;
 import java.util.Objects;
 
 public class StringType extends BytesType {
-    private static final String NAME = "string";
-    private static final StringType INSTANCE = new StringType();
-
-    public static StringType defaultInstance() {
-        return INSTANCE;
-    }
-
-    StringType() {
+    private static final String BASE_NAME = "string";
+    
+    public StringType() {
         super(DYNAMIC_LENGTH);
     }
 
     @Override
     public String getTypeName() {
-        return NAME;
+        return BASE_NAME;
     }
 
     @Override
     public int hashCode() {
-        return Objects.hash(NAME);
+        return Objects.hash(BASE_NAME);
     }
 
     @Override
@@ -35,10 +30,5 @@ public class StringType extends BytesType {
         }
 
         return obj instanceof StringType;
-    }
-
-    static SolidityType<?> createStringType(String keyword) {
-        return keyword.equals(NAME) ? INSTANCE : null;
-    }
-        
+    }        
 }

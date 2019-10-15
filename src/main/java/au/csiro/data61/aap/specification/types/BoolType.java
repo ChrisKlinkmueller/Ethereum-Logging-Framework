@@ -5,14 +5,9 @@ import java.util.Objects;
 import au.csiro.data61.aap.util.MethodResult;
 
 public class BoolType extends SolidityType<Boolean> {
-    private static final String NAME = "bool";
-    private static final BoolType INSTANCE = new BoolType();
-
-    public static final BoolType defaultInstance() {
-        return INSTANCE;
-    }
-
-    private BoolType() {}
+    private static final String BASE_NAME = "bool";
+    
+    public BoolType() {}
 
     @Override
     public MethodResult<Boolean> cast(Object obj) {
@@ -41,20 +36,16 @@ public class BoolType extends SolidityType<Boolean> {
 
     @Override
     public String getTypeName() {
-        return NAME;
+        return BASE_NAME;
     }
 
     @Override
     public int hashCode() {
-        return Objects.hash(NAME);
+        return Objects.hash(BASE_NAME);
     }
 
     @Override
     public boolean equals(Object obj) {
         return obj != null && (obj == this || obj instanceof BoolType);
-    }
-
-    static SolidityType<?> createBoolType(String keyword) {
-        return keyword.equals(NAME) ? INSTANCE : null;
     }
 }
