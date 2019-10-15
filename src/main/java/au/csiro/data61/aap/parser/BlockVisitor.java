@@ -1,6 +1,7 @@
 package au.csiro.data61.aap.parser;
 
 import java.math.BigInteger;
+import java.util.function.Predicate;
 import java.util.stream.IntStream;
 
 import au.csiro.data61.aap.parser.XbelParser.AddressListContext;
@@ -17,6 +18,7 @@ import au.csiro.data61.aap.parser.XbelParser.SolSkipVariableContext;
 import au.csiro.data61.aap.parser.XbelParser.SolVariableContext;
 import au.csiro.data61.aap.parser.XbelParser.TransactionsRangeContext;
 import au.csiro.data61.aap.parser.XbelParser.VarArgsSpecificationContext;
+import au.csiro.data61.aap.parser.XbelParser.VariableNameContext;
 import au.csiro.data61.aap.specification.Block;
 import au.csiro.data61.aap.specification.BlockRangeBlock;
 import au.csiro.data61.aap.specification.Constant;
@@ -26,6 +28,7 @@ import au.csiro.data61.aap.specification.LogEntryParameter;
 import au.csiro.data61.aap.specification.SmartContractsRangeBlock;
 import au.csiro.data61.aap.specification.TransactionRangeBlock;
 import au.csiro.data61.aap.specification.ValueSource;
+import au.csiro.data61.aap.specification.Variable;
 import au.csiro.data61.aap.specification.types.AddressType;
 import au.csiro.data61.aap.specification.types.ArrayType;
 import au.csiro.data61.aap.specification.types.IntegerType;
@@ -36,7 +39,8 @@ import au.csiro.data61.aap.state.ProgramState;
  * BlockVisitor
  */
 class BlockVisitor extends StatefulVisitor<SpecificationParserResult<Block>> {
-    private static final BigInteger PENDING_BLOCK_NUMBER = new BigInteger("99999999999999999999999999999999999999999999");
+    private static final BigInteger PENDING_BLOCK_NUMBER = new BigInteger(
+            "99999999999999999999999999999999999999999999");
 
     public BlockVisitor(ProgramState state) {
         super(state);
@@ -60,17 +64,13 @@ class BlockVisitor extends StatefulVisitor<SpecificationParserResult<Block>> {
     private SpecificationParserResult<Block> mapBlockHeadToBlock(BlockHeadContext ctx) {
         if (ctx.blocksRange() != null) {
             return this.mapBlockRangeToBlock(ctx.blocksRange());
-        } 
-        else if (ctx.transactionsRange() != null) {
+        } else if (ctx.transactionsRange() != null) {
             return this.mapTransactionsRangeToBlock(ctx.transactionsRange());
-        }
-        else if (ctx.smartContractsRange() != null) {
+        } else if (ctx.smartContractsRange() != null) {
             return this.mapSmartContractsRangeToBlock(ctx.smartContractsRange());
-        }
-        else if (ctx.logEntriesRange() != null) {
+        } else if (ctx.logEntriesRange() != null) {
             return this.mapLogEntriesRangeToBlock(ctx.logEntriesRange());
-        }
-        else { 
+        } else {
             return SpecificationParserResult.ofError(ctx.start, "This type of block specification is not supported.");
         }
     }
@@ -88,12 +88,14 @@ class BlockVisitor extends StatefulVisitor<SpecificationParserResult<Block>> {
                     "EARLIEST isn't a valid value for parameter 'to'");
         }
 
-        final SpecificationParserResult<ValueSource> from = this.mapBlockRangeNumberToValueSource(ctx.from, true);
+        final SpecificationParserResult<? extends ValueSource> from = this.mapBlockRangeNumberToValueSource(ctx.from,
+                true);
         if (!from.isSuccessful()) {
             return SpecificationParserResult.ofUnsuccessfulParserResult(from);
         }
 
-        final SpecificationParserResult<ValueSource> to = this.mapBlockRangeNumberToValueSource(ctx.to, false);
+        final SpecificationParserResult<? extends ValueSource> to = this.mapBlockRangeNumberToValueSource(ctx.to,
+                false);
         if (!to.isSuccessful()) {
             return SpecificationParserResult.ofUnsuccessfulParserResult(to);
         }
@@ -112,31 +114,26 @@ class BlockVisitor extends StatefulVisitor<SpecificationParserResult<Block>> {
         return SpecificationParserResult.ofResult(new BlockRangeBlock(from.getResult(), to.getResult()));
     }
 
-    private SpecificationParserResult<ValueSource> mapBlockRangeNumberToValueSource(BlockRangeNumberContext ctx, boolean from) {
+    private SpecificationParserResult<? extends ValueSource> mapBlockRangeNumberToValueSource(
+            BlockRangeNumberContext ctx, boolean from) {
         if (ctx.variableName() != null) {
-            // TODO: return lookup of variable needs to be implemented
-            throw new UnsupportedOperationException("variablenames currently not supported as BlockRange parameters");
-        } 
-        else if (ctx.methodCall() != null) {
-            // TODO: return lookup of variable needs to be implemented
+            return this.lookupVariable(ctx.variableName(), t -> t.getClass().equals(IntegerType.class), "Integer");
+        } else if (ctx.methodCall() != null) {
+            // TODO: return lookup of method needs to be implemented
             throw new UnsupportedOperationException("methodcalls currently not supported as BlockRange parameters");
-        } 
-        else if (ctx.KEY_CURRENT() != null) {
+        } else if (ctx.KEY_CURRENT() != null) {
             // TODO: return method that retrieves current block number
             throw new UnsupportedOperationException("CURRENT currently not supported as BlockRange parameters");
-        } 
-        else if (ctx.INT_VALUE() != null) {
+        } else if (ctx.INT_VALUE() != null) {
             final BigInteger value = new BigInteger(ctx.INT_VALUE().getText());
             return createBlockRangeNumberConstant(value, from);
-        } 
-        else if (ctx.KEY_EARLIEST() != null) {
+        } else if (ctx.KEY_EARLIEST() != null) {
             return createBlockRangeNumberConstant(BigInteger.ZERO, from);
-        } 
-        else if (ctx.KEY_PENDING() != null) {
+        } else if (ctx.KEY_PENDING() != null) {
             return createBlockRangeNumberConstant(PENDING_BLOCK_NUMBER, from);
-        } 
-        else { 
-            return SpecificationParserResult.ofError(ctx.start, "This option for specifying block range parameters is not supported.");
+        } else {
+            return SpecificationParserResult.ofError(ctx.start,
+                    "This option for specifying block range parameters is not supported.");
         }
     }
 
@@ -155,12 +152,12 @@ class BlockVisitor extends StatefulVisitor<SpecificationParserResult<Block>> {
                        MODE_TX_RECIPIENTS = 1,
                        MODE_CONTRACTS = 2;
     private SpecificationParserResult<Block> mapTransactionsRangeToBlock(TransactionsRangeContext ctx) {
-        final SpecificationParserResult<ValueSource> senders = this.mapAddressListToValueSource(ctx.senders, MODE_TX_SENDERS);
+        final SpecificationParserResult<? extends ValueSource> senders = this.mapAddressListToValueSource(ctx.senders, MODE_TX_SENDERS);
         if (!senders.isSuccessful()) {
             return SpecificationParserResult.ofUnsuccessfulParserResult(senders);
         }
 
-        final SpecificationParserResult<ValueSource> recipients = this.mapAddressListToValueSource(ctx.recipients, MODE_TX_RECIPIENTS);
+        final SpecificationParserResult<? extends ValueSource> recipients = this.mapAddressListToValueSource(ctx.recipients, MODE_TX_RECIPIENTS);
         if (!recipients.isSuccessful()) {
             return SpecificationParserResult.ofUnsuccessfulParserResult(recipients);
         }
@@ -169,7 +166,7 @@ class BlockVisitor extends StatefulVisitor<SpecificationParserResult<Block>> {
     } 
     
     private SpecificationParserResult<Block> mapSmartContractsRangeToBlock(SmartContractsRangeContext ctx) {
-        final SpecificationParserResult<ValueSource> contracts = this.mapAddressListToValueSource(ctx.addressList(), MODE_CONTRACTS);
+        final SpecificationParserResult<? extends ValueSource> contracts = this.mapAddressListToValueSource(ctx.addressList(), MODE_CONTRACTS);
         if (!contracts.isSuccessful()) {
             return SpecificationParserResult.ofUnsuccessfulParserResult(contracts);
         }
@@ -177,14 +174,26 @@ class BlockVisitor extends StatefulVisitor<SpecificationParserResult<Block>> {
         return SpecificationParserResult.ofResult(new SmartContractsRangeBlock(contracts.getResult()));
     }
 
-    private SpecificationParserResult<ValueSource> mapAddressListToValueSource(AddressListContext ctx, int mode) {
+    private SpecificationParserResult<? extends ValueSource> mapAddressListToValueSource(AddressListContext ctx, int mode) {
         if (ctx.KEY_ANY() != null) {
              // TODO: return lookup of any function needs to be implemented
              throw new UnsupportedOperationException("ANY is currently not supported as a TransactionRange parameter.");
         }
         else if (ctx.variableName() != null) {
-             // TODO: return lookup of variable needs to be implemented
-             throw new UnsupportedOperationException("Variable names are currently not supported as TransactionRange parameters.");
+             return this.lookupVariable(
+                ctx.variableName(), 
+                type -> {
+                    try {
+                        @SuppressWarnings({"unchecked","unused"})
+                        ArrayType<AddressType> arrayType = (ArrayType<AddressType>)type;
+                    }
+                    catch (Exception ex) {
+                        return false;
+                    }
+                    return true;
+                }, 
+                "address[]"
+            );
         }
         else if (ctx.methodCall() != null) {
              // TODO: return lookup of method call needs to be implemented
@@ -291,6 +300,23 @@ class BlockVisitor extends StatefulVisitor<SpecificationParserResult<Block>> {
     }
 
     //#endregion log entries mapping
+
+    private SpecificationParserResult<? extends ValueSource> lookupVariable(VariableNameContext ctx, Predicate<SolidityType<?>> variableType, String expectedType) {
+        final SpecificationParserResult<Variable> parseResult = VisitorRepository.getVariableDefinitionVisitor().visitVariableName(ctx);
+        if (!parseResult.isSuccessful()) {
+            return parseResult;
+        }
+
+        final Variable variable = parseResult.getResult();
+        if (!variableType.test(variable.getType())) {
+            return SpecificationParserResult.ofError(
+                ctx.start, 
+                String.format("The type of variable '%s' must be %s, but is %s.", variable.getName(), expectedType, variable.getType().getTypeName())
+            );
+        }
+
+        return parseResult;
+    }
 
     private SpecificationParserResult<Block> addInstructions(Block block, BlockBodyContext ctx) {
         if (!ctx.blockBodyElements().isEmpty()) {
