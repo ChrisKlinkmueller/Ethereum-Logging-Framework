@@ -41,7 +41,7 @@ public class BoolType extends SolidityType<Boolean> {
 
     @Override
     public int hashCode() {
-        return Objects.hash(BASE_NAME);
+        return Objects.hashCode(BASE_NAME);
     }
 
     @Override

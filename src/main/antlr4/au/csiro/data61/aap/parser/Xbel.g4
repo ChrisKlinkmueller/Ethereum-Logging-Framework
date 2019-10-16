@@ -222,12 +222,16 @@ methodCall
 
 methodParameter
     : variableName
-    | STRING_VALUE
+    | staticValue
+    ;
+
+staticValue 
+    : STRING_VALUE
+    | arrayValue
     | BOOLEAN_VALUE
     | BYTE_AND_ADDRESS_VALUE
     | FIXED_VALUE
     | INT_VALUE
-    | arrayValue
     ;
 
 KEY_CONFIGURATION : C O N F I G U R A T I O N;
