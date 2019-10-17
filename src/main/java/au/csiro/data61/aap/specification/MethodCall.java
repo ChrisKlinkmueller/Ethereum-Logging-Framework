@@ -17,9 +17,11 @@ public class MethodCall implements ValueSource {
     public MethodCall(Method method, ValueSource... inputParameters) {
         assert method != null;
         assert Arrays.stream(inputParameters).allMatch(Objects::nonNull);
-        assert method.parameterTypeCount() == inputParameters.length;
+        assert method.getSignature().parameterTypeCount() == inputParameters.length;
         // TODO: verify if the following assertion can be relaxed by requiring type compatibility instead of type equality
-        assert IntStream.range(0, inputParameters.length).allMatch(i -> inputParameters[i].getType().getClass().equals(method.getParameterType(i).getClass()));
+        assert IntStream
+            .range(0, inputParameters.length)
+            .allMatch(i -> inputParameters[i].getType().getClass().equals(method.getSignature().getParameterType(i).getClass()));
 
         this.method = method;
         this.inputParameters = Arrays.copyOf(inputParameters, inputParameters.length);
@@ -49,7 +51,7 @@ public class MethodCall implements ValueSource {
 
     @Override
     public SolidityType<?> getType() {
-        return this.method.getReturnType();
+        return this.method.getSignature().getReturnType();
     }
 
 }
