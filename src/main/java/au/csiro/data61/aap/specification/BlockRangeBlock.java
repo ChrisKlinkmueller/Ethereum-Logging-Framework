@@ -25,7 +25,7 @@ public class BlockRangeBlock extends Block {
     }
 
     @Override
-    public void execute() {
+    public void execute(ProgramState state) {
         throw new UnsupportedOperationException();
     }
         

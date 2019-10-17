@@ -6,7 +6,7 @@ package au.csiro.data61.aap.specification;
 public class Statement implements Instruction {
 
     @Override
-    public void execute() {
+    public void execute(ProgramState state) {
         throw new UnsupportedOperationException();
     }
 

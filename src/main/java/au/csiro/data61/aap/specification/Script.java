@@ -5,8 +5,9 @@ package au.csiro.data61.aap.specification;
  */
 public class Script extends Block {
     
+
     @Override
-    public void execute() {
+    public void execute(ProgramState state) {
         
     }
 
