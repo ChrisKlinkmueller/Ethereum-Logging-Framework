@@ -3,7 +3,9 @@ package au.csiro.data61.aap.parser;
 import au.csiro.data61.aap.parser.XbelParser.VariableDefinitionContext;
 import au.csiro.data61.aap.parser.XbelParser.VariableDefinitionStartRuleContext;
 import au.csiro.data61.aap.parser.XbelParser.VariableNameContext;
+import au.csiro.data61.aap.specification.Constant;
 import au.csiro.data61.aap.specification.ProgramState;
+import au.csiro.data61.aap.specification.ValueContainer;
 import au.csiro.data61.aap.specification.Variable;
 import au.csiro.data61.aap.specification.types.SolidityType;
 
@@ -38,7 +40,7 @@ class VariableDefinitionVisitor extends StatefulVisitor<SpecificationParserResul
         }
 
         final Variable variable = new Variable(typeResult.getResult(), name);
-        this.getState().addVariable(variable);
+        this.getState().addValueContainer(variable);
         return SpecificationParserResult.ofResult(variable);
     }
 
@@ -49,11 +51,15 @@ class VariableDefinitionVisitor extends StatefulVisitor<SpecificationParserResul
             return SpecificationParserResult.ofError(ctx.start, "The variable name is empty.");
         }
 
-        final Variable variable = this.getState().getVariable(name);
-        if (variable == null) {
+        final ValueContainer container = this.getState().getValueContainer(name);
+        if (container == null) {
             return SpecificationParserResult.ofError(ctx.start, String.format("The variable '%s' has not been defined.", name));
         }
 
-        return SpecificationParserResult.ofResult(variable);
+        if (container instanceof Constant) {
+            return SpecificationParserResult.ofError(ctx.start, String.format("A constant with name '%s' has been defined.", name));
+        }
+
+        return SpecificationParserResult.ofResult((Variable)container);
     }
 }

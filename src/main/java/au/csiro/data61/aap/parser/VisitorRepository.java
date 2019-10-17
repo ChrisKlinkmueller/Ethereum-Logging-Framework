@@ -37,7 +37,7 @@ class VisitorRepository {
     }
 
     public static void clearProgramState() {
-        programState.clearVariables();
+        programState.clearValueContainers();
     }
     
 }
