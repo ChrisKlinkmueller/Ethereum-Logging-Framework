@@ -225,6 +225,9 @@ methodParameter
     | staticValue
     ;
 
+staticValueStartRule
+    : staticValue EOF;
+
 staticValue 
     : STRING_VALUE
     | arrayValue
@@ -275,11 +278,16 @@ stringArrayValue
     ;
 
 intArrayValue
-    : '{' ((INT_VALUE|FIXED_VALUE) (',' (INT_VALUE|FIXED_VALUE))*)? '}'
+    : '{' ((INT_VALUE) (',' INT_VALUE)*)? '}'
     ;
 
 fixedArrayValue
-    : '{' (FIXED_VALUE (',' FIXED_VALUE)*)? '}'
+    : '{' fixedArrayElement (',' fixedArrayElement)* '}'
+    ;
+
+fixedArrayElement
+    : FIXED_VALUE
+    | INT_VALUE
     ;
 
 booleanArrayValue
@@ -301,8 +309,7 @@ BOOLEAN_VALUE
   | F A L S E
   ;
 
-BYTE_AND_ADDRESS_VALUE : ('0x')? [0-9a-fA-F]+;
-
+BYTE_AND_ADDRESS_VALUE : '0x' [0-9a-fA-F]+;
 
 
 solTypeStartRule

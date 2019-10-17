@@ -7,6 +7,8 @@ import au.csiro.data61.aap.util.MethodResult;
 public class BoolType extends SolidityType<Boolean> {
     private static final String BASE_NAME = "bool";
     
+    public static final BoolType DEFAULT_INSTANCE = new BoolType();
+
     public BoolType() {}
 
     @Override

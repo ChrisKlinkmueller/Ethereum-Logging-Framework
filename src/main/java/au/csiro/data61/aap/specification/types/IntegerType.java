@@ -12,6 +12,8 @@ public class IntegerType extends SolidityType<BigInteger> {
     private final boolean signed;
     private final int bitLength;
 
+    public static final IntegerType DEFAULT_INSTANCE = new IntegerType(true);
+
     public IntegerType(boolean signed) {
         this(signed, DEFAULT_LENGTH);
     }

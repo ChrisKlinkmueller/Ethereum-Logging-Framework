@@ -9,6 +9,8 @@ public class AddressType extends BytesType {
     private static final int ARRAY_LENGTH = 20;
     private static final String BASE_NAME = "address";
     
+    public static final AddressType DEFAULT_INSTANCE = new AddressType();
+
     public AddressType() {
         super(ARRAY_LENGTH);
     }

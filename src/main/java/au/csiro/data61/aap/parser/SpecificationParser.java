@@ -13,6 +13,7 @@ import org.antlr.v4.runtime.tree.TerminalNode;
 
 import au.csiro.data61.aap.specification.types.SolidityType;
 import au.csiro.data61.aap.specification.Block;
+import au.csiro.data61.aap.specification.Constant;
 import au.csiro.data61.aap.specification.Variable;
 import au.csiro.data61.aap.util.MethodResult;
 
@@ -32,6 +33,10 @@ public class SpecificationParser {
 
     public SpecificationParserResult<Block> parseBlock(InputStream is) {
         return this.parseAndClean(is, XbelParser::blockStartRule, VisitorRepository.getBlockVisitor());
+    }
+
+    public SpecificationParserResult<Constant> parseConstant(InputStream is) {
+        return this.parseAndClean(is, XbelParser::staticValueStartRule, VisitorRepository.getConstantVisitor());
     }
 
     private <T> SpecificationParserResult<T> parseAndClean(InputStream is, Function<XbelParser, ParseTree> rule, XbelBaseVisitor<SpecificationParserResult<T>> visitor) {
@@ -82,12 +87,12 @@ public class SpecificationParser {
 
         @Override
         public void visitErrorNode(ErrorNode node) {
-            //LOG.info(node.getText().replaceAll("\\s+", " "));
+            LOG.info(node.getText().replaceAll("\\s+", " "));
         }
 
         @Override
         public void visitTerminal(TerminalNode node) {
-            //LOG.info(node.getText().replaceAll("\\s+", " "));
+            LOG.info(node.getText().replaceAll("\\s+", " "));
         }
     }
 

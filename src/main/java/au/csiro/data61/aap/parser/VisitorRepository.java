@@ -6,16 +6,22 @@ import au.csiro.data61.aap.state.ProgramState;
  * VisitorRepository
  */
 class VisitorRepository {
-    private static final ProgramState programState;
-    private static final VariableDefinitionVisitor varDefVisitor;
-    private static final SolidityTypeVisitor solTypeVisitor;
     private static final BlockVisitor blockVisitor;
+    private static final ConstantVisitor constantVisitor;
+    private static final SolidityTypeVisitor solTypeVisitor;
+    private static final VariableDefinitionVisitor varDefVisitor;
+    private static final ProgramState programState;
 
     static {
         programState = new ProgramState();
         varDefVisitor = new VariableDefinitionVisitor(programState);
         solTypeVisitor = new SolidityTypeVisitor(programState);
         blockVisitor = new BlockVisitor(programState);
+        constantVisitor = new ConstantVisitor(programState);
+    }
+
+    public static ConstantVisitor getConstantVisitor() {
+        return constantVisitor;
     }
 
     public static VariableDefinitionVisitor getVariableDefinitionVisitor() {

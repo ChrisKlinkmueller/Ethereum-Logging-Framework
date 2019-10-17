@@ -21,6 +21,8 @@ public class FixedType extends SolidityType<BigDecimal> {
     private final int n;
     private final boolean signed;
 
+    public static final FixedType DEFAULT_INSTANCE = new FixedType(true);
+
     public FixedType(boolean signed) {
         this(signed, FIXED_DEFAULT_M, FIXED_DEFAULT_N);
     }

@@ -13,6 +13,8 @@ public class BytesType extends SolidityType<String> {
     public final static int MIN_STATIC_LENGTH = 1;
     public final static int MAX_STATIC_LENGTH = 32;
 
+    public static final BytesType DEFAULT_INSTANCE = new BytesType();
+
     private final int length;
     public BytesType(int length) {
         this.length = length;
