@@ -17,6 +17,7 @@ import au.csiro.data61.aap.parser.XbelParser.StaticValueContext;
 import au.csiro.data61.aap.parser.XbelParser.StaticValueStartRuleContext;
 import au.csiro.data61.aap.parser.XbelParser.StringArrayValueContext;
 import au.csiro.data61.aap.specification.Constant;
+import au.csiro.data61.aap.specification.ProgramState;
 import au.csiro.data61.aap.specification.types.ArrayType;
 import au.csiro.data61.aap.specification.types.BoolType;
 import au.csiro.data61.aap.specification.types.BytesType;
@@ -24,7 +25,6 @@ import au.csiro.data61.aap.specification.types.FixedType;
 import au.csiro.data61.aap.specification.types.IntegerType;
 import au.csiro.data61.aap.specification.types.SolidityType;
 import au.csiro.data61.aap.specification.types.StringType;
-import au.csiro.data61.aap.state.ProgramState;
 import au.csiro.data61.aap.util.MethodResult;
 
 /**

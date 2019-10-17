@@ -1,17 +1,5 @@
 package au.csiro.data61.aap.parser;
 
-import au.csiro.data61.aap.specification.types.AddressType;
-import au.csiro.data61.aap.specification.types.ArrayType;
-import au.csiro.data61.aap.specification.types.BoolType;
-import au.csiro.data61.aap.specification.types.BytesType;
-import au.csiro.data61.aap.specification.types.FixedType;
-import au.csiro.data61.aap.specification.types.IntegerType;
-import au.csiro.data61.aap.specification.types.SolidityType;
-import au.csiro.data61.aap.specification.types.StringType;
-import au.csiro.data61.aap.state.ProgramState;
-import au.csiro.data61.aap.util.MethodResult;
-import au.csiro.data61.aap.util.StringUtil;
-
 import java.math.BigDecimal;
 import java.math.BigInteger;
 import java.util.List;
@@ -21,6 +9,17 @@ import org.antlr.v4.runtime.Token;
 
 import au.csiro.data61.aap.parser.XbelParser.SolTypeContext;
 import au.csiro.data61.aap.parser.XbelParser.SolTypeStartRuleContext;
+import au.csiro.data61.aap.specification.ProgramState;
+import au.csiro.data61.aap.specification.types.AddressType;
+import au.csiro.data61.aap.specification.types.ArrayType;
+import au.csiro.data61.aap.specification.types.BoolType;
+import au.csiro.data61.aap.specification.types.BytesType;
+import au.csiro.data61.aap.specification.types.FixedType;
+import au.csiro.data61.aap.specification.types.IntegerType;
+import au.csiro.data61.aap.specification.types.SolidityType;
+import au.csiro.data61.aap.specification.types.StringType;
+import au.csiro.data61.aap.util.MethodResult;
+import au.csiro.data61.aap.util.StringUtil;
 
 /**
  * SolidityTypeVisitor

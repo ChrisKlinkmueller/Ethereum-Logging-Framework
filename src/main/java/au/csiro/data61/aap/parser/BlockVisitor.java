@@ -25,6 +25,7 @@ import au.csiro.data61.aap.specification.Constant;
 import au.csiro.data61.aap.specification.LogEntriesBlock;
 import au.csiro.data61.aap.specification.LogEntryDefinition;
 import au.csiro.data61.aap.specification.LogEntryParameter;
+import au.csiro.data61.aap.specification.ProgramState;
 import au.csiro.data61.aap.specification.SmartContractsRangeBlock;
 import au.csiro.data61.aap.specification.TransactionRangeBlock;
 import au.csiro.data61.aap.specification.ValueSource;
@@ -33,7 +34,6 @@ import au.csiro.data61.aap.specification.types.AddressType;
 import au.csiro.data61.aap.specification.types.ArrayType;
 import au.csiro.data61.aap.specification.types.IntegerType;
 import au.csiro.data61.aap.specification.types.SolidityType;
-import au.csiro.data61.aap.state.ProgramState;
 
 /**
  * BlockVisitor

@@ -1,6 +1,6 @@
 package au.csiro.data61.aap.parser;
 
-import au.csiro.data61.aap.state.ProgramState;
+import au.csiro.data61.aap.specification.ProgramState;
 
 /**
  * StatefulVisitor

@@ -1,11 +1,11 @@
 package au.csiro.data61.aap.parser;
 
-import au.csiro.data61.aap.specification.types.SolidityType;
-import au.csiro.data61.aap.state.ProgramState;
 import au.csiro.data61.aap.parser.XbelParser.VariableDefinitionContext;
 import au.csiro.data61.aap.parser.XbelParser.VariableDefinitionStartRuleContext;
 import au.csiro.data61.aap.parser.XbelParser.VariableNameContext;
+import au.csiro.data61.aap.specification.ProgramState;
 import au.csiro.data61.aap.specification.Variable;
+import au.csiro.data61.aap.specification.types.SolidityType;
 
 /**
  * VariableDefinitionVisitor

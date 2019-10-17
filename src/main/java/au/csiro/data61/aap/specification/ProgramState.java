@@ -1,4 +1,4 @@
-package au.csiro.data61.aap.state;
+package au.csiro.data61.aap.specification;
 
 import java.util.HashMap;
 import java.util.Map;
