@@ -15,6 +15,7 @@
     <antlr4.version>4.7.2</antlr4.version>
     <junit.jupiter.version>5.5.2</junit.jupiter.version>
     <junit.platform.version>1.5.2</junit.platform.version>
+    <web3j.version>4.5.5</web3j.version>
   </properties>
 
   <dependencies>
@@ -46,6 +47,16 @@
         <groupId>org.antlr</groupId>
         <artifactId>antlr4-runtime</artifactId>
         <version>${antlr4.version}</version>
+    </dependency>
+    <dependency>
+        <groupId>org.web3j</groupId>
+        <artifactId>core</artifactId>
+        <version>${web3j.version}</version>
+    </dependency>
+    <dependency>
+        <groupId>org.web3j</groupId>
+        <artifactId>abi</artifactId>
+        <version>${web3j.version}</version>
     </dependency>
   </dependencies> 
 
