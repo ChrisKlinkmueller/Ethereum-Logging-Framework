@@ -20,7 +20,7 @@ import au.csiro.data61.aap.util.StringUtil;
 /**
  * SolidityTypeBuilder
  */
-public class SolidityTypeBuilder extends XbelBaseVisitor<SpecificationParserResult<SolidityType>> {
+class SolidityTypeVisitor extends XbelBaseVisitor<SpecificationParserResult<SolidityType>> {
     private final static String BYTES_TYPE_DYNAMIC_SUFFIX = "s";
     private static final String ADDRESS_TYPE_NAME = "address";
     private static final String BYTES_BASE_KEYWORD = "byte";

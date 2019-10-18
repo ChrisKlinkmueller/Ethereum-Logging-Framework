@@ -5,7 +5,7 @@ package au.csiro.data61.aap.spec;
  */
 public class Statement extends Instruction {
     
-    public Statement(Block enclosingBlock) {
+    public Statement(CodeBlock enclosingBlock) {
         super(enclosingBlock);
     } 
 }

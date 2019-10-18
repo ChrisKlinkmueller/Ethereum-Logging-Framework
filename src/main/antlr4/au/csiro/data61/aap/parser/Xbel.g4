@@ -40,6 +40,8 @@ methodParameter
 
 // Literals
 
+literalRule : literal EOF;
+
 literal 
     : STRING_LITERAL
     | arrayValue
@@ -97,9 +99,7 @@ BYTE_AND_ADDRESS_LITERAL : '0x' [0-9a-fA-F]+;
 
 // TYPES
 
-solTypeRule
-    : solType EOF
-    ;
+solTypeRule : solType EOF;
 
 solType 
     :
