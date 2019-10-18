@@ -4,120 +4,11 @@
 
 grammar Xbel;
 
-document 
-    : blockBody EOF
-    ;
+statement 
+    : (variable '=')? valueCreation
+    ; 
 
-blockStartRule
-    : block EOF
-    ;
-
-block 
-    : blockHead '{' blockBody '}'
-    ;
-
-// block header
-
-blockHead
-    : blocksRange
-    | transactionsRange
-    | smartContractsRange
-    | logEntriesRange
-    ;
-
-blocksRange
-    : KEY_BLOCK_RANGE '(' from=blockRangeNumber ',' to=blockRangeNumber ')'
-    ;
-
-blockRangeNumber
-    : INT_VALUE
-    | KEY_CURRENT
-    | KEY_EARLIEST
-    | KEY_PENDING
-    | variableName
-    | methodCall
-    ;
-
-transactionsRange
-    : KEY_TRANSACTIONS '(' senders=addressList ')' '(' recipients=addressList ')'
-    ;
-
-smartContractsRange
-    : KEY_SMART_CONTRACTS '(' contracts=addressList ')'
-    ;
-
-addressList
-    : BYTE_AND_ADDRESS_VALUE (',' BYTE_AND_ADDRESS_VALUE)*
-    | KEY_ANY
-    | variableName
-    | methodCall
-    ;
-
-logEntriesRange
-    : KEY_LOG_ENTRIES '(' eventSignatureSpecification ')'
-    | KEY_LOG_ENTRIES '(' varArgsSpecification ')'
-    ;
-
-eventSignatureSpecification
-    : methodName=Identifier '(' (solVariable (',' solVariable)* )? ')' KEY_ANONYMOUS?
-    ;
-
-varArgsSpecification
-    : (solSkipVariable (',' solSkipVariable)* )? (',' KEY_VAR_ARGS)?
-    ;
-
-solVariable
-    : solType (KEY_INDEXED)? variableName
-    ;
-
-solSkipVariable
-    : solVariable
-    | KEY_SKIP_INDEXED
-    | KEY_SKIP_DATA
-    ;
-
-boolExpr
-    : variableName
-    | methodCall
-    | arrayValue
-    | BOOLEAN_VALUE
-    | BYTE_AND_ADDRESS_VALUE
-    | FIXED_VALUE
-    | INT_VALUE
-    | STRING_VALUE
-    | variableName KEY_IN '[' INT_VALUE ',' INT_VALUE ']'
-    | variableName KEY_IN '[' FIXED_VALUE ',' FIXED_VALUE ']'
-    | variableName KEY_IN arrayValue
-    | '(' boolExpr ')'
-    | KEY_NOT boolExpr 
-    | boolExpr KEY_AND boolExpr 
-    | boolExpr KEY_OR boolExpr 
-    | boolExpr '==' boolExpr 
-    | boolExpr '!=' boolExpr 
-    | boolExpr '<=' boolExpr 
-    | boolExpr '<' boolExpr 
-    | boolExpr '>=' boolExpr 
-    | boolExpr '>' boolExpr
-    ;
-
-
-// BLOCK BODY
-
-blockBody
-    : blockBodyElements*
-    ;
-
-blockBodyElements
-    : block
-    | statement ';'
-    | emitBlock
-    ;
-
-statement
-    : (leftStatementSide '=')? rightStatementSide 
-    ;
-
-leftStatementSide
+variable
     : variableDefinition
     | variableName
     ;
@@ -126,95 +17,17 @@ variableDefinition
     : solType variableName
     ;
 
-variableDefinitionStartRule
-    : variableDefinition EOF
-    ;
-
-rightStatementSide
-    : variableName
-    | methodCall
-    | value
-    ;
-
-emitBlock
-    : emitHead '{' emitCall* '}'
-    ;
-
-emitHead
-    : KEY_EMIT emitCondition?
-    ;
-
-emitCondition
-    : KEY_IF '(' boolExpr ')'
-    ;
-
-emitCall
-    : type=(KEY_EVENT|KEY_TRACE) '(' emitVariable (',' emitVariable )* ')' ';'
-    ;
-
-emitVariable
-    : variableName (KEY_AS xesVariable)?
-    | BOOLEAN_VALUE KEY_AS (xesType)? variableName
-    | BYTE_AND_ADDRESS_VALUE (xesType)? variableName
-    | STRING_VALUE KEY_AS (xesType)? variableName
-    | FIXED_VALUE KEY_AS (xesType)? variableName
-    | INT_VALUE KEY_AS (xesType)? variableName
-    | arrayValue KEY_AS (xesType)? variableName
-    ;
-
-xesVariable
-    : xesType variableName
-    | xesType
-    | variableName
-    ;
-
-xesType
-    : KEY_XBOOLEAN
-    | KEY_XDATE
-    | KEY_XFLOAT
-    | KEY_XID
-    | KEY_XINT
-    | KEY_XSTRING
-    ;
-
-// KEY WORD SECTION
-
-KEY_BLOCK_RANGE : B L O C K ' ' R A N G E;
-KEY_EARLIEST : E A R L I E S T;
-KEY_CURRENT : C U R R E N T;
-KEY_PENDING : P E N D I N G;
-KEY_ANY : A N Y;
-KEY_TRANSACTIONS : T R A N S A C T I O N S;
-KEY_SMART_CONTRACTS : S M A R T ' ' C O N T R A C T S;
-KEY_LOG_ENTRIES : L O G ' ' E N T R I E S ;
-KEY_ANONYMOUS : 'anonymous';
-KEY_VAR_ARGS : '...';
-KEY_INDEXED : 'indexed';
-KEY_SKIP_INDEXED : '_indexed_';
-KEY_SKIP_DATA : '_';
-KEY_EMIT : E M I T;
-KEY_IF : I F;
-KEY_IN : I N;
-KEY_NOT : N O T;
-KEY_AND : A N D;
-KEY_OR : O R;
-KEY_EVENT : E V E N T;
-KEY_TRACE : T R A C E;
-KEY_AS : A S;
-KEY_XDATE : X D A T E;
-KEY_XINT : X I N T;
-KEY_XSTRING : X S T R I N G;
-KEY_XFLOAT : X F L O A T;
-KEY_XID : X I D;
-KEY_XBOOLEAN : X B O O L E A N;
-
-// GENERAL VARIABLE DEFINITIONS
-
 variableName
     : Identifier
     | Identifier ':' Identifier
     | Identifier '.' Identifier
-    ; 
+    ;
+
+valueCreation
+    : variableName
+    | methodCall
+    | literal
+    ;
 
 methodCall
     : methodName=Identifier '(' (methodParameter (',' methodParameter)* )? ')'
@@ -222,47 +35,18 @@ methodCall
 
 methodParameter
     : variableName
-    | staticValue
+    | literal
     ;
 
-staticValueStartRule
-    : staticValue EOF;
+// Literals
 
-staticValue 
-    : STRING_VALUE
+literal 
+    : STRING_LITERAL
     | arrayValue
-    | BOOLEAN_VALUE
-    | BYTE_AND_ADDRESS_VALUE
-    | FIXED_VALUE
-    | INT_VALUE
-    ;
-
-KEY_CONFIGURATION : C O N F I G U R A T I O N;
-KEY_EXPORT_TO : E X P O R T ' ' T O;
-KEY_XES : X E S;
-KEY_XES_EXTENSION : X E S E X T E N S I O N;
-KEY_XES_GLOBAL : X E S G L O B A L;
-KEY_XES_CLASSIFIER : X E S C L A S S I F I E R;
-KEY_CSV : C S V;
-KEY_EXCEPTION_HANDLING : E X C E P T I O N ' ' H A N D L I N G;
-KEY_EXCEPTION_IGNORE : I G N O R E;
-KEY_EXCEPTION_DETERMINE : D E T E R M I N E;
-KEY_EXCEPTION_PRINT : P R I N T;
-KEY_NULL : N U L L;
-
-
-
-
-
-
-// TYPES AND VALUES
-
-value
-    : STRING_VALUE
-    | FIXED_VALUE
-    | INT_VALUE
-    | BOOLEAN_VALUE
-    | BYTE_AND_ADDRESS_VALUE
+    | BOOLEAN_LITERAL
+    | BYTE_AND_ADDRESS_LITERAL
+    | FIXED_LITERAL
+    | INT_LITERAL
     ;
 
 arrayValue
@@ -274,11 +58,11 @@ arrayValue
     ;
 
 stringArrayValue
-    : '{' (STRING_VALUE (',' STRING_VALUE)*)? '}'
+    : '{' (STRING_LITERAL (',' STRING_LITERAL)*)? '}'
     ;
 
 intArrayValue
-    : '{' ((INT_VALUE) (',' INT_VALUE)*)? '}'
+    : '{' ((INT_LITERAL) (',' INT_LITERAL)*)? '}'
     ;
 
 fixedArrayValue
@@ -286,36 +70,37 @@ fixedArrayValue
     ;
 
 fixedArrayElement
-    : FIXED_VALUE
-    | INT_VALUE
+    : FIXED_LITERAL
+    | INT_LITERAL
     ;
 
 booleanArrayValue
-    : '{' (BOOLEAN_VALUE (',' BOOLEAN_VALUE)*)? '}'
+    : '{' (BOOLEAN_LITERAL (',' BOOLEAN_LITERAL)*)? '}'
     ;
 
 byteAndAddressArrayValue
-    : '{' (BYTE_AND_ADDRESS_VALUE (',' BYTE_AND_ADDRESS_VALUE)*)? '}'
+    : '{' (BYTE_AND_ADDRESS_LITERAL (',' BYTE_AND_ADDRESS_LITERAL)*)? '}'
     ;
 
-STRING_VALUE : '"' ('\\"' | ~["\r\n])* '"';
+STRING_LITERAL : '"' ('\\"' | ~["\r\n])* '"';
 
-FIXED_VALUE : [0-9]* '.' [0-9]+ ;
+FIXED_LITERAL : [0-9]* '.' [0-9]+ ;
 
-INT_VALUE : [0-9]+;
+INT_LITERAL : [0-9]+;
 
-BOOLEAN_VALUE 
+BOOLEAN_LITERAL 
   : T R U E
   | F A L S E
   ;
 
-BYTE_AND_ADDRESS_VALUE : '0x' [0-9a-fA-F]+;
+BYTE_AND_ADDRESS_LITERAL : '0x' [0-9a-fA-F]+;
 
+// TYPES
 
-solTypeStartRule
+solTypeRule
     : solType EOF
     ;
-    
+
 solType 
     :
     | SOL_ADDRESS_TYPE
