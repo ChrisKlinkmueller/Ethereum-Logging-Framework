@@ -8,6 +8,7 @@ import java.util.List;
 import java.util.function.Function;
 import java.util.stream.Collectors;
 
+import org.antlr.v4.runtime.Token;
 import org.antlr.v4.runtime.tree.TerminalNode;
 
 import au.csiro.data61.aap.parser.XbelParser.ArrayValueContext;
@@ -18,7 +19,10 @@ import au.csiro.data61.aap.parser.XbelParser.IntArrayValueContext;
 import au.csiro.data61.aap.parser.XbelParser.LiteralContext;
 import au.csiro.data61.aap.parser.XbelParser.LiteralRuleContext;
 import au.csiro.data61.aap.parser.XbelParser.StringArrayValueContext;
+import au.csiro.data61.aap.parser.XbelParser.VariableDefinitionContext;
+import au.csiro.data61.aap.parser.XbelParser.VariableDefinitionRuleContext;
 import au.csiro.data61.aap.spec.CodeBlock;
+import au.csiro.data61.aap.spec.Statement;
 import au.csiro.data61.aap.spec.Variable;
 import au.csiro.data61.aap.spec.types.ArrayType;
 import au.csiro.data61.aap.spec.types.BoolType;
@@ -34,6 +38,16 @@ import au.csiro.data61.aap.util.MethodResult;
  */
 class VariableVisitor extends XbelBaseVisitor<SpecificationParserResult<SpecBuilder<Variable>>> {
     private static final String BYTES_PREFIX = "0x";
+
+    @Override
+    public SpecificationParserResult<SpecBuilder<Variable>> visitVariableDefinitionRule(VariableDefinitionRuleContext ctx) {
+        return this.visitVariableDefinition(ctx.variableDefinition());
+    }
+
+    @Override
+    public SpecificationParserResult<SpecBuilder<Variable>> visitVariableDefinition(VariableDefinitionContext ctx) {
+        return SpecificationParserResult.ofResult(new VariableDefinitionBuilder(ctx));
+    }
 
     @Override
     public SpecificationParserResult<SpecBuilder<Variable>> visitLiteralRule(LiteralRuleContext ctx) {
@@ -122,6 +136,73 @@ class VariableVisitor extends XbelBaseVisitor<SpecificationParserResult<SpecBuil
     @Override
     public SpecificationParserResult<SpecBuilder<Variable>> visitStringArrayValue(StringArrayValueContext ctx) {
         return SpecificationParserResult.ofResult(new ArrayLiteralBuilder(ctx.STRING_LITERAL(), StringType.DEFAULT_INSTANCE, VariableVisitor::stringCast));
+    }
+
+    private static class VariableDefinitionBuilder implements SpecBuilder<Variable> {
+        private final SpecificationParserResult<Variable> parseResult;
+        private final Token token;
+
+        public VariableDefinitionBuilder(VariableDefinitionContext ctx) {
+            this.token = ctx.start;
+            
+            final SpecificationParserResult<SolidityType> typeResult = VisitorRepository.SOLIDITY_TYPE_VISITOR.visitSolType(ctx.solType());
+            if (typeResult.isSuccessful()) {
+                this.parseResult = SpecificationParserResult.ofResult(
+                    new Variable(typeResult.getResult(), ctx.variableName().getText())
+                );
+            }
+            else {
+                this.parseResult = SpecificationParserResult.ofUnsuccessfulParserResult(typeResult);
+            }
+        }
+
+        @Override
+        public SpecificationParserError verify(CodeBlock block) {
+            if (!this.parseResult.isSuccessful()) {
+                assert 0 < this.parseResult.errorCount();
+                return this.parseResult.getError(0);
+            }
+
+            final Variable variable = this.parseResult.getResult();
+            switch (this.variableAlreadyDefined(variable, block)) {
+                case DEFINED : return new SpecificationParserError(this.token, String.format("A variable with name '%s' has already been defined."));
+                case RESERVED : return new SpecificationParserError(this.token, String.format("The variable name '%s' is reserved."));
+                default : return null;
+            }
+        }
+
+        private VariableExistence variableAlreadyDefined(Variable variable, CodeBlock block) {
+            if (block.isVariableNameReserved(variable.getName())) {
+                return VariableExistence.RESERVED;
+            }
+
+            if (block.instructionStream().filter(i -> i instanceof Statement).anyMatch(i -> this.containsVariable((Statement)i, variable))) {
+                return VariableExistence.DEFINED;
+            }
+
+
+            if (block.getEnclosingBlock() != null) {
+                return this.variableAlreadyDefined(variable, block.getEnclosingBlock());
+            }
+
+            return VariableExistence.UNDEFINED;
+        }
+
+        private boolean containsVariable(Statement statement, Variable variable) {
+            return statement.getVariable().isPresent() && statement.getVariable().get().getName().equals(variable.getName());
+        }
+
+        @Override
+        public Variable build(CodeBlock block) {
+            return this.parseResult.getResult();
+        }
+        
+        private static enum VariableExistence {
+            RESERVED,
+            DEFINED,
+            UNDEFINED
+        }
+
     }
 
     private static class ArrayLiteralBuilder implements SpecBuilder<Variable> {

@@ -14,5 +14,5 @@ public abstract class Instruction {
         return this.enclosingBlock;
     }
     
-    
+    // TODO: instructions need a way to report error handling or abort execution    
 }

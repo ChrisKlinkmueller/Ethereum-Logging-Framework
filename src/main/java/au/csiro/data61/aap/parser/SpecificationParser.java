@@ -21,6 +21,10 @@ import au.csiro.data61.aap.util.MethodResult;
 public class SpecificationParser {
     private static final Logger LOG = Logger.getLogger(SpecificationParser.class.getName());
 
+    public SpecificationParserResult<SpecBuilder<Variable>> parseVariableDefinition(InputStream is) {
+        return this.parse(is, XbelParser::variableDefinitionRule, VisitorRepository.VARIABLE_VISITOR);
+    }
+
     public SpecificationParserResult<SpecBuilder<Variable>> parseLiteral(InputStream is) {
         return this.parse(is, XbelParser::literalRule, VisitorRepository.VARIABLE_VISITOR);
     }

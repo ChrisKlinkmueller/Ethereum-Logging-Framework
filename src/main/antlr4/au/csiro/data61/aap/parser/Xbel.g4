@@ -13,6 +13,8 @@ variable
     | variableName
     ;
 
+variableDefinitionRule : variableDefinition EOF;
+
 variableDefinition
     : solType variableName
     ;
