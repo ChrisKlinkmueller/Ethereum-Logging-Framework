@@ -19,7 +19,8 @@
     <junit.jupiter.version>5.5.2</junit.jupiter.version>
     <junit.platform.version>1.5.2</junit.platform.version>
     <web3j.version>4.5.5</web3j.version>
-  </properties>
+    <logback-classic.version>1.2.3</logback-classic.version>
+	</properties>
 
   <dependencies>
       <dependency>
@@ -61,6 +62,12 @@
         <artifactId>abi</artifactId>
         <version>${web3j.version}</version>
     </dependency>
+		<dependency>
+			<groupId>ch.qos.logback</groupId>
+			<artifactId>logback-classic</artifactId>
+			<version>${logback-classic.version}</version>
+			<scope>runtime</scope>
+		</dependency>
   </dependencies> 
 
   <build>
