@@ -28,7 +28,7 @@ import au.csiro.data61.aap.util.StringUtil;
  */
 public class ParseLiteralTest {
     private final SpecificationParser parser = new SpecificationParser();
-    private final CodeBlock emptyCodeBlock = new CodeBlock(null);
+    private final CodeBlock emptyCodeBlock = new CodeBlock();
 
     @ParameterizedTest
     @MethodSource("createValidPlainCases")

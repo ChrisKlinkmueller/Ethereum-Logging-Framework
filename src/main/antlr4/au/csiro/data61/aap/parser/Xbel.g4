@@ -4,6 +4,91 @@
 
 grammar Xbel;
 
+// filters
+
+filterScope 
+    : filter ('&' filter)?
+    ;
+
+filter
+    : blockFilter
+    | transactionFilter
+    | smartContractsFilter
+    | logEntryFilter
+    ;
+
+blockFilter
+    : KEY_BLOCK_RANGE '(' from=blockNumber ',' to=blockNumber ')'
+    ;
+
+blockNumber
+    : INT_LITERAL
+    | KEY_CURRENT
+    | KEY_EARLIEST
+    | KEY_PENDING
+    // | variableName                       TODO: add support
+    // | methodCall                         TODO: add support
+    ;
+
+transactionFilter
+    : KEY_TRANSACTIONS '(' senders=addressList ')' '(' recipients=addressList ')'
+    ;
+
+smartContractsFilter
+    : KEY_SMART_CONTRACTS '(' contracts=addressList ')'
+    ;
+
+addressList
+    : BYTE_AND_ADDRESS_LITERAL (',' BYTE_AND_ADDRESS_LITERAL)*
+    | KEY_ANY
+    // | variableName                       TODO: add support
+    // | methodCall                         TODO: add support
+    ;
+
+logEntryFilter
+    : KEY_LOG_ENTRIES '(' eventSignatureSpecification ')'
+    | KEY_LOG_ENTRIES '(' varArgsSpecification ')'
+    ;
+
+eventSignatureSpecification
+    : methodName=Identifier '(' (solVariable (',' solVariable)* )? ')' KEY_ANONYMOUS?
+    ;
+
+varArgsSpecification
+    : (solSkipVariable (',' solSkipVariable)* )? (',' KEY_VAR_ARGS)?
+    ;
+
+solVariable
+    : solType (KEY_INDEXED)? variableName
+    ;
+
+solSkipVariable
+    : solVariable
+    | KEY_SKIP_INDEXED
+    | KEY_SKIP_DATA
+    ;
+
+
+
+// KEYWORDS
+
+KEY_BLOCK_RANGE : B L O C K S;
+KEY_EARLIEST : E A R L I E S T;
+KEY_CURRENT : C U R R E N T;
+KEY_PENDING : P E N D I N G;
+KEY_ANY : A N Y;
+KEY_TRANSACTIONS : T R A N S A C T I O N S;
+KEY_SMART_CONTRACTS : S M A R T ' ' C O N T R A C T S;
+KEY_LOG_ENTRIES : L O G ' ' E N T R Y ;
+KEY_ANONYMOUS : 'anonymous';
+KEY_VAR_ARGS : '...';
+KEY_INDEXED : 'indexed';
+KEY_SKIP_INDEXED : '_indexed_';
+KEY_SKIP_DATA : '_';
+
+
+// statements
+
 statement 
     : (variable '=')? valueCreation
     ; 

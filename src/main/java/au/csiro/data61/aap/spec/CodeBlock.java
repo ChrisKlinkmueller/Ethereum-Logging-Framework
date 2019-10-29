@@ -11,10 +11,20 @@ import java.util.stream.Stream;
  */
 public class CodeBlock extends Instruction {
     private final List<Instruction> instructions;
+    private final Filter filter;
 
-    public CodeBlock(CodeBlock enclosingBlock) {
-        super(enclosingBlock);
+    public CodeBlock() {
+        super(null);
+        this.filter = null;
         this.instructions = new ArrayList<>();
+    }
+    
+    public CodeBlock(CodeBlock enclosingBlock, Filter filter) {
+        super(enclosingBlock);
+        assert enclosingBlock != null;
+        assert filter != null;
+        this.instructions = new ArrayList<>();
+        this.filter = filter;
     }
 
     public void addInstruction(Instruction instruction) {
@@ -32,6 +42,10 @@ public class CodeBlock extends Instruction {
 
     public Stream<Instruction> instructionStream() {
         return this.instructions.stream();
+    }
+
+    public Filter getFilter() {
+        return this.filter;
     }
     
     public boolean isVariableNameReserved(String variableName) {
