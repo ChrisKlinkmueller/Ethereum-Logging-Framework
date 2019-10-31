@@ -14,7 +14,7 @@ import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.Arguments;
 import org.junit.jupiter.params.provider.MethodSource;
 
-import au.csiro.data61.aap.spec.CodeBlock;
+import au.csiro.data61.aap.spec.Scope;
 import au.csiro.data61.aap.spec.Variable;
 import au.csiro.data61.aap.spec.types.BoolType;
 import au.csiro.data61.aap.spec.types.BytesType;
@@ -28,7 +28,7 @@ import au.csiro.data61.aap.util.StringUtil;
  */
 public class ParseLiteralTest {
     private final SpecificationParser parser = new SpecificationParser();
-    private final CodeBlock emptyCodeBlock = new CodeBlock();
+    private final Scope emptyCodeBlock = null;
 
     @ParameterizedTest
     @MethodSource("createValidPlainCases")

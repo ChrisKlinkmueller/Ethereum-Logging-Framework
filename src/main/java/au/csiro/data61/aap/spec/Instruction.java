@@ -1,18 +1,23 @@
 package au.csiro.data61.aap.spec;
 
+import au.csiro.data61.aap.state.ProgramState;
+
 /**
  * Instruction
  */
 public abstract class Instruction {
-    private final CodeBlock enclosingBlock;
+    private final Scope enclosingScope;
 
-    protected Instruction(CodeBlock enclosingBlock) {
-        this.enclosingBlock = enclosingBlock;
+    protected Instruction(Scope enclosingScope) {
+        this.enclosingScope = enclosingScope;
     }
 
-    public CodeBlock getEnclosingBlock() {
-        return this.enclosingBlock;
+    public Scope getEnclosingScope() {
+        return this.enclosingScope;
     }
     
-    // TODO: instructions need a way to report error handling or abort execution    
+    // TODO: instructions need a way to report error handling or abort execution   
+    
+    public abstract void execute(ProgramState state);
+    
 }

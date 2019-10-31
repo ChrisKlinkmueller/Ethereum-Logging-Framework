@@ -1,11 +1,11 @@
 package au.csiro.data61.aap.parser;
 
-import au.csiro.data61.aap.spec.CodeBlock;
+import au.csiro.data61.aap.spec.Scope;
 
 /**
  * SpecBuilder
  */
 public interface SpecBuilder<T> {
-    public SpecificationParserError verify(CodeBlock block);
-    public T build(CodeBlock block);
+    public SpecificationParserError verify(Scope block);
+    public T build(Scope block);
 }

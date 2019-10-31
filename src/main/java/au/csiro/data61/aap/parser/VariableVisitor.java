@@ -21,7 +21,7 @@ import au.csiro.data61.aap.parser.XbelParser.LiteralRuleContext;
 import au.csiro.data61.aap.parser.XbelParser.StringArrayValueContext;
 import au.csiro.data61.aap.parser.XbelParser.VariableDefinitionContext;
 import au.csiro.data61.aap.parser.XbelParser.VariableDefinitionRuleContext;
-import au.csiro.data61.aap.spec.CodeBlock;
+import au.csiro.data61.aap.spec.Scope;
 import au.csiro.data61.aap.spec.Statement;
 import au.csiro.data61.aap.spec.Variable;
 import au.csiro.data61.aap.spec.types.ArrayType;
@@ -157,7 +157,7 @@ class VariableVisitor extends XbelBaseVisitor<SpecificationParserResult<SpecBuil
         }
 
         @Override
-        public SpecificationParserError verify(CodeBlock block) {
+        public SpecificationParserError verify(Scope block) {
             if (!this.parseResult.isSuccessful()) {
                 assert 0 < this.parseResult.errorCount();
                 return this.parseResult.getError(0);
@@ -171,8 +171,8 @@ class VariableVisitor extends XbelBaseVisitor<SpecificationParserResult<SpecBuil
             }
         }
 
-        private VariableExistence variableAlreadyDefined(Variable variable, CodeBlock block) {
-            if (block.isVariableNameReserved(variable.getName())) {
+        private VariableExistence variableAlreadyDefined(Variable variable, Scope block) {
+            if (Variable.isVariableNameReserved(variable.getName())) {
                 return VariableExistence.RESERVED;
             }
 
@@ -180,9 +180,8 @@ class VariableVisitor extends XbelBaseVisitor<SpecificationParserResult<SpecBuil
                 return VariableExistence.DEFINED;
             }
 
-
-            if (block.getEnclosingBlock() != null) {
-                return this.variableAlreadyDefined(variable, block.getEnclosingBlock());
+            if (block.getEnclosingScope() != null) {
+                return this.variableAlreadyDefined(variable, block.getEnclosingScope());
             }
 
             return VariableExistence.UNDEFINED;
@@ -193,7 +192,7 @@ class VariableVisitor extends XbelBaseVisitor<SpecificationParserResult<SpecBuil
         }
 
         @Override
-        public Variable build(CodeBlock block) {
+        public Variable build(Scope block) {
             return this.parseResult.getResult();
         }
         
@@ -227,12 +226,12 @@ class VariableVisitor extends XbelBaseVisitor<SpecificationParserResult<SpecBuil
         }
 
         @Override
-        public SpecificationParserError verify(CodeBlock block) {
+        public SpecificationParserError verify(Scope block) {
             return this.error;
         }
 
         @Override
-        public Variable build(CodeBlock block) {
+        public Variable build(Scope block) {
             return this.literal;
         }
 
@@ -255,12 +254,12 @@ class VariableVisitor extends XbelBaseVisitor<SpecificationParserResult<SpecBuil
         }
 
         @Override
-        public SpecificationParserError verify(CodeBlock block) {
+        public SpecificationParserError verify(Scope block) {
             return this.error;
         }
 
         @Override
-        public Variable build(CodeBlock block) {
+        public Variable build(Scope block) {
             return this.literal;
         }
 
