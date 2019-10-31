@@ -1,5 +1,5 @@
 package au.csiro.data61.aap.parser;
-
+/*
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertTrue;
@@ -22,11 +22,12 @@ import au.csiro.data61.aap.spec.types.FixedType;
 import au.csiro.data61.aap.spec.types.IntegerType;
 import au.csiro.data61.aap.spec.types.StringType;
 import au.csiro.data61.aap.util.StringUtil;
-
+*/
 /**
  * ParseStaticValueTest
  */
 public class ParseLiteralTest {
+    /*
     private final SpecificationParser parser = new SpecificationParser();
     private final Scope emptyCodeBlock = null;
 
@@ -103,4 +104,5 @@ public class ParseLiteralTest {
             Arguments.of("123.12321.123")
         );
     }
+    */
 }

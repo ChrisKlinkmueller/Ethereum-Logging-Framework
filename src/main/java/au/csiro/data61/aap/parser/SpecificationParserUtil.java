@@ -19,7 +19,7 @@ import au.csiro.data61.aap.util.MethodResult;
 class SpecificationParserUtil {
     private static final Logger LOG = Logger.getLogger(SpecificationParserUtil.class.getName());
 
-    public static MethodResult<CharStream> charStreamfromInputStream(InputStream is) {
+    static MethodResult<CharStream> charStreamfromInputStream(InputStream is) {
         if (is == null) {
             return MethodResult.ofError("Parameter 'is' cannot be null.");
         }
@@ -35,7 +35,7 @@ class SpecificationParserUtil {
         }
     }
 
-    public static MethodResult<CharStream> charStreamfromString(String string) {
+    static MethodResult<CharStream> charStreamfromString(String string) {
         if (string == null) {
             return MethodResult.ofError("Parameter 'string' cannot be null.");
         }
@@ -50,17 +50,17 @@ class SpecificationParserUtil {
         }
     }
 
-    public static MethodResult<XbelParser> createParser(InputStream is, AntlrErrorReporter errorReporter) {
+    static MethodResult<XbelParser> createParser(InputStream is, ErrorCollector errorCollector) {
         final MethodResult<CharStream> charstreamResult = charStreamfromInputStream(is);
-        return createParser(charstreamResult, errorReporter);
+        return createParser(charstreamResult, errorCollector);
     }
 
-    public static MethodResult<XbelParser> createParser(String string, AntlrErrorReporter errorReporter) {
+    static MethodResult<XbelParser> createParser(String string, ErrorCollector errorCollector) {
         final MethodResult<CharStream> charstreamResult = charStreamfromString(string);
-        return createParser(charstreamResult, errorReporter);
+        return createParser(charstreamResult, errorCollector);
     }
 
-    private static MethodResult<XbelParser> createParser(MethodResult<CharStream> charstreamResult, AntlrErrorReporter errorReporter) {
+    private static MethodResult<XbelParser> createParser(MethodResult<CharStream> charstreamResult, ErrorCollector errorCollector) {
         if (!charstreamResult.isSuccessful()) {
             return MethodResult.ofError(charstreamResult);
         }
@@ -72,9 +72,9 @@ class SpecificationParserUtil {
 
         if (charStream != null) {
             lexer.removeErrorListeners();
-            lexer.addErrorListener(errorReporter);
+            lexer.addErrorListener(errorCollector);
             syntacticParser.removeErrorListeners();
-            syntacticParser.addErrorListener(errorReporter);
+            syntacticParser.addErrorListener(errorCollector);
         }
 
         return MethodResult.ofResult(syntacticParser);

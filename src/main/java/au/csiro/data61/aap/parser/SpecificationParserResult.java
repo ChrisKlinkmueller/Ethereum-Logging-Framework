@@ -1,13 +1,9 @@
 package au.csiro.data61.aap.parser;
 
 import java.util.Arrays;
-import java.util.Collection;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
-import org.antlr.v4.runtime.Token;
-
-import au.csiro.data61.aap.spec.types.SolidityType;
 import au.csiro.data61.aap.util.MethodResult;
 
 /**
@@ -20,13 +16,13 @@ public class SpecificationParserResult<T> {
     private final SpecificationParserError[] errors;
 
     private SpecificationParserResult(T result, SpecificationParserError[] errors) {
-        assert result == null ? errors != null && 0 <= errors.length && Arrays.stream(errors).allMatch(error -> error != null) : errors == null;
+        assert errors == null ? true : 0 <= errors.length && Arrays.stream(errors).allMatch(error -> error != null);
         this.result = result;
         this.errors = errors == null ? new SpecificationParserError[0] : Arrays.copyOf(errors, errors.length);
     }
 
     public boolean isSuccessful() {
-        return this.result != null;
+        return this.errors.length == 0;
     }
 
     public T getResult() {
@@ -56,14 +52,19 @@ public class SpecificationParserResult<T> {
         return ofError(message, null);
     }
 
+    static <T> SpecificationParserResult<T> ofUnsuccessfulMethodResult(MethodResult<?> result) {
+        assert result != null && !result.isSuccessful();
+        return ofError(result.getErrorMessage(), result.getErrorCause());
+    } 
+
     static <T> SpecificationParserResult<T> ofError(String message, Throwable cause) {
         assert message != null && !message.trim().isEmpty();
         final SpecificationParserError[] errors = new SpecificationParserError[1];
         errors[0] = new SpecificationParserError(0, 0, message, cause);
         return new SpecificationParserResult<T>(null, errors);
-    }    
+    }   
 
-    static <T> SpecificationParserResult<T> ofError(Token token, String message) {
+    /*static <T> SpecificationParserResult<T> ofError(Token token, String message) {
         return ofError(token, message, null);
     }
 
@@ -89,11 +90,6 @@ public class SpecificationParserResult<T> {
         return new SpecificationParserResult<T>(null, result.errors);
     }
 
-    static <T> SpecificationParserResult<T> ofUnsuccessfulMethodResult(MethodResult<?> result) {
-        assert result != null && !result.isSuccessful();
-        return ofError(result.getErrorMessage(), result.getErrorCause());
-    }
-
 	static <T> SpecificationParserResult<SolidityType> ofUnsuccessfulParserResult(Token token, SpecificationParserResult<SolidityType> result) {
         assert result != null && !result.isSuccessful();
         assert token != null;
@@ -102,15 +98,23 @@ public class SpecificationParserResult<T> {
             null, 
             result.errorStream().map(e -> new SpecificationParserError(token, e.getErrorMessage(), e.getErrorCause())).toArray(SpecificationParserError[]::new)
         );
-	}
+    }*/
+    
+    static <T> SpecificationParserResult<T> ofErrors(Stream<SpecificationParserError> errorStream) {
+        assert errorStream != null;
 
-    static <T> SpecificationParserResult<T> ofErrorReporter(AntlrErrorReporter reporter) {
+        final SpecificationParserError[] errors = errorStream.toArray(SpecificationParserError[]::new);
+        assert 0 < errors.length;
+
+        return new SpecificationParserResult<T>(null, errors);
+    }
+
+    /*static <T> SpecificationParserResult<T> ofErrorReporter(AntlrErrorReporter reporter) {
         assert reporter != null && reporter.hasErrors();
         return new SpecificationParserResult<T>(null, reporter.errorStream().toArray(SpecificationParserError[]::new));
-    } 
+    } */
 
     static <T> SpecificationParserResult<T> ofResult(T result) {
-        assert result != null;
         return new SpecificationParserResult<T>(result, null);
     }
 }

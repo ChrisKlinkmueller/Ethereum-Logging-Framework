@@ -9,15 +9,15 @@ document
     ;
 
 instruction
-    : filterScope
+    : scope
     | statement
     // | TODO: add emit statements 
     ;
 
 // filters
 
-filterScope 
-    : filter ('&' filter)?
+scope 
+    : filter '{' instruction* '}'
     ;
 
 filter
@@ -56,8 +56,8 @@ addressList
     ;
 
 logEntryFilter
-    : KEY_LOG_ENTRIES '(' eventSignatureSpecification ')'
-    | KEY_LOG_ENTRIES '(' varArgsSpecification ')'
+    : KEY_LOG_ENTRIES '(' addressList ')' '(' eventSignatureSpecification ')'
+    | KEY_LOG_ENTRIES '(' addressList ')' '(' varArgsSpecification ')'
     ;
 
 eventSignatureSpecification

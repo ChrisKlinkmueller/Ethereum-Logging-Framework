@@ -6,13 +6,9 @@ import java.util.logging.Logger;
 
 import org.antlr.v4.runtime.CharStream;
 import org.antlr.v4.runtime.CommonTokenStream;
-import org.antlr.v4.runtime.tree.ErrorNode;
 import org.antlr.v4.runtime.tree.ParseTree;
-import org.antlr.v4.runtime.tree.ParseTreeWalker;
-import org.antlr.v4.runtime.tree.TerminalNode;
 
-import au.csiro.data61.aap.spec.Variable;
-import au.csiro.data61.aap.spec.types.SolidityType;
+import au.csiro.data61.aap.spec.GlobalScope;
 import au.csiro.data61.aap.util.MethodResult;
 
 /**
@@ -21,19 +17,11 @@ import au.csiro.data61.aap.util.MethodResult;
 public class SpecificationParser {
     private static final Logger LOG = Logger.getLogger(SpecificationParser.class.getName());
 
-    public SpecificationParserResult<SpecBuilder<Variable>> parseVariableDefinition(InputStream is) {
-        return this.parse(is, XbelParser::variableDefinitionRule, VisitorRepository.VARIABLE_VISITOR);
-    }
+    public SpecificationParserResult<GlobalScope> parseDocument(InputStream is) {
+        return this.parse(is, XbelParser::document);
+    } 
 
-    public SpecificationParserResult<SpecBuilder<Variable>> parseLiteral(InputStream is) {
-        return this.parse(is, XbelParser::literalRule, VisitorRepository.VARIABLE_VISITOR);
-    }
-
-    public SpecificationParserResult<SolidityType> parseSolidityType(InputStream is) {
-        return this.parse(is, XbelParser::solTypeRule, VisitorRepository.SOLIDITY_TYPE_VISITOR);
-    }
-
-    protected <T> SpecificationParserResult<T> parse(InputStream is, Function<XbelParser, ParseTree> rule, XbelBaseVisitor<SpecificationParserResult<T>> visitor) {
+    protected <T> SpecificationParserResult<T> parse(InputStream is, Function<XbelParser, ParseTree> rule) {
         if (is == null) {
             LOG.severe("The 'is' parameter was null.");
             return SpecificationParserResult.ofError("The 'is' parameter was null.");
@@ -45,43 +33,32 @@ public class SpecificationParser {
             return SpecificationParserResult.ofUnsuccessfulMethodResult(charStreamResult);
         }
 
-        final AntlrErrorReporter errorReporter = new AntlrErrorReporter();
+        final ErrorCollector errorCollector = new ErrorCollector();
         final XbelLexer lexer = new XbelLexer(charStreamResult.getResult());
         lexer.removeErrorListeners();
-        lexer.addErrorListener(errorReporter);
+        lexer.addErrorListener(errorCollector);
 
         final CommonTokenStream tokens = new CommonTokenStream(lexer);        
         final XbelParser syntacticParser = new XbelParser(tokens);
         syntacticParser.removeErrorListeners();
-        syntacticParser.addErrorListener(errorReporter);
+        syntacticParser.addErrorListener(errorCollector);
 
         final ParseTree tree = rule.apply(syntacticParser);      
-        logParseTree(tree);       
-        
-        if (errorReporter.hasErrors()) {
-            LOG.severe("Errors during syntactic parsing.");
-            return SpecificationParserResult.ofErrorReporter(errorReporter);
+        if (errorCollector.hasErrors()) {
+            LOG.info("Errors during syntactic parsing.");
+            return SpecificationParserResult.ofErrors(errorCollector.errorStream());
         }
 
-        return visitor.visit(tree);
-    }
+        final SemanticAnalysis semanticAnalysis = new SemanticAnalysis(errorCollector);
+        semanticAnalysis.analyze(tree);
 
-    private void logParseTree(ParseTree tree) {
-        final ParseTreeWalker walker = new ParseTreeWalker();
-        walker.walk(new PrintParseTreeListener(), tree);
-    }
-
-    private static class PrintParseTreeListener extends XbelBaseListener {
-
-        @Override
-        public void visitErrorNode(ErrorNode node) {
-            LOG.info(node.getText().replaceAll("\\s+", " "));
+        if (errorCollector.hasErrors()) {
+            LOG.info("Errors during semantic analysis.");
+            return SpecificationParserResult.ofErrors(errorCollector.errorStream());
         }
 
-        @Override
-        public void visitTerminal(TerminalNode node) {
-            LOG.info(node.getText().replaceAll("\\s+", " "));
-        }
+        // TODO: build model
+        return SpecificationParserResult.ofResult(null);
     }
 
 
