@@ -39,6 +39,7 @@ import au.csiro.data61.aap.util.MethodResult;
 class VariableVisitor extends XbelBaseVisitor<SpecificationParserResult<SpecBuilder<Variable>>> {
     private static final String BYTES_PREFIX = "0x";
 
+
     @Override
     public SpecificationParserResult<SpecBuilder<Variable>> visitVariableDefinitionRule(VariableDefinitionRuleContext ctx) {
         return this.visitVariableDefinition(ctx.variableDefinition());
@@ -192,7 +193,7 @@ class VariableVisitor extends XbelBaseVisitor<SpecificationParserResult<SpecBuil
         }
 
         @Override
-        public Variable build(Scope block) {
+        public Variable build() {
             return this.parseResult.getResult();
         }
         
@@ -204,14 +205,16 @@ class VariableVisitor extends XbelBaseVisitor<SpecificationParserResult<SpecBuil
 
     }
 
+    
+
     private static class ArrayLiteralBuilder implements SpecBuilder<Variable> {
         private final SpecificationParserError error;
         private final Variable literal;
 
-        public ArrayLiteralBuilder(List<TerminalNode> nodes, SolidityType baseType, Function<String,MethodResult<Object>> cast) {
+        public ArrayLiteralBuilder(List<TerminalNode> nodes, SolidityType baseType, Function<String,MethodResult<? extends Object>> cast) {
             final List<Object> values = new ArrayList<>();
             for (TerminalNode node : nodes) {
-                final MethodResult<Object> castResult = safeCast(node.getText(), cast);
+                final MethodResult<? extends Object> castResult = safeCast(node.getText(), cast);
                 if (castResult.isSuccessful()) {
                     values.add(castResult.getResult());
                 } 
@@ -231,7 +234,7 @@ class VariableVisitor extends XbelBaseVisitor<SpecificationParserResult<SpecBuil
         }
 
         @Override
-        public Variable build(Scope block) {
+        public Variable build() {
             return this.literal;
         }
 
@@ -241,8 +244,8 @@ class VariableVisitor extends XbelBaseVisitor<SpecificationParserResult<SpecBuil
         private final SpecificationParserError error;
         private final Variable literal;
 
-        public PlainLiteralBuilder(TerminalNode node, SolidityType type, Function<String,MethodResult<Object>> cast) {
-            final MethodResult<Object> castResult = safeCast(node.getText(), cast);
+        public PlainLiteralBuilder(TerminalNode node, SolidityType type, Function<String,MethodResult<? extends Object>> cast) {
+            final MethodResult<? extends Object> castResult = safeCast(node.getText(), cast);
             if (castResult.isSuccessful()) {
                 this.literal = new Variable(type, createLiteralName(), true, castResult.getResult());
                 this.error = null;
@@ -259,7 +262,7 @@ class VariableVisitor extends XbelBaseVisitor<SpecificationParserResult<SpecBuil
         }
 
         @Override
-        public Variable build(Scope block) {
+        public Variable build() {
             return this.literal;
         }
 
@@ -270,17 +273,17 @@ class VariableVisitor extends XbelBaseVisitor<SpecificationParserResult<SpecBuil
         return String.format("$literal%s", ++literalCount);
     }
 
-    private static MethodResult<Object> safeCast(String string, Function<String,MethodResult<Object>> cast) {
+    public static MethodResult<? extends Object> safeCast(String string, Function<String,MethodResult<? extends Object>> cast) {
         return string == null 
             ? MethodResult.ofError("The 'string' parameter must not be null.")
             : cast.apply(string);
     }
 
-    private static MethodResult<Object> booleanCast(String string) {
+    public static MethodResult<Boolean> booleanCast(String string) {
         return MethodResult.ofResult(Boolean.parseBoolean(string));
     }
 
-    private static MethodResult<Object> bytesCast(String string) {
+    public static MethodResult<String> bytesCast(String string) {
         if (!string.startsWith(BYTES_PREFIX)) {
             return MethodResult.ofError(String.format("'%s' is not a valid bytes or address value, as it does not start with '%s'.", string, BYTES_PREFIX));
         }
@@ -292,7 +295,7 @@ class VariableVisitor extends XbelBaseVisitor<SpecificationParserResult<SpecBuil
         return MethodResult.ofResult(string);
     }
 
-    private static MethodResult<Object> fixedCast(String string) {
+    public static MethodResult<BigDecimal> fixedCast(String string) {
         try {
             final BigDecimal number = new BigDecimal(string);
             return MethodResult.ofResult(number);
@@ -302,7 +305,7 @@ class VariableVisitor extends XbelBaseVisitor<SpecificationParserResult<SpecBuil
         } 
     }
 
-    private static MethodResult<Object> integerCast(String string) {
+    public static MethodResult<BigInteger> integerCast(String string) {
         try {
             final BigInteger number = new BigInteger(string);
             return MethodResult.ofResult(number);
@@ -312,7 +315,7 @@ class VariableVisitor extends XbelBaseVisitor<SpecificationParserResult<SpecBuil
         } 
     }
 
-    private static MethodResult<Object> stringCast(String string) {
+    public static MethodResult<String> stringCast(String string) {
         if (string.length() < 2 || string.charAt(0) != '\"' || string.charAt(string.length() - 1) != '\"') {
             return MethodResult.ofError(String.format("'%' is not a valid string value.", string));
         }

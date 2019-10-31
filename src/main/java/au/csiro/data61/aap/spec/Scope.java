@@ -11,13 +11,6 @@ public abstract class Scope extends Instruction {
     private final List<Instruction> instructions;
 
     protected Scope() {
-        super(null);
-        this.instructions = new ArrayList<>();
-    }
-
-    protected Scope(Scope enclosingScope) {
-        super(enclosingScope);
-        assert enclosingScope != null;
         this.instructions = new ArrayList<>();
     }
 

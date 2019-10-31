@@ -11,16 +11,20 @@ public class Statement extends Instruction {
     private Optional<Variable> variable;
     private ValueSource source;
 
-    public Statement(Scope enclosingBlock, ValueSource source) {
-        this(enclosingBlock, null, source);
+    public Statement(ValueSource source) {
+        this(null, source);
     }
 
-    public Statement(Scope enclosingBlock, Variable variable, ValueSource source) {
-        super(enclosingBlock);
-        assert source != null;
+    public Statement(Variable variable, ValueSource source) {
         this.variable = variable == null ? Optional.empty() : Optional.of(variable);
         this.source = source;
     } 
+
+    @Override
+    public void setEnclosingScope(Scope enclosingScope) {
+        assert enclosingScope != null;
+        super.setEnclosingScope(enclosingScope);
+    }
 
     public Optional<Variable> getVariable() {
         return this.variable;

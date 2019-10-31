@@ -15,23 +15,16 @@ public class BlockScope extends Scope {
     private final Variable fromBlockNumber;
     private final Variable toBlockNumber;
 
-    public BlockScope(GlobalScope enclosingScope, Variable fromBlockNumber, Variable toBlockNumber) {
-        super(enclosingScope);
-        assert enclosingScope != null;
+    public BlockScope(Variable fromBlockNumber, Variable toBlockNumber) {
         assert isValidBlockNumberVariable(fromBlockNumber);
         assert isValidBlockNumberVariable(toBlockNumber);
         this.fromBlockNumber = fromBlockNumber;
         this.toBlockNumber = toBlockNumber;
     }
 
-    public static boolean isValidBlockNumberVariable(Variable variable) {
-        return variable != null && (
-               variable == PENDING
-            || variable == EARLIEST 
-            || variable == CURRENT
-            || IntegerType.DEFAULT_INSTANCE.castableFrom(variable.getType())
-        );
-    } 
+    public void setEnclosingBlock(GlobalScope scope) {
+        super.setEnclosingScope(scope);
+    }
 
     public Variable getFromBlockNumber() {
         return this.fromBlockNumber;
@@ -45,5 +38,14 @@ public class BlockScope extends Scope {
     public void execute(ProgramState state) {
         throw new UnsupportedOperationException();
     }
+
+    public static boolean isValidBlockNumberVariable(Variable variable) {
+        return variable != null && (
+               variable == PENDING
+            || variable == EARLIEST 
+            || variable == CURRENT
+            || IntegerType.DEFAULT_INSTANCE.castableFrom(variable.getType())
+        );
+    } 
     
 }

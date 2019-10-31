@@ -4,6 +4,16 @@
 
 grammar Xbel;
 
+document
+    : instruction* EOF
+    ;
+
+instruction
+    : filterScope
+    | statement
+    // | TODO: add emit statements 
+    ;
+
 // filters
 
 filterScope 

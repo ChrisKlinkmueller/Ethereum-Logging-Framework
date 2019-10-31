@@ -7,5 +7,5 @@ import au.csiro.data61.aap.spec.Scope;
  */
 public interface SpecBuilder<T> {
     public SpecificationParserError verify(Scope block);
-    public T build(Scope block);
+    public T build();
 }

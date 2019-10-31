@@ -14,13 +14,15 @@ public class TransactionScope extends Scope {
     private final Variable senders;
     private final Variable recipients;
 
-    public TransactionScope(BlockScope enclosingScope, Variable senders, Variable recipients) {
-        super(enclosingScope);
-        assert enclosingScope != null;
+    public TransactionScope(Variable senders, Variable recipients) {
         assert isValidAddressListVariable(senders);
         assert isValidAddressListVariable(recipients);
         this.recipients = recipients;
         this.senders = senders;
+    }
+
+    public void setEnclosingScope(BlockScope enclosingScope) {
+        super.setEnclosingScope(enclosingScope);
     }
 
     public Variable getSenders() {

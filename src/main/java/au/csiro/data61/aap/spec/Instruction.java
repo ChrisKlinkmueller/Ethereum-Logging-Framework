@@ -6,9 +6,9 @@ import au.csiro.data61.aap.state.ProgramState;
  * Instruction
  */
 public abstract class Instruction {
-    private final Scope enclosingScope;
+    private Scope enclosingScope;
 
-    protected Instruction(Scope enclosingScope) {
+    protected void setEnclosingScope(Scope enclosingScope) {
         this.enclosingScope = enclosingScope;
     }
 
