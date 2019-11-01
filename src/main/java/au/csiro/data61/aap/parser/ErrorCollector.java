@@ -7,6 +7,7 @@ import java.util.stream.Stream;
 import org.antlr.v4.runtime.BaseErrorListener;
 import org.antlr.v4.runtime.RecognitionException;
 import org.antlr.v4.runtime.Recognizer;
+import org.antlr.v4.runtime.Token;
 
 /**
  * ErrorCollector
@@ -30,9 +31,9 @@ class ErrorCollector extends BaseErrorListener {
         return this.errors.stream();
     }
 
-    public void addSemanticError(SpecificationParserError error) {
-        assert error != null;
-        this.errors.add(error);
+    public void addSemanticError(Token token, String errorMessage) {
+        assert token != null && errorMessage != null;
+        this.errors.add(new SpecificationParserError(token, errorMessage));
     }
 
     public void clear() {

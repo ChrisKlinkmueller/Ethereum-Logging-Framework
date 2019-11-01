@@ -12,15 +12,15 @@ import org.antlr.v4.runtime.tree.TerminalNode;
 /**
  * LiteralVerifier
  */
-class LiteralVerifier {
-    private static final Logger LOGGER = Logger.getLogger(LiteralVerifier.class.getName());
+class LiteralAnalyzer {
+    private static final Logger LOGGER = Logger.getLogger(LiteralAnalyzer.class.getName());
     private static final int ADDRESS_LENGTH = 42;
 
     static String verifyAddressLiteral(TerminalNode node, ErrorCollector collector) {
         assert collector != null && node != null;
 
         if (node.getText().length() != ADDRESS_LENGTH) {
-            collector.addSemanticError(new SpecificationParserError(node.getSymbol(), "An address literal must start with '0x' followed by 40 hexa-decimal characters."));
+            collector.addSemanticError(node.getSymbol(), "An address literal must start with '0x' followed by 40 hexa-decimal characters.");
             return null;
         }
 
@@ -47,7 +47,7 @@ class LiteralVerifier {
         catch (NumberFormatException ex) {
             final String message = String.format("An integer literal should always be parseable, but this '%s' was not.", node.getText());
             LOGGER.log(Level.SEVERE, message, ex);
-            collector.addSemanticError(new SpecificationParserError(node.getSymbol(), message));
+            collector.addSemanticError(node.getSymbol(), message);
             return null;
         }
     }

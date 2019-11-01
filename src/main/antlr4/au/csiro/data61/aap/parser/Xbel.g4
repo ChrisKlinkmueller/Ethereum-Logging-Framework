@@ -45,7 +45,16 @@ transactionFilter
     ;
 
 smartContractsFilter
-    : KEY_SMART_CONTRACTS '(' contracts=addressList ')'
+    : KEY_SMART_CONTRACT '(' contracts=addressList ')' '(' smartContractSignature ')'
+    ;
+
+smartContractSignature
+    : (smartContractVariable (',' smartContractVariable)* )? (',' KEY_VAR_ARGS)?
+    ;
+
+smartContractVariable
+    : solType variableName
+    | KEY_SKIP_DATA
     ;
 
 addressList
@@ -56,24 +65,24 @@ addressList
     ;
 
 logEntryFilter
-    : KEY_LOG_ENTRIES '(' addressList ')' '(' eventSignatureSpecification ')'
-    | KEY_LOG_ENTRIES '(' addressList ')' '(' varArgsSpecification ')'
+    : KEY_LOG_ENTRIES '(' addressList ')' '(' logEntrySignature ')'
+    | KEY_LOG_ENTRIES '(' addressList ')' '(' skippableLogEntrySignature ')'
     ;
 
-eventSignatureSpecification
-    : methodName=Identifier '(' (solVariable (',' solVariable)* )? ')' KEY_ANONYMOUS?
+logEntrySignature
+    : methodName=Identifier '(' (logEntryParameter (',' logEntryParameter)* )? ')' KEY_ANONYMOUS?
     ;
 
-varArgsSpecification
-    : (solSkipVariable (',' solSkipVariable)* )? (',' KEY_VAR_ARGS)?
+skippableLogEntrySignature
+    : (skippableLogEntryParameter (',' skippableLogEntryParameter)* )? (',' KEY_VAR_ARGS)?
     ;
 
-solVariable
+logEntryParameter
     : solType (KEY_INDEXED)? variableName
     ;
 
-solSkipVariable
-    : solVariable
+skippableLogEntryParameter
+    : logEntryParameter
     | KEY_SKIP_INDEXED
     | KEY_SKIP_DATA
     ;
@@ -88,7 +97,7 @@ KEY_CURRENT : C U R R E N T;
 KEY_PENDING : P E N D I N G;
 KEY_ANY : A N Y;
 KEY_TRANSACTIONS : T R A N S A C T I O N S;
-KEY_SMART_CONTRACTS : S M A R T ' ' C O N T R A C T S;
+KEY_SMART_CONTRACT : S M A R T ' ' C O N T R A C T;
 KEY_LOG_ENTRIES : L O G ' ' E N T R Y ;
 KEY_ANONYMOUS : 'anonymous';
 KEY_VAR_ARGS : '...';
@@ -183,9 +192,9 @@ byteAndAddressArrayValue
 
 STRING_LITERAL : '"' ('\\"' | ~["\r\n])* '"';
 
-FIXED_LITERAL : [0-9]* '.' [0-9]+ ;
+FIXED_LITERAL : '-'? [0-9]* '.' [0-9]+ ;
 
-INT_LITERAL : [0-9]+;
+INT_LITERAL : '-'? [0-9]+;
 
 BOOLEAN_LITERAL 
   : T R U E

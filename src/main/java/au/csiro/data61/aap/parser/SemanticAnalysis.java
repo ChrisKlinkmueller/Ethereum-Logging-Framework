@@ -23,7 +23,10 @@ class SemanticAnalysis extends XbelBaseListener {
         assert errorCollector != null;
         this.errorCollector = errorCollector;
         this.analyzers = new LinkedList<>();
-        this.analyzers.add(new FilterVerifier(this.errorCollector));        
+
+        final VariableCollector collector = new VariableCollector(errorCollector);
+        this.analyzers.add(collector);
+        this.analyzers.add(new FilterAnalyzer(this.errorCollector));        
     }
 
     public void analyze(ParseTree parseTree) {
