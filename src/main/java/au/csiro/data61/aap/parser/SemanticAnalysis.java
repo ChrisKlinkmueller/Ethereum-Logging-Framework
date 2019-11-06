@@ -7,10 +7,12 @@ import org.antlr.v4.runtime.tree.ParseTree;
 import org.antlr.v4.runtime.tree.ParseTreeWalker;
 
 import au.csiro.data61.aap.parser.XbelParser.BlockFilterContext;
+import au.csiro.data61.aap.parser.XbelParser.DocumentContext;
 import au.csiro.data61.aap.parser.XbelParser.LogEntryFilterContext;
 import au.csiro.data61.aap.parser.XbelParser.ScopeContext;
 import au.csiro.data61.aap.parser.XbelParser.SmartContractsFilterContext;
 import au.csiro.data61.aap.parser.XbelParser.TransactionFilterContext;
+import au.csiro.data61.aap.parser.XbelParser.VariableDefinitionContext;
 
 /**
  * SemanticAnalysis
@@ -24,7 +26,7 @@ class SemanticAnalysis extends XbelBaseListener {
         this.errorCollector = errorCollector;
         this.analyzers = new LinkedList<>();
 
-        final VariableCollector collector = new VariableCollector(errorCollector);
+        final VariableAnalyzer collector = new VariableAnalyzer(errorCollector);
         this.analyzers.add(collector);
         this.analyzers.add(new FilterAnalyzer(this.errorCollector));        
     }
@@ -79,5 +81,20 @@ class SemanticAnalysis extends XbelBaseListener {
     @Override
     public void exitScope(ScopeContext ctx) {
         this.analyzers.forEach(l -> l.exitScope(ctx));
+    }
+
+    @Override
+    public void enterDocument(DocumentContext ctx) {
+        this.analyzers.forEach(l -> l.enterDocument(ctx));
+    }
+
+    @Override
+    public void exitDocument(DocumentContext ctx) {
+        this.analyzers.forEach(l -> l.exitDocument(ctx));
+    }
+
+    @Override
+    public void enterVariableDefinition(VariableDefinitionContext ctx) {
+        this.analyzers.forEach(l -> enterVariableDefinition(ctx));
     }
 }

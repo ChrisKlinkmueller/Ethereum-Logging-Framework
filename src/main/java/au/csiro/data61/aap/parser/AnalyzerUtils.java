@@ -5,15 +5,21 @@ import java.util.List;
 import java.util.Objects;
 import java.util.logging.Level;
 import java.util.logging.Logger;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 import java.util.stream.Collectors;
+import java.util.stream.IntStream;
 
 import org.antlr.v4.runtime.tree.TerminalNode;
 
+import au.csiro.data61.aap.parser.XbelParser.SolTypeContext;
+import au.csiro.data61.aap.spec.types.SolidityType;
+
 /**
- * LiteralVerifier
+ * AnalyzerUtils
  */
-class LiteralAnalyzer {
-    private static final Logger LOGGER = Logger.getLogger(LiteralAnalyzer.class.getName());
+class AnalyzerUtils {
+    private static final Logger LOGGER = Logger.getLogger(AnalyzerUtils.class.getName());
     private static final int ADDRESS_LENGTH = 42;
 
     static String verifyAddressLiteral(TerminalNode node, ErrorCollector collector) {
@@ -51,5 +57,30 @@ class LiteralAnalyzer {
             return null;
         }
     }
+
+    static SolidityType verifySolidityType(SolTypeContext ctx, ErrorCollector collector) {
+        assert ctx != null && collector != null;
+
+        if (ctx.SOL_INT_TYPE() != null) {
+            return parseIntType(ctx.SOL_INT_ARRAY_TYPE(), collector);
+        }
+
+        return null;
+    }
+
+    private static SolidityType parseIntType(TerminalNode node, ErrorCollector collector) {
+        return null;
+    }
     
+    public static void main(String[] args) {
+        final String[] types = {"uint128", "int8", "uint", "int"};
+        Pattern pattern = Pattern.compile("\\d*");
+
+        for (String type : types) {
+            final boolean unsigned = type.startsWith("u");
+            final String bitLength = type.chars().filter(Character::isDigit).mapToObj(c -> Character.toString(c)).collect(Collectors.joining());
+            System.out.println(unsigned + " + " + bitLength);
+        }
+    }
+
 }

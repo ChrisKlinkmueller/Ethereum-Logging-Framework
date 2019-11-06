@@ -2,6 +2,13 @@
     "configurations": [
         {
             "type": "java",
+            "name": "CodeLens (Launch) - AnalyzerUtils",
+            "request": "launch",
+            "mainClass": "au.csiro.data61.aap.parser.AnalyzerUtils",
+            "projectName": "xes-blockchain"
+        },
+        {
+            "type": "java",
             "name": "CodeLens (Launch) - EthereumClient",
             "request": "launch",
             "mainClass": "au.csiro.data61.aap.rpc.EthereumClient",

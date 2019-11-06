@@ -54,8 +54,8 @@ class FilterAnalyzer extends SemanticAnalyzer {
         }
 
         if (ctx.from.INT_LITERAL() != null && ctx.to.INT_LITERAL() != null) {
-            final BigInteger from = LiteralAnalyzer.verifyIntegerLiteral(ctx.from.INT_LITERAL(), this.errorCollector);
-            final BigInteger to = LiteralAnalyzer.verifyIntegerLiteral(ctx.to.INT_LITERAL(), this.errorCollector);
+            final BigInteger from = AnalyzerUtils.verifyIntegerLiteral(ctx.from.INT_LITERAL(), this.errorCollector);
+            final BigInteger to = AnalyzerUtils.verifyIntegerLiteral(ctx.to.INT_LITERAL(), this.errorCollector);
             if (from.compareTo(BigInteger.ZERO) < 0) {
                 this.errorCollector.addSemanticError(ctx.from.start, String.format("The 'from' parameter must be positive, but wasn't: %s.", from));
             }
@@ -213,7 +213,7 @@ class FilterAnalyzer extends SemanticAnalyzer {
         // TODO: add and verify contracts variable if it exists
         if (ctx.KEY_ANY() == null) {
             if (!ctx.BYTE_AND_ADDRESS_LITERAL().isEmpty()) {
-                LiteralAnalyzer.verifyAddressLiterals(ctx.BYTE_AND_ADDRESS_LITERAL(), this.errorCollector);
+                AnalyzerUtils.verifyAddressLiterals(ctx.BYTE_AND_ADDRESS_LITERAL(), this.errorCollector);
             }
             else {
                 final String message = "The use of this address list option is not supported!";
