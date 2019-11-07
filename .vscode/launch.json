@@ -2,6 +2,13 @@
     "configurations": [
         {
             "type": "java",
+            "name": "CodeLens (Launch) - ParseSolTypeTest",
+            "request": "launch",
+            "mainClass": "au.csiro.data61.aap.parser.ParseSolTypeTest",
+            "projectName": "xes-blockchain"
+        },
+        {
+            "type": "java",
             "name": "CodeLens (Launch) - AnalyzerUtils",
             "request": "launch",
             "mainClass": "au.csiro.data61.aap.parser.AnalyzerUtils",

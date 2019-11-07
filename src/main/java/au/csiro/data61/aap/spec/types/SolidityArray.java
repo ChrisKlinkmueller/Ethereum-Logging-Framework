@@ -1,14 +1,16 @@
 package au.csiro.data61.aap.spec.types;
 
+import java.util.Objects;
+
 /**
  * ArrayType
  */
-public class ArrayType extends SolidityType {
+public class SolidityArray extends SolidityType {
     private static final String SUFFIX = "[]";
 
     private final SolidityType baseType;
     
-    public ArrayType(SolidityType baseType) {
+    public SolidityArray(SolidityType baseType) {
         assert baseType != null;
         this.baseType = baseType;
     }
@@ -25,5 +27,19 @@ public class ArrayType extends SolidityType {
     @Override
     public boolean castableFrom(SolidityType type) {
         return this.baseType.castableFrom(type);
+    }
+
+    @Override
+    public boolean equals(Object o) {
+        if (o == null || !(o instanceof SolidityArray)) {
+            return false;
+        }
+
+        return this.baseType.equals(((SolidityArray)o).getBaseType());
+    }
+
+    @Override
+    public int hashCode() {
+        return Objects.hash(SUFFIX, this.baseType);
     }
 }

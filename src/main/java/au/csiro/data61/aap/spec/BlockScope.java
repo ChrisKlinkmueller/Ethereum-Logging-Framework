@@ -1,16 +1,16 @@
 package au.csiro.data61.aap.spec;
 
-import au.csiro.data61.aap.spec.types.IntegerType;
-import au.csiro.data61.aap.spec.types.StringType;
+import au.csiro.data61.aap.spec.types.SolidityInteger;
+import au.csiro.data61.aap.spec.types.SolidityString;
 import au.csiro.data61.aap.state.ProgramState;
 
 /**
  * BlockScope
  */
 public class BlockScope extends Scope {
-    public static final Variable EARLIEST = new Variable(IntegerType.DEFAULT_INSTANCE, "earliest", true, 0);
-    public static final Variable CURRENT = new Variable(StringType.DEFAULT_INSTANCE, "current", true, "current");
-    public static final Variable PENDING = new Variable(StringType.DEFAULT_INSTANCE, "pending", true, "pending");
+    public static final Variable EARLIEST = new Variable(SolidityInteger.DEFAULT_INSTANCE, "earliest", true, 0);
+    public static final Variable CURRENT = new Variable(SolidityString.DEFAULT_INSTANCE, "current", true, "current");
+    public static final Variable PENDING = new Variable(SolidityString.DEFAULT_INSTANCE, "pending", true, "pending");
 
     private final Variable fromBlockNumber;
     private final Variable toBlockNumber;
@@ -44,7 +44,7 @@ public class BlockScope extends Scope {
                variable == PENDING
             || variable == EARLIEST 
             || variable == CURRENT
-            || IntegerType.DEFAULT_INSTANCE.castableFrom(variable.getType())
+            || SolidityInteger.DEFAULT_INSTANCE.castableFrom(variable.getType())
         );
     } 
     

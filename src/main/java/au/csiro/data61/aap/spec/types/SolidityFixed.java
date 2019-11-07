@@ -1,9 +1,11 @@
 package au.csiro.data61.aap.spec.types;
 
+import java.util.Objects;
+
 /**
  * FixedType
  */
-public class FixedType extends SolidityType {
+public class SolidityFixed extends SolidityType {
     private static final String NAME = "fixed";
     private static final int MIN_M = 8;
     private static final int MAX_M = 256;
@@ -12,18 +14,18 @@ public class FixedType extends SolidityType {
     private static final int FIXED_DEFAULT_M = 128;
     private static final int FIXED_DEFAULT_N = 18;    
 
-    public static final FixedType DEFAULT_INSTANCE = new FixedType(true);    
+    public static final SolidityFixed DEFAULT_INSTANCE = new SolidityFixed(true);    
     
     private final int m;
     private final int n;
     private final boolean signed;
     
-    public FixedType(boolean signed) {
+    public SolidityFixed(boolean signed) {
         this(signed, FIXED_DEFAULT_M, FIXED_DEFAULT_N);
     }
 
-    public FixedType(boolean signed, int m, int n) {
-        super(FixedType.class, IntegerType.class);
+    public SolidityFixed(boolean signed, int m, int n) {
+        super(SolidityFixed.class, SolidityInteger.class);
         assert isValidMValue(m);
         assert isValidNValue(n);
         this.signed = signed;
@@ -55,5 +57,20 @@ public class FixedType extends SolidityType {
 
     public static boolean isValidNValue(int value) {
         return MIN_N <= value && value <= MAX_N;
+    }
+
+    @Override
+    public boolean equals(Object o) {
+        if (o == null || !(o instanceof SolidityFixed)) {
+            return false;
+        }
+
+        final SolidityFixed type = (SolidityFixed)o;
+        return type.signed == this.signed && type.m == this.m && type.n == this.n;
+    }
+
+    @Override
+    public int hashCode() {
+        return Objects.hash(NAME, this.signed, this.m, this.n);
     }
 }

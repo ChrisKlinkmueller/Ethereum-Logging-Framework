@@ -85,16 +85,36 @@ public class VariableAnalyzer extends SemanticAnalyzer {
 
     @Override
     public void enterVariableDefinition(VariableDefinitionContext ctx) {
-        // TODO Auto-generated method stub
-        super.enterVariableDefinition(ctx);
-    }
+        final Variable lookupResult = this.getVariable(ctx.variableName().getText());
+        if (lookupResult != null) {
+            final String message = lookupResult.isScopeVariable() 
+                ? String.format("The variable '%s' already exists as an implicit scope variable.", lookupResult.getName())
+                : String.format("The variable '%s' already exists as an explicitly defined variable.", lookupResult.getName());
+            this.errorCollector.addSemanticError(ctx.variableName().start, message);
+            return;
+        }
 
+        final SolidityType type = AnalyzerUtils.verifySolidityType(ctx.solType(), this.errorCollector);
+        if (type == null) {
+            return;
+        }
+
+        final Variable variable = new Variable(type, ctx.variableName().getText());
+        this.visibleVariables.peek().add(variable);
+    }
 
     //#endregion statement variables
 
     public boolean containsVariable(String name) {
         return this.variableStream()
             .anyMatch(var -> var.getName().equals(name));
+    }
+
+    private Variable getVariable(String name) {
+        return this.variableStream()
+            .filter(variable -> variable.getName().equals(name))
+            .findFirst()
+            .orElse(null);
     }
 
     public SolidityType getVariableType(String name) {
