@@ -1,7 +1,11 @@
 package au.csiro.data61.aap.parser;
 
+import static org.junit.jupiter.api.Assertions.assertFalse;
+import static org.junit.jupiter.api.Assertions.assertNull;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
+import java.util.Arrays;
+import java.util.List;
 import java.util.function.Function;
 import java.util.stream.Stream;
 
@@ -24,14 +28,35 @@ import au.csiro.data61.aap.spec.types.SolidityType;
 public class ParseSolTypeTest {
 
     @ParameterizedTest
-    @MethodSource("validTypeDefinitionCases")
-    public void testTypeDefinitionCases(String definition, Function<String, SolidityType> cast, SolidityType expectedType) {
+    @MethodSource("validBasicTypeDefinitionCases")
+    public void testBasicTypeDefinitionCases(String definition, Function<String, SolidityType> cast, SolidityType expectedType) {
         SolidityType type = cast.apply(definition);
         assertTrue(type != null, String.format("Test case: '%s'", definition));
         assertTrue(type.equals(expectedType), String.format("Test case: '%s'", definition));
     }
+    
+    @ParameterizedTest
+    @MethodSource("validArrayTypeDefinitionCases")
+    public void testArrayTypeDefinitionCases(String definition, Function<String, SolidityType> cast, SolidityType expectedType) {
+        SolidityType type = AnalyzerUtils.parseArrayDefinition(definition, cast);
+        assertTrue(type != null, String.format("Test case: '%s'", definition));
+        assertTrue(type.equals(expectedType), String.format("Test case: '%s'", definition));
+    }
 
-    private static Stream<Arguments> validTypeDefinitionCases() {
+    @ParameterizedTest
+    @MethodSource("equalsAndHashCases")
+    public void testEqualsAndHashcode(SolidityType type1, SolidityType type2, boolean equal) {
+        if (equal) {
+            assertTrue(type1.equals(type2));
+            assertTrue(type1.hashCode() == type2.hashCode());
+        }
+        else {
+            assertFalse(type1.equals(type2));
+            assertFalse(type1.hashCode() == type2.hashCode());
+        }        
+    }
+
+    private static Stream<Arguments> validBasicTypeDefinitionCases() {
         return Stream.of(
             Arguments.of("address", addressCast(), SolidityAddress.DEFAULT_INSTANCE),
             Arguments.of("bool", boolCast(), SolidityBool.DEFAULT_INSTANCE),
@@ -240,6 +265,174 @@ public class ParseSolTypeTest {
         );
     }
 
+    private static Stream<Arguments> validArrayTypeDefinitionCases() {
+        return Stream.of(    
+            Arguments.of("address[]", addressCast(), new SolidityArray(SolidityAddress.DEFAULT_INSTANCE)),
+            Arguments.of("bool[]", boolCast(), new SolidityArray(SolidityBool.DEFAULT_INSTANCE)),
+            Arguments.of("string[]", stringCast(), new SolidityArray(SolidityString.DEFAULT_INSTANCE)),
+            Arguments.of("bytes14[]", bytesCast(), new SolidityArray(new SolidityBytes(14))),
+            Arguments.of("bytes15[]", bytesCast(), new SolidityArray(new SolidityBytes(15))),
+            Arguments.of("bytes16[]", bytesCast(), new SolidityArray(new SolidityBytes(16))),
+            Arguments.of("bytes20[]", bytesCast(), new SolidityArray(new SolidityBytes(20))),
+            Arguments.of("bytes29[]", bytesCast(), new SolidityArray(new SolidityBytes(29))),
+            Arguments.of("int8[]", integerCast(), new SolidityArray(new SolidityInteger(true, 8))),
+            Arguments.of("int24[]", integerCast(), new SolidityArray(new SolidityInteger(true, 24))),
+            Arguments.of("uint128[]", integerCast(), new SolidityArray(new SolidityInteger(false, 128))),
+            Arguments.of("uint256[]", integerCast(), new SolidityArray(new SolidityInteger(false, 256))),
+            Arguments.of("uint152[]", integerCast(), new SolidityArray(new SolidityInteger(false, 152))),
+            Arguments.of("uint248[]", integerCast(), new SolidityArray(new SolidityInteger(false, 248))),
+            Arguments.of("uint72[]", integerCast(), new SolidityArray(new SolidityInteger(false, 72))),
+            Arguments.of("uint168[]", integerCast(), new SolidityArray(new SolidityInteger(false, 168))),
+            Arguments.of("fixed240x47[]", fixedCast(), new SolidityArray(new SolidityFixed(true, 240, 47))),
+            Arguments.of("fixed80x73[]", fixedCast(), new SolidityArray(new SolidityFixed(true, 80, 73))),
+            Arguments.of("ufixed32x52[]", fixedCast(), new SolidityArray(new SolidityFixed(false, 32, 52))),
+            Arguments.of("ufixed32x34[]", fixedCast(), new SolidityArray(new SolidityFixed(false, 32, 34))),
+            Arguments.of("fixed96x32[]", fixedCast(), new SolidityArray(new SolidityFixed(true, 96, 32))),
+            Arguments.of("fixed152x29[]", fixedCast(), new SolidityArray(new SolidityFixed(true, 152, 29))),
+            Arguments.of("ufixed192x54[]", fixedCast(), new SolidityArray(new SolidityFixed(false, 192, 54))),
+            Arguments.of("ufixed152x45[]", fixedCast(), new SolidityArray(new SolidityFixed(false, 152, 45))),
+            Arguments.of("ufixed24x68[]", fixedCast(), new SolidityArray(new SolidityFixed(false, 24, 68))),
+            Arguments.of("fixed32x79[]", fixedCast(), new SolidityArray(new SolidityFixed(true, 32, 79))),
+            Arguments.of("ufixed144x10[]", fixedCast(), new SolidityArray(new SolidityFixed(false, 144, 10))),
+            Arguments.of("fixed200x36[]", fixedCast(), new SolidityArray(new SolidityFixed(true, 200, 36))),
+            Arguments.of("ufixed256x74[]", fixedCast(), new SolidityArray(new SolidityFixed(false, 256, 74))),
+            Arguments.of("ufixed104x62[]", fixedCast(), new SolidityArray(new SolidityFixed(false, 104, 62))),
+            Arguments.of("ufixed48x20[]", fixedCast(), new SolidityArray(new SolidityFixed(false, 48, 20))),
+            Arguments.of("ufixed248x7[]", fixedCast(), new SolidityArray(new SolidityFixed(false, 248, 7))),
+            Arguments.of("ufixed48x14[]", fixedCast(), new SolidityArray(new SolidityFixed(false, 48, 14))),
+            Arguments.of("fixed144x25[]", fixedCast(), new SolidityArray(new SolidityFixed(true, 144, 25))),
+            Arguments.of("fixed168x14[]", fixedCast(), new SolidityArray(new SolidityFixed(true, 168, 14))),
+            Arguments.of("ufixed144x64[]", fixedCast(), new SolidityArray(new SolidityFixed(false, 144, 64))),
+            Arguments.of("ufixed88x7[]", fixedCast(), new SolidityArray(new SolidityFixed(false, 88, 7))),
+            Arguments.of("ufixed144x6[]", fixedCast(), new SolidityArray(new SolidityFixed(false, 144, 6))),
+            Arguments.of("fixed208x76[]", fixedCast(), new SolidityArray(new SolidityFixed(true, 208, 76))),
+            Arguments.of("fixed56x75[]", fixedCast(), new SolidityArray(new SolidityFixed(true, 56, 75))),
+            Arguments.of("fixed184x57[]", fixedCast(), new SolidityArray(new SolidityFixed(true, 184, 57))),
+            Arguments.of("ufixed232x66[]", fixedCast(), new SolidityArray(new SolidityFixed(false, 232, 66))),
+            Arguments.of("ufixed184x30[]", fixedCast(), new SolidityArray(new SolidityFixed(false, 184, 30))),
+            Arguments.of("ufixed88x66[]", fixedCast(), new SolidityArray(new SolidityFixed(false, 88, 66))),
+            Arguments.of("ufixed56x11[]", fixedCast(), new SolidityArray(new SolidityFixed(false, 56, 11))),
+            Arguments.of("fixed48x22[]", fixedCast(), new SolidityArray(new SolidityFixed(true, 48, 22)))
+            
+        );
+    }
+
+    @ParameterizedTest
+    @MethodSource("invalidCases")
+    public void testInvalidCases(String definition) {
+        for (Function<String, SolidityType> cast : BASE_TYPE_CASTS) {
+            assertNull(cast.apply(definition));
+            assertNull(AnalyzerUtils.parseArrayDefinition(definition, cast));
+        }
+    }
+
+    private static Stream<Arguments> equalsAndHashCases() {
+        return Stream.of(
+            Arguments.of(new SolidityFixed(false, 216, 25), new SolidityFixed(false, 216, 25), true),
+            Arguments.of(new SolidityFixed(true, 240, 24), new SolidityFixed(true, 240, 24), true),
+            Arguments.of(new SolidityFixed(true, 160, 34), new SolidityFixed(true, 160, 34), true),
+            Arguments.of(new SolidityFixed(false, 80, 1), new SolidityFixed(false, 80, 1), true),
+            Arguments.of(new SolidityFixed(false, 232, 66), new SolidityFixed(false, 232, 66), true),
+            Arguments.of(new SolidityFixed(false, 216, 38), new SolidityFixed(false, 216, 38), true),
+            Arguments.of(new SolidityFixed(false, 128, 5), new SolidityFixed(false, 128, 5), true),
+            Arguments.of(new SolidityFixed(true, 168, 15), new SolidityFixed(true, 168, 15), true),
+            Arguments.of(new SolidityFixed(false, 240, 8), new SolidityFixed(false, 240, 8), true),
+            Arguments.of(new SolidityFixed(true, 48, 14), new SolidityFixed(true, 48, 14), true),
+            Arguments.of(new SolidityFixed(false, 144, 43), new SolidityFixed(false, 144, 43), true),
+            Arguments.of(new SolidityFixed(false, 40, 68), new SolidityFixed(false, 40, 68), true),
+            Arguments.of(new SolidityFixed(true, 224, 30), new SolidityFixed(true, 224, 30), true),
+            Arguments.of(new SolidityFixed(true, 120, 68), new SolidityFixed(true, 120, 68), true),
+            Arguments.of(new SolidityFixed(true, 24, 45), new SolidityFixed(true, 24, 45), true),
+            Arguments.of(new SolidityFixed(true, 152, 53), new SolidityFixed(true, 152, 53), true),
+            Arguments.of(new SolidityFixed(true, 120, 47), new SolidityFixed(true, 120, 47), true),
+            Arguments.of(new SolidityFixed(false, 24, 74), new SolidityFixed(false, 24, 74), true),
+            Arguments.of(new SolidityFixed(true, 56, 18), new SolidityFixed(true, 56, 18), true),
+            Arguments.of(new SolidityFixed(false, 208, 42), new SolidityFixed(false, 208, 42), true),
+            Arguments.of(new SolidityArray(new SolidityFixed(true, 16, 78)), new SolidityArray(new SolidityFixed(true, 16, 78)), true),
+            Arguments.of(new SolidityArray(new SolidityFixed(false, 248, 52)), new SolidityArray(new SolidityFixed(false, 248, 52)), true),
+            Arguments.of(new SolidityArray(new SolidityFixed(false, 224, 28)), new SolidityArray(new SolidityFixed(false, 224, 28)), true),
+            Arguments.of(new SolidityArray(new SolidityFixed(false, 240, 80)), new SolidityArray(new SolidityFixed(false, 240, 80)), true),
+            Arguments.of(new SolidityArray(new SolidityFixed(false, 240, 23)), new SolidityArray(new SolidityFixed(false, 240, 23)), true),
+            Arguments.of(new SolidityArray(new SolidityFixed(true, 48, 46)), new SolidityArray(new SolidityFixed(true, 48, 46)), true),
+            Arguments.of(new SolidityArray(new SolidityFixed(true, 128, 51)), new SolidityArray(new SolidityFixed(true, 128, 51)), true),
+            Arguments.of(new SolidityArray(new SolidityFixed(true, 216, 32)), new SolidityArray(new SolidityFixed(true, 216, 32)), true),
+            Arguments.of(new SolidityArray(new SolidityFixed(false, 200, 22)), new SolidityArray(new SolidityFixed(false, 200, 22)), true),
+            Arguments.of(new SolidityArray(new SolidityFixed(false, 136, 20)), new SolidityArray(new SolidityFixed(false, 136, 20)), true),
+            Arguments.of(new SolidityArray(new SolidityFixed(false, 112, 3)), new SolidityInteger(true, 160), false),
+            Arguments.of(new SolidityFixed(false, 8, 44), new SolidityArray(new SolidityString()), false),
+            Arguments.of(new SolidityFixed(true, 112, 20), new SolidityArray(new SolidityFixed(true, 88, 19)), false),
+            Arguments.of(new SolidityFixed(false, 224, 48), new SolidityFixed(false, 152, 3), false),
+            Arguments.of(new SolidityArray(new SolidityFixed(true, 16, 35)), new SolidityFixed(true, 192, 50), false),
+            Arguments.of(new SolidityArray(new SolidityFixed(false, 152, 4)), new SolidityArray(new SolidityFixed(true, 136, 36)), false),
+            Arguments.of(new SolidityArray(new SolidityFixed(true, 88, 60)), new SolidityFixed(false, 160, 33), false),
+            Arguments.of(new SolidityArray(new SolidityFixed(false, 104, 12)), new SolidityFixed(true, 120, 35), false),
+            Arguments.of(new SolidityArray(new SolidityFixed(false, 72, 76)), new SolidityFixed(false, 112, 32), false),
+            Arguments.of(new SolidityFixed(false, 128, 57), new SolidityFixed(true, 32, 58), false),
+            Arguments.of(new SolidityArray(new SolidityFixed(true, 192, 25)), new SolidityFixed(false, 200, 26), false),
+            Arguments.of(new SolidityArray(new SolidityFixed(false, 56, 21)), new SolidityFixed(true, 16, 59), false),
+            Arguments.of(new SolidityFixed(false, 120, 66), new SolidityFixed(true, 80, 80), false),
+            Arguments.of(new SolidityFixed(false, 104, 11), new SolidityFixed(false, 128, 73), false),
+            Arguments.of(new SolidityArray(new SolidityFixed(true, 232, 69)), new SolidityFixed(true, 152, 23), false),
+            Arguments.of(new SolidityFixed(false, 112, 30), new SolidityFixed(true, 240, 11), false),
+            Arguments.of(new SolidityFixed(true, 48, 3), new SolidityFixed(true, 248, 45), false),
+            Arguments.of(new SolidityFixed(true, 40, 78), new SolidityArray(new SolidityFixed(false, 112, 27)), false),
+            Arguments.of(new SolidityFixed(false, 208, 28), new SolidityFixed(true, 240, 66), false),
+            Arguments.of(new SolidityArray(new SolidityFixed(false, 176, 28)), new SolidityFixed(true, 184, 2), false),
+            Arguments.of(new SolidityFixed(true, 176, 19), new SolidityArray(new SolidityFixed(false, 168, 30)), false),
+            Arguments.of(new SolidityArray(new SolidityFixed(false, 152, 48)), new SolidityFixed(true, 56, 52), false),
+            Arguments.of(new SolidityArray(new SolidityFixed(true, 152, 57)), new SolidityArray(new SolidityFixed(true, 240, 24)), false),
+            Arguments.of(new SolidityArray(new SolidityFixed(false, 80, 33)), new SolidityFixed(false, 248, 21), false),
+            Arguments.of(new SolidityArray(new SolidityFixed(true, 80, 3)), new SolidityArray(new SolidityFixed(true, 112, 51)), false),
+            Arguments.of(new SolidityArray(new SolidityFixed(true, 232, 25)), new SolidityArray(new SolidityFixed(true, 136, 41)), false),
+            Arguments.of(new SolidityArray(new SolidityFixed(true, 136, 42)), new SolidityFixed(true, 208, 29), false),
+            Arguments.of(new SolidityFixed(false, 96, 8), new SolidityArray(new SolidityFixed(true, 112, 4)), false),
+            Arguments.of(new SolidityFixed(true, 232, 5), new SolidityArray(new SolidityFixed(false, 240, 50)), false),
+            Arguments.of(new SolidityArray(new SolidityFixed(false, 64, 44)), new SolidityFixed(true, 8, 48), false)
+        );
+    }
+
+    private static Stream<String> invalidCases() {
+        return Stream.of(
+            "bol",
+            "strng",
+            "adres",
+            "fixed155x77",
+            "fixed200x89",
+            "ufixed277x99",
+            "fixd",
+            "ufx",
+            "string[",
+            "unt",
+            "it256",
+            "int78",
+            "uint300",
+            "uint128]",
+            "uint[",
+            "",
+            "    ",
+            "byte12",
+            "bytes356",
+            "bytes0",
+            "bytes33[]",
+            "uint157[]",
+            "int55[]",
+            "fixed9x99[]",
+            "ufixed80x96[]",
+            "ufixed53x80[]",
+            "ufixed34x",
+            "fixedx123"
+        );
+    }
+
+    private static List<Function<String, SolidityType>> BASE_TYPE_CASTS = Arrays.asList(
+        addressCast(),
+        boolCast(),
+        bytesCast(),
+        fixedCast(),
+        integerCast(),
+        stringCast()
+    );
+
     private static Function<String, SolidityType> addressCast() {
         return AnalyzerUtils::parseAddressDefinition;
     }
@@ -265,10 +458,6 @@ public class ParseSolTypeTest {
     }
 
     public static void main(String[] args) {
-        for (boolean signed : new boolean[]{true, false}) {
-            for (int m = 8; m <= 256; m +=8) {
-                System.out.println(String.format("Arguments.of(\"%sint%s\", integerCast(), new SolidityInteger(%s, %s)),", signed ? "" : "u", m, Boolean.toString(signed), m));
-            }
-        }
+        
     }
 }

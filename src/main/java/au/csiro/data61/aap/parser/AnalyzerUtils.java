@@ -68,79 +68,66 @@ class AnalyzerUtils {
 
         // ADDRESS TYPES
         if (ctx.SOL_ADDRESS_TYPE() != null) {
-            return parse(ctx.SOL_ADDRESS_TYPE(), TerminalNode::getText, AnalyzerUtils::parseAddressDefinition, collector, "Address");
+            return parse(ctx.SOL_ADDRESS_TYPE(), AnalyzerUtils::parseAddressDefinition, collector, "Address");
         }
         else if (ctx.SOL_ADDRESS_ARRAY_TYPE() != null) {
-            return parseArray(ctx.SOL_ADDRESS_TYPE(), AnalyzerUtils::parseAddressDefinition, collector, "Address");
+            return parse(ctx.SOL_ADDRESS_TYPE(), def -> AnalyzerUtils.parseArrayDefinition(def, AnalyzerUtils::parseAddressDefinition), collector, "Address Array");
         }
         // BOOL TYPES
         else if (ctx.SOL_BOOL_TYPE() != null) {
-            return parse(ctx.SOL_BOOL_TYPE(), TerminalNode::getText, AnalyzerUtils::parseBoolDefinition, collector, "Bool");
+            return parse(ctx.SOL_BOOL_TYPE(), AnalyzerUtils::parseBoolDefinition, collector, "Bool");
         }
         else if (ctx.SOL_BOOL_ARRAY_TYPE() != null) {
-            return parseArray(ctx.SOL_BOOL_ARRAY_TYPE(), AnalyzerUtils::parseBoolDefinition, collector, "Bool");
+            return parse(ctx.SOL_BOOL_ARRAY_TYPE(), def -> AnalyzerUtils.parseArrayDefinition(def, AnalyzerUtils::parseBoolDefinition), collector, "Bool Array");
         }
         // BYTE TYPES
         else if (ctx.SOL_BYTE_TYPE() != null) {
-            return parse(ctx.SOL_BYTE_TYPE(), TerminalNode::getText, AnalyzerUtils::parseBytesDefinition, collector, "Bytes");
+            return parse(ctx.SOL_BYTE_TYPE(), AnalyzerUtils::parseBytesDefinition, collector, "Bytes");
         }
         else if (ctx.SOL_BYTE_ARRAY_TYPE() != null) {
-            return parseArray(ctx.SOL_BYTE_ARRAY_TYPE(), AnalyzerUtils::parseBytesDefinition, collector, "Bytes");
+            return parse(ctx.SOL_BYTE_ARRAY_TYPE(), def -> AnalyzerUtils.parseArrayDefinition(def, AnalyzerUtils::parseBytesDefinition), collector, "Bytes Array");
         }
         // FIXED TYPES
         else if (ctx.SOL_FIXED_TYPE() != null) {
-            return parse(ctx.SOL_FIXED_TYPE(), TerminalNode::getText, AnalyzerUtils::parseFixedDefinition, collector, "Fixed");
+            return parse(ctx.SOL_FIXED_TYPE(), AnalyzerUtils::parseFixedDefinition, collector, "Fixed");
         }
         else if (ctx.SOL_FIXED_ARRAY_TYPE() != null) {
-            return parseArray(ctx.SOL_FIXED_ARRAY_TYPE(), AnalyzerUtils::parseBoolDefinition, collector, "Fixed");
+            return parse(ctx.SOL_FIXED_ARRAY_TYPE(), def -> AnalyzerUtils.parseArrayDefinition(def, AnalyzerUtils::parseBoolDefinition), collector, "Fixed Array");
         }
         // INT TYPES
         else if (ctx.SOL_INT_TYPE() != null) {
-            return parse(ctx.SOL_INT_TYPE(), TerminalNode::getText, AnalyzerUtils::parseIntegerDefinition, collector, "Integer");
+            return parse(ctx.SOL_INT_TYPE(), AnalyzerUtils::parseIntegerDefinition, collector, "Integer");
         }
         else if (ctx.SOL_INT_ARRAY_TYPE() != null) {
-            return parseArray(ctx.SOL_INT_ARRAY_TYPE(), AnalyzerUtils::parseIntegerDefinition, collector, "Integer");
+            return parse(ctx.SOL_INT_ARRAY_TYPE(), def -> AnalyzerUtils.parseArrayDefinition(def, AnalyzerUtils::parseIntegerDefinition), collector, "Integer Array");
         }
         // STRING TYPES
         else if (ctx.SOL_STRING_TYPE() != null) {
-            return parse(ctx.SOL_STRING_TYPE(), TerminalNode::getText, AnalyzerUtils::parseStringDefinition, collector, "String");
+            return parse(ctx.SOL_STRING_TYPE(), AnalyzerUtils::parseStringDefinition, collector, "String");
         }
         // UNKNOWN TYPES
         else {
             throw new UnsupportedOperationException(String.format("This definition of a solidity type is not supported: '%s'.", ctx.getText()));
         }
     }
-
-    private static SolidityType parseArray(TerminalNode node, Function<String, SolidityType> baseTypeCast, ErrorCollector collector, String baseTypeName) {
-        if (!node.getText().endsWith("\\[\\]")) {
-            collector.addSemanticError(node.getSymbol(), String.format("'%s' is not a valid array type", node.getText()));
-        }
-        
-        final SolidityType baseType = parse(
-            node, 
-            AnalyzerUtils::trimArrayToBaseType,
-            baseTypeCast, 
-            collector, 
-            baseTypeName);
-
-        
-        return baseType == null ? null : new SolidityArray(baseType);
-    }
-
-    private static String trimArrayToBaseType(TerminalNode node) {
-        String baseType = node.getText();
-        return baseType.substring(0, baseType.length() - 2);
-    }
-
-
-    static SolidityType parse(TerminalNode node, Function<TerminalNode, String> typeDef, Function<String, SolidityType> cast, ErrorCollector collector, String typeName) {
-        SolidityType type = cast.apply(typeDef.apply(node));
+    
+    static SolidityType parse(TerminalNode node, Function<String, SolidityType> cast, ErrorCollector collector, String typeName) {
+        SolidityType type = cast.apply(node.getText());
         if (type != null) {
             return type;
         }
 
         collector.addSemanticError(node.getSymbol(), String.format("'%s' is not a valid '%s' type", node.getText(), typeName));
         return null;
+    }
+
+    static SolidityArray parseArrayDefinition(String definition, Function<String, SolidityType> baseTypeCast) {
+        if (!definition.endsWith("[]")) {
+            return null;
+        }
+
+        final SolidityType type = baseTypeCast.apply(definition.substring(0, definition.length() - 2));
+        return type == null ? null : new SolidityArray(type);
     }
 
     static SolidityAddress parseAddressDefinition(String definition) {
@@ -228,7 +215,7 @@ class AnalyzerUtils {
         }
         
         final Integer bitLength = parseIntegerValue(suffix);
-        if (!SolidityInteger.isValidLength(bitLength)) {
+        if (bitLength == null || !SolidityInteger.isValidLength(bitLength)) {
             return null;
         }
         return new SolidityInteger(signed, bitLength);
