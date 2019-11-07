@@ -9,7 +9,7 @@ import au.csiro.data61.aap.state.ProgramState;
  * TransactionScope
  */
 public class TransactionScope extends Scope {
-    public static final Variable ANY = new Variable(SolidityString.DEFAULT_INSTANCE, "any", true, "any");
+    public static final Variable ANY = new Variable(SolidityString.DEFAULT_INSTANCE, "any", VariableCategory.SCOPE_VARIABLE, "any");
 
     private final Variable senders;
     private final Variable recipients;

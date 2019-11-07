@@ -8,9 +8,9 @@ import au.csiro.data61.aap.state.ProgramState;
  * BlockScope
  */
 public class BlockScope extends Scope {
-    public static final Variable EARLIEST = new Variable(SolidityInteger.DEFAULT_INSTANCE, "earliest", true, 0);
-    public static final Variable CURRENT = new Variable(SolidityString.DEFAULT_INSTANCE, "current", true, "current");
-    public static final Variable PENDING = new Variable(SolidityString.DEFAULT_INSTANCE, "pending", true, "pending");
+    public static final Variable EARLIEST = new Variable(SolidityInteger.DEFAULT_INSTANCE, "earliest",  VariableCategory.SCOPE_VARIABLE, 0);
+    public static final Variable CURRENT = new Variable(SolidityString.DEFAULT_INSTANCE, "current",  VariableCategory.SCOPE_VARIABLE, "current");
+    public static final Variable PENDING = new Variable(SolidityString.DEFAULT_INSTANCE, "pending",  VariableCategory.SCOPE_VARIABLE, "pending");
 
     private final Variable fromBlockNumber;
     private final Variable toBlockNumber;

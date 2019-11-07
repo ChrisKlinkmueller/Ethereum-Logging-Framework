@@ -5,6 +5,7 @@ import java.util.Set;
 import java.util.stream.Stream;
 
 import au.csiro.data61.aap.spec.Variable;
+import au.csiro.data61.aap.spec.VariableCategory;
 import au.csiro.data61.aap.spec.types.SolidityAddress;
 import au.csiro.data61.aap.spec.types.SolidityArray;
 import au.csiro.data61.aap.spec.types.SolidityBool;
@@ -89,7 +90,7 @@ public class DefaultVariables {
     }
 
     private static void addVariable(Set<Variable> variables, SolidityType type, String name) {
-        variables.add(new Variable(type, name, true, null));
+        variables.add(new Variable(type, name, VariableCategory.SCOPE_VARIABLE, null));
     }
     
 

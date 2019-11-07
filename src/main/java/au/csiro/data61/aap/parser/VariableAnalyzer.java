@@ -15,6 +15,7 @@ import au.csiro.data61.aap.parser.XbelParser.SmartContractsFilterContext;
 import au.csiro.data61.aap.parser.XbelParser.TransactionFilterContext;
 import au.csiro.data61.aap.parser.XbelParser.VariableDefinitionContext;
 import au.csiro.data61.aap.spec.Variable;
+import au.csiro.data61.aap.spec.VariableCategory;
 import au.csiro.data61.aap.spec.types.SolidityType;
 
 /**
@@ -87,7 +88,7 @@ public class VariableAnalyzer extends SemanticAnalyzer {
     public void enterVariableDefinition(VariableDefinitionContext ctx) {
         final Variable lookupResult = this.getVariable(ctx.variableName().getText());
         if (lookupResult != null) {
-            final String message = lookupResult.isScopeVariable() 
+            final String message = lookupResult.getCategory() == VariableCategory.SCOPE_VARIABLE 
                 ? String.format("The variable '%s' already exists as an implicit scope variable.", lookupResult.getName())
                 : String.format("The variable '%s' already exists as an explicitly defined variable.", lookupResult.getName());
             this.errorCollector.addSemanticError(ctx.variableName().start, message);

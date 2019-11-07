@@ -9,25 +9,25 @@ import au.csiro.data61.aap.util.MethodResult;
 public class Variable implements ValueSource {
     private final SolidityType type;
     private final String name;
-    private final boolean isScopeVariable;
+    private final VariableCategory category;
     protected Object value;
 
     public Variable(SolidityType type, String name) {
-        this(type, name, false, null);
+        this(type, name, VariableCategory.SCOPE_VARIABLE, null);
     }
 
-    public Variable(SolidityType type, String name, boolean isScopeVariable, Object value) {
+    public Variable(SolidityType type, String name, VariableCategory category, Object value) {
         assert type != null;
         assert name != null;
-        assert isScopeVariable ? value != null : true;
+        assert category != null;
         this.type = type;
         this.name = name;
-        this.isScopeVariable = isScopeVariable;
+        this.category = category;
         this.value = value;
     }
 
-    public boolean isScopeVariable() {
-        return isScopeVariable;
+    public VariableCategory getCategory() {
+        return this.category;
     }
 
     @Override
@@ -36,7 +36,7 @@ public class Variable implements ValueSource {
     }
 
     public void setValue(Object object) {
-        if (this.isScopeVariable) {
+        if (this.category != VariableCategory.USER_DEFINED) {
             throw new UnsupportedOperationException("The value of a constant cannot be updated!");
         }
     }
