@@ -1,5 +1,7 @@
 package au.csiro.data61.aap.parser;
 
+import org.antlr.v4.runtime.Token;
+
 /**
  * XbelAnalyzer
  */
@@ -13,4 +15,7 @@ abstract class SemanticAnalyzer extends XbelBaseListener {
     
     public abstract void clear();
     
+    protected void addError(Token token, String message) {
+        this.errorCollector.addSemanticError(token, message);
+    }
 }

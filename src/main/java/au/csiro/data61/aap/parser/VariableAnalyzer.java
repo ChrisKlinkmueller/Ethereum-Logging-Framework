@@ -115,7 +115,7 @@ public class VariableAnalyzer extends SemanticAnalyzer {
             final String message = lookupResult.getCategory() == VariableCategory.SCOPE_VARIABLE 
                 ? String.format("The variable '%s' already exists as an implicit scope variable.", lookupResult.getName())
                 : String.format("The variable '%s' already exists as an explicitly defined variable.", lookupResult.getName());
-            this.errorCollector.addSemanticError(nameCtx.start, message);
+            this.addError(nameCtx.start, message);
             return;
         }
 
@@ -137,7 +137,7 @@ public class VariableAnalyzer extends SemanticAnalyzer {
     @Override
     public void enterVariableReference(VariableReferenceContext ctx) {
         if (this.getVariable(ctx.variableName().getText()) == null) {
-            this.errorCollector.addSemanticError(ctx.start, String.format("A variable with name '%' does not exist", ctx.variableName().getText()));
+            this.addError(ctx.start, String.format("A variable with name '%' does not exist", ctx.variableName().getText()));
         }
     }
 

@@ -36,8 +36,7 @@ blockNumber
     | KEY_CURRENT
     | KEY_EARLIEST
     | KEY_PENDING
-    // | variableReference                  TODO: add support
-    // | methodCall                         TODO: add support
+    | variableReference
     ;
 
 transactionFilter
@@ -60,8 +59,7 @@ smartContractVariable
 addressList
     : BYTE_AND_ADDRESS_LITERAL (',' BYTE_AND_ADDRESS_LITERAL)*
     | KEY_ANY
-    // | variableReference                       TODO: add support
-    // | methodCall                         TODO: add support
+    | variableReference
     ;
 
 logEntryFilter

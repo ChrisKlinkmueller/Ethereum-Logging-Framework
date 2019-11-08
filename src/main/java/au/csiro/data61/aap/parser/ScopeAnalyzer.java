@@ -18,6 +18,10 @@ import au.csiro.data61.aap.parser.XbelParser.ScopeContext;
 import au.csiro.data61.aap.parser.XbelParser.SmartContractVariableContext;
 import au.csiro.data61.aap.parser.XbelParser.SmartContractsFilterContext;
 import au.csiro.data61.aap.parser.XbelParser.TransactionFilterContext;
+import au.csiro.data61.aap.spec.types.SolidityAddress;
+import au.csiro.data61.aap.spec.types.SolidityArray;
+import au.csiro.data61.aap.spec.types.SolidityInteger;
+import au.csiro.data61.aap.spec.types.SolidityType;
 
 /**
  * FilterVerifier
@@ -45,37 +49,40 @@ class ScopeAnalyzer extends SemanticAnalyzer {
     }
 
     @Override
-    public void enterBlockFilter(BlockFilterContext ctx) {
+    public void exitBlockFilter(BlockFilterContext ctx) {
         this.verifyFilterContexts(ctx, Objects::isNull, "A block scope cannot be embedded in any scope.");
 
+        if (!this.isBlockNumberSpecified(ctx.from) || !this.isBlockNumberSpecified(ctx.to)) {
+            assert false;
+            this.addError(ctx.start, "The 'from' and 'to' block numbers must be specified");
+        }
+
         if (ctx.from.KEY_PENDING() != null) {
-            this.errorCollector.addSemanticError(ctx.from.start, "The 'from' parameter cannot be set to 'PENDING'");
+            this.addError(ctx.from.start, "The 'from' parameter cannot be set to 'PENDING'");
         }
 
         if (ctx.to.KEY_EARLIEST() != null) {
-            this.errorCollector.addSemanticError(ctx.to.start, "The 'to' parameter cannot be set to 'EARLIEST'");
+            this.addError(ctx.to.start, "The 'to' parameter cannot be set to 'EARLIEST'");
         }
 
         if (ctx.from.INT_LITERAL() != null && ctx.to.INT_LITERAL() != null) {
             final BigInteger from = AnalyzerUtils.verifyIntegerLiteral(ctx.from.INT_LITERAL(), this.errorCollector);
             final BigInteger to = AnalyzerUtils.verifyIntegerLiteral(ctx.to.INT_LITERAL(), this.errorCollector);
             if (from.compareTo(BigInteger.ZERO) < 0) {
-                this.errorCollector.addSemanticError(ctx.from.start, String.format("The 'from' parameter must be positive, but wasn't: %s.", from));
+                this.addError(ctx.from.start, String.format("The 'from' parameter must be positive, but wasn't: %s.", from));
             }
 
             if (to.compareTo(BigInteger.ZERO) < 0) {
-                this.errorCollector.addSemanticError(ctx.to.start, String.format("The 'to' parameter must be positive, but wasn't: %s.", to));
+                this.addError(ctx.to.start, String.format("The 'to' parameter must be positive, but wasn't: %s.", to));
             }
             
             if (from != null && to != null && from.compareTo(to) > 0) {
-                this.errorCollector.addSemanticError(ctx.from.start, String.format("The 'to' parameter must not be greater than 'to' paremeter, but was: %s > %s.", from, to));
+                this.addError(ctx.from.start, String.format("The 'to' parameter must not be greater than 'to' paremeter, but was: %s > %s.", from, to));
             }
         }
 
-        if (!this.isBlockNumberSpecified(ctx.from) || !this.isBlockNumberSpecified(ctx.to)) {
-            assert false;
-            this.errorCollector.addSemanticError(ctx.start, "The 'from' and 'to' block numbers must be specified");
-        }
+        this.verifyVariableReference(ctx.from);
+        this.verifyVariableReference(ctx.to);
 
         this.addScopeToStack(BLOCK_SCOPE);
     }
@@ -84,11 +91,30 @@ class ScopeAnalyzer extends SemanticAnalyzer {
         return    ctx.INT_LITERAL() != null 
                || ctx.KEY_CURRENT() != null 
                || ctx.KEY_EARLIEST() != null 
-               || ctx.KEY_PENDING() != null;
+               || ctx.KEY_PENDING() != null
+               || ctx.variableReference() != null;
+    }
+
+    private void verifyVariableReference(BlockNumberContext ctx) {
+        if (ctx.variableReference() == null) {
+            return;
+        }
+
+        final SolidityType varType = this.variableAnalyzer.getVariableType(ctx.variableReference().variableName().getText());
+        if (varType != null && !this.isArrayOrBaseType(varType, SolidityInteger.DEFAULT_INSTANCE)) {
+            this.addError(
+                ctx.variableReference().start,
+                String.format(
+                    "The variable '%s' with type '' is not applicable for the blocknumber parameter which must be an integer or an integer array", 
+                    ctx.variableReference().variableName().getText(),
+                    varType.toString()
+                )
+            );
+        }
     }
 
     @Override
-    public void enterTransactionFilter(TransactionFilterContext ctx) {
+    public void exitTransactionFilter(TransactionFilterContext ctx) {
         this.verifyFilterContexts(
             ctx, 
             ScopeAnalyzer::isBlockFilter,
@@ -102,7 +128,7 @@ class ScopeAnalyzer extends SemanticAnalyzer {
     }
 
     @Override
-    public void enterSmartContractsFilter(SmartContractsFilterContext ctx) {
+    public void exitSmartContractsFilter(SmartContractsFilterContext ctx) {
         this.verifyFilterContexts(
             ctx, 
             ScopeAnalyzer::isBlockFilter,
@@ -112,11 +138,11 @@ class ScopeAnalyzer extends SemanticAnalyzer {
         this.verifyAddressList(ctx.addressList());
 
         if (!this.containsVariables(ctx)) {
-            this.errorCollector.addSemanticError(ctx.start, "There must be at least one variable in a smart contract signature.");
+            this.addError(ctx.start, "There must be at least one variable in a smart contract signature.");
         }
 
         if (!this.areVariableNamesDifferent(ctx)) {
-            this.errorCollector.addSemanticError(ctx.start, "The variables in a smart contract signature must have distinct names.");
+            this.addError(ctx.start, "The variables in a smart contract signature must have distinct names.");
         }
 
         this.addScopeToStack(SMART_CONTRACT_SCOPE);
@@ -152,7 +178,7 @@ class ScopeAnalyzer extends SemanticAnalyzer {
     }
 
     @Override
-    public void enterLogEntryFilter(LogEntryFilterContext ctx) {
+    public void exitLogEntryFilter(LogEntryFilterContext ctx) {
         this.verifyFilterContexts(
             ctx, 
             enclosingFilter -> isBlockFilter(enclosingFilter) || isTransactionFilter(enclosingFilter), 
@@ -162,11 +188,11 @@ class ScopeAnalyzer extends SemanticAnalyzer {
         this.verifyAddressList(ctx.addressList());
 
         if (!this.containsVariables(ctx)) {
-            this.errorCollector.addSemanticError(ctx.start, "A log entry signature must at least contain one variable.");
+            this.addError(ctx.start, "A log entry signature must at least contain one variable.");
         }
 
         if (!this.areVariableNamesDifferent(ctx)) {
-            this.errorCollector.addSemanticError(ctx.start, "The variables in a log entry signature must have distinct names.");
+            this.addError(ctx.start, "The variables in a log entry signature must have distinct names.");
         }
 
         this.addScopeToStack(LOG_ENTRY_SCOPE);
@@ -213,17 +239,35 @@ class ScopeAnalyzer extends SemanticAnalyzer {
     }
 
     private void verifyAddressList(AddressListContext ctx) {
-        // TODO: add and verify contracts variable if it exists
         if (ctx.KEY_ANY() == null) {
             if (!ctx.BYTE_AND_ADDRESS_LITERAL().isEmpty()) {
                 AnalyzerUtils.verifyAddressLiterals(ctx.BYTE_AND_ADDRESS_LITERAL(), this.errorCollector);
             }
             else {
                 final String message = "The use of this address list option is not supported!";
-                this.errorCollector.addSemanticError(ctx.start, message);
+                this.addError(ctx.start, message);
                 LOGGER.severe(message);
             }
+            return;
         }
+
+        if (ctx.variableReference() != null) {
+            final SolidityType varType = this.variableAnalyzer.getVariableType(ctx.variableReference().variableName().getText());
+            if (varType != null && !this.isArrayOrBaseType(varType, SolidityAddress.DEFAULT_INSTANCE)) {
+                this.addError(
+                    ctx.variableReference().start,
+                    String.format(
+                        "The variable '%s' with type '' is not applicable for the address list parameter which must be an address or an address array", 
+                        ctx.variableReference().variableName().getText(),
+                        varType.toString()
+                    )
+                );
+            }
+        }
+    }
+
+    private boolean isArrayOrBaseType(SolidityType varType, SolidityType baseType) {
+        return varType.conceptuallyEquals(baseType) || varType.conceptuallyEquals(new SolidityArray(baseType));
     }
 
     private void verifyFilterContexts(ParserRuleContext ctx, 
@@ -233,7 +277,7 @@ class ScopeAnalyzer extends SemanticAnalyzer {
         final String scope = this.enclosingScopes.isEmpty() ? null : this.enclosingScopes.peek();
 
         if (!enclosingFilterPredicate.test(scope)) {
-            this.errorCollector.addSemanticError(ctx.start, errorMessage);
+            this.addError(ctx.start, errorMessage);
         }
 
     }

@@ -12,9 +12,9 @@
 - (Open) literals and referenced variables must be type compatible 
 
 ## MethodCall
-- (Open) Method name must be registered
+- (Done) Method name must be registered
 - (Done) Existence of referenced variables in parameter list is checked by variable rule
-- (Open) Types of parameters (variables or literals) must be compatible with one of the signatures for the methodname
+- (Done) Types of parameters (variables or literals) must be compatible with one of the signatures for the methodname
 
 ## Statement
 - (Open) Type of left and right side must be compatible

@@ -58,13 +58,13 @@ class MethodCallAnalyzer extends SemanticAnalyzer {
     @Override
     public void exitMethodCall(MethodCallContext ctx) {
         if (!Library.INSTANCE.isMethodNameKnown(ctx.methodName.getText())) {
-            this.errorCollector.addSemanticError(ctx.methodName,
+            this.addError(ctx.methodName,
                     String.format("A method with the name '%s' is not known.", ctx.methodName.getText()));
             return;
         }
 
         if (!this.existsMethodWithSignature(ctx)) {
-            this.errorCollector.addSemanticError(ctx.methodName,
+            this.addError(ctx.methodName,
                     String.format("The method '%s' is not applicable for these parameters.", ctx.methodName.getText()));
         }
     }
