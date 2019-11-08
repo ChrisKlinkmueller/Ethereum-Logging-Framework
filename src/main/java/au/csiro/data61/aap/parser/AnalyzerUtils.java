@@ -26,16 +26,30 @@ import au.csiro.data61.aap.spec.types.SolidityString;
 class AnalyzerUtils {
     private static final Logger LOGGER = Logger.getLogger(AnalyzerUtils.class.getName());
     private static final int ADDRESS_LENGTH = 42;
+    private final static String BYTES_PATTERN = "0x[0-9a-fA-F]*";
+    private final static int MINIMUM_BYTES_LENGTH = 4;
+    private final static int MAXIMUM_BYTES_LENGTH = 66;
 
     static String verifyAddressLiteral(TerminalNode node, ErrorCollector collector) {
         assert collector != null && node != null;
 
-        if (node.getText().length() != ADDRESS_LENGTH) {
+        if (isAddressLiteral(node)) {
             collector.addSemanticError(node.getSymbol(), "An address literal must start with '0x' followed by 40 hexa-decimal characters.");
             return null;
         }
 
         return node.getText();
+    }
+
+    static boolean isAddressLiteral(TerminalNode node) {
+        return node.getText().matches(BYTES_PATTERN) && node.getText().length() != ADDRESS_LENGTH;
+    }
+
+    static boolean isBytesLiteral(TerminalNode node) {
+        return     node.getText().matches(BYTES_PATTERN) 
+                && node.getText().length() % 2 == 0
+                && MINIMUM_BYTES_LENGTH <= node.getText().length()
+                && node.getText().length() <= MAXIMUM_BYTES_LENGTH;
     }
 
     static List<String> verifyAddressLiterals(List<TerminalNode> nodes, ErrorCollector collector) {

@@ -5,10 +5,11 @@ import java.util.HashMap;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.function.BiPredicate;
-import java.util.stream.Collectors;
 import java.util.stream.IntStream;
+import java.util.stream.Stream;
 
 import au.csiro.data61.aap.spec.Method;
+import au.csiro.data61.aap.spec.MethodSignature;
 import au.csiro.data61.aap.spec.types.SolidityType;
 
 /**
@@ -33,15 +34,15 @@ public class Library {
             return false;
         }
         
-        final List<Method> existingMethodList = this.methodDictionary.get(method.getName());
+        final List<Method> existingMethodList = this.methodDictionary.get(method.getSignature().getName());
         if (existingMethodList == null) {
             final List<Method> methodList = new LinkedList<>();
             methodList.add(method);
-            this.methodDictionary.put(method.getName(), methodList);
+            this.methodDictionary.put(method.getSignature().getName(), methodList);
             return true;
         }
         
-        if (this.containsMethod(existingMethodList, method)) {
+        if (this.containsMethod(existingMethodList, method.getSignature())) {
             return false;
         }
 
@@ -49,41 +50,36 @@ public class Library {
         return true;
     }
 
-    public List<Method> getCompatibleMethods(Method method) {
-        final List<Method> existingMethodList = this.methodDictionary.get(method.getName());
-        if (existingMethodList == null) {
-            return Collections.emptyList();
-        }
+	public boolean isMethodNameKnown(String name) {
+        return name != null && this.methodDictionary.containsKey(name);
+	}
 
-        return existingMethodList.stream()
-            .filter(existingMethod -> this.areMethodsCompatible(existingMethod, method))
-            .collect(Collectors.toList());
+    public Stream<Method> methodStream(String method) {
+        return this.methodDictionary
+            .getOrDefault(method, Collections.emptyList())
+            .stream();
     }
 
-    private boolean containsMethod(List<Method> methodList, Method method) {
+    private boolean containsMethod(List<Method> methodList, MethodSignature signature) {
         return methodList.stream()
-            .anyMatch(existingMethod -> this.isMethodSignatureEqual(existingMethod, method));
+            .anyMatch(method -> this.areMethodSignaturesEqual(method, signature));
     }    
 
-    private boolean isMethodSignatureEqual(Method method1, Method method2) {
-        return this.compareMethods(method1, method2, (t1, t2) -> t1.conceptuallyEquals(t2));
+    private boolean areMethodSignaturesEqual(Method method, MethodSignature signature) {
+        return this.compareMethodSignatures(method, signature, (t1, t2) -> t1.conceptuallyEquals(t2));
     }
 
-    private boolean areMethodsCompatible(Method method1, Method method2) {
-        return this.compareMethods(method1, method2, (t1, t2) -> t1.castableFrom(t2));
-    }
-
-    private boolean compareMethods(Method method1, Method method2, BiPredicate<SolidityType, SolidityType> comparison) {
-        if (!method1.getName().equals(method2.getName())) {
+    private boolean compareMethodSignatures(Method method, MethodSignature signature, BiPredicate<SolidityType, SolidityType> comparison) {
+        if (!method.getSignature().getName().equals(signature.getName())) {
             return false;
         }
 
-        if (method1.parameterTypeCount() != method2.parameterTypeCount()) {
+        if (method.getSignature().parameterTypeCount() != signature.parameterTypeCount()) {
             return false;
         }        
 
-        return IntStream.range(0, method1.parameterTypeCount())
-            .allMatch(i -> comparison.test(method1.getParameterType(i), method2.getParameterType(i)));
+        return IntStream.range(0, signature.parameterTypeCount())
+            .allMatch(i -> comparison.test(method.getSignature().getParameterType(i), signature.getParameterType(i)));
     }
 
     // TODO: test library

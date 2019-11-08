@@ -149,7 +149,7 @@ public class VariableAnalyzer extends SemanticAnalyzer {
             .anyMatch(var -> var.getName().equals(name));
     }
 
-    private Variable getVariable(String name) {
+    public Variable getVariable(String name) {
         return this.variableStream()
             .filter(variable -> variable.getName().equals(name))
             .findFirst()
@@ -161,6 +161,11 @@ public class VariableAnalyzer extends SemanticAnalyzer {
             .filter(variable -> variable.getName().equals(name))
             .findFirst();
         return searchResult.isPresent() ? searchResult.get().getType() : null;
+    }
+
+    public boolean existsVariable(String name, SolidityType type) {
+        final Variable variable = this.getVariable(name);
+        return variable != null && variable.getType().conceptuallyEquals(type);
     }
 
     private Stream<Variable> variableStream() {

@@ -18,9 +18,9 @@ public class MethodCall implements ValueSource {
     public MethodCall(Method method, Variable... variables) {
         assert method != null;
         assert Arrays.stream(variables).allMatch(Objects::nonNull);
-        assert method.parameterTypeCount() == variables.length;
+        assert method.getSignature().parameterTypeCount() == variables.length;
         assert IntStream.range(0, variables.length)
-                .allMatch(i -> method.getParameterType(i).castableFrom(variables[i].getType()));
+                .allMatch(i -> method.getSignature().getParameterType(i).castableFrom(variables[i].getType()));
         this.method = method;
         // TODO: if a variable type is not equal to the respective parameter type, 
         //       wrap the variable in a cast
@@ -52,6 +52,6 @@ public class MethodCall implements ValueSource {
 
     @Override
     public SolidityType getType() {
-        return this.method.getReturnType();
+        return this.method.getSignature().getReturnType();
     }
 }

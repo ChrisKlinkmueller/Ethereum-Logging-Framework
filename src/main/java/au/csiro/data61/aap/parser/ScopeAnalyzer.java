@@ -22,17 +22,20 @@ import au.csiro.data61.aap.parser.XbelParser.TransactionFilterContext;
 /**
  * FilterVerifier
  */
-class FilterAnalyzer extends SemanticAnalyzer {
-    private static final Logger LOGGER = Logger.getLogger(FilterAnalyzer.class.getName());
+class ScopeAnalyzer extends SemanticAnalyzer {
+    private static final Logger LOGGER = Logger.getLogger(ScopeAnalyzer.class.getName());
     private static final String BLOCK_SCOPE = "block";
     private static final String TRANSACTION_SCOPE = "transaction";
     private static final String SMART_CONTRACT_SCOPE = "smartContract";
     private static final String LOG_ENTRY_SCOPE = "logEntry";
 
     private final Stack<String> enclosingScopes;
+    private final VariableAnalyzer variableAnalyzer;
 
-    public FilterAnalyzer(ErrorCollector errorCollector) {
+    public ScopeAnalyzer(ErrorCollector errorCollector, VariableAnalyzer variableAnalyzer) {
         super(errorCollector);
+        assert variableAnalyzer != null;
+        this.variableAnalyzer = variableAnalyzer;
         this.enclosingScopes = new Stack<>();
     }
 
@@ -88,7 +91,7 @@ class FilterAnalyzer extends SemanticAnalyzer {
     public void enterTransactionFilter(TransactionFilterContext ctx) {
         this.verifyFilterContexts(
             ctx, 
-            FilterAnalyzer::isBlockFilter,
+            ScopeAnalyzer::isBlockFilter,
             "A smart contract scope must be embedded in a block scope."
         );
 
@@ -102,7 +105,7 @@ class FilterAnalyzer extends SemanticAnalyzer {
     public void enterSmartContractsFilter(SmartContractsFilterContext ctx) {
         this.verifyFilterContexts(
             ctx, 
-            FilterAnalyzer::isBlockFilter,
+            ScopeAnalyzer::isBlockFilter,
             "A smart contract scope must be embedded in a block scope."
         );
 
