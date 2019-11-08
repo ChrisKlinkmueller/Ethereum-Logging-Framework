@@ -20,6 +20,10 @@ public abstract class SolidityType {
         return type != null && this.compatibleTypes.contains(type.getClass());
     }
 
+    public boolean conceptuallyEquals(SolidityType type) {
+        return type != null && this.getClass().equals(type.getClass());
+    }
+
     @Override
     public String toString() {
         return this.getName();

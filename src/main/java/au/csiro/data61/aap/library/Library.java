@@ -1,16 +1,23 @@
 package au.csiro.data61.aap.library;
 
+import java.util.Collections;
 import java.util.HashMap;
-import java.util.Map;
+import java.util.LinkedList;
+import java.util.List;
+import java.util.function.BiPredicate;
+import java.util.stream.Collectors;
+import java.util.stream.IntStream;
 
 import au.csiro.data61.aap.spec.Method;
-import au.csiro.data61.aap.util.MethodResult;
+import au.csiro.data61.aap.spec.types.SolidityType;
 
 /**
  * Library
  */
 public class Library {
-    private final Map<String, Method> methodDictionary;    
+    public static final Library INSTANCE = new Library();
+
+    private final HashMap<String, List<Method>> methodDictionary;    
 
     private Library() {
         this.methodDictionary = new HashMap<>();
@@ -18,32 +25,66 @@ public class Library {
     }
 
     private void init() {
+        // TODO: add default methods
+    }
+
+    public boolean addMethod(Method method) {
+        if (method == null) {
+            return false;
+        }
         
-    }
-
-    public MethodResult<Void> addMethod(Method method) {
-        if (this.containsMethodWithSameName(method)) {
-            return MethodResult.ofError("A method with name '%s' already exists.");
+        final List<Method> existingMethodList = this.methodDictionary.get(method.getName());
+        if (existingMethodList == null) {
+            final List<Method> methodList = new LinkedList<>();
+            methodList.add(method);
+            this.methodDictionary.put(method.getName(), methodList);
+            return true;
+        }
+        
+        if (this.containsMethod(existingMethodList, method)) {
+            return false;
         }
 
-        this.methodDictionary.put(method.getName(), method);
-        return MethodResult.ofResult();
-    } 
+        existingMethodList.add(method);
+        return true;
+    }
 
-    public MethodResult<Void> removeMethod(Method method) {
-        if (!this.containsMethodWithSameName(method)) {
-            return MethodResult.ofError("A method with name '%s' does not exist.");
+    public List<Method> getCompatibleMethods(Method method) {
+        final List<Method> existingMethodList = this.methodDictionary.get(method.getName());
+        if (existingMethodList == null) {
+            return Collections.emptyList();
         }
 
-        this.methodDictionary.remove(method.getName());
-        return MethodResult.ofResult();
+        return existingMethodList.stream()
+            .filter(existingMethod -> this.areMethodsCompatible(existingMethod, method))
+            .collect(Collectors.toList());
     }
 
-    public boolean containsMethodWithSameName(Method method) {
-        return this.containsMethod(method.getName());
+    private boolean containsMethod(List<Method> methodList, Method method) {
+        return methodList.stream()
+            .anyMatch(existingMethod -> this.isMethodSignatureEqual(existingMethod, method));
+    }    
+
+    private boolean isMethodSignatureEqual(Method method1, Method method2) {
+        return this.compareMethods(method1, method2, (t1, t2) -> t1.conceptuallyEquals(t2));
     }
 
-    public boolean containsMethod(String name) {
-        return this.methodDictionary.containsKey(name);
+    private boolean areMethodsCompatible(Method method1, Method method2) {
+        return this.compareMethods(method1, method2, (t1, t2) -> t1.castableFrom(t2));
     }
+
+    private boolean compareMethods(Method method1, Method method2, BiPredicate<SolidityType, SolidityType> comparison) {
+        if (!method1.getName().equals(method2.getName())) {
+            return false;
+        }
+
+        if (method1.parameterTypeCount() != method2.parameterTypeCount()) {
+            return false;
+        }        
+
+        return IntStream.range(0, method1.parameterTypeCount())
+            .allMatch(i -> comparison.test(method1.getParameterType(i), method2.getParameterType(i)));
+    }
+
+    // TODO: test library
 }

@@ -36,7 +36,7 @@ blockNumber
     | KEY_CURRENT
     | KEY_EARLIEST
     | KEY_PENDING
-    // | variableName                       TODO: add support
+    // | variableReference                  TODO: add support
     // | methodCall                         TODO: add support
     ;
 
@@ -60,7 +60,7 @@ smartContractVariable
 addressList
     : BYTE_AND_ADDRESS_LITERAL (',' BYTE_AND_ADDRESS_LITERAL)*
     | KEY_ANY
-    // | variableName                       TODO: add support
+    // | variableReference                       TODO: add support
     // | methodCall                         TODO: add support
     ;
 
@@ -114,7 +114,7 @@ statement
 
 variable
     : variableDefinition
-    | variableName
+    | variableReference
     ;
 
 variableDefinitionRule : variableDefinition EOF;
@@ -130,7 +130,7 @@ variableName
     ;
 
 valueCreation
-    : variableName
+    : variableReference
     | methodCall
     | literal
     ;
@@ -140,8 +140,12 @@ methodCall
     ;
 
 methodParameter
-    : variableName
+    : variableReference
     | literal
+    ;
+
+variableReference
+    : variableName
     ;
 
 // Literals

@@ -10,10 +10,15 @@ import au.csiro.data61.aap.library.DefaultVariables;
 import au.csiro.data61.aap.parser.XbelParser.BlockFilterContext;
 import au.csiro.data61.aap.parser.XbelParser.DocumentContext;
 import au.csiro.data61.aap.parser.XbelParser.LogEntryFilterContext;
+import au.csiro.data61.aap.parser.XbelParser.LogEntryParameterContext;
 import au.csiro.data61.aap.parser.XbelParser.ScopeContext;
+import au.csiro.data61.aap.parser.XbelParser.SmartContractVariableContext;
 import au.csiro.data61.aap.parser.XbelParser.SmartContractsFilterContext;
+import au.csiro.data61.aap.parser.XbelParser.SolTypeContext;
 import au.csiro.data61.aap.parser.XbelParser.TransactionFilterContext;
 import au.csiro.data61.aap.parser.XbelParser.VariableDefinitionContext;
+import au.csiro.data61.aap.parser.XbelParser.VariableNameContext;
+import au.csiro.data61.aap.parser.XbelParser.VariableReferenceContext;
 import au.csiro.data61.aap.spec.Variable;
 import au.csiro.data61.aap.spec.VariableCategory;
 import au.csiro.data61.aap.spec.types.SolidityType;
@@ -82,29 +87,62 @@ public class VariableAnalyzer extends SemanticAnalyzer {
 
 
 
-    //#region statement variables
+    //#region defined variables
 
     @Override
     public void enterVariableDefinition(VariableDefinitionContext ctx) {
-        final Variable lookupResult = this.getVariable(ctx.variableName().getText());
+        this.verifyVariable(ctx.solType(), ctx.variableName());
+    }
+
+    @Override
+    public void enterSmartContractVariable(SmartContractVariableContext ctx) {
+        if (ctx.solType() != null || ctx.variableName() != null) {
+            this.verifyVariable(ctx.solType(), ctx.variableName());
+        }
+    }
+
+    @Override
+    public void enterLogEntryParameter(LogEntryParameterContext ctx) {
+        if (ctx.solType() != null || ctx.variableName() != null) {
+            this.verifyVariable(ctx.solType(), ctx.variableName());
+        }
+    }
+
+
+    private void verifyVariable(SolTypeContext typeCtx, VariableNameContext nameCtx) {
+        final Variable lookupResult = this.getVariable(nameCtx.getText());
         if (lookupResult != null) {
             final String message = lookupResult.getCategory() == VariableCategory.SCOPE_VARIABLE 
                 ? String.format("The variable '%s' already exists as an implicit scope variable.", lookupResult.getName())
                 : String.format("The variable '%s' already exists as an explicitly defined variable.", lookupResult.getName());
-            this.errorCollector.addSemanticError(ctx.variableName().start, message);
+            this.errorCollector.addSemanticError(nameCtx.start, message);
             return;
         }
 
-        final SolidityType type = AnalyzerUtils.verifySolidityType(ctx.solType(), this.errorCollector);
+        final SolidityType type = AnalyzerUtils.verifySolidityType(typeCtx, this.errorCollector);
         if (type == null) {
             return;
         }
 
-        final Variable variable = new Variable(type, ctx.variableName().getText());
+        final Variable variable = new Variable(type, nameCtx.getText());
         this.visibleVariables.peek().add(variable);
     }
+    
+    //#endregion
 
-    //#endregion statement variables
+
+
+    //#region referenced variables
+
+    @Override
+    public void enterVariableReference(VariableReferenceContext ctx) {
+        if (this.getVariable(ctx.variableName().getText()) == null) {
+            this.errorCollector.addSemanticError(ctx.start, String.format("A variable with name '%' does not exist", ctx.variableName().getText()));
+        }
+    }
+
+    //#endregion
+
 
     public boolean containsVariable(String name) {
         return this.variableStream()

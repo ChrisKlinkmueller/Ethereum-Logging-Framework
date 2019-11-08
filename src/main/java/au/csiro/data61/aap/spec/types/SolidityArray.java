@@ -28,6 +28,13 @@ public class SolidityArray extends SolidityType {
     public boolean castableFrom(SolidityType type) {
         return this.baseType.castableFrom(type);
     }
+    
+    @Override
+    public boolean conceptuallyEquals(SolidityType type) {
+        return    type != null 
+               && type instanceof SolidityArray
+               && this.baseType.conceptuallyEquals(((SolidityArray)type).baseType);
+    }
 
     @Override
     public boolean equals(Object o) {
