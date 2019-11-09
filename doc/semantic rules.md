@@ -9,7 +9,7 @@
 
 ## Scope Definition
 - (Done) if scopes introduce user defined variables (signatures in smart contract and log entry scopes), the variable must not be introduced
-- (Open) literals and referenced variables must be type compatible 
+- (Done) literals and referenced variables must be type compatible 
 
 ## MethodCall
 - (Done) Method name must be registered

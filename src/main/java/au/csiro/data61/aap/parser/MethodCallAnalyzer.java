@@ -27,6 +27,7 @@ class MethodCallAnalyzer extends SemanticAnalyzer {
     private final VariableAnalyzer variableAnalyzer;
     private final HashMap<Class<?>, BiPredicate<SolidityType, MethodParameterContext>> baseTypeChecks;
     private final HashMap<Class<?>, Predicate<ArrayValueContext>> arrayTypeChecks;
+    private final HashMap<String, Method> calledMethods;
 
     public MethodCallAnalyzer(ErrorCollector errorCollector, VariableAnalyzer variableAnalyzer) {
         super(errorCollector);
@@ -49,10 +50,18 @@ class MethodCallAnalyzer extends SemanticAnalyzer {
         this.arrayTypeChecks.put(SolidityFixed.class, this::isFixedArray);
         this.arrayTypeChecks.put(SolidityInteger.class, this::isIntegerArray);
         this.arrayTypeChecks.put(SolidityString.class, this::isStringArray);
+
+        this.calledMethods = new HashMap<>();
     }
 
     @Override
     public void clear() {
+        this.calledMethods.clear();
+    }
+
+    public Method getCalledMethod(MethodCallContext ctx) {
+        assert ctx != null;
+        return this.calledMethods.get(AnalyzerUtils.tokenPositionString(ctx.start));
     }
 
     @Override
@@ -70,8 +79,16 @@ class MethodCallAnalyzer extends SemanticAnalyzer {
     }
 
     private boolean existsMethodWithSignature(MethodCallContext ctx) {
-        return Library.INSTANCE.methodStream(ctx.methodName.getText())
-                .anyMatch(method -> this.areParametersMatching(method, ctx));
+        final Method method = 
+            Library.INSTANCE.methodStream(ctx.methodName.getText())
+                .filter(m -> this.areParametersMatching(m, ctx))
+                .findFirst().orElse(null);
+        
+        if (method != null) {
+            this.calledMethods.put(AnalyzerUtils.tokenPositionString(ctx.start), method);
+        }    
+
+        return method != null;   
     }
 
     private boolean areParametersMatching(Method method, MethodCallContext ctx) {

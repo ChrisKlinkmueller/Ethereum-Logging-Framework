@@ -1,15 +1,21 @@
 package au.csiro.data61.aap.parser;
 
 import java.math.BigInteger;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Objects;
+import java.util.function.BiPredicate;
 import java.util.function.Function;
+import java.util.function.Predicate;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import java.util.stream.Collectors;
 
+import org.antlr.v4.runtime.Token;
 import org.antlr.v4.runtime.tree.TerminalNode;
 
+import au.csiro.data61.aap.parser.XbelParser.ArrayValueContext;
+import au.csiro.data61.aap.parser.XbelParser.LiteralContext;
 import au.csiro.data61.aap.parser.XbelParser.SolTypeContext;
 import au.csiro.data61.aap.spec.types.SolidityAddress;
 import au.csiro.data61.aap.spec.types.SolidityArray;
@@ -26,9 +32,101 @@ import au.csiro.data61.aap.spec.types.SolidityString;
 class AnalyzerUtils {
     private static final Logger LOGGER = Logger.getLogger(AnalyzerUtils.class.getName());
     private static final int ADDRESS_LENGTH = 42;
-    private final static String BYTES_PATTERN = "0x[0-9a-fA-F]*";
-    private final static int MINIMUM_BYTES_LENGTH = 4;
-    private final static int MAXIMUM_BYTES_LENGTH = 66;
+    private static final String BYTES_PATTERN = "0x[0-9a-fA-F]*";
+    private static final int MINIMUM_BYTES_LENGTH = 4;
+    private static final int MAXIMUM_BYTES_LENGTH = 66;
+
+    private static final HashMap<Class<? extends SolidityType>, BiPredicate<SolidityType, LiteralContext>> BASE_TYPE_CHECKS;
+    private static final HashMap<Class<? extends SolidityType>, Predicate<ArrayValueContext>> ARRAY_TYPE_CHECKS;
+
+    static {
+        BASE_TYPE_CHECKS = new HashMap<>();
+        BASE_TYPE_CHECKS.put(SolidityAddress.class, AnalyzerUtils::isAddress);
+        BASE_TYPE_CHECKS.put(SolidityBool.class, AnalyzerUtils::isBool);
+        BASE_TYPE_CHECKS.put(SolidityBytes.class, AnalyzerUtils::isBytes);
+        BASE_TYPE_CHECKS.put(SolidityFixed.class, AnalyzerUtils::isFixed);
+        BASE_TYPE_CHECKS.put(SolidityInteger.class, AnalyzerUtils::isInteger);
+        BASE_TYPE_CHECKS.put(SolidityString.class, AnalyzerUtils::isString);
+        BASE_TYPE_CHECKS.put(SolidityArray.class, AnalyzerUtils::isArray);
+
+        ARRAY_TYPE_CHECKS = new HashMap<>();
+        ARRAY_TYPE_CHECKS.put(SolidityAddress.class, AnalyzerUtils::isAddress);
+        ARRAY_TYPE_CHECKS.put(SolidityBool.class, AnalyzerUtils::isBool);
+        ARRAY_TYPE_CHECKS.put(SolidityBytes.class, AnalyzerUtils::isBytes);
+        ARRAY_TYPE_CHECKS.put(SolidityFixed.class, AnalyzerUtils::isFixed);
+        ARRAY_TYPE_CHECKS.put(SolidityInteger.class, AnalyzerUtils::isInteger);
+        ARRAY_TYPE_CHECKS.put(SolidityString.class, AnalyzerUtils::isString);
+    }
+
+    static boolean isTypeCompatible(SolidityType type, LiteralContext ctx) {
+        final BiPredicate<SolidityType, LiteralContext> literalCheck = BASE_TYPE_CHECKS.get(type.getClass());
+        return literalCheck != null && literalCheck.test(type, ctx);
+    }
+
+    static boolean isArray(SolidityType type, LiteralContext ctx) {
+        if (ctx.arrayValue() == null || !(type instanceof SolidityArray)) {
+            return false;
+        }
+
+        final SolidityType baseType = ((SolidityArray)type).getBaseType();
+        final Predicate<ArrayValueContext> literalCheck = ARRAY_TYPE_CHECKS.get(baseType.getClass());
+        return literalCheck != null && literalCheck.test(ctx.arrayValue());
+    }
+
+    static boolean isAddress(SolidityType type, LiteralContext ctx) {
+        return ctx.BYTE_AND_ADDRESS_LITERAL() != null && isAddressLiteral(ctx.BYTE_AND_ADDRESS_LITERAL());
+    }
+
+    static boolean isAddress(ArrayValueContext ctx) {
+        return    ctx.byteAndAddressArrayValue() != null 
+               && ctx.byteAndAddressArrayValue()
+                    .BYTE_AND_ADDRESS_LITERAL()
+                    .stream().allMatch(AnalyzerUtils::isAddressLiteral);
+    }
+
+    static boolean isBool(SolidityType tyoe, LiteralContext ctx) {
+        return ctx.BOOLEAN_LITERAL() != null;
+    }
+
+    static boolean isBool(ArrayValueContext ctx) {
+        return ctx.booleanArrayValue() != null;
+    }
+
+    static boolean isBytes(SolidityType tyoe, LiteralContext ctx) {
+        return ctx.BYTE_AND_ADDRESS_LITERAL() != null && isBytesLiteral(ctx.BYTE_AND_ADDRESS_LITERAL());
+    }
+
+    static boolean isBytes(ArrayValueContext ctx) {
+        return    ctx.byteAndAddressArrayValue() != null
+               && ctx.byteAndAddressArrayValue()
+                    .BYTE_AND_ADDRESS_LITERAL()
+                    .stream()
+                    .allMatch(AnalyzerUtils::isBytesLiteral);
+    }
+
+    static boolean isFixed(SolidityType type, LiteralContext ctx) {
+        return ctx.FIXED_LITERAL() != null || ctx.INT_LITERAL() != null;
+    }
+
+    static boolean isFixed(ArrayValueContext ctx) {
+        return ctx.fixedArrayValue() != null;
+    }
+
+    static boolean isInteger(SolidityType type, LiteralContext ctx) {
+        return ctx.INT_LITERAL() != null;
+    }
+
+    static boolean isInteger(ArrayValueContext ctx) {
+        return ctx.intArrayValue() != null;
+    }
+
+    static boolean isString(SolidityType type, LiteralContext ctx) {
+        return ctx.STRING_LITERAL() != null;
+    }
+
+    static boolean isString(ArrayValueContext ctx) {
+        return ctx.stringArrayValue() != null;
+    }
 
     static String verifyAddressLiteral(TerminalNode node, ErrorCollector collector) {
         assert collector != null && node != null;
@@ -250,6 +348,10 @@ class AnalyzerUtils {
         catch (NumberFormatException ex) {
             return null;
         }
+    }
+
+    static String tokenPositionString(Token token) {
+        return String.format("Ln %s, Col %s", token.getLine(), token.getCharPositionInLine());
     }
 
 }
