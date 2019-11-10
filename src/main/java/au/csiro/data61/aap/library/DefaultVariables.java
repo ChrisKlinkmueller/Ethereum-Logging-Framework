@@ -42,6 +42,13 @@ public class DefaultVariables {
         return Stream.empty();
     }
 
+    public static Stream<Variable> variableNames() {
+        return Stream.concat(
+            Stream.concat(defaultBlockVariableStream(), defaultTransactionVariableStream()),
+            defaultLogEntryVariableStream()
+        );
+    }
+
     static {
         BLOCK_VARIABLES = new HashSet<>();
         TRANSACTION_VARIABLES = new HashSet<>();

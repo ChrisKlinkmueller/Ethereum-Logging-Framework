@@ -2,6 +2,20 @@
     "configurations": [
         {
             "type": "java",
+            "name": "CodeLens (Launch) - ScriptGeneratorUtils",
+            "request": "launch",
+            "mainClass": "au.csiro.data61.aap.parser.ScriptGeneratorUtils",
+            "projectName": "xes-blockchain"
+        },
+        {
+            "type": "java",
+            "name": "CodeLens (Launch) - Casts",
+            "request": "launch",
+            "mainClass": "au.csiro.data61.aap.library.Casts",
+            "projectName": "xes-blockchain"
+        },
+        {
+            "type": "java",
             "name": "CodeLens (Launch) - ParseSolTypeTest",
             "request": "launch",
             "mainClass": "au.csiro.data61.aap.parser.ParseSolTypeTest",

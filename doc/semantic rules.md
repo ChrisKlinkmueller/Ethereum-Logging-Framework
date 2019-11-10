@@ -17,4 +17,4 @@
 - (Done) Types of parameters (variables or literals) must be compatible with one of the signatures for the methodname
 
 ## Statement
-- (Open) Type of left and right side must be compatible
+- (Done) Type of left and right side must be compatible

@@ -26,7 +26,12 @@ public class Library {
     }
 
     private void init() {
+        this.add(Casts.castStream());
         // TODO: add default methods
+    }
+
+    private void add(Stream<Method> methods) {
+        methods.forEach(method -> this.addMethod(method));
     }
 
     public boolean addMethod(Method method) {

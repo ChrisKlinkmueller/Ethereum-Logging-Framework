@@ -29,7 +29,7 @@ import au.csiro.data61.aap.spec.types.SolidityString;
 /**
  * AnalyzerUtils
  */
-class AnalyzerUtils {
+public class AnalyzerUtils {
     private static final Logger LOGGER = Logger.getLogger(AnalyzerUtils.class.getName());
     private static final int ADDRESS_LENGTH = 42;
     private static final String BYTES_PATTERN = "0x[0-9a-fA-F]*";
@@ -140,14 +140,23 @@ class AnalyzerUtils {
     }
 
     static boolean isAddressLiteral(TerminalNode node) {
-        return node.getText().matches(BYTES_PATTERN) && node.getText().length() != ADDRESS_LENGTH;
+        return isAddressLiteral(node.getText());
+    }
+
+    public static boolean isAddressLiteral(String literal) {
+        assert literal != null;
+        return literal.matches(BYTES_PATTERN) && literal.length() != ADDRESS_LENGTH;
     }
 
     static boolean isBytesLiteral(TerminalNode node) {
-        return     node.getText().matches(BYTES_PATTERN) 
-                && node.getText().length() % 2 == 0
-                && MINIMUM_BYTES_LENGTH <= node.getText().length()
-                && node.getText().length() <= MAXIMUM_BYTES_LENGTH;
+        return isBytesLiteral(node.getText());
+    }
+
+    public static boolean isBytesLiteral(String literal) {
+        return     literal.matches(BYTES_PATTERN) 
+                && literal.length() % 2 == 0
+                && MINIMUM_BYTES_LENGTH <= literal.length()
+                && literal.length() <= MAXIMUM_BYTES_LENGTH;
     }
 
     static List<String> verifyAddressLiterals(List<TerminalNode> nodes, ErrorCollector collector) {
