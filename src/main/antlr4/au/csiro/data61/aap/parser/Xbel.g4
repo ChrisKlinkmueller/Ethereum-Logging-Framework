@@ -107,7 +107,7 @@ KEY_SKIP_DATA : '_';
 // statements
 
 statement 
-    : (variable '=')? valueCreation
+    : (variable '=')? valueCreation ';'
     ; 
 
 variable
@@ -155,8 +155,8 @@ literal
     | arrayValue
     | BOOLEAN_LITERAL
     | BYTE_AND_ADDRESS_LITERAL
-    | FIXED_LITERAL
     | INT_LITERAL
+    | FIXED_LITERAL
     ;
 
 arrayValue
@@ -213,15 +213,16 @@ solType
     :
     | SOL_ADDRESS_TYPE
     | SOL_ADDRESS_ARRAY_TYPE
-    | SOL_BOOL_ARRAY_TYPE
     | SOL_BOOL_TYPE
-    | SOL_BYTE_ARRAY_TYPE
+    | SOL_BOOL_ARRAY_TYPE
     | SOL_BYTE_TYPE
-    | SOL_FIXED_ARRAY_TYPE
+    | SOL_BYTE_ARRAY_TYPE
     | SOL_FIXED_TYPE
-    | SOL_INT_ARRAY_TYPE
+    | SOL_FIXED_ARRAY_TYPE
     | SOL_INT_TYPE
+    | SOL_INT_ARRAY_TYPE
     | SOL_STRING_TYPE
+    | SOL_STRING_ARRAY_TYPE
     ;
 
 SOL_FIXED_ARRAY_TYPE
@@ -229,7 +230,7 @@ SOL_FIXED_ARRAY_TYPE
     ;
 
 SOL_FIXED_TYPE
-    : (SOL_UNSIGNED)? 'fixed'(SOL_NUMBER_LENGTH'x'SOL_FIXED_N)?
+    : (SOL_UNSIGNED)? 'fixed'(SOL_NUMBER_LENGTH'x'SOL_FIXED_N)? ('[' ']')?
     ;
 
 SOL_BYTE_ARRAY_TYPE
@@ -237,8 +238,7 @@ SOL_BYTE_ARRAY_TYPE
     ;
 
 SOL_BYTE_TYPE 
-    : 'byte' ('s' SOL_BYTES_LENGTH)?
-    | 'bytes'
+    : 'byte' ('s' SOL_BYTES_LENGTH)? ('[' ']')?
     ;
 
 SOL_INT_ARRAY_TYPE
@@ -279,6 +279,10 @@ SOL_NUMBER_LENGTH
 
 SOL_FIXED_N
     : [1-7]?[0-9]|[8][0-1]
+    ;
+
+SOL_STRING_ARRAY_TYPE
+    : SOL_STRING_TYPE '[' ']'
     ;
 
 SOL_STRING_TYPE

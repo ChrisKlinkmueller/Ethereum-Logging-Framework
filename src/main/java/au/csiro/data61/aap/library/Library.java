@@ -57,7 +57,20 @@ public class Library {
 
 	public boolean isMethodNameKnown(String name) {
         return name != null && this.methodDictionary.containsKey(name);
-	}
+    }
+    
+    public long methodCount() {
+        return this.methodStream().count();
+    }
+
+    public Stream<Method> methodStream() {
+        return this.methodDictionary
+            .entrySet()
+            .stream()
+            .flatMap(e -> e.getValue().stream());
+    }
+
+
 
     public Stream<Method> methodStream(String method) {
         return this.methodDictionary

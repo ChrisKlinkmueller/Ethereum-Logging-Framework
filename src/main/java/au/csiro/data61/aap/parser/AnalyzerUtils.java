@@ -192,7 +192,7 @@ public class AnalyzerUtils {
             return parse(ctx.SOL_ADDRESS_TYPE(), AnalyzerUtils::parseAddressDefinition, collector, "Address");
         }
         else if (ctx.SOL_ADDRESS_ARRAY_TYPE() != null) {
-            return parse(ctx.SOL_ADDRESS_TYPE(), def -> AnalyzerUtils.parseArrayDefinition(def, AnalyzerUtils::parseAddressDefinition), collector, "Address Array");
+            return parse(ctx.SOL_ADDRESS_ARRAY_TYPE(), def -> AnalyzerUtils.parseArrayDefinition(def, AnalyzerUtils::parseAddressDefinition), collector, "Address Array");
         }
         // BOOL TYPES
         else if (ctx.SOL_BOOL_TYPE() != null) {
@@ -213,7 +213,7 @@ public class AnalyzerUtils {
             return parse(ctx.SOL_FIXED_TYPE(), AnalyzerUtils::parseFixedDefinition, collector, "Fixed");
         }
         else if (ctx.SOL_FIXED_ARRAY_TYPE() != null) {
-            return parse(ctx.SOL_FIXED_ARRAY_TYPE(), def -> AnalyzerUtils.parseArrayDefinition(def, AnalyzerUtils::parseBoolDefinition), collector, "Fixed Array");
+            return parse(ctx.SOL_FIXED_ARRAY_TYPE(), def -> AnalyzerUtils.parseArrayDefinition(def, AnalyzerUtils::parseFixedDefinition), collector, "Fixed Array");
         }
         // INT TYPES
         else if (ctx.SOL_INT_TYPE() != null) {
@@ -225,6 +225,9 @@ public class AnalyzerUtils {
         // STRING TYPES
         else if (ctx.SOL_STRING_TYPE() != null) {
             return parse(ctx.SOL_STRING_TYPE(), AnalyzerUtils::parseStringDefinition, collector, "String");
+        }
+        else if (ctx.SOL_STRING_ARRAY_TYPE() != null) {
+            return  parse(ctx.SOL_STRING_ARRAY_TYPE(), def -> AnalyzerUtils.parseArrayDefinition(def, AnalyzerUtils::parseStringDefinition), collector, "String Array");
         }
         // UNKNOWN TYPES
         else {

@@ -61,6 +61,12 @@ public class ScriptGeneratorUtils {
         TYPE_BUILDERS.put(new SolidityArray(SolidityString.DEFAULT_INSTANCE), () -> getArrayType(ScriptGeneratorUtils::getStringType));
     }
 
+    public static String createStatement() {
+        final int index = RANDOM.nextInt(TYPE_BUILDERS.size());
+        final SolidityType type = TYPE_BUILDERS.keySet().stream().collect(Collectors.toList()).get(index);
+        return createStatement(type);
+    }
+
     public static String createStatement(SolidityType type) {
         return String.format(
             "%s %s = %s;",
@@ -80,7 +86,7 @@ public class ScriptGeneratorUtils {
         return String.format(
             "%s:%s", 
             firstPart,
-            createVariableName()
+            createVariableNamePart()
         );
     }
 
@@ -147,7 +153,7 @@ public class ScriptGeneratorUtils {
 
     private static String getStringLiteral() {
         final int length = 4 + RANDOM.nextInt(30);
-        return String.format("\"%s\"", createLiteral(STRING_LITERAL_ALPHABET, length));
+        return String.format("\\\"%s\\\"", createLiteral(STRING_LITERAL_ALPHABET, length));
     }
 
     private static String createLiteral(String alphabet, int length) {
