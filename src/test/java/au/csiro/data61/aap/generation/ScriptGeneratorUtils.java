@@ -1,4 +1,4 @@
-package au.csiro.data61.aap.parser;
+package au.csiro.data61.aap.generation;
 
 import java.util.HashMap;
 import java.util.Map;
@@ -20,7 +20,7 @@ import au.csiro.data61.aap.spec.types.SolidityType;
  * ScriptGeneratorUtils
  */
 public class ScriptGeneratorUtils {
-    private static final Random RANDOM = new Random();
+    public static final Random RANDOM = new Random();
     private static final String STRING_LITERAL_ALPHABET = "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz .:0123456789?*!@#$%^&()";
     private static final String BYTES_LITERAL_ALPHABET = "ABCDEFabcdef0123456789";
     private static final String NUMBER_LITERAL_ALPHABET_FULL = "0123456789";
@@ -29,7 +29,6 @@ public class ScriptGeneratorUtils {
     private static final String VARIABLE_LITERAL_FULL = "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789";
 
     private static final Map<SolidityType, Supplier<String>> LITERAL_BUILDERS;
-    private static final Map<SolidityType, Supplier<String>> TYPE_BUILDERS;
 
     static {
         LITERAL_BUILDERS = new HashMap<>();
@@ -46,34 +45,7 @@ public class ScriptGeneratorUtils {
         LITERAL_BUILDERS.put(SolidityString.DEFAULT_INSTANCE, ScriptGeneratorUtils::getStringLiteral);
         LITERAL_BUILDERS.put(new SolidityArray(SolidityString.DEFAULT_INSTANCE), () -> getArrayLiteral(ScriptGeneratorUtils::getStringLiteral));
         
-        TYPE_BUILDERS = new HashMap<>();
-        TYPE_BUILDERS.put(SolidityAddress.DEFAULT_INSTANCE, ScriptGeneratorUtils::getAddressType);
-        TYPE_BUILDERS.put(new SolidityArray(SolidityAddress.DEFAULT_INSTANCE), () -> getArrayType(ScriptGeneratorUtils::getAddressType));
-        TYPE_BUILDERS.put(SolidityBool.DEFAULT_INSTANCE, ScriptGeneratorUtils::getBoolType);
-        TYPE_BUILDERS.put(new SolidityArray(SolidityBool.DEFAULT_INSTANCE), () -> getArrayType(ScriptGeneratorUtils::getBoolType));
-        TYPE_BUILDERS.put(SolidityBytes.DEFAULT_INSTANCE, ScriptGeneratorUtils::getBytesType);
-        TYPE_BUILDERS.put(new SolidityArray(SolidityBytes.DEFAULT_INSTANCE), () -> getArrayType(ScriptGeneratorUtils::getBytesType));
-        TYPE_BUILDERS.put(SolidityFixed.DEFAULT_INSTANCE, ScriptGeneratorUtils::getFixedType);
-        TYPE_BUILDERS.put(new SolidityArray(SolidityFixed.DEFAULT_INSTANCE), () -> getArrayType(ScriptGeneratorUtils::getFixedType));
-        TYPE_BUILDERS.put(SolidityInteger.DEFAULT_INSTANCE, ScriptGeneratorUtils::getIntegerType);
-        TYPE_BUILDERS.put(new SolidityArray(SolidityInteger.DEFAULT_INSTANCE), () -> getArrayType(ScriptGeneratorUtils::getIntegerType));
-        TYPE_BUILDERS.put(SolidityString.DEFAULT_INSTANCE, ScriptGeneratorUtils::getStringType);
-        TYPE_BUILDERS.put(new SolidityArray(SolidityString.DEFAULT_INSTANCE), () -> getArrayType(ScriptGeneratorUtils::getStringType));
-    }
-
-    public static String createStatement() {
-        final int index = RANDOM.nextInt(TYPE_BUILDERS.size());
-        final SolidityType type = TYPE_BUILDERS.keySet().stream().collect(Collectors.toList()).get(index);
-        return createStatement(type);
-    }
-
-    public static String createStatement(SolidityType type) {
-        return String.format(
-            "%s %s = %s;",
-            createType(type),
-            createVariableName(),
-            createLiteral(type)
-        );
+        
     }
 
     public static String createVariableName() {
@@ -101,11 +73,6 @@ public class ScriptGeneratorUtils {
     public static String createLiteral(SolidityType type) {
         assert type != null;
         return LITERAL_BUILDERS.get(type).get();
-    }
-
-    public static String createType(SolidityType type) {
-        assert type != null;
-        return TYPE_BUILDERS.get(type).get();
     }
 
     private static String getArrayLiteral(Supplier<String> literalBuilder) {
@@ -188,17 +155,6 @@ public class ScriptGeneratorUtils {
         }
     }
 
-    private static String getFixedType() {
-        final String signed = nextSigned();
-        final int bitLength = nextBitLength();
-
-        if (bitLength == 0) {
-            return String.format("%sfixed", signed);
-        }
-
-        return String.format("%sfixed%sx%s", signed, bitLength, RANDOM.nextInt(81));
-    }
-
     private static String getIntegerType() {
         final String signed = nextSigned();
         final int bitLength = nextBitLength();
@@ -219,11 +175,5 @@ public class ScriptGeneratorUtils {
 
     private static String nextSigned() {
         return RANDOM.nextBoolean() ? "" : "u";
-    }
-
-    public static void main(String[] args) {
-        TYPE_BUILDERS.keySet().forEach(
-            t -> System.out.println(createStatement(t))
-        );
     }
 }

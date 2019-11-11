@@ -2,6 +2,13 @@
     "configurations": [
         {
             "type": "java",
+            "name": "CodeLens (Launch) - ScriptGenerator",
+            "request": "launch",
+            "mainClass": "au.csiro.data61.aap.parser.ScriptGenerator",
+            "projectName": "xes-blockchain"
+        },
+        {
+            "type": "java",
             "name": "CodeLens (Launch) - ParseStatementTest",
             "request": "launch",
             "mainClass": "au.csiro.data61.aap.parser.ParseStatementTest",

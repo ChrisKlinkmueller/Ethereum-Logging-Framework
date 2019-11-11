@@ -4,8 +4,6 @@ import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
 import java.io.InputStream;
-import java.util.stream.Collectors;
-import java.util.stream.IntStream;
 import java.util.stream.Stream;
 
 import org.junit.jupiter.params.ParameterizedTest;
@@ -91,14 +89,6 @@ public class ParseStatementTest {
 			Arguments.of("address[] oP5UTELTDbc:w1fwEOE4FPl = {0xEfE6bcD5eE1C3fE813D78CcfeBCCfe7a9D2Dbd17};"),
 			Arguments.of("bytes32 wAK9aU07FvL:tWBhph7o1qj = 0xC38bCfbc02DF460C278Bf475BF82C50bE2a3a90CfcdaD2aD61CfC6cC;"),
 			Arguments.of("bytes9[] CDbiDwUcw6v:luUa7ueCAIG = {0xF1E7d5Acb9Ce4FFDCeFBfF4CdfDF164e3FDc1F, 0x9eBf57Dbc9, 0xdBbac00AC0E86FcC1EDcFfBFEe82EC4Ad1BeeC4a0C2CD885, 0xCF2d75b057BA9C9C16dcF140B8Ebec9dB95aBbe4FD4Ec6DD159417928c16Efd6, 0x3FEd9DcAF365Adef9BeF7b69ecFEb0Ddf8F61F5EAc5e64Daf1c5e1, 0xa93eB5, 0x1D3bE9CD1f1c517A9c6bc446cFc0AE, 0x9EA9};")
-        );
-    }
-
-    public static void main(String[] args) {
-        System.out.println(
-            IntStream.range(0, 50)
-                .mapToObj(i -> String.format("\t\t\tArguments.of(\"%s\")", ScriptGeneratorUtils.createStatement()))
-                .collect(Collectors.joining(",\n"))
         );
     }
 }
