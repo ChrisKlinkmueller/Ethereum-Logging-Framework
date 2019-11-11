@@ -9,18 +9,28 @@ public class SolidityBytes extends SolidityType {
     private final static String NAME = "bytes";    
     private final static int MIN_STATIC_LENGTH = 1;
     private final static int MAX_STATIC_LENGTH = 32;
+    private final static int DYNAMIC_LENGTH = -1;
     
-    public static final SolidityBytes DEFAULT_INSTANCE = new SolidityBytes(1);
+    public static final SolidityBytes DEFAULT_INSTANCE = new SolidityBytes(DYNAMIC_LENGTH);
 
     private final int length;
+
+    public SolidityBytes() {
+        this(DYNAMIC_LENGTH);
+    }
+
     public SolidityBytes(int length) {
         super(SolidityBytes.class, SolidityAddress.class);
-        assert isValidLength(length);
+        assert length == DYNAMIC_LENGTH || isValidLength(length);
         this.length = length;
     }
 
     public int getLength() {
         return length;
+    }
+
+    public boolean isDynamic() {
+        return this.length == DYNAMIC_LENGTH;
     }
 
     @Override

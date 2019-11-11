@@ -4,8 +4,8 @@ import java.math.BigInteger;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Objects;
+import java.util.function.BiFunction;
 import java.util.function.BiPredicate;
-import java.util.function.Function;
 import java.util.function.Predicate;
 import java.util.logging.Level;
 import java.util.logging.Logger;
@@ -184,77 +184,71 @@ public class AnalyzerUtils {
         }
     }
 
-    static SolidityType verifySolidityType(SolTypeContext ctx, ErrorCollector collector) {
+    static SolidityType verifySolidityType(SolTypeContext ctx, ErrorCollector collector, boolean baseTypeOnly) {
         assert ctx != null && collector != null;
 
-        // ADDRESS TYPES
         if (ctx.SOL_ADDRESS_TYPE() != null) {
-            return parse(ctx.SOL_ADDRESS_TYPE(), AnalyzerUtils::parseAddressDefinition, collector, "Address");
+            return parse(ctx.SOL_ADDRESS_TYPE(), AnalyzerUtils::parseAddressDefinition, collector, "Address", baseTypeOnly);
         }
-        else if (ctx.SOL_ADDRESS_ARRAY_TYPE() != null) {
-            return parse(ctx.SOL_ADDRESS_ARRAY_TYPE(), def -> AnalyzerUtils.parseArrayDefinition(def, AnalyzerUtils::parseAddressDefinition), collector, "Address Array");
-        }
-        // BOOL TYPES
         else if (ctx.SOL_BOOL_TYPE() != null) {
-            return parse(ctx.SOL_BOOL_TYPE(), AnalyzerUtils::parseBoolDefinition, collector, "Bool");
+            return parse(ctx.SOL_BOOL_TYPE(), AnalyzerUtils::parseBoolDefinition, collector, "Bool", baseTypeOnly);
         }
-        else if (ctx.SOL_BOOL_ARRAY_TYPE() != null) {
-            return parse(ctx.SOL_BOOL_ARRAY_TYPE(), def -> AnalyzerUtils.parseArrayDefinition(def, AnalyzerUtils::parseBoolDefinition), collector, "Bool Array");
-        }
-        // BYTE TYPES
         else if (ctx.SOL_BYTE_TYPE() != null) {
-            return parse(ctx.SOL_BYTE_TYPE(), AnalyzerUtils::parseBytesDefinition, collector, "Bytes");
+            return parse(ctx.SOL_BYTE_TYPE(), AnalyzerUtils::parseBytesDefinition, collector, "Bytes", baseTypeOnly);
         }
-        else if (ctx.SOL_BYTE_ARRAY_TYPE() != null) {
-            return parse(ctx.SOL_BYTE_ARRAY_TYPE(), def -> AnalyzerUtils.parseArrayDefinition(def, AnalyzerUtils::parseBytesDefinition), collector, "Bytes Array");
-        }
-        // FIXED TYPES
         else if (ctx.SOL_FIXED_TYPE() != null) {
-            return parse(ctx.SOL_FIXED_TYPE(), AnalyzerUtils::parseFixedDefinition, collector, "Fixed");
+            return parse(ctx.SOL_FIXED_TYPE(), AnalyzerUtils::parseFixedDefinition, collector, "Fixed", baseTypeOnly);
         }
-        else if (ctx.SOL_FIXED_ARRAY_TYPE() != null) {
-            return parse(ctx.SOL_FIXED_ARRAY_TYPE(), def -> AnalyzerUtils.parseArrayDefinition(def, AnalyzerUtils::parseFixedDefinition), collector, "Fixed Array");
-        }
-        // INT TYPES
         else if (ctx.SOL_INT_TYPE() != null) {
-            return parse(ctx.SOL_INT_TYPE(), AnalyzerUtils::parseIntegerDefinition, collector, "Integer");
+            return parse(ctx.SOL_INT_TYPE(), AnalyzerUtils::parseIntegerDefinition, collector, "Integer", baseTypeOnly);
         }
-        else if (ctx.SOL_INT_ARRAY_TYPE() != null) {
-            return parse(ctx.SOL_INT_ARRAY_TYPE(), def -> AnalyzerUtils.parseArrayDefinition(def, AnalyzerUtils::parseIntegerDefinition), collector, "Integer Array");
-        }
-        // STRING TYPES
         else if (ctx.SOL_STRING_TYPE() != null) {
-            return parse(ctx.SOL_STRING_TYPE(), AnalyzerUtils::parseStringDefinition, collector, "String");
+            return parse(ctx.SOL_STRING_TYPE(), AnalyzerUtils::parseStringDefinition, collector, "String", baseTypeOnly);
         }
-        else if (ctx.SOL_STRING_ARRAY_TYPE() != null) {
-            return  parse(ctx.SOL_STRING_ARRAY_TYPE(), def -> AnalyzerUtils.parseArrayDefinition(def, AnalyzerUtils::parseStringDefinition), collector, "String Array");
+        else if (ctx.solType() != null) {
+            final SolidityType baseType = verifySolidityType(ctx.solType(), collector, baseTypeOnly);
+            return baseType == null ? null : new SolidityArray(baseType);
         }
-        // UNKNOWN TYPES
         else {
             throw new UnsupportedOperationException(String.format("This definition of a solidity type is not supported: '%s'.", ctx.getText()));
         }
     }
     
-    static SolidityType parse(TerminalNode node, Function<String, SolidityType> cast, ErrorCollector collector, String typeName) {
-        SolidityType type = cast.apply(node.getText());
+    static SolidityType parse(
+        TerminalNode node, 
+        BiFunction<String, Boolean, SolidityType> cast, 
+        ErrorCollector collector, 
+        String typeName,
+        boolean baseTypeOnly
+    ) {
+        SolidityType type = cast.apply(node.getText(), baseTypeOnly);
         if (type != null) {
             return type;
         }
 
-        collector.addSemanticError(node.getSymbol(), String.format("'%s' is not a valid '%s' type", node.getText(), typeName));
+        collector.addSemanticError(
+            node.getSymbol(), 
+            String.format(
+                "'%s' is not a valid '%s' type%s.",
+                node.getText(), 
+                typeName, 
+                baseTypeOnly ? " for variable definitions" : ""           
+            )
+        );
+
         return null;
     }
 
-    static SolidityArray parseArrayDefinition(String definition, Function<String, SolidityType> baseTypeCast) {
+    static SolidityArray parseArrayDefinition(String definition, BiFunction<String, Boolean, SolidityType> baseTypeCast, boolean baseTypeOnly) {
         if (!definition.endsWith("[]")) {
             return null;
         }
 
-        final SolidityType type = baseTypeCast.apply(definition.substring(0, definition.length() - 2));
+        final SolidityType type = baseTypeCast.apply(definition.substring(0, definition.length() - 2), baseTypeOnly);
         return type == null ? null : new SolidityArray(type);
     }
 
-    static SolidityAddress parseAddressDefinition(String definition) {
+    static SolidityAddress parseAddressDefinition(String definition, boolean baseTypeOnly) {
         if (definition == null || definition.isBlank()) {
             return null;
         }
@@ -262,7 +256,7 @@ public class AnalyzerUtils {
         return definition.equals("address") ? SolidityAddress.DEFAULT_INSTANCE : null;        
     }
 
-    static SolidityBool parseBoolDefinition(String definition) {
+    static SolidityBool parseBoolDefinition(String definition, boolean baseTypeOnly) {
         if (definition == null || definition.isBlank()) {
             return null;
         }
@@ -270,13 +264,17 @@ public class AnalyzerUtils {
         return definition.equals("bool") ? SolidityBool.DEFAULT_INSTANCE : null;        
     }
 
-    static SolidityType parseBytesDefinition(String definition) {
+    static SolidityType parseBytesDefinition(String definition, boolean baseTypeOnly) {
         if (definition == null || definition.isBlank()) {
             return null;
         }
 
+        if (baseTypeOnly) {
+            return definition.equals("bytes") ? SolidityBytes.DEFAULT_INSTANCE : null;
+        }
+
         if (definition.equals("byte")) {
-            return SolidityBytes.DEFAULT_INSTANCE;
+            return new SolidityBytes(1);
         }
 
         if (!definition.startsWith("bytes")) {
@@ -285,7 +283,7 @@ public class AnalyzerUtils {
 
         final String suffix = definition.replaceFirst("bytes", "");
         if (suffix.isEmpty()) {
-            return new SolidityArray(SolidityBytes.DEFAULT_INSTANCE);
+            return SolidityBytes.DEFAULT_INSTANCE;
         }
 
         final Integer length = parseIntegerValue(suffix);
@@ -296,9 +294,13 @@ public class AnalyzerUtils {
         return new SolidityBytes(length);
     }
 
-    static SolidityFixed parseFixedDefinition(String definition) {
+    static SolidityFixed parseFixedDefinition(String definition, boolean baseTypeOnly) {
         if (definition == null || definition.isBlank()) {
             return null;
+        }
+
+        if (baseTypeOnly) {
+            return definition.equals("fixed") ? SolidityFixed.DEFAULT_INSTANCE : null;
         }
 
         final boolean signed = !definition.startsWith("u");
@@ -326,9 +328,13 @@ public class AnalyzerUtils {
         return new SolidityFixed(signed, m, n);
     }
 
-    static SolidityInteger parseIntegerDefinition(String definition) {
+    static SolidityInteger parseIntegerDefinition(String definition, boolean baseTypeOnly) {
         if (definition == null || definition.isBlank()) {
             return null;
+        }
+
+        if (baseTypeOnly) {
+            return definition.equals("int") ? SolidityInteger.DEFAULT_INSTANCE : null;
         }
 
         final boolean signed = !definition.startsWith("u");
@@ -345,7 +351,7 @@ public class AnalyzerUtils {
         return new SolidityInteger(signed, bitLength);
     }
 
-    static SolidityString parseStringDefinition(String definition) {
+    static SolidityString parseStringDefinition(String definition, boolean baseTypeOnly) {
         if (definition == null || definition.isBlank()) {
             return null;
         }

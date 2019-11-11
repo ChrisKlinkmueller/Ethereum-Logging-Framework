@@ -6,7 +6,7 @@ import static org.junit.jupiter.api.Assertions.assertTrue;
 
 import java.util.Arrays;
 import java.util.List;
-import java.util.function.Function;
+import java.util.function.BiFunction;
 import java.util.stream.Stream;
 
 import org.junit.jupiter.params.ParameterizedTest;
@@ -29,16 +29,16 @@ public class ParseSolTypeTest {
 
     @ParameterizedTest
     @MethodSource("validBasicTypeDefinitionCases")
-    public void testBasicTypeDefinitionCases(String definition, Function<String, SolidityType> cast, SolidityType expectedType) {
-        SolidityType type = cast.apply(definition);
+    public void testBasicTypeDefinitionCases(String definition, BiFunction<String, Boolean, SolidityType> cast, SolidityType expectedType) {
+        SolidityType type = cast.apply(definition, false);
         assertTrue(type != null, String.format("Test case: '%s'", definition));
         assertTrue(type.equals(expectedType), String.format("Test case: '%s'", definition));
     }
     
     @ParameterizedTest
     @MethodSource("validArrayTypeDefinitionCases")
-    public void testArrayTypeDefinitionCases(String definition, Function<String, SolidityType> cast, SolidityType expectedType) {
-        SolidityType type = AnalyzerUtils.parseArrayDefinition(definition, cast);
+    public void testArrayTypeDefinitionCases(String definition, BiFunction<String, Boolean, SolidityType> cast, SolidityType expectedType) {
+        SolidityType type = AnalyzerUtils.parseArrayDefinition(definition, cast, false);
         assertTrue(type != null, String.format("Test case: '%s'", definition));
         assertTrue(type.equals(expectedType), String.format("Test case: '%s'", definition));
     }
@@ -260,8 +260,8 @@ public class ParseSolTypeTest {
             Arguments.of("bytes30", bytesCast(), new SolidityBytes(30)),
             Arguments.of("bytes31", bytesCast(), new SolidityBytes(31)),
             Arguments.of("bytes32", bytesCast(), new SolidityBytes(32)),
-            Arguments.of("byte", bytesCast(), SolidityBytes.DEFAULT_INSTANCE),
-            Arguments.of("bytes", bytesCast(), new SolidityArray(SolidityBytes.DEFAULT_INSTANCE))
+            Arguments.of("byte", bytesCast(), new SolidityBytes(1)),
+            Arguments.of("bytes", bytesCast(), SolidityBytes.DEFAULT_INSTANCE)
         );
     }
 
@@ -320,9 +320,9 @@ public class ParseSolTypeTest {
     @ParameterizedTest
     @MethodSource("invalidCases")
     public void testInvalidCases(String definition) {
-        for (Function<String, SolidityType> cast : BASE_TYPE_CASTS) {
-            assertNull(cast.apply(definition));
-            assertNull(AnalyzerUtils.parseArrayDefinition(definition, cast));
+        for (BiFunction<String, Boolean, SolidityType> cast : BASE_TYPE_CASTS) {
+            assertNull(cast.apply(definition, false));
+            assertNull(AnalyzerUtils.parseArrayDefinition(definition, cast, false));
         }
     }
 
@@ -424,7 +424,7 @@ public class ParseSolTypeTest {
         );
     }
 
-    private static List<Function<String, SolidityType>> BASE_TYPE_CASTS = Arrays.asList(
+    private static List<BiFunction<String, Boolean, SolidityType>> BASE_TYPE_CASTS = Arrays.asList(
         addressCast(),
         boolCast(),
         bytesCast(),
@@ -433,27 +433,27 @@ public class ParseSolTypeTest {
         stringCast()
     );
 
-    private static Function<String, SolidityType> addressCast() {
+    private static BiFunction<String, Boolean, SolidityType> addressCast() {
         return AnalyzerUtils::parseAddressDefinition;
     }
 
-    private static Function<String, SolidityType> boolCast() {
+    private static BiFunction<String, Boolean, SolidityType> boolCast() {
         return AnalyzerUtils::parseBoolDefinition;
     }
 
-    private static Function<String, SolidityType> bytesCast() {
+    private static BiFunction<String, Boolean, SolidityType> bytesCast() {
         return AnalyzerUtils::parseBytesDefinition;
     }
 
-    private static Function<String, SolidityType> fixedCast() {
+    private static BiFunction<String, Boolean, SolidityType> fixedCast() {
         return AnalyzerUtils::parseFixedDefinition;
     }
 
-    private static Function<String, SolidityType> integerCast() {
+    private static BiFunction<String, Boolean, SolidityType> integerCast() {
         return AnalyzerUtils::parseIntegerDefinition;
     }
 
-    private static Function<String, SolidityType> stringCast() {
+    private static BiFunction<String, Boolean, SolidityType> stringCast() {
         return AnalyzerUtils::parseStringDefinition;
     }
 

@@ -91,25 +91,25 @@ public class VariableAnalyzer extends SemanticAnalyzer {
 
     @Override
     public void enterVariableDefinition(VariableDefinitionContext ctx) {
-        this.verifyVariable(ctx.solType(), ctx.variableName());
+        this.verifyVariable(ctx.solType(), ctx.variableName(), true);
     }
 
     @Override
     public void enterSmartContractVariable(SmartContractVariableContext ctx) {
         if (ctx.solType() != null || ctx.variableName() != null) {
-            this.verifyVariable(ctx.solType(), ctx.variableName());
+            this.verifyVariable(ctx.solType(), ctx.variableName(), false);
         }
     }
 
     @Override
     public void enterLogEntryParameter(LogEntryParameterContext ctx) {
         if (ctx.solType() != null || ctx.variableName() != null) {
-            this.verifyVariable(ctx.solType(), ctx.variableName());
+            this.verifyVariable(ctx.solType(), ctx.variableName(), false);
         }
     }
 
 
-    private void verifyVariable(SolTypeContext typeCtx, VariableNameContext nameCtx) {
+    private void verifyVariable(SolTypeContext typeCtx, VariableNameContext nameCtx, boolean baseTypeOnly) {
         final Variable lookupResult = this.getVariable(nameCtx.getText());
         if (lookupResult != null) {
             final String message = lookupResult.getCategory() == VariableCategory.SCOPE_VARIABLE 
@@ -119,7 +119,7 @@ public class VariableAnalyzer extends SemanticAnalyzer {
             return;
         }
 
-        final SolidityType type = AnalyzerUtils.verifySolidityType(typeCtx, this.errorCollector);
+        final SolidityType type = AnalyzerUtils.verifySolidityType(typeCtx, this.errorCollector, baseTypeOnly);
         if (type == null) {
             return;
         }
