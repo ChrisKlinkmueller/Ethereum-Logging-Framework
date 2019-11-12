@@ -1,12 +1,11 @@
 package au.csiro.data61.aap.parser;
 
+import java.util.HashSet;
 import java.util.Optional;
 import java.util.Set;
 import java.util.Stack;
-import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
-import au.csiro.data61.aap.library.DefaultVariables;
 import au.csiro.data61.aap.parser.XbelParser.BlockFilterContext;
 import au.csiro.data61.aap.parser.XbelParser.DocumentContext;
 import au.csiro.data61.aap.parser.XbelParser.LogEntryFilterContext;
@@ -19,6 +18,11 @@ import au.csiro.data61.aap.parser.XbelParser.TransactionFilterContext;
 import au.csiro.data61.aap.parser.XbelParser.VariableDefinitionContext;
 import au.csiro.data61.aap.parser.XbelParser.VariableNameContext;
 import au.csiro.data61.aap.parser.XbelParser.VariableReferenceContext;
+import au.csiro.data61.aap.spec.BlockScope;
+import au.csiro.data61.aap.spec.GlobalScope;
+import au.csiro.data61.aap.spec.LogEntryScope;
+import au.csiro.data61.aap.spec.SmartContractScope;
+import au.csiro.data61.aap.spec.TransactionScope;
 import au.csiro.data61.aap.spec.Variable;
 import au.csiro.data61.aap.spec.VariableCategory;
 import au.csiro.data61.aap.spec.types.SolidityType;
@@ -41,36 +45,36 @@ public class VariableAnalyzer extends SemanticAnalyzer {
 
     @Override
     public void enterBlockFilter(BlockFilterContext ctx) {
-        this.addVariableSet(DefaultVariables.defaultBlockVariableStream());
+        this.addVariableSet(BlockScope.DEFAULT_VARIABLES);
     }
 
     @Override
     public void enterTransactionFilter(TransactionFilterContext ctx) {
-        this.addVariableSet(DefaultVariables.defaultTransactionVariableStream());
+        this.addVariableSet(TransactionScope.DEFAULT_VARIABLES);
     }
 
     @Override
     public void enterSmartContractsFilter(SmartContractsFilterContext ctx) {
-        this.addVariableSet(DefaultVariables.defaultSmartContractVariableStream());
+        this.addVariableSet(SmartContractScope.DEFAULT_VARIABLES);
     }
 
     @Override
     public void enterLogEntryFilter(LogEntryFilterContext ctx) {
-        this.addVariableSet(DefaultVariables.defaultLogEntryVariableStream());
+        this.addVariableSet(LogEntryScope.DEFAULT_VARIABLES);
+    }
+
+    @Override
+    public void enterDocument(DocumentContext ctx) {
+        this.addVariableSet(GlobalScope.DEFAULT_VARIABLES);
+    }
+
+    private void addVariableSet(Set<Variable> variables) {
+        this.visibleVariables.push(new HashSet<>(variables));    
     }
 
     @Override
     public void exitScope(ScopeContext ctx) {
         this.visibleVariables.pop();
-    }
-
-    @Override
-    public void enterDocument(DocumentContext ctx) {
-        this.addVariableSet(DefaultVariables.defaultGlobalVariableStream());
-    }
-
-    private void addVariableSet(Stream<Variable> variableStream) {
-        this.visibleVariables.push(variableStream.collect(Collectors.toSet()));    
     }
 
     @Override
@@ -172,5 +176,4 @@ public class VariableAnalyzer extends SemanticAnalyzer {
         return this.visibleVariables.stream()
             .flatMap(set -> set.stream());
     }
-    
 }

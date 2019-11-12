@@ -25,19 +25,18 @@ import au.csiro.data61.aap.spec.types.SolidityType;
  * LiteralGenerator
  */
 public class LiteralGenerator {
-    private final String DIGITS_WITHOUT_ZERO = "123456789";
-    private final String DIGITS_WITH_ZERO = "0" + DIGITS_WITHOUT_ZERO;
-    private final String HEX_DIGITS = DIGITS_WITH_ZERO + "abcdefABCDEF";
-    private final String STRING_ALPHABET = "abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789 ,.?<>/\\\n:;\"'{}[]!@#$%^&*()_-+='";
+    private static final String DIGITS_WITHOUT_ZERO = "123456789";
+    private static final String DIGITS_WITH_ZERO = "0" + DIGITS_WITHOUT_ZERO;
+    private static final String HEX_DIGITS = DIGITS_WITH_ZERO + "abcdefABCDEF";
+    private static final String STRING_ALPHABET = "abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789 ,.?<>/\\\n:;\"'{}[]!@#$%^&*()_-+='";
     
-    private final int ADDRESS_LENGTH = 20;
-    private final int MIN_BYTES_LENGTH = 1;
-    private final int MAX_BYTES_LENGTH = 32;
-    private final int MAX_INT_LENGTH = 18;
-    private final int MAX_STRING_LENGTH = 100;
-    private final int MIN_LIST_LENGTH = 1;
-    private final int MAX_LIST_LENGTH = 10;
-
+    private static final int ADDRESS_LENGTH = 20;
+    private static final int MIN_BYTES_LENGTH = 1;
+    private static final int MAX_BYTES_LENGTH = 32;
+    private static final int MAX_INT_LENGTH = 18;
+    private static final int MAX_STRING_LENGTH = 100;
+    private static final int MIN_LIST_LENGTH = 1;
+    private static final int MAX_LIST_LENGTH = 10;
 
     private int count;    
     private final Random random;
@@ -55,7 +54,6 @@ public class LiteralGenerator {
         this.literalCreators.put(SolidityFixed.class, this::generateFixedValue);
         this.literalCreators.put(SolidityInteger.class, this::generateIntegerValue);
         this.literalCreators.put(SolidityString.class, this::generateStringValue);
-
     }
 
     public String serializeLiteralValue(Variable literal) {
@@ -119,11 +117,11 @@ public class LiteralGenerator {
     }
 
     private Object generateStringValue(SolidityType type) {
-        return GeneratorUtils.generateString(this.random, STRING_ALPHABET, this.random.nextInt(MAX_STRING_LENGTH));
+        return GeneratorUtils.generateString(STRING_ALPHABET, this.random.nextInt(MAX_STRING_LENGTH));
     }
 
     private String generateBytesString(int length) {
-        return String.format("0x%s", GeneratorUtils.generateString(this.random, HEX_DIGITS, 2 * length));
+        return String.format("0x%s", GeneratorUtils.generateString(HEX_DIGITS, 2 * length));
     }
 
     private String generateFixedString() {
@@ -136,18 +134,18 @@ public class LiteralGenerator {
         return String.format(
             "%s.%s",
             number,
-            GeneratorUtils.generateString(this.random, DIGITS_WITH_ZERO, this.random.nextInt(MAX_INT_LENGTH))
+            GeneratorUtils.generateString(DIGITS_WITH_ZERO, this.random.nextInt(MAX_INT_LENGTH))
         );
     }
 
     private String generateIntegerString() {     
         int length = this.random.nextInt(MAX_INT_LENGTH);
         return length == 0 
-            ? GeneratorUtils.generateString(this.random, DIGITS_WITH_ZERO, 1)
+            ? GeneratorUtils.generateString(DIGITS_WITH_ZERO, 1)
             : String.format(
                 "%s%s", 
-                GeneratorUtils.generateString(this.random, DIGITS_WITHOUT_ZERO, 1),
-                GeneratorUtils.generateString(this.random, DIGITS_WITH_ZERO, length)
+                GeneratorUtils.generateString(DIGITS_WITHOUT_ZERO, 1),
+                GeneratorUtils.generateString(DIGITS_WITH_ZERO, length)
             )
         ; 
     }

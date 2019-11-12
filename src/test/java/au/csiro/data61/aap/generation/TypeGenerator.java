@@ -21,45 +21,40 @@ import au.csiro.data61.aap.spec.types.SolidityType;
 class TypeGenerator {
     private static final int MAX_TYPE_PROBABILITY = 125;
     private static final int MAX_VALUE_TYPE_PROBABILITY = 100;
-    private static final TypeCreator[] TYPE_CREATORS;
-    private static final Map<Class<? extends SolidityType>, String> BASE_KEYWORDS;
-    private static final Map<Class<? extends SolidityType>, BiFunction<Random, SolidityType, String>> KEYWORD_CREATORS;
 
-    static {
-        TYPE_CREATORS = new TypeCreator[]{
-            new TypeCreator(5, TypeGenerator::generateAddressType),
-            new TypeCreator(10, TypeGenerator::generateBoolType),
-            new TypeCreator(35, TypeGenerator::generateBytesType),
-            new TypeCreator(60, TypeGenerator::generateFixedType),
-            new TypeCreator(95, TypeGenerator::generateIntegerType),
-            new TypeCreator(MAX_VALUE_TYPE_PROBABILITY, TypeGenerator::generateStringType),
-            new TypeCreator(MAX_TYPE_PROBABILITY, TypeGenerator::generateArrayType),
-        };
-
-        BASE_KEYWORDS = new HashMap<>();
-        BASE_KEYWORDS.put(SolidityAddress.class, "address");
-        BASE_KEYWORDS.put(SolidityBool.class, "bool");
-        BASE_KEYWORDS.put(SolidityBytes.class, "bytes");
-        BASE_KEYWORDS.put(SolidityFixed.class, "fixed");
-        BASE_KEYWORDS.put(SolidityInteger.class, "int");
-        BASE_KEYWORDS.put(SolidityString.class, "string");
-
-        KEYWORD_CREATORS = new HashMap<>();
-        KEYWORD_CREATORS.put(SolidityAddress.class, TypeGenerator::serializeAddress);
-        KEYWORD_CREATORS.put(SolidityBool.class, TypeGenerator::serializeBool);
-        KEYWORD_CREATORS.put(SolidityBytes.class, TypeGenerator::serializeBytes);
-        KEYWORD_CREATORS.put(SolidityFixed.class, TypeGenerator::serializeFixed);
-        KEYWORD_CREATORS.put(SolidityInteger.class, TypeGenerator::serializeInteger);
-        KEYWORD_CREATORS.put(SolidityString.class, TypeGenerator::serializeString);
-    }
-
-
-
+    private final TypeCreator[] typeCreators;
+    private final Map<Class<? extends SolidityType>, String> baseKeywords;
+    private final Map<Class<? extends SolidityType>, BiFunction<Random, SolidityType, String>> keywordCreators;
     private final Random random;
+    
     public TypeGenerator(Random random) {
         this.random = random;
 
-        
+        this.typeCreators = new TypeCreator[]{
+            new TypeCreator(5, this::generateAddressType),
+            new TypeCreator(10, this::generateBoolType),
+            new TypeCreator(35, this::generateBytesType),
+            new TypeCreator(60, this::generateFixedType),
+            new TypeCreator(95, this::generateIntegerType),
+            new TypeCreator(MAX_VALUE_TYPE_PROBABILITY, this::generateStringType),
+            new TypeCreator(MAX_TYPE_PROBABILITY, this::generateArrayType),
+        };
+
+        this.baseKeywords = new HashMap<>();
+        this.baseKeywords.put(SolidityAddress.class, "address");
+        this.baseKeywords.put(SolidityBool.class, "bool");
+        this.baseKeywords.put(SolidityBytes.class, "bytes");
+        this.baseKeywords.put(SolidityFixed.class, "fixed");
+        this.baseKeywords.put(SolidityInteger.class, "int");
+        this.baseKeywords.put(SolidityString.class, "string");
+
+        this.keywordCreators = new HashMap<>();
+        this.keywordCreators.put(SolidityAddress.class, this::serializeAddress);
+        this.keywordCreators.put(SolidityBool.class, this::serializeBool);
+        this.keywordCreators.put(SolidityBytes.class, this::serializeBytes);
+        this.keywordCreators.put(SolidityFixed.class, this::serializeFixed);
+        this.keywordCreators.put(SolidityInteger.class, this::serializeInteger);
+        this.keywordCreators.put(SolidityString.class, this::serializeString);
     }    
 
     public String toBaseKeyword(SolidityType type) {
@@ -68,26 +63,26 @@ class TypeGenerator {
             return String.format("%s[]", this.toBaseKeyword(((SolidityArray)type).getBaseType()));
         }
 
-        assert BASE_KEYWORDS.containsKey(type.getClass());
-        return BASE_KEYWORDS.get(type.getClass());
+        assert this.baseKeywords.containsKey(type.getClass());
+        return this.baseKeywords.get(type.getClass());
     }
 
     public String toKeyword(SolidityType type) {
-        assert type != null && KEYWORD_CREATORS.containsKey(type.getClass());
-        return KEYWORD_CREATORS.get(type.getClass()).apply(this.random, type);
+        assert type != null && this.keywordCreators.containsKey(type.getClass());
+        return this.keywordCreators.get(type.getClass()).apply(this.random, type);
     }
 
-    private static String serializeAddress(Random random, SolidityType type) {
-        return BASE_KEYWORDS.get(SolidityAddress.class);
+    private String serializeAddress(Random random, SolidityType type) {
+        return this.baseKeywords.get(SolidityAddress.class);
     }
 
-    private static String serializeBool(Random random, SolidityType type) {
-        return BASE_KEYWORDS.get(SolidityBool.class);
+    private String serializeBool(Random random, SolidityType type) {
+        return this.baseKeywords.get(SolidityBool.class);
     }
 
-    private static String serializeBytes(Random random, SolidityType type) {
+    private String serializeBytes(Random random, SolidityType type) {
         final SolidityBytes bytes = (SolidityBytes)type;
-        final String keyword = BASE_KEYWORDS.get(SolidityBytes.class);
+        final String keyword = this.baseKeywords.get(SolidityBytes.class);
         
         if (bytes.isDynamic()) {
             return keyword;
@@ -100,9 +95,9 @@ class TypeGenerator {
         return String.format("%s%s", keyword, bytes.getLength());
     }
 
-    private static String serializeFixed(Random random, SolidityType type) {
+    private String serializeFixed(Random random, SolidityType type) {
         final SolidityFixed fixed = (SolidityFixed)type;
-        final String keyword = BASE_KEYWORDS.get(SolidityFixed.class);
+        final String keyword = this.baseKeywords.get(SolidityFixed.class);
         final String signed = fixed.isSigned() ? "" : "u";
 
         if (fixed.getM() == 128 && fixed.getN() == 18 && random.nextBoolean()) {
@@ -112,9 +107,9 @@ class TypeGenerator {
         return String.format("%s%s%sx%s", signed, keyword, fixed.getM(), fixed.getN());
     }
 
-    private static String serializeInteger(Random random, SolidityType type) {
+    private String serializeInteger(Random random, SolidityType type) {
         final SolidityInteger integer = (SolidityInteger)type;
-        final String keyword = BASE_KEYWORDS.get(SolidityInteger.class);
+        final String keyword = this.baseKeywords.get(SolidityInteger.class);
         final String signed = integer.isSigned() ? "" : "u";
 
         if (integer.getLength() == 256 && random.nextBoolean()) {
@@ -124,8 +119,8 @@ class TypeGenerator {
         return String.format("%s%s%s", signed, keyword, integer.getLength());
     }
 
-    private static String serializeString(Random random, SolidityType type) {
-        return BASE_KEYWORDS.get(SolidityString.class);
+    private String serializeString(Random random, SolidityType type) {
+        return this.baseKeywords.get(SolidityString.class);
     }
 
     public SolidityType generateTypeOtherThan(SolidityType excludedType) {
@@ -140,13 +135,13 @@ class TypeGenerator {
         return generateType(this.random, MAX_TYPE_PROBABILITY);
     }
 
-    private static SolidityArray generateArrayType(Random random) {
+    private SolidityArray generateArrayType(Random random) {
         return new SolidityArray(generateType(random, MAX_VALUE_TYPE_PROBABILITY));
     }    
 
-    private static SolidityType generateType(Random random, int maxGeneratorThreshold) {
+    private SolidityType generateType(Random random, int maxGeneratorThreshold) {
         final int number = random.nextInt(maxGeneratorThreshold);
-        for (TypeCreator gen : TYPE_CREATORS) {
+        for (TypeCreator gen : this.typeCreators) {
             if (number < gen.threshold) {
                 return gen.generator.apply(random);
             }
@@ -156,15 +151,15 @@ class TypeGenerator {
         return null;
     }
 
-    private static SolidityAddress generateAddressType(Random random) {
+    private SolidityAddress generateAddressType(Random random) {
         return SolidityAddress.DEFAULT_INSTANCE;
     }
 
-    private static SolidityBool generateBoolType(Random random) {
+    private SolidityBool generateBoolType(Random random) {
         return SolidityBool.DEFAULT_INSTANCE;
     }
 
-    private static SolidityBytes generateBytesType(Random random) {
+    private SolidityBytes generateBytesType(Random random) {
         final int bitLength = random.nextInt(34);
         if (bitLength == 0) {
             return new SolidityBytes(1);
@@ -177,7 +172,7 @@ class TypeGenerator {
         }
     }
 
-    private static SolidityFixed generateFixedType(Random random) {
+    private SolidityFixed generateFixedType(Random random) {
         final boolean signed = random.nextBoolean();
         final int bitLength = generateIntegerLength(random);
 
@@ -188,7 +183,7 @@ class TypeGenerator {
         return new SolidityFixed(signed, bitLength, random.nextInt(81));
     }
     
-    private static SolidityInteger generateIntegerType(Random random) {
+    private SolidityInteger generateIntegerType(Random random) {
         final boolean signed = random.nextBoolean();
         final int bitLength = generateIntegerLength(random);
         return bitLength == 0 
@@ -196,11 +191,11 @@ class TypeGenerator {
             : new SolidityInteger(signed, bitLength);
     } 
 
-    private static SolidityString generateStringType(Random random) {
+    private SolidityString generateStringType(Random random) {
         return SolidityString.DEFAULT_INSTANCE;
     }
 
-    private static int generateIntegerLength(Random random) {
+    private int generateIntegerLength(Random random) {
         return 8 * random.nextInt(33);
     } 
 
