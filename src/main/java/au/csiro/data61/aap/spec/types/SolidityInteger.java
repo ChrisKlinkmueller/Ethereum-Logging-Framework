@@ -24,6 +24,10 @@ public class SolidityInteger extends SolidityType {
         this.signed = signed;
     }
 
+    public boolean isSigned() {
+        return this.signed;
+    }
+
     public boolean isUnsigned() {
         return !this.signed;
     }

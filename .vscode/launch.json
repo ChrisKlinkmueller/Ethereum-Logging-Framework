@@ -2,6 +2,20 @@
     "configurations": [
         {
             "type": "java",
+            "name": "CodeLens (Launch) - TypeHandler",
+            "request": "launch",
+            "mainClass": "au.csiro.data61.aap.generation.TypeHandler",
+            "projectName": "xes-blockchain"
+        },
+        {
+            "type": "java",
+            "name": "CodeLens (Launch) - ScriptGeneratorUtils",
+            "request": "launch",
+            "mainClass": "au.csiro.data61.aap.generation.ScriptGeneratorUtils",
+            "projectName": "xes-blockchain"
+        },
+        {
+            "type": "java",
             "name": "CodeLens (Launch) - ScriptGenerator",
             "request": "launch",
             "mainClass": "au.csiro.data61.aap.parser.ScriptGenerator",

@@ -33,6 +33,10 @@ public class SolidityFixed extends SolidityType {
         this.n = n;
     }
 
+    public boolean isSigned() {
+        return this.signed;
+    }
+
     public boolean isUnsigned() {
         return !this.signed;
     }
