@@ -8,8 +8,15 @@ import java.util.stream.IntStream;
  * ScriptGeneratorUtils
  */
 public class GeneratorUtils {
-
     private static final int MAX_STRING_MUTATIONS = 5;
+
+    public static String generateString(Random random, String alphabet, int length) {
+        return IntStream.range(0, length)
+            .mapToObj(i -> Character.toString(alphabet.charAt(random.nextInt(alphabet.length()))))
+            .collect(Collectors.joining());
+
+    }
+    
     public static String mutateString(String string, Random random, String alphabet) {
         String mutation = string;
         int mutations = 1 + random.nextInt(MAX_STRING_MUTATIONS);
