@@ -9,6 +9,7 @@ import java.util.stream.IntStream;
 import java.util.stream.Stream;
 
 import au.csiro.data61.aap.program.types.SolidityType;
+import au.csiro.data61.aap.program.types.ValueCasts;
 import au.csiro.data61.aap.util.MethodResult;
 
 /**
@@ -25,7 +26,7 @@ public class MethodCall implements ValueSource, Executable {
         assert Arrays.stream(parameters).allMatch(Objects::nonNull);
         assert method.getSignature().parameterTypeCount() == parameters.length;
         assert IntStream.range(0, parameters.length)
-                .allMatch(i -> method.getSignature().getParameterType(i).castableFrom(parameters[i].getType()));
+                .allMatch(i -> ValueCasts.isCastSupported(parameters[i].getType(), method.getSignature().getParameterType(i)));
         this.method = method;
         // TODO: if a variable type is not equal to the respective parameter type, 
         //       wrap the variable in a cast

@@ -20,7 +20,6 @@ public class SolidityBytes extends SolidityType {
     }
 
     public SolidityBytes(int length) {
-        super(SolidityBytes.class, SolidityAddress.class);
         assert length == DYNAMIC_LENGTH || isValidLength(length);
         this.length = length;
     }

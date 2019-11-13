@@ -25,7 +25,6 @@ public class SolidityFixed extends SolidityType {
     }
 
     public SolidityFixed(boolean signed, int m, int n) {
-        super(SolidityFixed.class, SolidityInteger.class);
         assert isValidMValue(m);
         assert isValidNValue(n);
         this.signed = signed;

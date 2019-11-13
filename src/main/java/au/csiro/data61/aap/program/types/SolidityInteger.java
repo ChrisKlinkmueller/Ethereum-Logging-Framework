@@ -19,7 +19,6 @@ public class SolidityInteger extends SolidityType {
     }
 
     public SolidityInteger(boolean signed, int bitLength) {
-        super(SolidityInteger.class);
         this.bitLength = bitLength;
         this.signed = signed;
     }

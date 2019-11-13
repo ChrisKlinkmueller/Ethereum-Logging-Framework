@@ -10,10 +10,6 @@ public class SolidityAddress extends SolidityType {
     
     public static final SolidityAddress DEFAULT_INSTANCE = new SolidityAddress();
 
-    public SolidityAddress() {
-        super(SolidityAddress.class);
-    }
-
     @Override
     public String getName() {
         return NAME;

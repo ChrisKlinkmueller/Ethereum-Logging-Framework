@@ -10,10 +10,6 @@ public class SolidityString extends SolidityType {
 
     public static final SolidityString DEFAULT_INSTANCE = new SolidityString();
 
-    public SolidityString() {
-        super(SolidityAddress.class, SolidityBool.class, SolidityBytes.class, SolidityFixed.class, SolidityInteger.class, SolidityString.class);
-    }
-
     @Override
     public String getName() {
         return NAME;

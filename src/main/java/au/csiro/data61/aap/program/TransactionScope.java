@@ -8,6 +8,7 @@ import au.csiro.data61.aap.program.types.SolidityArray;
 import au.csiro.data61.aap.program.types.SolidityBytes;
 import au.csiro.data61.aap.program.types.SolidityInteger;
 import au.csiro.data61.aap.program.types.SolidityString;
+import au.csiro.data61.aap.program.types.ValueCasts;
 import au.csiro.data61.aap.util.MethodResult;
 
 /**
@@ -62,7 +63,7 @@ public class TransactionScope extends Scope {
 
     public static boolean isValidAddressListVariable(Variable variable) {
         return variable != null && (variable == ANY || (variable.getType() instanceof SolidityArray
-                && SolidityBytes.DEFAULT_INSTANCE.castableFrom((SolidityArray) variable.getType())));
+                && ValueCasts.isCastSupported(((SolidityArray)variable.getType()).getBaseType(), SolidityAddress.DEFAULT_INSTANCE)));
     }
 
     @Override

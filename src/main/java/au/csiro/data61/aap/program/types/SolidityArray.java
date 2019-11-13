@@ -23,11 +23,6 @@ public class SolidityArray extends SolidityType {
     public String getName() {
         return String.format("%s%s", this.baseType.getName(), SUFFIX);
     }
-
-    @Override
-    public boolean castableFrom(SolidityType type) {
-        return this.baseType.castableFrom(type);
-    }
     
     @Override
     public boolean conceptuallyEquals(SolidityType type) {
