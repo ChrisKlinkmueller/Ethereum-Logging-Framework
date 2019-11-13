@@ -3,14 +3,16 @@ package au.csiro.data61.aap.program;
 import java.io.IOException;
 import java.math.BigInteger;
 import java.util.HashSet;
+import java.util.List;
 import java.util.Set;
 import java.util.function.Predicate;
 
 import au.csiro.data61.aap.program.types.SolidityAddress;
-import au.csiro.data61.aap.program.types.SolidityArray;
 import au.csiro.data61.aap.program.types.SolidityBytes;
 import au.csiro.data61.aap.program.types.SolidityInteger;
 import au.csiro.data61.aap.program.types.SolidityString;
+import au.csiro.data61.aap.program.types.ValueCasts;
+import au.csiro.data61.aap.program.types.ValueCasts.ValueCastException;
 import au.csiro.data61.aap.rpc.EthereumBlock;
 import au.csiro.data61.aap.util.MethodResult;
 
@@ -31,7 +33,7 @@ public class BlockScope extends Scope {
     public static final String BLOCK_LOGS_BLOOM = "block.logsBloom";
     public static final String BLOCK_TRANSACTION_ROOT = "block.transactionsRoot";
     public static final String BLOCK_STATE_ROOT = "block.stateRoot";
-    public static final String BLOCK_RECEIPT_ROOT = "block.receiptsRoot";
+    public static final String BLOCK_RECEIPTS_ROOT = "block.receiptsRoot";
     public static final String BLOCK_MINER = "block.miner";
     public static final String BLOCK_DIFFICULTY = "block.difficulty";
     public static final String BLOCK_TOTAL_DIFFICULTY = "block.totalDifficulty";
@@ -41,7 +43,6 @@ public class BlockScope extends Scope {
     public static final String BLOCK_GAS_USED = "block.gasUsed";
     public static final String BLOCK_TIMESTAMP = "block.timestamp";
     public static final String BLOCK_TRANSACTIONS = "block.transactions";
-    public static final String BLOCK_UNCLES = "block.uncles";
 
     static {
         DEFAULT_VARIABLES = new HashSet<>();
@@ -53,7 +54,7 @@ public class BlockScope extends Scope {
         addVariable(DEFAULT_VARIABLES, SolidityString.DEFAULT_INSTANCE, BLOCK_LOGS_BLOOM);
         addVariable(DEFAULT_VARIABLES, SolidityBytes.DEFAULT_INSTANCE, BLOCK_TRANSACTION_ROOT);
         addVariable(DEFAULT_VARIABLES, SolidityBytes.DEFAULT_INSTANCE, BLOCK_STATE_ROOT);
-        addVariable(DEFAULT_VARIABLES, SolidityBytes.DEFAULT_INSTANCE, BLOCK_RECEIPT_ROOT);
+        addVariable(DEFAULT_VARIABLES, SolidityBytes.DEFAULT_INSTANCE, BLOCK_RECEIPTS_ROOT);
         addVariable(DEFAULT_VARIABLES, SolidityAddress.DEFAULT_INSTANCE, BLOCK_MINER);
         addVariable(DEFAULT_VARIABLES, SolidityInteger.DEFAULT_INSTANCE, BLOCK_DIFFICULTY);
         addVariable(DEFAULT_VARIABLES, SolidityInteger.DEFAULT_INSTANCE, BLOCK_TOTAL_DIFFICULTY);
@@ -63,7 +64,6 @@ public class BlockScope extends Scope {
         addVariable(DEFAULT_VARIABLES, SolidityInteger.DEFAULT_INSTANCE, BLOCK_GAS_USED);
         addVariable(DEFAULT_VARIABLES, SolidityInteger.DEFAULT_INSTANCE, BLOCK_TIMESTAMP);
         addVariable(DEFAULT_VARIABLES, SolidityInteger.DEFAULT_INSTANCE, BLOCK_TRANSACTIONS);
-        addVariable(DEFAULT_VARIABLES, new SolidityArray(SolidityBytes.DEFAULT_INSTANCE), BLOCK_UNCLES);
     }
 
     public static boolean isValidBlockNumberVariable(Variable variable) {
@@ -177,7 +177,12 @@ public class BlockScope extends Scope {
     }
 
     private MethodResult<Void> processBlock(ProgramState state, EthereumBlock block) {
-        this.setBlockVariables(state, block);
+        try {
+            extractValues(VALUE_EXTRACTORS, block, this);
+        }
+        catch (ValueCastException ex) {
+            return MethodResult.ofError(String.format("Error when retrieving data for block %s.", block.getNumber()), ex);
+        }
 
         for (int i = 0; i < this.instructionCount(); i++) {
             final MethodResult<Void> result = this.getInstruction(i).execute(state);
@@ -189,25 +194,25 @@ public class BlockScope extends Scope {
         return MethodResult.ofResult();
     }
 
-    private void setBlockVariables(ProgramState state, EthereumBlock block) {
-        state.setCurrentBlock(block);
+    private static List<ValueExtractor<EthereumBlock>> VALUE_EXTRACTORS = List.of(
+        new ValueExtractor<EthereumBlock>(BLOCK_DIFFICULTY, EthereumBlock::getDifficulty, ValueCasts::stringToInteger),
+        new ValueExtractor<EthereumBlock>(BLOCK_EXTRA_DATA, EthereumBlock::getExtraData),
+        new ValueExtractor<EthereumBlock>(BLOCK_GAS_LIMIT, EthereumBlock::getGasLimit, ValueCasts::stringToInteger),
+        new ValueExtractor<EthereumBlock>(BLOCK_GAS_USED, EthereumBlock::getGasUsed, ValueCasts::stringToInteger),        
+        new ValueExtractor<EthereumBlock>(BLOCK_HASH, EthereumBlock::getHash, ValueCasts::stringToBytes),  
+        new ValueExtractor<EthereumBlock>(BLOCK_LOGS_BLOOM, EthereumBlock::getLogsBloom),  
+        new ValueExtractor<EthereumBlock>(BLOCK_MINER, EthereumBlock::getMiner, ValueCasts::stringToAddress),
+        new ValueExtractor<EthereumBlock>(BLOCK_NONCE, EthereumBlock::getNonce, ValueCasts::stringToBytes),
+        new ValueExtractor<EthereumBlock>(BLOCK_NUMBER, EthereumBlock::getNumber, ValueCasts::stringToInteger),
+        new ValueExtractor<EthereumBlock>(BLOCK_PARENT_HASH, EthereumBlock::getParentHash, ValueCasts::stringToBytes),
+        new ValueExtractor<EthereumBlock>(BLOCK_RECEIPTS_ROOT, EthereumBlock::getReceiptsRoot, ValueCasts::stringToBytes),
+        new ValueExtractor<EthereumBlock>(BLOCK_SHA3_UNCLES, EthereumBlock::getSha3uncles, ValueCasts::stringToBytes),
+        new ValueExtractor<EthereumBlock>(BLOCK_SIZE, EthereumBlock::getSize, ValueCasts::stringToInteger),
+        new ValueExtractor<EthereumBlock>(BLOCK_STATE_ROOT, EthereumBlock::getStateRoot, ValueCasts::stringToBytes),
+        new ValueExtractor<EthereumBlock>(BLOCK_TIMESTAMP, EthereumBlock::getTimestamp, ValueCasts::stringToInteger),
+        new ValueExtractor<EthereumBlock>(BLOCK_TOTAL_DIFFICULTY, EthereumBlock::getTotalDifficulty, ValueCasts::stringToInteger),
+        new ValueExtractor<EthereumBlock>(BLOCK_TRANSACTIONS, block -> BigInteger.valueOf(block.transactionCount())),
+        new ValueExtractor<EthereumBlock>(BLOCK_TRANSACTION_ROOT, EthereumBlock::getTransactionsRoot, ValueCasts::stringToBytes)
+    );
 
-        //this.setBlockVariableValue(BLOCK_DIFFICULTY, block.getDifficulty(), ValueCasts::stringToInteger);
-        //this.setBlockVariableValue(BLOCK_EXTRA_DATA, block.getExtraData(), null);
-        //this.setBlockVariableValue(BLOCK_GAS_LIMIT, block.getGasLimit(), ValueCasts::stringToInteger);
-        //this.setBlockVariableValue(BLOCK_GAS_USED, block.getGasUsed(), ValueCasts::stringToInteger);        
-        //this.setBlockVariableValue(BLOCK_HASH, block.getHash(), null);  
-        //this.setBlockVariableValue(BLOCK_LOGS_BLOOM, block.getLogsBloom(), null);  
-        //this.setBlockVariableValue(BLOCK_MINER, block.getMiner(), null);
-        //this.setBlockVariableValue(BLOCK_NONCE, block.getNonce(), null);
-        //this.setBlockVariableValue(BLOCK_NUMBER, block.getNumber(), ValueCasts::stringToInteger);
-        /*
-    }
-
-    private void setBlockVariableValue(String variableName, Object value, Function<Object, Object> cast) {
-        assert value != null;
-        final Variable variable = this.getVariable(variableName);
-        assert variable != null;
-        variable.setValue(cast == null ? value : cast.apply(value));*/
-    }
 }

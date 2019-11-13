@@ -6,10 +6,13 @@ import java.util.List;
 import java.util.Map;
 import java.util.Objects;
 import java.util.Set;
+import java.util.function.Function;
 import java.util.function.Predicate;
 import java.util.stream.Stream;
 
 import au.csiro.data61.aap.program.types.SolidityType;
+import au.csiro.data61.aap.program.types.ValueCasts.ValueCast;
+import au.csiro.data61.aap.program.types.ValueCasts.ValueCastException;
 
 /**
  * Block
@@ -69,39 +72,43 @@ public abstract class Scope extends Instruction {
         return this.instructionStream().flatMap(Instruction::variableStream);
     }
 
-    /*
-    TODO: remove
-    public Stream<Variable> variableStream() {
-        return Stream.concat(
-            this.defaultVariableStream(), 
-            this.instructionStream().flatMap(instr -> {
-                if (instr instanceof Statement) {
-                    Statement stmt = (Statement)instr;
-                    return stmt.getVariable().isEmpty() ? Stream.of() : Stream.of(stmt.getVariable().get());
-                }
-                else if (instr instanceof Scope) {
-                    return ((Scope)instr).defaultVariableStream();
-                }
-                else {
-                    // TODO: once emit blocks are introduced, check here
-                    throw new UnsupportedOperationException();
-                }
-            })
-            .filter(this.filterByName())
-        );
-    }
+    protected static <T> void extractValues(List<ValueExtractor<T>> extractors, T object, Scope scope) throws ValueCastException {
+        assert extractors != null && extractors.stream().allMatch(Objects::nonNull);
+        assert object != null;
 
-    public Stream<Variable> variableStream(Predicate<Variable> selectionCriterion) {
-        assert selectionCriterion != null;
-        return this.variableStream().filter(selectionCriterion);
+        for (ValueExtractor<T> extractor : extractors) {
+            extractor.setVariableValue(scope, object);
+        }
     }
+    
+    protected static class ValueExtractor<T> {
+        private final String variableName;
+        private final Function<T, Object> attribute;
+        private final ValueCast cast;
+        
+        public ValueExtractor(String variableName, Function<T, Object> blockAttribute) {
+            this(variableName, blockAttribute, null);
+        }
+        
+        public ValueExtractor(String variableName, Function<T, Object> attribute, ValueCast cast) {
+            assert variableName != null;
+            assert attribute != null;
+            this.variableName = variableName;
+            this.attribute = attribute;
+            this.cast = cast;
+        }
 
-    private Predicate<Variable> filterByName() {
-        final Set<String> knownNames = new HashSet<>();
-        return variable -> {
-            final boolean isKnown = knownNames.contains(variable.getName());
-            knownNames.add(variable.getName());
-            return !isKnown;
-        };
-    }*/
+        public void setVariableValue(Scope scope, T object) throws ValueCastException {
+            assert scope != null;
+            assert object != null;
+
+            final Variable variable = scope.getVariable(this.variableName);
+            assert variable != null;
+
+            final Object value = this.attribute.apply(object);
+            assert value != null;
+
+            variable.setValue(this.cast == null ? value : this.cast.cast(value));
+        }
+    }
 }

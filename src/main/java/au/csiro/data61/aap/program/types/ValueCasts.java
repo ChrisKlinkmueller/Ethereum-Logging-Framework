@@ -97,6 +97,22 @@ public class ValueCasts {
         return ((BigInteger)value).toString();
     }
 
+    public static Object stringToAddress(Object value) throws ValueCastException {
+        assert value != null && value instanceof String;
+        if (isAddressLiteral((String)value)) {
+            return value;
+        }
+        throw new ValueCastException(String.format("'%s' is not a valid address value.", value));
+    }
+
+    public static Object stringToBytes(Object value) throws ValueCastException {
+        assert value != null && value instanceof String;
+        if (isBytesLiteral((String)value)) {
+            return value;
+        }
+        throw new ValueCastException(String.format("'%s' is not a valid bytes value.", value));
+    }
+
     public static Object stringToInteger(Object value) throws ValueCastException {
         assert value != null && value instanceof String;
         try {
@@ -105,8 +121,6 @@ public class ValueCasts {
             throw new ValueCastException(String.format("Error casting string '%s' to integer.", value), ex);
         }
     }
-
-   
 
     public static boolean isAddressLiteral(String literal) {
         assert literal != null;
