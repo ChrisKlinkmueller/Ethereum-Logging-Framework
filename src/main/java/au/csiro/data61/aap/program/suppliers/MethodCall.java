@@ -18,7 +18,7 @@ import au.csiro.data61.aap.util.MethodResult;
 /**
  * MethodCall
  */
-public class MethodCall implements ValueSource, Executable {
+public class MethodCall implements ValueSupplier, Executable {
     private static final Logger LOGGER = Logger.getLogger(MethodCall.class.getName());
     private final Method method;
     private final Variable[] parameters;

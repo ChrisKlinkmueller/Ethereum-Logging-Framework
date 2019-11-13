@@ -4,7 +4,7 @@ import java.util.Optional;
 import java.util.stream.Stream;
 
 import au.csiro.data61.aap.program.suppliers.MethodCall;
-import au.csiro.data61.aap.program.suppliers.ValueSource;
+import au.csiro.data61.aap.program.suppliers.ValueSupplier;
 import au.csiro.data61.aap.program.suppliers.Variable;
 import au.csiro.data61.aap.util.MethodResult;
 
@@ -13,13 +13,13 @@ import au.csiro.data61.aap.util.MethodResult;
  */
 public class Statement extends Instruction {
     private Optional<Variable> variable;
-    private ValueSource source;
+    private ValueSupplier source;
 
-    public Statement(ValueSource source) {
+    public Statement(ValueSupplier source) {
         this(null, source);
     }
 
-    public Statement(Variable variable, ValueSource source) {
+    public Statement(Variable variable, ValueSupplier source) {
         this.variable = variable == null ? Optional.empty() : Optional.of(variable);
         this.source = source;
     }
@@ -34,7 +34,7 @@ public class Statement extends Instruction {
         return this.variable;
     }
 
-    public ValueSource getSource() {
+    public ValueSupplier getSource() {
         return this.source;
     }
 
@@ -47,9 +47,15 @@ public class Statement extends Instruction {
             }
         }
 
-        if (this.variable.isPresent()) {
-            final Object value = this.source.getValue();
-            this.variable.get().setValue(value);
+        try {
+            if (this.variable.isPresent()) {
+                final Object value = this.source.getValue();
+                this.variable.get().setValue(value);
+            }
+        }
+        catch (Throwable cause) {
+            final String message = String.format("Error getting a value.");
+            state.reportException(message, cause);
         }
 
         return MethodResult.ofResult();

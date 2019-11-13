@@ -75,10 +75,10 @@ public class ProgramState implements AutoCloseable {
         this.exceptionHandlingStrategy = strategy;
     }
 
-    public void reportException(String message, Exception exception) {
+    public void reportException(String message, Throwable cause) {
         assert message != null;
-        assert exception != null;
-        LOGGER.log(Level.SEVERE, message, exception);
+        assert cause != null;
+        LOGGER.log(Level.SEVERE, message, cause);
     }
 
     public boolean continueAfterException() {

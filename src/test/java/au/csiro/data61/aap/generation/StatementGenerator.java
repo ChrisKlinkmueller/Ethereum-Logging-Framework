@@ -8,7 +8,7 @@ import au.csiro.data61.aap.program.Instruction;
 import au.csiro.data61.aap.program.suppliers.MethodCall;
 import au.csiro.data61.aap.program.Scope;
 import au.csiro.data61.aap.program.Statement;
-import au.csiro.data61.aap.program.suppliers.ValueSource;
+import au.csiro.data61.aap.program.suppliers.ValueSupplier;
 import au.csiro.data61.aap.program.suppliers.Variable;
 import au.csiro.data61.aap.program.suppliers.VariableCategory;
 
@@ -34,7 +34,7 @@ public class StatementGenerator {
         }
 
         final Variable variable = this.generateVariable(scope);
-        final ValueSource valueSource = this.generateValueSource(scope, variable);
+        final ValueSupplier valueSource = this.generateValueSource(scope, variable);
         this.addStatementToScope(scope, new Statement(variable, valueSource));
     }
 
@@ -43,7 +43,7 @@ public class StatementGenerator {
         scope.addInstruction(statement);
     }
 
-    private ValueSource generateValueSource(Scope scope, Variable variable) {
+    private ValueSupplier generateValueSource(Scope scope, Variable variable) {
         final int randomNumber = this.random.nextInt(100); 
 
         if (randomNumber < 40) {
@@ -111,7 +111,7 @@ public class StatementGenerator {
         return scope.getEnclosingScope() == null ? false : this.isVariableAlreadyDefined(variable, scope, scope.getEnclosingScope());
     }
 
-    private String serializeValueSource(ValueSource source) {
+    private String serializeValueSource(ValueSupplier source) {
         if (source instanceof MethodCall) {
             return GeneratorUtils.METHOD_CALL_GENERATOR.serializeMethodCall((MethodCall)source);
         }

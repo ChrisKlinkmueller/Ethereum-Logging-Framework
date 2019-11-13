@@ -5,7 +5,7 @@ import au.csiro.data61.aap.program.types.SolidityType;
 /**
  * Variable
  */
-public class Variable implements ValueSource {
+public class Variable implements ValueSupplier {
     private final SolidityType type;
     private final String name;
     private final VariableCategory category;

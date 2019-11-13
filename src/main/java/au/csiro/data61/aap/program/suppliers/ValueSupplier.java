@@ -5,7 +5,7 @@ import au.csiro.data61.aap.program.types.SolidityType;
 /**
  * ValueSource
  */
-public interface ValueSource {
-    public Object getValue();
+public interface ValueSupplier {
+    public Object getValue() throws Throwable;
     public SolidityType getType();    
 }
