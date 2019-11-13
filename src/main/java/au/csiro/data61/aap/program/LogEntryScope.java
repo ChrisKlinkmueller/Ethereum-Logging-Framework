@@ -22,13 +22,17 @@ public class LogEntryScope extends Scope {
         addVariable(DEFAULT_VARIABLES, SolidityAddress.DEFAULT_INSTANCE, "log.address");
     }
 
+    public LogEntryScope(Set<Variable> variables) {
+        super(DEFAULT_VARIABLES);
+    }
+
     @Override
     public MethodResult<Void> execute(ProgramState state) {        
         return MethodResult.ofError("Method not implemented");
     }
 
     @Override
-    public Stream<Variable> defaultVariableStream() {
+    public Stream<Variable> variableStream() {
         return DEFAULT_VARIABLES.stream();
     }
 

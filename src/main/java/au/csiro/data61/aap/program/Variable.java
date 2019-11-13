@@ -11,6 +11,14 @@ public class Variable implements ValueSource {
     private final VariableCategory category;
     protected Object value;
 
+    public Variable(Variable variable) {
+        assert variable != null;
+        this.type = variable.type;
+        this.name = variable.name;
+        this.category = variable.category;
+        this.value = variable.value;
+    }
+
     public Variable(SolidityType type, String name) {
         this(type, name, VariableCategory.SCOPE_VARIABLE, null);
     }

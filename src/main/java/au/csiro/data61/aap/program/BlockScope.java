@@ -5,7 +5,6 @@ import java.math.BigInteger;
 import java.util.HashSet;
 import java.util.Set;
 import java.util.function.Predicate;
-import java.util.stream.Stream;
 
 import au.csiro.data61.aap.program.types.SolidityAddress;
 import au.csiro.data61.aap.program.types.SolidityArray;
@@ -23,16 +22,6 @@ public class BlockScope extends Scope {
     public static final Variable EARLIEST = new Variable(SolidityInteger.DEFAULT_INSTANCE, "earliest", VariableCategory.SCOPE_VARIABLE, 0);
     public static final Variable CURRENT = new Variable(SolidityString.DEFAULT_INSTANCE, "current", VariableCategory.SCOPE_VARIABLE, "current");
     public static final Variable PENDING = new Variable(SolidityString.DEFAULT_INSTANCE, "pending", VariableCategory.SCOPE_VARIABLE, "pending");
-
-    private final Variable fromBlockNumber;
-    private final Variable toBlockNumber;
-
-    public BlockScope(Variable fromBlockNumber, Variable toBlockNumber) {
-        assert isValidBlockNumberVariable(fromBlockNumber);
-        assert isValidBlockNumberVariable(toBlockNumber);
-        this.fromBlockNumber = fromBlockNumber;
-        this.toBlockNumber = toBlockNumber;
-    }
 
     static {
         DEFAULT_VARIABLES = new HashSet<>();
@@ -55,6 +44,18 @@ public class BlockScope extends Scope {
         addVariable(DEFAULT_VARIABLES, SolidityInteger.DEFAULT_INSTANCE, "block.timestamp");
         addVariable(DEFAULT_VARIABLES, SolidityInteger.DEFAULT_INSTANCE, "block.transactions");
         addVariable(DEFAULT_VARIABLES, new SolidityArray(SolidityBytes.DEFAULT_INSTANCE), "block.uncles");
+    }
+
+    private final Variable fromBlockNumber;
+    private final Variable toBlockNumber;
+
+    public BlockScope(Variable fromBlockNumber, Variable toBlockNumber) {
+        super(DEFAULT_VARIABLES);
+
+        assert isValidBlockNumberVariable(fromBlockNumber);
+        assert isValidBlockNumberVariable(toBlockNumber);
+        this.fromBlockNumber = fromBlockNumber;
+        this.toBlockNumber = toBlockNumber;
     }
 
     public void setEnclosingBlock(GlobalScope scope) {
@@ -169,11 +170,6 @@ public class BlockScope extends Scope {
                    || SolidityInteger.DEFAULT_INSTANCE.conceptuallyEquals(variable.getType())
                 )
         ;
-    }
-
-    @Override
-    public Stream<Variable> defaultVariableStream() {
-        return DEFAULT_VARIABLES.stream();
     }
 
 }

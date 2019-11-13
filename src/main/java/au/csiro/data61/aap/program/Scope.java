@@ -1,8 +1,10 @@
 package au.csiro.data61.aap.program;
 
 import java.util.ArrayList;
-import java.util.HashSet;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
+import java.util.Objects;
 import java.util.Set;
 import java.util.function.Predicate;
 import java.util.stream.Stream;
@@ -14,16 +16,24 @@ import au.csiro.data61.aap.program.types.SolidityType;
  */
 public abstract class Scope extends Instruction {
     private final List<Instruction> instructions;
+    private final Map<String, Variable> variables;
 
-    protected Scope() {
+    protected Scope(Set<Variable> variables) {
+        assert variables != null && variables.stream().allMatch(Objects::nonNull);
         this.instructions = new ArrayList<>();
+        this.variables = new HashMap<>();
+        variables.stream()
+            .forEach(variable -> this.variables.put(variable.getName(), new Variable(variable)));            
     }
-
-    protected void initDefaultVariables() {}
 
     protected static final void addVariable(Set<Variable> variables, SolidityType type, String name) {
         assert variables != null && type != null && name != null;
         variables.add(new Variable(type, name, VariableCategory.SCOPE_VARIABLE, null));
+    }
+    
+    protected Variable getVariable(String name) {
+        assert name != null && this.variables.containsKey(name);
+        return this.variables.get(name);
     }
 
     public void addInstruction(Instruction instruction) {
@@ -43,8 +53,24 @@ public abstract class Scope extends Instruction {
         return this.instructions.stream();
     }    
 
-    public abstract Stream<Variable> defaultVariableStream();
+    @Override
+    public Stream<Variable> variableStream() {
+        return this.variables.values().stream();
+    }
 
+    public Stream<Variable> findVariablesWithinScope(Predicate<Variable> selectionCriterion) {
+        assert selectionCriterion != null;
+        return Stream.concat(this.variableStream(), this.instructionVariableStream())
+            .filter(selectionCriterion)
+            .distinct();
+    }
+
+    private Stream<Variable> instructionVariableStream() {
+        return this.instructionStream().flatMap(Instruction::variableStream);
+    }
+
+    /*
+    TODO: remove
     public Stream<Variable> variableStream() {
         return Stream.concat(
             this.defaultVariableStream(), 
@@ -77,5 +103,5 @@ public abstract class Scope extends Instruction {
             knownNames.add(variable.getName());
             return !isKnown;
         };
-    }
+    }*/
 }

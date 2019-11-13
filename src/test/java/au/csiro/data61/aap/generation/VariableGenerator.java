@@ -23,23 +23,23 @@ public class VariableGenerator {
         this.random = random;
     }
 
-    public Variable selectVariable(Scope scope) {
-        return this.selectScopeVariable(scope.variableStream(), this::matchAny);  
+    public Variable selectAnyVariable(Scope scope) {
+        return this.selectScopeVariable(scope.findVariablesWithinScope(v -> true), this::matchAny);  
     }
 
-    public Variable selectVariable(Scope scope, SolidityType variableType) {
-        return this.selectScopeVariable(scope.variableStream(), this.getTypeEqualityMatcher(variableType));  
+    public Variable selectAnyVariable(Scope scope, SolidityType variableType) {
+        return this.selectScopeVariable(scope.findVariablesWithinScope(v -> true), this.getTypeEqualityMatcher(variableType));  
     }
 
     public Variable selectScopeVariable(Scope scope) {
         assert scope != null;
-        return this.selectScopeVariable(scope.defaultVariableStream(), this::matchAny);
+        return this.selectScopeVariable(scope.variableStream(), this::matchAny);
     }
 
     public Variable selectScopeVariable(Scope scope, SolidityType variableType) {
         assert scope != null;
         assert variableType != null;
-        return this.selectScopeVariable(scope.defaultVariableStream(), this.getTypeEqualityMatcher(variableType));
+        return this.selectScopeVariable(scope.variableStream(), this.getTypeEqualityMatcher(variableType));
     }
 
     private boolean matchAny(Variable variable) {

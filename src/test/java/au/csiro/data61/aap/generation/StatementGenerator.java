@@ -54,7 +54,7 @@ public class StatementGenerator {
         }
 
         if (randomNumber < 60) {
-            final Variable existingVariable =  GeneratorUtils.VARIABLE_GENERATOR.selectVariable(scope, variable.getType());
+            final Variable existingVariable =  GeneratorUtils.VARIABLE_GENERATOR.selectAnyVariable(scope, variable.getType());
             if (existingVariable != null) {
                 return existingVariable;
             }
@@ -65,7 +65,7 @@ public class StatementGenerator {
 
     private Variable generateVariable(Scope scope) {
         if (this.random.nextInt(100) < 33) {
-            final Stream<Variable> variables = scope.variableStream(variable -> variable.getCategory() == VariableCategory.USER_DEFINED);
+            final Stream<Variable> variables = scope.findVariablesWithinScope(variable -> variable.getCategory() == VariableCategory.USER_DEFINED);
             final Variable variable = GeneratorUtils.randomElement(variables);
 
             if (variable != null) {
@@ -91,7 +91,7 @@ public class StatementGenerator {
     }
 
     private boolean isVariableAlreadyDefined(Variable variable, Instruction currentInstruction, Scope scope) {
-        if (scope.defaultVariableStream().anyMatch(scopeVariable -> scopeVariable.hasSameName(variable))) {
+        if (scope.variableStream().anyMatch(scopeVariable -> scopeVariable.hasSameName(variable))) {
             return true;
         }
 

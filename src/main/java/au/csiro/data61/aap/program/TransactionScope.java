@@ -2,7 +2,6 @@ package au.csiro.data61.aap.program;
 
 import java.util.HashSet;
 import java.util.Set;
-import java.util.stream.Stream;
 
 import au.csiro.data61.aap.program.types.SolidityAddress;
 import au.csiro.data61.aap.program.types.SolidityArray;
@@ -23,6 +22,8 @@ public class TransactionScope extends Scope {
     private final Variable recipients;
 
     public TransactionScope(Variable senders, Variable recipients) {
+        super(DEFAULT_VARIABLES);
+        
         assert isValidAddressListVariable(senders);
         assert isValidAddressListVariable(recipients);
         this.recipients = recipients;
@@ -67,11 +68,6 @@ public class TransactionScope extends Scope {
     @Override
     public MethodResult<Void> execute(ProgramState state) {
         return MethodResult.ofError("Method not implemented.");
-    }
-
-    @Override
-    public Stream<Variable> defaultVariableStream() {
-        return DEFAULT_VARIABLES.stream();
     }
 
     
