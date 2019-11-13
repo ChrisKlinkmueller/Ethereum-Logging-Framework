@@ -10,6 +10,8 @@ import java.util.function.Function;
 import java.util.function.Predicate;
 import java.util.stream.Stream;
 
+import au.csiro.data61.aap.program.suppliers.Variable;
+import au.csiro.data61.aap.program.suppliers.VariableCategory;
 import au.csiro.data61.aap.program.types.SolidityType;
 import au.csiro.data61.aap.program.types.ValueCasts.ValueCast;
 import au.csiro.data61.aap.program.types.ValueCasts.ValueCastException;

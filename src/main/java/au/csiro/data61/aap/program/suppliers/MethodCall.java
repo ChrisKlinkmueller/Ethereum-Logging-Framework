@@ -1,4 +1,4 @@
-package au.csiro.data61.aap.program;
+package au.csiro.data61.aap.program.suppliers;
 
 import java.util.Arrays;
 import java.util.Objects;
@@ -8,6 +8,9 @@ import java.util.stream.Collectors;
 import java.util.stream.IntStream;
 import java.util.stream.Stream;
 
+import au.csiro.data61.aap.program.Executable;
+import au.csiro.data61.aap.program.Method;
+import au.csiro.data61.aap.program.ProgramState;
 import au.csiro.data61.aap.program.types.SolidityType;
 import au.csiro.data61.aap.program.types.ValueCasts;
 import au.csiro.data61.aap.util.MethodResult;

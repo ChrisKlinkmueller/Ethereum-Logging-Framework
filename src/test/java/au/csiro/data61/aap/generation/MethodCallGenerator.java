@@ -8,9 +8,9 @@ import java.util.stream.Stream;
 
 import au.csiro.data61.aap.library.Library;
 import au.csiro.data61.aap.program.Method;
-import au.csiro.data61.aap.program.MethodCall;
+import au.csiro.data61.aap.program.suppliers.MethodCall;
 import au.csiro.data61.aap.program.Scope;
-import au.csiro.data61.aap.program.Variable;
+import au.csiro.data61.aap.program.suppliers.Variable;
 import au.csiro.data61.aap.program.types.SolidityType;
 
 /**

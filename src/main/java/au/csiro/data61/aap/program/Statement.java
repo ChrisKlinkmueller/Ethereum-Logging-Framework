@@ -3,6 +3,9 @@ package au.csiro.data61.aap.program;
 import java.util.Optional;
 import java.util.stream.Stream;
 
+import au.csiro.data61.aap.program.suppliers.MethodCall;
+import au.csiro.data61.aap.program.suppliers.ValueSource;
+import au.csiro.data61.aap.program.suppliers.Variable;
 import au.csiro.data61.aap.util.MethodResult;
 
 /**

@@ -23,8 +23,8 @@ import au.csiro.data61.aap.program.GlobalScope;
 import au.csiro.data61.aap.program.LogEntryScope;
 import au.csiro.data61.aap.program.SmartContractScope;
 import au.csiro.data61.aap.program.TransactionScope;
-import au.csiro.data61.aap.program.Variable;
-import au.csiro.data61.aap.program.VariableCategory;
+import au.csiro.data61.aap.program.suppliers.Variable;
+import au.csiro.data61.aap.program.suppliers.VariableCategory;
 import au.csiro.data61.aap.program.types.SolidityType;
 
 /**

@@ -5,12 +5,12 @@ import java.util.stream.Stream;
 
 import au.csiro.data61.aap.program.GlobalScope;
 import au.csiro.data61.aap.program.Instruction;
-import au.csiro.data61.aap.program.MethodCall;
+import au.csiro.data61.aap.program.suppliers.MethodCall;
 import au.csiro.data61.aap.program.Scope;
 import au.csiro.data61.aap.program.Statement;
-import au.csiro.data61.aap.program.ValueSource;
-import au.csiro.data61.aap.program.Variable;
-import au.csiro.data61.aap.program.VariableCategory;
+import au.csiro.data61.aap.program.suppliers.ValueSource;
+import au.csiro.data61.aap.program.suppliers.Variable;
+import au.csiro.data61.aap.program.suppliers.VariableCategory;
 
 /**
  * StatementGenerator

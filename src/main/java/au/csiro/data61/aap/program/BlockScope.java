@@ -7,6 +7,8 @@ import java.util.List;
 import java.util.Set;
 import java.util.function.Predicate;
 
+import au.csiro.data61.aap.program.suppliers.Variable;
+import au.csiro.data61.aap.program.suppliers.VariableCategory;
 import au.csiro.data61.aap.program.types.SolidityAddress;
 import au.csiro.data61.aap.program.types.SolidityBytes;
 import au.csiro.data61.aap.program.types.SolidityInteger;

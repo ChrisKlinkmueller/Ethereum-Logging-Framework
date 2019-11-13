@@ -1,6 +1,9 @@
 package au.csiro.data61.aap.program;
 
 import au.csiro.data61.aap.library.Library;
+import au.csiro.data61.aap.program.suppliers.MethodCall;
+import au.csiro.data61.aap.program.suppliers.Variable;
+import au.csiro.data61.aap.program.suppliers.VariableCategory;
 import au.csiro.data61.aap.program.types.SolidityString;
 
 /**

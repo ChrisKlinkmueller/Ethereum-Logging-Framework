@@ -10,8 +10,8 @@ import java.util.function.Function;
 import java.util.stream.Collectors;
 import java.util.stream.IntStream;
 
-import au.csiro.data61.aap.program.Variable;
-import au.csiro.data61.aap.program.VariableCategory;
+import au.csiro.data61.aap.program.suppliers.Variable;
+import au.csiro.data61.aap.program.suppliers.VariableCategory;
 import au.csiro.data61.aap.program.types.SolidityAddress;
 import au.csiro.data61.aap.program.types.SolidityArray;
 import au.csiro.data61.aap.program.types.SolidityBool;

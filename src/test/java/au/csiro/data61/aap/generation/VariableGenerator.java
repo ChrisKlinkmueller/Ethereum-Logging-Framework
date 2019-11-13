@@ -5,8 +5,8 @@ import java.util.function.Predicate;
 import java.util.stream.Stream;
 
 import au.csiro.data61.aap.program.Scope;
-import au.csiro.data61.aap.program.Variable;
-import au.csiro.data61.aap.program.VariableCategory;
+import au.csiro.data61.aap.program.suppliers.Variable;
+import au.csiro.data61.aap.program.suppliers.VariableCategory;
 import au.csiro.data61.aap.program.types.SolidityType;
 
 /**

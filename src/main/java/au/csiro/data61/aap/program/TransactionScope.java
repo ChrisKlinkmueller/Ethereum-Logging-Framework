@@ -3,6 +3,8 @@ package au.csiro.data61.aap.program;
 import java.util.HashSet;
 import java.util.Set;
 
+import au.csiro.data61.aap.program.suppliers.Variable;
+import au.csiro.data61.aap.program.suppliers.VariableCategory;
 import au.csiro.data61.aap.program.types.SolidityAddress;
 import au.csiro.data61.aap.program.types.SolidityArray;
 import au.csiro.data61.aap.program.types.SolidityBytes;

@@ -3,6 +3,7 @@ package au.csiro.data61.aap.program;
 import java.util.HashSet;
 import java.util.Set;
 
+import au.csiro.data61.aap.program.suppliers.Variable;
 import au.csiro.data61.aap.util.MethodResult;
 
 /**

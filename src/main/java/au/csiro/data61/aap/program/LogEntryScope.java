@@ -4,6 +4,7 @@ import java.util.HashSet;
 import java.util.Set;
 import java.util.stream.Stream;
 
+import au.csiro.data61.aap.program.suppliers.Variable;
 import au.csiro.data61.aap.program.types.SolidityAddress;
 import au.csiro.data61.aap.program.types.SolidityBool;
 import au.csiro.data61.aap.program.types.SolidityInteger;
