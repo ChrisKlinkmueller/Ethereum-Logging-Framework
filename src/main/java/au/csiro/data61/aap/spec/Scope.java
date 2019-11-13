@@ -1,8 +1,10 @@
 package au.csiro.data61.aap.spec;
 
 import java.util.ArrayList;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
+import java.util.function.Predicate;
 import java.util.stream.Stream;
 
 import au.csiro.data61.aap.spec.types.SolidityType;
@@ -42,4 +44,38 @@ public abstract class Scope extends Instruction {
     }    
 
     public abstract Stream<Variable> defaultVariableStream();
+
+    public Stream<Variable> variableStream() {
+        return Stream.concat(
+            this.defaultVariableStream(), 
+            this.instructionStream().flatMap(instr -> {
+                if (instr instanceof Statement) {
+                    Statement stmt = (Statement)instr;
+                    return stmt.getVariable().isEmpty() ? Stream.of() : Stream.of(stmt.getVariable().get());
+                }
+                else if (instr instanceof Scope) {
+                    return ((Scope)instr).defaultVariableStream();
+                }
+                else {
+                    // TODO: once emit blocks are introduced, check here
+                    throw new UnsupportedOperationException();
+                }
+            })
+            .filter(this.filterByName())
+        );
+    }
+
+    public Stream<Variable> variableStream(Predicate<Variable> selectionCriterion) {
+        assert selectionCriterion != null;
+        return this.variableStream().filter(selectionCriterion);
+    }
+
+    private Predicate<Variable> filterByName() {
+        final Set<String> knownNames = new HashSet<>();
+        return variable -> {
+            final boolean isKnown = knownNames.contains(variable.getName());
+            knownNames.add(variable.getName());
+            return !isKnown;
+        };
+    }
 }

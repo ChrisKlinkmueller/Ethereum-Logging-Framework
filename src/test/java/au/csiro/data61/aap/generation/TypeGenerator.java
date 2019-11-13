@@ -3,7 +3,6 @@ package au.csiro.data61.aap.generation;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Random;
-import java.util.function.BiFunction;
 import java.util.function.Function;
 
 import au.csiro.data61.aap.spec.types.SolidityAddress;
@@ -24,7 +23,7 @@ class TypeGenerator {
 
     private final TypeCreator[] typeCreators;
     private final Map<Class<? extends SolidityType>, String> baseKeywords;
-    private final Map<Class<? extends SolidityType>, BiFunction<Random, SolidityType, String>> keywordCreators;
+    private final Map<Class<? extends SolidityType>, Function<SolidityType, String>> keywordCreators;
     private final Random random;
     
     public TypeGenerator(Random random) {
@@ -69,18 +68,18 @@ class TypeGenerator {
 
     public String toKeyword(SolidityType type) {
         assert type != null && this.keywordCreators.containsKey(type.getClass());
-        return this.keywordCreators.get(type.getClass()).apply(this.random, type);
+        return this.keywordCreators.get(type.getClass()).apply(type);
     }
 
-    private String serializeAddress(Random random, SolidityType type) {
+    private String serializeAddress(SolidityType type) {
         return this.baseKeywords.get(SolidityAddress.class);
     }
 
-    private String serializeBool(Random random, SolidityType type) {
+    private String serializeBool(SolidityType type) {
         return this.baseKeywords.get(SolidityBool.class);
     }
 
-    private String serializeBytes(Random random, SolidityType type) {
+    private String serializeBytes(SolidityType type) {
         final SolidityBytes bytes = (SolidityBytes)type;
         final String keyword = this.baseKeywords.get(SolidityBytes.class);
         
@@ -95,7 +94,7 @@ class TypeGenerator {
         return String.format("%s%s", keyword, bytes.getLength());
     }
 
-    private String serializeFixed(Random random, SolidityType type) {
+    private String serializeFixed(SolidityType type) {
         final SolidityFixed fixed = (SolidityFixed)type;
         final String keyword = this.baseKeywords.get(SolidityFixed.class);
         final String signed = fixed.isSigned() ? "" : "u";
@@ -107,7 +106,7 @@ class TypeGenerator {
         return String.format("%s%s%sx%s", signed, keyword, fixed.getM(), fixed.getN());
     }
 
-    private String serializeInteger(Random random, SolidityType type) {
+    private String serializeInteger(SolidityType type) {
         final SolidityInteger integer = (SolidityInteger)type;
         final String keyword = this.baseKeywords.get(SolidityInteger.class);
         final String signed = integer.isSigned() ? "" : "u";
@@ -119,7 +118,7 @@ class TypeGenerator {
         return String.format("%s%s%s", signed, keyword, integer.getLength());
     }
 
-    private String serializeString(Random random, SolidityType type) {
+    private String serializeString(SolidityType type) {
         return this.baseKeywords.get(SolidityString.class);
     }
 

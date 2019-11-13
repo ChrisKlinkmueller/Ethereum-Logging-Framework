@@ -96,6 +96,7 @@ public class LiteralGenerator {
         final SolidityType baseType = ((SolidityArray)type).getBaseType();
         return IntStream.range(0, MIN_LIST_LENGTH + this.random.nextInt(MAX_LIST_LENGTH))
             .mapToObj(i -> this.generateLiteral(baseType))
+            .map(var -> var.getValue().getResult())
             .collect(Collectors.toList());
     }
 

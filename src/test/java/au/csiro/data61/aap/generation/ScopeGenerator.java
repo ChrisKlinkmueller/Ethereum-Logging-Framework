@@ -11,5 +11,4 @@ public class ScopeGenerator {
         assert random != null;
         this.random = random;
     }
-    
 }

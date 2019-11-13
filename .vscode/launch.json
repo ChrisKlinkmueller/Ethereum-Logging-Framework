@@ -2,6 +2,13 @@
     "configurations": [
         {
             "type": "java",
+            "name": "CodeLens (Launch) - StatementGenerator",
+            "request": "launch",
+            "mainClass": "au.csiro.data61.aap.generation.StatementGenerator",
+            "projectName": "xes-blockchain"
+        },
+        {
+            "type": "java",
             "name": "CodeLens (Launch) - VariableAnalyzer",
             "request": "launch",
             "mainClass": "au.csiro.data61.aap.parser.VariableAnalyzer",

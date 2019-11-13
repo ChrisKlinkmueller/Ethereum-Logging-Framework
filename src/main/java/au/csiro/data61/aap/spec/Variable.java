@@ -20,6 +20,7 @@ public class Variable implements ValueSource {
         assert type != null;
         assert name != null;
         assert category != null;
+        assert category == VariableCategory.LITERAL ? value != null : true;
         this.type = type;
         this.name = name;
         this.category = category;
@@ -48,6 +49,10 @@ public class Variable implements ValueSource {
 
     public String getName() {
         return this.name;
+    }
+
+    public boolean hasSameName(Variable variable) {
+        return variable == null ? false : variable.name.equals(this.name);
     }
 
     

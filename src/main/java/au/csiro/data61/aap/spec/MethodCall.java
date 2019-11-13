@@ -13,40 +13,40 @@ import au.csiro.data61.aap.util.MethodResult;
  */
 public class MethodCall implements ValueSource {
     private final Method method;
-    private final Variable[] variables;
+    private final Variable[] parameters;
 
-    public MethodCall(Method method, Variable... variables) {
+    public MethodCall(Method method, Variable... parameters) {
         assert method != null;
-        assert Arrays.stream(variables).allMatch(Objects::nonNull);
-        assert method.getSignature().parameterTypeCount() == variables.length;
-        assert IntStream.range(0, variables.length)
-                .allMatch(i -> method.getSignature().getParameterType(i).castableFrom(variables[i].getType()));
+        assert Arrays.stream(parameters).allMatch(Objects::nonNull);
+        assert method.getSignature().parameterTypeCount() == parameters.length;
+        assert IntStream.range(0, parameters.length)
+                .allMatch(i -> method.getSignature().getParameterType(i).castableFrom(parameters[i].getType()));
         this.method = method;
         // TODO: if a variable type is not equal to the respective parameter type, 
         //       wrap the variable in a cast
-        this.variables = Arrays.copyOf(variables, variables.length);
+        this.parameters = Arrays.copyOf(parameters, parameters.length);
     }
 
     public Method getMethod() {
         return this.method;
     }
 
-    public int variableCount() {
-        return this.variables.length;
+    public int parameterCount() {
+        return this.parameters.length;
     }
 
-    public Variable getVariable(int index) {
-        assert 0 <= index && index < this.variableCount();
-        return this.variables[index];
+    public Variable getParameter(int index) {
+        assert 0 <= index && index < this.parameterCount();
+        return this.parameters[index];
     }
 
-    public Stream<Variable> variableStream() {
-        return Arrays.stream(this.variables);
+    public Stream<Variable> parameterStream() {
+        return Arrays.stream(this.parameters);
     }
 
     @Override
     public MethodResult<Object> getValue() {
-        final Object[] parameters = this.variableStream().map(variable -> variable.getValue().getResult()).toArray();
+        final Object[] parameters = this.parameterStream().map(variable -> variable.getValue().getResult()).toArray();
         return this.method.execute(parameters);
     }
 
