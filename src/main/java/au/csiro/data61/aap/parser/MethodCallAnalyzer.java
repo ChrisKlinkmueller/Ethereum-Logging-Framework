@@ -6,8 +6,8 @@ import java.util.stream.IntStream;
 import au.csiro.data61.aap.library.Library;
 import au.csiro.data61.aap.parser.XbelParser.MethodCallContext;
 import au.csiro.data61.aap.parser.XbelParser.MethodParameterContext;
-import au.csiro.data61.aap.spec.Method;
-import au.csiro.data61.aap.spec.types.SolidityType;
+import au.csiro.data61.aap.program.Method;
+import au.csiro.data61.aap.program.types.SolidityType;
 
 /**
  * MethodCallAnalyzer

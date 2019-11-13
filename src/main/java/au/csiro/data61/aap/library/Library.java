@@ -8,9 +8,9 @@ import java.util.function.BiPredicate;
 import java.util.stream.IntStream;
 import java.util.stream.Stream;
 
-import au.csiro.data61.aap.spec.Method;
-import au.csiro.data61.aap.spec.MethodSignature;
-import au.csiro.data61.aap.spec.types.SolidityType;
+import au.csiro.data61.aap.program.Method;
+import au.csiro.data61.aap.program.MethodSignature;
+import au.csiro.data61.aap.program.types.SolidityType;
 
 /**
  * Library

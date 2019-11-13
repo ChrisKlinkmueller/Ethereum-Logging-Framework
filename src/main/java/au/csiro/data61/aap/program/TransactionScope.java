@@ -1,15 +1,14 @@
-package au.csiro.data61.aap.spec;
+package au.csiro.data61.aap.program;
 
 import java.util.HashSet;
 import java.util.Set;
 import java.util.stream.Stream;
 
-import au.csiro.data61.aap.spec.types.SolidityAddress;
-import au.csiro.data61.aap.spec.types.SolidityArray;
-import au.csiro.data61.aap.spec.types.SolidityBytes;
-import au.csiro.data61.aap.spec.types.SolidityInteger;
-import au.csiro.data61.aap.spec.types.SolidityString;
-import au.csiro.data61.aap.state.ProgramState;
+import au.csiro.data61.aap.program.types.SolidityAddress;
+import au.csiro.data61.aap.program.types.SolidityArray;
+import au.csiro.data61.aap.program.types.SolidityBytes;
+import au.csiro.data61.aap.program.types.SolidityInteger;
+import au.csiro.data61.aap.program.types.SolidityString;
 
 /**
  * TransactionScope

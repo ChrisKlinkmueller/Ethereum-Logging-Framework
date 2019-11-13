@@ -1,6 +1,6 @@
 package au.csiro.data61.aap.parser;
 
-import au.csiro.data61.aap.spec.Scope;
+import au.csiro.data61.aap.program.Scope;
 
 /**
  * SpecBuilder

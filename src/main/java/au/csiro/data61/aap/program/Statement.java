@@ -1,8 +1,6 @@
-package au.csiro.data61.aap.spec;
+package au.csiro.data61.aap.program;
 
 import java.util.Optional;
-
-import au.csiro.data61.aap.state.ProgramState;
 
 /**
  * Statement

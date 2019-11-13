@@ -1,4 +1,4 @@
-package au.csiro.data61.aap.spec;
+package au.csiro.data61.aap.program;
 
 /**
  * VariableCategory

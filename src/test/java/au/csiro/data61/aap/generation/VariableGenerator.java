@@ -4,10 +4,10 @@ import java.util.Random;
 import java.util.function.Predicate;
 import java.util.stream.Stream;
 
-import au.csiro.data61.aap.spec.Scope;
-import au.csiro.data61.aap.spec.Variable;
-import au.csiro.data61.aap.spec.VariableCategory;
-import au.csiro.data61.aap.spec.types.SolidityType;
+import au.csiro.data61.aap.program.Scope;
+import au.csiro.data61.aap.program.Variable;
+import au.csiro.data61.aap.program.VariableCategory;
+import au.csiro.data61.aap.program.types.SolidityType;
 
 /**
  * VariableGenerator

@@ -5,14 +5,14 @@ import java.util.Map;
 import java.util.Random;
 import java.util.function.Function;
 
-import au.csiro.data61.aap.spec.types.SolidityAddress;
-import au.csiro.data61.aap.spec.types.SolidityArray;
-import au.csiro.data61.aap.spec.types.SolidityBool;
-import au.csiro.data61.aap.spec.types.SolidityBytes;
-import au.csiro.data61.aap.spec.types.SolidityFixed;
-import au.csiro.data61.aap.spec.types.SolidityInteger;
-import au.csiro.data61.aap.spec.types.SolidityString;
-import au.csiro.data61.aap.spec.types.SolidityType;
+import au.csiro.data61.aap.program.types.SolidityAddress;
+import au.csiro.data61.aap.program.types.SolidityArray;
+import au.csiro.data61.aap.program.types.SolidityBool;
+import au.csiro.data61.aap.program.types.SolidityBytes;
+import au.csiro.data61.aap.program.types.SolidityFixed;
+import au.csiro.data61.aap.program.types.SolidityInteger;
+import au.csiro.data61.aap.program.types.SolidityString;
+import au.csiro.data61.aap.program.types.SolidityType;
 
 /**
  * TypeGenerator

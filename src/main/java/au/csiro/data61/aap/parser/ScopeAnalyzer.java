@@ -18,10 +18,10 @@ import au.csiro.data61.aap.parser.XbelParser.ScopeContext;
 import au.csiro.data61.aap.parser.XbelParser.SmartContractVariableContext;
 import au.csiro.data61.aap.parser.XbelParser.SmartContractsFilterContext;
 import au.csiro.data61.aap.parser.XbelParser.TransactionFilterContext;
-import au.csiro.data61.aap.spec.types.SolidityAddress;
-import au.csiro.data61.aap.spec.types.SolidityArray;
-import au.csiro.data61.aap.spec.types.SolidityInteger;
-import au.csiro.data61.aap.spec.types.SolidityType;
+import au.csiro.data61.aap.program.types.SolidityAddress;
+import au.csiro.data61.aap.program.types.SolidityArray;
+import au.csiro.data61.aap.program.types.SolidityInteger;
+import au.csiro.data61.aap.program.types.SolidityType;
 
 /**
  * FilterVerifier

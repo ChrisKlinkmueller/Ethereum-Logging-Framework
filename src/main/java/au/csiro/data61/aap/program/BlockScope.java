@@ -1,27 +1,23 @@
-package au.csiro.data61.aap.spec;
+package au.csiro.data61.aap.program;
 
 import java.util.HashSet;
 import java.util.Set;
 import java.util.stream.Stream;
 
-import au.csiro.data61.aap.spec.types.SolidityAddress;
-import au.csiro.data61.aap.spec.types.SolidityArray;
-import au.csiro.data61.aap.spec.types.SolidityBytes;
-import au.csiro.data61.aap.spec.types.SolidityInteger;
-import au.csiro.data61.aap.spec.types.SolidityString;
-import au.csiro.data61.aap.state.ProgramState;
+import au.csiro.data61.aap.program.types.SolidityAddress;
+import au.csiro.data61.aap.program.types.SolidityArray;
+import au.csiro.data61.aap.program.types.SolidityBytes;
+import au.csiro.data61.aap.program.types.SolidityInteger;
+import au.csiro.data61.aap.program.types.SolidityString;
 
 /**
  * BlockScope
  */
 public class BlockScope extends Scope {
     public static final Set<Variable> DEFAULT_VARIABLES;
-    public static final Variable EARLIEST = new Variable(SolidityInteger.DEFAULT_INSTANCE, "earliest",
-            VariableCategory.SCOPE_VARIABLE, 0);
-    public static final Variable CURRENT = new Variable(SolidityString.DEFAULT_INSTANCE, "current",
-            VariableCategory.SCOPE_VARIABLE, "current");
-    public static final Variable PENDING = new Variable(SolidityString.DEFAULT_INSTANCE, "pending",
-            VariableCategory.SCOPE_VARIABLE, "pending");
+    public static final Variable EARLIEST = new Variable(SolidityInteger.DEFAULT_INSTANCE, "earliest", VariableCategory.SCOPE_VARIABLE, 0);
+    public static final Variable CURRENT = new Variable(SolidityString.DEFAULT_INSTANCE, "current", VariableCategory.SCOPE_VARIABLE, "current");
+    public static final Variable PENDING = new Variable(SolidityString.DEFAULT_INSTANCE, "pending", VariableCategory.SCOPE_VARIABLE, "pending");
 
     private final Variable fromBlockNumber;
     private final Variable toBlockNumber;
@@ -51,7 +47,7 @@ public class BlockScope extends Scope {
         addVariable(DEFAULT_VARIABLES, SolidityInteger.DEFAULT_INSTANCE, "block.size");
         addVariable(DEFAULT_VARIABLES, SolidityInteger.DEFAULT_INSTANCE, "block.gasLimit");
         addVariable(DEFAULT_VARIABLES, SolidityInteger.DEFAULT_INSTANCE, "block.gasUsed");
-        addVariable(DEFAULT_VARIABLES, SolidityInteger.DEFAULT_INSTANCE, "block.imestamp");
+        addVariable(DEFAULT_VARIABLES, SolidityInteger.DEFAULT_INSTANCE, "block.timestamp");
         addVariable(DEFAULT_VARIABLES, SolidityInteger.DEFAULT_INSTANCE, "block.transactions");
         addVariable(DEFAULT_VARIABLES, new SolidityArray(SolidityBytes.DEFAULT_INSTANCE), "block.uncles");
     }

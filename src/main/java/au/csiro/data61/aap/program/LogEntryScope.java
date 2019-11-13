@@ -1,13 +1,12 @@
-package au.csiro.data61.aap.spec;
+package au.csiro.data61.aap.program;
 
 import java.util.HashSet;
 import java.util.Set;
 import java.util.stream.Stream;
 
-import au.csiro.data61.aap.spec.types.SolidityAddress;
-import au.csiro.data61.aap.spec.types.SolidityBool;
-import au.csiro.data61.aap.spec.types.SolidityInteger;
-import au.csiro.data61.aap.state.ProgramState;
+import au.csiro.data61.aap.program.types.SolidityAddress;
+import au.csiro.data61.aap.program.types.SolidityBool;
+import au.csiro.data61.aap.program.types.SolidityInteger;
 
 /**
  * LogEntryScope

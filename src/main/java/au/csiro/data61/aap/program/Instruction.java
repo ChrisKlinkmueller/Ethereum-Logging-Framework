@@ -1,6 +1,4 @@
-package au.csiro.data61.aap.spec;
-
-import au.csiro.data61.aap.state.ProgramState;
+package au.csiro.data61.aap.program;
 
 /**
  * Instruction

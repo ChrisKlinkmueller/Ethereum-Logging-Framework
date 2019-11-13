@@ -1,4 +1,4 @@
-package au.csiro.data61.aap.spec;
+package au.csiro.data61.aap.program;
 
 import java.util.ArrayList;
 import java.util.HashSet;
@@ -7,7 +7,7 @@ import java.util.Set;
 import java.util.function.Predicate;
 import java.util.stream.Stream;
 
-import au.csiro.data61.aap.spec.types.SolidityType;
+import au.csiro.data61.aap.program.types.SolidityType;
 
 /**
  * Block

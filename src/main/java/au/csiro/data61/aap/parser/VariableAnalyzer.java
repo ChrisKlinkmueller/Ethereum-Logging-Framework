@@ -18,14 +18,14 @@ import au.csiro.data61.aap.parser.XbelParser.TransactionFilterContext;
 import au.csiro.data61.aap.parser.XbelParser.VariableDefinitionContext;
 import au.csiro.data61.aap.parser.XbelParser.VariableNameContext;
 import au.csiro.data61.aap.parser.XbelParser.VariableReferenceContext;
-import au.csiro.data61.aap.spec.BlockScope;
-import au.csiro.data61.aap.spec.GlobalScope;
-import au.csiro.data61.aap.spec.LogEntryScope;
-import au.csiro.data61.aap.spec.SmartContractScope;
-import au.csiro.data61.aap.spec.TransactionScope;
-import au.csiro.data61.aap.spec.Variable;
-import au.csiro.data61.aap.spec.VariableCategory;
-import au.csiro.data61.aap.spec.types.SolidityType;
+import au.csiro.data61.aap.program.BlockScope;
+import au.csiro.data61.aap.program.GlobalScope;
+import au.csiro.data61.aap.program.LogEntryScope;
+import au.csiro.data61.aap.program.SmartContractScope;
+import au.csiro.data61.aap.program.TransactionScope;
+import au.csiro.data61.aap.program.Variable;
+import au.csiro.data61.aap.program.VariableCategory;
+import au.csiro.data61.aap.program.types.SolidityType;
 
 /**
  * VariableCollector

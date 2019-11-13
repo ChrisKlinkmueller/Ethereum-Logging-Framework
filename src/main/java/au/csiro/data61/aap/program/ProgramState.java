@@ -1,10 +1,10 @@
-package au.csiro.data61.aap.state;
+package au.csiro.data61.aap.program;
 
 import java.util.HashMap;
 import java.util.Map;
 
 import au.csiro.data61.aap.rpc.EthereumBlock;
-import au.csiro.data61.aap.spec.Variable;
+import au.csiro.data61.aap.program.Variable;
 
 /**
  * ProgramState

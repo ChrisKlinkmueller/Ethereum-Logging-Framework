@@ -1,11 +1,11 @@
-package au.csiro.data61.aap.spec;
+package au.csiro.data61.aap.program;
 
 import java.util.Arrays;
 import java.util.Objects;
 import java.util.function.Function;
 import java.util.stream.Collectors;
 
-import au.csiro.data61.aap.spec.types.SolidityType;
+import au.csiro.data61.aap.program.types.SolidityType;
 import au.csiro.data61.aap.util.MethodResult;
 
 /**

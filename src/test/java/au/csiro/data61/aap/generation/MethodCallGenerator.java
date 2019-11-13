@@ -7,11 +7,11 @@ import java.util.stream.IntStream;
 import java.util.stream.Stream;
 
 import au.csiro.data61.aap.library.Library;
-import au.csiro.data61.aap.spec.Method;
-import au.csiro.data61.aap.spec.MethodCall;
-import au.csiro.data61.aap.spec.Scope;
-import au.csiro.data61.aap.spec.Variable;
-import au.csiro.data61.aap.spec.types.SolidityType;
+import au.csiro.data61.aap.program.Method;
+import au.csiro.data61.aap.program.MethodCall;
+import au.csiro.data61.aap.program.Scope;
+import au.csiro.data61.aap.program.Variable;
+import au.csiro.data61.aap.program.types.SolidityType;
 
 /**
  * MethodCallGenerator

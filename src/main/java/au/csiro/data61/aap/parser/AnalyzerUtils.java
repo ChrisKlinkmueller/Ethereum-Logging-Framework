@@ -17,14 +17,14 @@ import org.antlr.v4.runtime.tree.TerminalNode;
 import au.csiro.data61.aap.parser.XbelParser.ArrayValueContext;
 import au.csiro.data61.aap.parser.XbelParser.LiteralContext;
 import au.csiro.data61.aap.parser.XbelParser.SolTypeContext;
-import au.csiro.data61.aap.spec.types.SolidityAddress;
-import au.csiro.data61.aap.spec.types.SolidityArray;
-import au.csiro.data61.aap.spec.types.SolidityBool;
-import au.csiro.data61.aap.spec.types.SolidityBytes;
-import au.csiro.data61.aap.spec.types.SolidityFixed;
-import au.csiro.data61.aap.spec.types.SolidityInteger;
-import au.csiro.data61.aap.spec.types.SolidityType;
-import au.csiro.data61.aap.spec.types.SolidityString;
+import au.csiro.data61.aap.program.types.SolidityAddress;
+import au.csiro.data61.aap.program.types.SolidityArray;
+import au.csiro.data61.aap.program.types.SolidityBool;
+import au.csiro.data61.aap.program.types.SolidityBytes;
+import au.csiro.data61.aap.program.types.SolidityFixed;
+import au.csiro.data61.aap.program.types.SolidityInteger;
+import au.csiro.data61.aap.program.types.SolidityType;
+import au.csiro.data61.aap.program.types.SolidityString;
 
 /**
  * AnalyzerUtils

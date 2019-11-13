@@ -3,14 +3,14 @@ package au.csiro.data61.aap.generation;
 import java.util.Random;
 import java.util.stream.Stream;
 
-import au.csiro.data61.aap.spec.GlobalScope;
-import au.csiro.data61.aap.spec.Instruction;
-import au.csiro.data61.aap.spec.MethodCall;
-import au.csiro.data61.aap.spec.Scope;
-import au.csiro.data61.aap.spec.Statement;
-import au.csiro.data61.aap.spec.ValueSource;
-import au.csiro.data61.aap.spec.Variable;
-import au.csiro.data61.aap.spec.VariableCategory;
+import au.csiro.data61.aap.program.GlobalScope;
+import au.csiro.data61.aap.program.Instruction;
+import au.csiro.data61.aap.program.MethodCall;
+import au.csiro.data61.aap.program.Scope;
+import au.csiro.data61.aap.program.Statement;
+import au.csiro.data61.aap.program.ValueSource;
+import au.csiro.data61.aap.program.Variable;
+import au.csiro.data61.aap.program.VariableCategory;
 
 /**
  * StatementGenerator
