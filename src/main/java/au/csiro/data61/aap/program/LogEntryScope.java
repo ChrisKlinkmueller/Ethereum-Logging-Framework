@@ -7,6 +7,7 @@ import java.util.stream.Stream;
 import au.csiro.data61.aap.program.types.SolidityAddress;
 import au.csiro.data61.aap.program.types.SolidityBool;
 import au.csiro.data61.aap.program.types.SolidityInteger;
+import au.csiro.data61.aap.util.MethodResult;
 
 /**
  * LogEntryScope
@@ -22,8 +23,8 @@ public class LogEntryScope extends Scope {
     }
 
     @Override
-    public void execute(ProgramState state) {
-        throw new UnsupportedOperationException("Method not implemented.");
+    public MethodResult<Void> execute(ProgramState state) {        
+        return MethodResult.ofError("Method not implemented");
     }
 
     @Override

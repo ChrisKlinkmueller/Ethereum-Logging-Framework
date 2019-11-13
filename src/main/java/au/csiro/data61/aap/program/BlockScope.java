@@ -1,7 +1,10 @@
 package au.csiro.data61.aap.program;
 
+import java.io.IOException;
+import java.math.BigInteger;
 import java.util.HashSet;
 import java.util.Set;
+import java.util.function.Predicate;
 import java.util.stream.Stream;
 
 import au.csiro.data61.aap.program.types.SolidityAddress;
@@ -9,6 +12,8 @@ import au.csiro.data61.aap.program.types.SolidityArray;
 import au.csiro.data61.aap.program.types.SolidityBytes;
 import au.csiro.data61.aap.program.types.SolidityInteger;
 import au.csiro.data61.aap.program.types.SolidityString;
+import au.csiro.data61.aap.rpc.EthereumBlock;
+import au.csiro.data61.aap.util.MethodResult;
 
 /**
  * BlockScope
@@ -65,18 +70,110 @@ public class BlockScope extends Scope {
     }
 
     @Override
-    public void execute(ProgramState state) {
-        throw new UnsupportedOperationException();
+    public MethodResult<Void> execute(ProgramState state) {
+        BigInteger startBlock = null;
+        Predicate<BigInteger> stopCriterion = null;
+
+        // TODO: if pending, set export mode to block!
+
+        try {
+            startBlock = this.getBlockNumber(state, this.fromBlockNumber);
+            stopCriterion = this.createStopCriterion(state);
+        }
+        catch (IOException ex) {
+            final String message = this.createInitializationErrorMessage();
+            state.reportException(message, ex);
+            return MethodResult.ofError(message, ex);
+        }
+
+        return this.loopThroughBlocks(state, startBlock, stopCriterion);
+    }
+
+    private MethodResult<Void> loopThroughBlocks(ProgramState state, BigInteger startBlock, Predicate<BigInteger> stopCriterion) {
+        BigInteger currentBlock = startBlock;
+        while (!stopCriterion.test(currentBlock)) {
+            try {
+                final EthereumBlock block = state.getEthereumClient().queryBlockData(currentBlock);
+                final MethodResult<Void> result = this.processBlock(state, block);
+                if (!result.isSuccessful() && !state.continueAfterException()) {
+                    return result;
+                }
+            }
+            catch(Exception ex) {
+                final String message = String.format("Error processing block %s.", currentBlock);
+                state.reportException(message, ex);
+                if (!state.continueAfterException()) {
+                    return MethodResult.ofError(message, ex);
+                }
+            }
+
+            currentBlock = currentBlock.add(BigInteger.ONE);
+        }
+        return MethodResult.ofResult();
+    }
+
+    private MethodResult<Void> processBlock(ProgramState state, EthereumBlock block) {
+        this.setBlockVariables(block);
+
+        for (int i = 0; i < this.instructionCount(); i++) {
+            final MethodResult<Void> result = this.getInstruction(i).execute(state);
+            if (!result.isSuccessful()) {
+                return result;
+            }
+        }
+
+        return MethodResult.ofResult();
+    }
+
+    private void setBlockVariables(EthereumBlock block) {
+    }
+
+    private String createInitializationErrorMessage() {
+        return String.format(
+            "Error during initialization of block scope with parameters: from='%s' and to='%s'.",
+            this.fromBlockNumber.getValue(),
+            this.toBlockNumber.getValue() 
+        );
+    }
+
+    private BigInteger getBlockNumber(ProgramState state, Variable variable) throws IOException {
+        if (variable == EARLIEST) {
+            return BigInteger.ZERO;
+        }
+        else if (variable == CURRENT) {
+            return state.getEthereumClient().queryBlockNumber();
+        }
+        else if (variable == PENDING) {
+            throw new UnsupportedOperationException("PENDING cannot be converted into a number");
+        }
+        else {
+            return (BigInteger)variable.getValue();
+        }
+    }
+
+    private Predicate<BigInteger> createStopCriterion(ProgramState state) throws IOException {
+        if (this.toBlockNumber == PENDING) {
+            return number -> true;
+        }
+
+        final BigInteger toNumber = this.getBlockNumber(state, this.toBlockNumber);
+        return number -> number.equals(toNumber);
     }
 
     public static boolean isValidBlockNumberVariable(Variable variable) {
-        return variable != null && (variable == PENDING || variable == EARLIEST || variable == CURRENT
-                || SolidityInteger.DEFAULT_INSTANCE.castableFrom(variable.getType()));
+        return     variable != null 
+                && (
+                      variable == PENDING 
+                   || variable == EARLIEST 
+                   || variable == CURRENT 
+                   || SolidityInteger.DEFAULT_INSTANCE.conceptuallyEquals(variable.getType())
+                )
+        ;
     }
 
     @Override
     public Stream<Variable> defaultVariableStream() {
         return DEFAULT_VARIABLES.stream();
     }
-    
+
 }

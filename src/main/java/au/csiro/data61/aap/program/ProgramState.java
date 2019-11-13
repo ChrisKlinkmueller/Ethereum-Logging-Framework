@@ -1,43 +1,87 @@
 package au.csiro.data61.aap.program;
 
-import java.util.HashMap;
-import java.util.Map;
+import java.util.LinkedList;
+import java.util.List;
+import java.util.function.Consumer;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 
 import au.csiro.data61.aap.rpc.EthereumBlock;
-import au.csiro.data61.aap.program.Variable;
+import au.csiro.data61.aap.rpc.EthereumClient;
+import au.csiro.data61.aap.rpc.EthereumTransaction;
 
 /**
  * ProgramState
  */
-public class ProgramState {
-    private final Map<String, Variable> variables;
+public class ProgramState implements AutoCloseable {
+    private static final Logger LOGGER = Logger.getLogger("Exception Handling");
+
+    private final List<Consumer<ProgramState>> onCloseListeners;
     private EthereumBlock block;
+    private EthereumTransaction transaction;
+    private EthereumClient client;
+    private ExceptionHandlingStrategy exceptionHandlingStrategy;
 
     public ProgramState() {
-        this.variables = new HashMap<>();
+        this.onCloseListeners = new LinkedList<>();
+        this.exceptionHandlingStrategy = ExceptionHandlingStrategy.ABORT;
     }
 
-    public Variable getVariable(String varName) {
-        assert varName != null && varName.isBlank() && this.variables.containsKey(varName);
-        return this.variables.get(varName);
+
+
+    @Override
+    public void close() throws Exception {
+        this.onCloseListeners.forEach(l -> l.accept(this));
     }
 
-    public void addVariable(Variable variable) {
-        assert variable != null && !this.variables.containsKey(variable.getName());
-        this.variables.put(variable.getName(), variable);
+    public void addOnCloseListener(Consumer<ProgramState> listener) {
+        assert listener != null;
+        this.onCloseListeners.add(listener);
     }
 
-    public void removeVariable(Variable variable) {
-        assert variable != null && this.variables.containsKey(variable.getName());
-        this.variables.remove(variable.getName());
+    public void removeOnCloseListener(Consumer<ProgramState> listener) {
+        assert listener != null;
+        this.onCloseListeners.remove(listener);
     }
 
-    public void setCurrentBlock(EthereumBlock block) {
-        assert block != null;
-        this.block = block;
-    }
+
 
     public EthereumBlock getCurrentBlock() {
         return this.block;
+    }
+
+    public void setCurrentBlock(EthereumBlock block) {
+        this.block = block;
+    }
+
+    public EthereumTransaction getCurrentTransaction() {
+        return this.transaction;
+    }
+
+    public void setCurrentTransaction(EthereumTransaction transaction) {
+        this.transaction = transaction;
+    }
+
+    public EthereumClient getEthereumClient() {
+        return this.client;
+    }
+
+    public void setEthereumClient(EthereumClient client) {
+        this.client = client;
+    }
+
+
+    public void setExceptionHandlingStrategy(ExceptionHandlingStrategy strategy) {
+        this.exceptionHandlingStrategy = strategy;
+    }
+
+    public void reportException(String message, Exception exception) {
+        assert message != null;
+        assert exception != null;
+        LOGGER.log(Level.SEVERE, message, exception);
+    }
+
+    public boolean continueAfterException() {
+        return this.exceptionHandlingStrategy == ExceptionHandlingStrategy.CONTINUE;
     }
 }

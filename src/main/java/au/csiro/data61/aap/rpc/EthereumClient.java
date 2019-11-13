@@ -21,8 +21,6 @@ import org.web3j.protocol.core.methods.response.Transaction;
 import org.web3j.protocol.websocket.WebSocketClient;
 import org.web3j.protocol.websocket.WebSocketService;
 
-import au.csiro.data61.aap.util.MethodResult;
-
 /**
  * EthereumClient
  */
@@ -31,74 +29,62 @@ public class EthereumClient {
     private static final String URL = "ws://localhost:8546/";
 
     public static void main(String[] args) {
-        final MethodResult<EthereumClient> creationResult = createEthereumClient();
-        if (!creationResult.isSuccessful()) {
-            System.out.println(creationResult.getErrorMessage());
-            return;
-        }
+        EthereumClient client = null;
+        try {
+            client = new EthereumClient();
+            final BigInteger number = client.queryBlockNumber();
+            System.out.println("Current Blocknumber: " + number);
 
-        final EthereumClient client = creationResult.getResult();
-        final MethodResult<BigInteger> numberQueryResult = client.queryBlockNumber();
-        if (!numberQueryResult.isSuccessful()) {
-            System.out.println(creationResult.getErrorMessage());
-            return;
-        }
+            final EthereumBlock block = client.queryBlockData(number);
+            System.out.println("\tHash: " + block.getHash());
+            System.out.println("\tGas used: " + block.getGasUsed());
+            System.out.println("\tTransactions: " + block.transactionCount());
+            for (int i = 0; i < Math.min(10, block.transactionCount()); i++) {
+                final EthereumTransaction transaction = block.getTransaction(i);
+                System.out.println(String.format("\t\tTx (%s): %s -> %s", transaction.getTransactionIndex(), transaction.getFrom(), transaction.getTo()));
 
-        System.out.println("Current Blocknumber: " + numberQueryResult.getResult());
-
-        final MethodResult<EthereumBlock> blockQueryResult = client.queryBlockData(numberQueryResult.getResult());
-        if (!blockQueryResult.isSuccessful()) {
-            System.out.println(blockQueryResult.getErrorMessage());
-            return;
-        }
-
-        final EthereumBlock block = blockQueryResult.getResult();
-        System.out.println("\tHash: " + block.getHash());
-        System.out.println("\tGas used: " + block.getGasUsed());
-        System.out.println("\tTransactions: " + block.transactionCount());
-        for (int i = 0; i < Math.min(10, block.transactionCount()); i++) {
-            final EthereumTransaction transaction = block.getTransaction(i);
-            System.out.println(String.format("\t\tTx (%s): %s -> %s", transaction.getTransactionIndex(), transaction.getFrom(), transaction.getTo()));
-
-            for (int j = 0; j < Math.min(3, transaction.logCount()); j++) {
-                final EthereumLog log = transaction.getLog(j);
-                System.out.println(String.format("\t\t\tLog: %s", log.getData()));
+                for (int j = 0; j < Math.min(3, transaction.logCount()); j++) {
+                    final EthereumLog log = transaction.getLog(j);
+                    System.out.println(String.format("\t\t\tLog: %s", log.getData()));
+                }
+                if (3 < transaction.logCount()) {
+                    System.out.println("\t\t\t...");
+                }
             }
-            if (3 < transaction.logCount()) {
-                System.out.println("\t\t\t...");
+            if (10 < block.transactionCount()) {
+                System.out.println("\t\t...");
             }
-        }
-        if (10 < block.transactionCount()) {
-            System.out.println("\t\t...");
-        }
 
-        client.close();
+            client.close();
+        }
+        catch (Exception ex) {
+            ex.printStackTrace();
+        }
+        finally {
+            client.close();
+        }
     }
 
     private final WebSocketService wsService;
     private final Web3j web3j;
 
-    private EthereumClient(String url) throws URISyntaxException, ConnectException {
-        final WebSocketClient wsClient = new WebSocketClient(new URI(URL));
-        final WebSocketService wsService = new WebSocketService(wsClient, false);
-        wsService.connect();
-
-        this.web3j = Web3j.build(wsService);
-        this.wsService = wsService;
+    EthereumClient() throws URISyntaxException, ConnectException {
+        this(URL);
     }
 
-    public static MethodResult<EthereumClient> createEthereumClient() {
-        return createEthereumClient(URL);
-    }
-
-    public static MethodResult<EthereumClient> createEthereumClient(String url) {
+    public EthereumClient(String url) throws URISyntaxException, ConnectException {
         try {
-            final EthereumClient client = new EthereumClient(url);
-            return MethodResult.ofResult(client);
-        } catch (Exception ex) {
+            final WebSocketClient wsClient = new WebSocketClient(new URI(URL));
+            final WebSocketService wsService = new WebSocketService(wsClient, false);
+            wsService.connect();
+
+            this.web3j = Web3j.build(wsService);
+            this.wsService = wsService;
+        }
+        catch (URISyntaxException | ConnectException ex) {
             final String message = String.format("Error when connecting to the ethereum client with url '%s'.", url);
             LOGGER.log(Level.SEVERE, message, ex);
-            return MethodResult.ofError(message, ex);
+            throw ex;
         }
     }
 
@@ -106,48 +92,48 @@ public class EthereumClient {
         this.wsService.close();
     }
 
-    public MethodResult<BigInteger> queryBlockNumber() {
+    public BigInteger queryBlockNumber() throws IOException {
         try {
             final EthBlockNumber queryResult = this.web3j.ethBlockNumber().send();
             if (queryResult.hasError()) {
-                return MethodResult.ofError(queryResult.getError().getMessage());
+                throw new IOException(queryResult.getError().getMessage());
             } else {
-                return MethodResult.ofResult(queryResult.getBlockNumber());
+                return queryResult.getBlockNumber();
             }
         } catch (IOException ex) {
             final String message = "Error when retrieving the current block number.";
             LOGGER.log(Level.SEVERE, message, ex);
-            return MethodResult.ofError(message, ex);
+            throw ex;
         }
     }
 
-    public MethodResult<EthereumBlock> queryBlockData(BigInteger blockNumber) {
+    public EthereumBlock queryBlockData(BigInteger blockNumber) throws IOException {
         final DefaultBlockParameterNumber number = new DefaultBlockParameterNumber(blockNumber);
         try {
             final EthBlock blockResult = this.web3j.ethGetBlockByNumber(number, true).send();
             if (blockResult.hasError()) {
-                return MethodResult.ofError(blockResult.getError().getMessage());
+                throw new IOException(blockResult.getError().getMessage());
             }
 
             final EthFilter filter = new EthFilter(number, number, new ArrayList<>());
             final EthLog logResult = this.web3j.ethGetLogs(filter).send();
             if (logResult.hasError()) {
-                return MethodResult.ofError(logResult.getError().getMessage());
+                throw new IOException(logResult.getError().getMessage());
             }
 
             return this.transformBlockResults(blockResult, logResult);
         } catch (IOException ex) {
             final String message = String.format("Error when retrieving the data for blocknumber '%s'.", blockNumber);
             LOGGER.log(Level.SEVERE, message, ex);
-            return MethodResult.ofError(message, ex);
+            throw ex;
         }
     }
 
-    private MethodResult<EthereumBlock> transformBlockResults(EthBlock blockResult, EthLog logResult) {
+    private EthereumBlock transformBlockResults(EthBlock blockResult, EthLog logResult) {
         final EthereumBlock ethBlock = this.createEthereumBlock(blockResult.getBlock());
         this.addTransactions(ethBlock, blockResult.getBlock());
         this.addLogs(ethBlock, logResult);
-        return MethodResult.ofResult(ethBlock);
+        return ethBlock;
     }
 
     private EthereumBlock createEthereumBlock(Block block) {

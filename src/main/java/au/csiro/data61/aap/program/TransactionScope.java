@@ -9,6 +9,7 @@ import au.csiro.data61.aap.program.types.SolidityArray;
 import au.csiro.data61.aap.program.types.SolidityBytes;
 import au.csiro.data61.aap.program.types.SolidityInteger;
 import au.csiro.data61.aap.program.types.SolidityString;
+import au.csiro.data61.aap.util.MethodResult;
 
 /**
  * TransactionScope
@@ -64,8 +65,8 @@ public class TransactionScope extends Scope {
     }
 
     @Override
-    public void execute(ProgramState state) {
-        throw new UnsupportedOperationException();
+    public MethodResult<Void> execute(ProgramState state) {
+        return MethodResult.ofError("Method not implemented.");
     }
 
     @Override

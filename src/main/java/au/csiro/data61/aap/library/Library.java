@@ -1,9 +1,11 @@
 package au.csiro.data61.aap.library;
 
+import java.util.Arrays;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.LinkedList;
 import java.util.List;
+import java.util.Objects;
 import java.util.function.BiPredicate;
 import java.util.stream.IntStream;
 import java.util.stream.Stream;
@@ -27,6 +29,7 @@ public class Library {
 
     private void init() {
         this.add(Casts.castStream());
+        this.add(Configurations.configurationMethods());
         // TODO: add default methods
     }
 
@@ -55,7 +58,24 @@ public class Library {
         return true;
     }
 
-	public boolean isMethodNameKnown(String name) {
+    public Method getMethod(String name, SolidityType... parameterTypes) {
+        assert name != null;
+        assert Arrays.stream(parameterTypes).allMatch(Objects::nonNull);
+        return this.methodStream()
+            .filter(method -> isCompatibleSignature(method.getSignature(), name, parameterTypes))
+            .findFirst().orElse(null);
+    }
+
+	private boolean isCompatibleSignature(MethodSignature signature, String name, SolidityType[] parameterTypes) {
+        if (!signature.getName().equals(name) || signature.parameterTypeCount() != parameterTypes.length) {
+            return false;
+        }
+        
+        return IntStream.range(0, parameterTypes.length)
+            .allMatch(i -> parameterTypes[i].conceptuallyEquals(signature.getParameterType(i)));
+    }
+
+    public boolean isMethodNameKnown(String name) {
         return name != null && this.methodDictionary.containsKey(name);
     }
     
@@ -98,6 +118,10 @@ public class Library {
 
         return IntStream.range(0, signature.parameterTypeCount())
             .allMatch(i -> comparison.test(method.getSignature().getParameterType(i), signature.getParameterType(i)));
+    }
+
+    static boolean isValidParameterList(Object[] parameters, Class<?> cl) {
+        return parameters != null && parameters.length == 1 && parameters[0].getClass().equals(cl);
     }
 
     // TODO: test library

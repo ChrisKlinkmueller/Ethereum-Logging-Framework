@@ -4,6 +4,8 @@ import java.util.HashSet;
 import java.util.Set;
 import java.util.stream.Stream;
 
+import au.csiro.data61.aap.util.MethodResult;
+
 /**
  * GlobalScope
  */
@@ -11,8 +13,9 @@ public class GlobalScope extends Scope {
     public static final Set<Variable> DEFAULT_VARIABLES = new HashSet<>();
 
     @Override
-    public void execute(ProgramState state) {
+    public MethodResult<Void> execute(ProgramState state) {
         this.instructionStream().forEach(instr -> instr.execute(state));
+        return MethodResult.ofResult();
     }
 
     @Override

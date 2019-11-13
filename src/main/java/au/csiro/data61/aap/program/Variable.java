@@ -1,7 +1,6 @@
 package au.csiro.data61.aap.program;
 
 import au.csiro.data61.aap.program.types.SolidityType;
-import au.csiro.data61.aap.util.MethodResult;
 
 /**
  * Variable
@@ -43,8 +42,8 @@ public class Variable implements ValueSource {
     }
 
     @Override
-    public MethodResult<Object> getValue() {
-        return MethodResult.ofResult(this.value);
+    public Object getValue() {
+        return this.value;
     }
 
     public String getName() {

@@ -2,6 +2,8 @@ package au.csiro.data61.aap.program;
 
 import java.util.Optional;
 
+import au.csiro.data61.aap.util.MethodResult;
+
 /**
  * Statement
  */
@@ -33,7 +35,19 @@ public class Statement extends Instruction {
     }
 
     @Override
-    public void execute(ProgramState state) {
-        throw new UnsupportedOperationException();
+    public MethodResult<Void> execute(ProgramState state) {
+        if (this.source instanceof MethodCall) {
+            MethodResult<Void> callResult = ((MethodCall)this.source).execute(state);
+            if (!callResult.isSuccessful()) {
+                return callResult;
+            }
+        }
+        
+        if (this.variable.isPresent()) {
+            final Object value = this.source.getValue();
+            this.variable.get().setValue(value);
+        }
+        
+        return MethodResult.ofResult();
     }
 }

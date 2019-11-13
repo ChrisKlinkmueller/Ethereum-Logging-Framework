@@ -2,7 +2,6 @@ package au.csiro.data61.aap.program;
 
 import java.util.Arrays;
 import java.util.Objects;
-import java.util.function.Function;
 import java.util.stream.Collectors;
 
 import au.csiro.data61.aap.program.types.SolidityType;
@@ -13,10 +12,10 @@ import au.csiro.data61.aap.util.MethodResult;
  */
 public class Method {
     private final MethodSignature signature;
-    private final Function<Object[], Object> implementation;
+    private final MethodImplementation implementation;
     
     public Method(
-        Function<Object[], Object> implementation, 
+        MethodImplementation implementation, 
         SolidityType returnType, 
         String methodName, 
         SolidityType... parameterTypes
@@ -29,7 +28,7 @@ public class Method {
         this.implementation = implementation;
     }
 
-    public Method(Function<Object[], Object> implementation, MethodSignature signature) {
+    public Method(MethodImplementation implementation, MethodSignature signature) {
         assert implementation != null;
         assert signature != null;
         this.signature = signature;
@@ -40,9 +39,9 @@ public class Method {
         return this.signature;
     }
 
-    public MethodResult<Object> execute(Object[] parameters) {
+    public MethodResult<Object> execute(ProgramState state, Object[] parameters) {
         try {
-            final Object result = this.implementation.apply(parameters);
+            final Object result = this.implementation.execute(state, parameters);
             return MethodResult.ofResult(result);
         }
         catch (Throwable errorCause) {

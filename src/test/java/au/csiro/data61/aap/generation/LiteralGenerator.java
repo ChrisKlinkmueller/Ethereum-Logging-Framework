@@ -58,8 +58,8 @@ public class LiteralGenerator {
 
     public String serializeLiteralValue(Variable literal) {
         assert literal != null && literal.getCategory() == VariableCategory.LITERAL;
-        assert literal.getValue() != null && literal.getValue().getResult() != null;
-        return this.serializeValue(literal.getValue().getResult());
+        assert literal.getValue() != null && literal.getValue() != null;
+        return this.serializeValue(literal.getValue());
     }
 
     private String serializeValue(Object value) {
@@ -96,7 +96,7 @@ public class LiteralGenerator {
         final SolidityType baseType = ((SolidityArray)type).getBaseType();
         return IntStream.range(0, MIN_LIST_LENGTH + this.random.nextInt(MAX_LIST_LENGTH))
             .mapToObj(i -> this.generateLiteral(baseType))
-            .map(var -> var.getValue().getResult())
+            .map(var -> var.getValue())
             .collect(Collectors.toList());
     }
 
