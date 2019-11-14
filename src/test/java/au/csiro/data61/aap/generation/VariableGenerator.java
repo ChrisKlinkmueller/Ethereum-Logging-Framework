@@ -5,8 +5,10 @@ import java.util.function.Predicate;
 import java.util.stream.Stream;
 
 import au.csiro.data61.aap.program.Scope;
+import au.csiro.data61.aap.program.suppliers.Literal;
+import au.csiro.data61.aap.program.suppliers.UserVariable;
+import au.csiro.data61.aap.program.suppliers.ValueSupplier;
 import au.csiro.data61.aap.program.suppliers.Variable;
-import au.csiro.data61.aap.program.suppliers.VariableCategory;
 import au.csiro.data61.aap.program.types.SolidityType;
 
 /**
@@ -50,14 +52,14 @@ public class VariableGenerator {
         return variable -> variable.getType().conceptuallyEquals(type);
     }
 
-    private Variable selectScopeVariable(Stream<Variable> stream, Predicate<Variable> variableSelection) {
+    private Variable selectScopeVariable(Stream<? extends Variable> stream, Predicate<Variable> variableSelection) {
         return GeneratorUtils.randomElement(stream.filter(variableSelection));
     }
 
-    public Variable generateUniqueVariable(Scope scope) {
+    public UserVariable generateUniqueVariable(Scope scope) {
         assert scope != null;
 
-        Variable variable = null;
+        UserVariable variable = null;
         do {
             variable = this.generateVariable();
         } while (this.variableNotExistent(variable, scope));
@@ -65,18 +67,18 @@ public class VariableGenerator {
         return variable;
     }
 
-    private boolean variableNotExistent(Variable variable, Scope scope) {
+    private boolean variableNotExistent(UserVariable variable, Scope scope) {
         return scope.variableStream()
             .anyMatch(existingVar -> existingVar.getName().equals(variable.getName()));
     }
 
-    public Variable generateVariable() {
+    public UserVariable generateVariable() {
         final SolidityType type = GeneratorUtils.TYPE_GENERATOR.generateType();
         return this.generateVariable(type);
     }
 
-    public Variable generateVariable(SolidityType type) {
-        return new Variable(type, this.generateVariableName(), VariableCategory.USER_DEFINED, null);
+    public UserVariable generateVariable(SolidityType type) {
+        return new UserVariable(type, this.generateVariableName(), null);
     }
 
     private String generateVariableName() {
@@ -101,15 +103,22 @@ public class VariableGenerator {
         );
     }
 
-	public String serializeVariableReference(Variable variable) {
-        assert variable != null;
-        return variable.getCategory() == VariableCategory.LITERAL
-            ? GeneratorUtils.LITERAL_GENERATOR.serializeLiteralValue(variable)
-            : variable.getName();
+	public String serializeVariableReference(ValueSupplier supplier) {
+        assert supplier != null;
+        if (supplier instanceof Literal) {
+            return GeneratorUtils.LITERAL_GENERATOR.serializeLiteralValue((Literal)supplier);
+        }
+        else if (Variable.class.isAssignableFrom(supplier.getClass())) {
+            return ((Variable)supplier).getName();
+        }
+        else {
+            String msg = String.format("Class '%s' is not supported.", supplier.getClass());
+            throw new IllegalArgumentException(msg);
+        }
     }
     
-    public String serializeVariableDefinition(Variable variable) {
-        assert variable != null && variable.getCategory() == VariableCategory.USER_DEFINED;
+    public String serializeVariableDefinition(UserVariable variable) {
+        assert variable != null;
         return String.format(
             "%s %s", 
             GeneratorUtils.TYPE_GENERATOR.toBaseKeyword(variable.getType()),

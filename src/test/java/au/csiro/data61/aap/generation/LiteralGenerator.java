@@ -10,8 +10,7 @@ import java.util.function.Function;
 import java.util.stream.Collectors;
 import java.util.stream.IntStream;
 
-import au.csiro.data61.aap.program.suppliers.Variable;
-import au.csiro.data61.aap.program.suppliers.VariableCategory;
+import au.csiro.data61.aap.program.suppliers.Literal;
 import au.csiro.data61.aap.program.types.SolidityAddress;
 import au.csiro.data61.aap.program.types.SolidityArray;
 import au.csiro.data61.aap.program.types.SolidityBool;
@@ -38,14 +37,12 @@ public class LiteralGenerator {
     private static final int MIN_LIST_LENGTH = 1;
     private static final int MAX_LIST_LENGTH = 10;
 
-    private int count;    
     private final Random random;
     private final Map<Class<? extends SolidityType>, Function<SolidityType, Object>> literalCreators; 
     
     public LiteralGenerator(Random random) {
         assert random != null;
         this.random = random;
-        this.count = 0;
         this.literalCreators = new HashMap<>();
         this.literalCreators.put(SolidityAddress.class, this::generateAddressValue);
         this.literalCreators.put(SolidityArray.class, this::generateArrayValue);
@@ -56,9 +53,8 @@ public class LiteralGenerator {
         this.literalCreators.put(SolidityString.class, this::generateStringValue);
     }
 
-    public String serializeLiteralValue(Variable literal) {
-        assert literal != null && literal.getCategory() == VariableCategory.LITERAL;
-        assert literal.getValue() != null && literal.getValue() != null;
+    public String serializeLiteralValue(Literal literal) {
+        assert literal != null && literal.getValue() != null;
         return this.serializeValue(literal.getValue());
     }
 
@@ -78,14 +74,10 @@ public class LiteralGenerator {
         return String.format("{%s}", values);
     }
 
-    public Variable generateLiteral(SolidityType type) {
+    public Literal generateLiteral(SolidityType type) {
         assert type != null && this.literalCreators.containsKey(type.getClass());
         final Object value = this.literalCreators.get(type.getClass()).apply(type);
-        return new Variable(type, this.createLiteralName(), VariableCategory.LITERAL, value);
-    }
-
-    private String createLiteralName() {
-        return String.format("literal_%s", this.count++);
+        return new Literal(type, value);
     }
 
     private Object generateAddressValue(SolidityType type) {

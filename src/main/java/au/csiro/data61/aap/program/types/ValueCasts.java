@@ -33,6 +33,10 @@ public class ValueCasts {
     }
 
     public static boolean isCastSupported(SolidityType from,SolidityType to) {
+        if (from.conceptuallyEquals(to)) {
+            return true;
+        }
+
         return isCastSupported(from.getClass(), to.getClass());
     }
 

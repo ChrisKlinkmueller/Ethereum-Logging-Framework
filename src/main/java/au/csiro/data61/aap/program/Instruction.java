@@ -18,6 +18,6 @@ public abstract class Instruction implements Executable {
         return this.enclosingScope;
     }
 
-    public abstract Stream<Variable> variableStream();
+    public abstract Stream<? extends Variable> variableStream();
     
 }

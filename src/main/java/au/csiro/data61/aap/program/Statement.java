@@ -6,13 +6,14 @@ import java.util.stream.Stream;
 import au.csiro.data61.aap.program.suppliers.MethodCall;
 import au.csiro.data61.aap.program.suppliers.ValueSupplier;
 import au.csiro.data61.aap.program.suppliers.Variable;
+import au.csiro.data61.aap.program.suppliers.ValueConsumer;
 import au.csiro.data61.aap.util.MethodResult;
 
 /**
  * Statement
  */
 public class Statement extends Instruction {
-    private Optional<Variable> variable;
+    private Optional<ValueConsumer> variable;
     private ValueSupplier source;
 
     public Statement(ValueSupplier source) {
@@ -20,7 +21,8 @@ public class Statement extends Instruction {
     }
 
     public Statement(Variable variable, ValueSupplier source) {
-        this.variable = variable == null ? Optional.empty() : Optional.of(variable);
+        assert variable == null ? true : (ValueConsumer.class.isAssignableFrom(variable.getClass()));
+        this.variable = variable == null ? Optional.empty() : Optional.of((ValueConsumer)variable);
         this.source = source;
     }
 
@@ -30,8 +32,12 @@ public class Statement extends Instruction {
         super.setEnclosingScope(enclosingScope);
     }
 
-    public Optional<Variable> getVariable() {
-        return this.variable;
+    public boolean hasVariable() {
+        return this.variable.isPresent();
+    }
+
+    public Variable getVariable() {
+        return this.variable.get();
     }
 
     public ValueSupplier getSource() {

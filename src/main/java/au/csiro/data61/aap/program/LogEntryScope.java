@@ -5,9 +5,6 @@ import java.util.Set;
 import java.util.stream.Stream;
 
 import au.csiro.data61.aap.program.suppliers.Variable;
-import au.csiro.data61.aap.program.types.SolidityAddress;
-import au.csiro.data61.aap.program.types.SolidityBool;
-import au.csiro.data61.aap.program.types.SolidityInteger;
 import au.csiro.data61.aap.util.MethodResult;
 
 /**
@@ -18,13 +15,9 @@ public class LogEntryScope extends Scope {
 
     static {
         DEFAULT_VARIABLES = new HashSet<>();
-        addVariable(DEFAULT_VARIABLES, SolidityBool.DEFAULT_INSTANCE, "log.removed");
-        addVariable(DEFAULT_VARIABLES, SolidityInteger.DEFAULT_INSTANCE, "log.logIndex");
-        addVariable(DEFAULT_VARIABLES, SolidityAddress.DEFAULT_INSTANCE, "log.address");
-    }
-
-    public LogEntryScope(Set<Variable> variables) {
-        super(DEFAULT_VARIABLES);
+        //addVariable(DEFAULT_VARIABLES, SolidityBool.DEFAULT_INSTANCE, "log.removed");
+        //addVariable(DEFAULT_VARIABLES, SolidityInteger.DEFAULT_INSTANCE, "log.logIndex");
+        //addVariable(DEFAULT_VARIABLES, SolidityAddress.DEFAULT_INSTANCE, "log.address");
     }
 
     @Override

@@ -1,7 +1,6 @@
 package au.csiro.data61.aap.program.suppliers;
 
 import java.util.Arrays;
-import java.util.Objects;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import java.util.stream.Collectors;
@@ -21,12 +20,12 @@ import au.csiro.data61.aap.util.MethodResult;
 public class MethodCall implements ValueSupplier, Executable {
     private static final Logger LOGGER = Logger.getLogger(MethodCall.class.getName());
     private final Method method;
-    private final Variable[] parameters;
+    private final ValueSupplier[] parameters;
     private MethodResult<Object> result;
 
-    public MethodCall(Method method, Variable... parameters) {
+    public MethodCall(Method method, ValueSupplier... parameters) {
         assert method != null;
-        assert Arrays.stream(parameters).allMatch(Objects::nonNull);
+        assert Arrays.stream(parameters).allMatch(supplier -> supplier != null && !(supplier instanceof MethodCall));
         assert method.getSignature().parameterTypeCount() == parameters.length;
         assert IntStream.range(0, parameters.length)
                 .allMatch(i -> ValueCasts.isCastSupported(parameters[i].getType(), method.getSignature().getParameterType(i)));
@@ -44,12 +43,12 @@ public class MethodCall implements ValueSupplier, Executable {
         return this.parameters.length;
     }
 
-    public Variable getParameter(int index) {
+    public ValueSupplier getParameter(int index) {
         assert 0 <= index && index < this.parameterCount();
         return this.parameters[index];
     }
 
-    public Stream<Variable> parameterStream() {
+    public Stream<ValueSupplier> parameterStream() {
         return Arrays.stream(this.parameters);
     }
 
@@ -65,9 +64,12 @@ public class MethodCall implements ValueSupplier, Executable {
 
     @Override
     public MethodResult<Void> execute(ProgramState state) {
-        final Object[] parameters = this.parameterStream().map(variable -> variable.getValue()).toArray();
-        
         try {
+            final Object[] parameters = new Object[this.parameters.length];
+            for (int i = 0; i < parameters.length; i++) {
+                parameters[i] = this.parameters[i].getValue();
+            }            
+            
             this.result = this.method.execute(state, parameters);
             return MethodResult.ofResult();
         }

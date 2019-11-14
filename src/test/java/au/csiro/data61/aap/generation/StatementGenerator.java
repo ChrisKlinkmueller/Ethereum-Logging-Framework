@@ -4,13 +4,13 @@ import java.util.Random;
 import java.util.stream.Stream;
 
 import au.csiro.data61.aap.program.GlobalScope;
-import au.csiro.data61.aap.program.Instruction;
 import au.csiro.data61.aap.program.suppliers.MethodCall;
 import au.csiro.data61.aap.program.Scope;
 import au.csiro.data61.aap.program.Statement;
 import au.csiro.data61.aap.program.suppliers.ValueSupplier;
 import au.csiro.data61.aap.program.suppliers.Variable;
-import au.csiro.data61.aap.program.suppliers.VariableCategory;
+import au.csiro.data61.aap.program.suppliers.UserVariable;
+import au.csiro.data61.aap.program.suppliers.UserVariableReference;
 
 /**
  * StatementGenerator
@@ -65,7 +65,7 @@ public class StatementGenerator {
 
     private Variable generateVariable(Scope scope) {
         if (this.random.nextInt(100) < 33) {
-            final Stream<Variable> variables = scope.findVariablesWithinScope(variable -> variable.getCategory() == VariableCategory.USER_DEFINED);
+            final Stream<Variable> variables = scope.findVariablesWithinScope(variable -> true);
             final Variable variable = GeneratorUtils.randomElement(variables);
 
             if (variable != null) {
@@ -80,43 +80,22 @@ public class StatementGenerator {
         assert statement != null;
 
         final String valueSource = this.serializeValueSource(statement.getSource());
-        if (statement.getVariable().isEmpty()) {
+        if (!statement.hasVariable()) {
             return String.format("%s;", valueSource);
         }
 
-        final String variable = this.isVariableAlreadyDefined(statement.getVariable().get(), statement, statement.getEnclosingScope())
-            ? GeneratorUtils.VARIABLE_GENERATOR.serializeVariableReference(statement.getVariable().get())
-            : GeneratorUtils.VARIABLE_GENERATOR.serializeVariableDefinition(statement.getVariable().get());
+        final String variable = statement.getVariable() instanceof UserVariableReference
+            ? GeneratorUtils.VARIABLE_GENERATOR.serializeVariableReference((UserVariableReference)statement.getVariable())
+            : GeneratorUtils.VARIABLE_GENERATOR.serializeVariableDefinition((UserVariable)statement.getVariable());
         return String.format("%s = %s;", variable, valueSource);
-    }
-
-    private boolean isVariableAlreadyDefined(Variable variable, Instruction currentInstruction, Scope scope) {
-        if (scope.variableStream().anyMatch(scopeVariable -> scopeVariable.hasSameName(variable))) {
-            return true;
-        }
-
-        for (int i = 0; i < scope.instructionCount(); i++) {
-            Instruction instruction = scope.getInstruction(i);
-            if (instruction == currentInstruction) {
-                break;
-            }
-            if (   instruction instanceof Statement 
-                && ((Statement)instruction).getVariable().isPresent()
-                && ((Statement)instruction).getVariable().get().hasSameName(variable)
-            ) {
-                return true;
-            }
-        }
-
-        return scope.getEnclosingScope() == null ? false : this.isVariableAlreadyDefined(variable, scope, scope.getEnclosingScope());
     }
 
     private String serializeValueSource(ValueSupplier source) {
         if (source instanceof MethodCall) {
             return GeneratorUtils.METHOD_CALL_GENERATOR.serializeMethodCall((MethodCall)source);
         }
-        else if (source instanceof Variable) {
-            final Variable variable = (Variable)source;
+        else if (source instanceof UserVariable) {
+            final UserVariable variable = (UserVariable)source;
             return GeneratorUtils.VARIABLE_GENERATOR.serializeVariableReference(variable);
         }
         else {

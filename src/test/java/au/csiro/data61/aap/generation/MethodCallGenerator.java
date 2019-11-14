@@ -10,6 +10,8 @@ import au.csiro.data61.aap.library.Library;
 import au.csiro.data61.aap.program.Method;
 import au.csiro.data61.aap.program.suppliers.MethodCall;
 import au.csiro.data61.aap.program.Scope;
+import au.csiro.data61.aap.program.suppliers.UserVariable;
+import au.csiro.data61.aap.program.suppliers.ValueSupplier;
 import au.csiro.data61.aap.program.suppliers.Variable;
 import au.csiro.data61.aap.program.types.SolidityType;
 
@@ -44,19 +46,19 @@ public class MethodCallGenerator {
             return null;
         }
 
-        final Variable[] variables = IntStream.range(0, method.getSignature().parameterTypeCount())
+        final UserVariable[] variables = IntStream.range(0, method.getSignature().parameterTypeCount())
             .mapToObj(i -> this.generateParameter(scope, method.getSignature().getParameterType(i)))
-            .toArray(Variable[]::new);        
+            .toArray(UserVariable[]::new);        
 
         return new MethodCall(method, variables);
     }
 
-    public Variable generateParameter(Scope scope, SolidityType type) {
+    public ValueSupplier generateParameter(Scope scope, SolidityType type) {
         if (this.random.nextBoolean()) {
-            final Stream<Variable> variableStream = scope.variableStream()
+            final Stream<? extends Variable> variableStream = scope.variableStream()
                 .filter(variable -> variable.getType().conceptuallyEquals(type));
 
-            Variable variable = GeneratorUtils.randomElement(variableStream);
+            final Variable variable = GeneratorUtils.randomElement(variableStream);
             if (variable != null) {
                 return variable;
             }

@@ -23,8 +23,9 @@ import au.csiro.data61.aap.program.GlobalScope;
 import au.csiro.data61.aap.program.LogEntryScope;
 import au.csiro.data61.aap.program.SmartContractScope;
 import au.csiro.data61.aap.program.TransactionScope;
+import au.csiro.data61.aap.program.suppliers.BlockchainVariable;
+import au.csiro.data61.aap.program.suppliers.UserVariable;
 import au.csiro.data61.aap.program.suppliers.Variable;
-import au.csiro.data61.aap.program.suppliers.VariableCategory;
 import au.csiro.data61.aap.program.types.SolidityType;
 
 /**
@@ -114,11 +115,11 @@ public class VariableAnalyzer extends SemanticAnalyzer {
 
 
     private void verifyVariable(SolTypeContext typeCtx, VariableNameContext nameCtx, boolean baseTypeOnly) {
-        final Variable lookupResult = this.getVariable(nameCtx.getText());
-        if (lookupResult != null) {
-            final String message = lookupResult.getCategory() == VariableCategory.SCOPE_VARIABLE 
-                ? String.format("The variable '%s' already exists as an implicit scope variable.", lookupResult.getName())
-                : String.format("The variable '%s' already exists as an explicitly defined variable.", lookupResult.getName());
+        final Variable variable = this.getVariable(nameCtx.getText());
+        if (variable != null) {
+            final String message = variable instanceof BlockchainVariable 
+                ? String.format("The variable '%s' already exists as an implicit scope variable.", variable.getName())
+                : String.format("The variable '%s' already exists as an explicitly defined variable.", variable.getName());
             this.addError(nameCtx.start, message);
             return;
         }
@@ -128,8 +129,8 @@ public class VariableAnalyzer extends SemanticAnalyzer {
             return;
         }
 
-        final Variable variable = new Variable(type, nameCtx.getText());
-        this.visibleVariables.peek().add(variable);
+        final Variable newVariable = new UserVariable(type, nameCtx.getText());
+        this.visibleVariables.peek().add(newVariable);
     }
     
     //#endregion
@@ -155,7 +156,7 @@ public class VariableAnalyzer extends SemanticAnalyzer {
 
     public Variable getVariable(String name) {
         return this.variableStream()
-            .filter(variable -> variable.getName().equals(name))
+            .filter(variable -> variable.hasName(name))
             .findFirst()
             .orElse(null);
     }

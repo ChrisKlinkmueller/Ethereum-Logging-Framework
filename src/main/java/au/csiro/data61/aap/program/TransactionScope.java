@@ -1,76 +1,116 @@
 package au.csiro.data61.aap.program;
 
 import java.util.HashSet;
+import java.util.List;
 import java.util.Set;
+import java.util.stream.Collectors;
+import java.util.stream.Stream;
 
+import au.csiro.data61.aap.program.suppliers.BlockchainVariable;
+import au.csiro.data61.aap.program.suppliers.Literal;
+import au.csiro.data61.aap.program.suppliers.MethodCall;
+import au.csiro.data61.aap.program.suppliers.ValueSupplier;
 import au.csiro.data61.aap.program.suppliers.Variable;
-import au.csiro.data61.aap.program.suppliers.VariableCategory;
 import au.csiro.data61.aap.program.types.SolidityAddress;
 import au.csiro.data61.aap.program.types.SolidityArray;
 import au.csiro.data61.aap.program.types.SolidityBytes;
 import au.csiro.data61.aap.program.types.SolidityInteger;
 import au.csiro.data61.aap.program.types.SolidityString;
 import au.csiro.data61.aap.program.types.ValueCasts;
+import au.csiro.data61.aap.rpc.EthereumTransaction;
 import au.csiro.data61.aap.util.MethodResult;
 
 /**
  * TransactionScope
  */
 public class TransactionScope extends Scope {
-    public static final Variable ANY = new Variable(SolidityString.DEFAULT_INSTANCE, "any",
-            VariableCategory.SCOPE_VARIABLE, "any");
+    public static final Literal ANY = new Literal(SolidityString.DEFAULT_INSTANCE, "any");
     public static final Set<Variable> DEFAULT_VARIABLES;
 
-    private final Variable senders;
-    private final Variable recipients;
+    private final ValueSupplier senders;
+    private final ValueSupplier recipients;
+    private final List<BlockchainVariable<EthereumTransaction>> variables;
 
-    public TransactionScope(Variable senders, Variable recipients) {
-        super(DEFAULT_VARIABLES);
-        
+    @SuppressWarnings("unchecked")
+    public TransactionScope(ValueSupplier senders, ValueSupplier recipients) {        
         assert isValidAddressListVariable(senders);
         assert isValidAddressListVariable(recipients);
         this.recipients = recipients;
         this.senders = senders;
+        this.variables = DEFAULT_VARIABLES.stream()
+            .map(variable -> new BlockchainVariable<EthereumTransaction>((BlockchainVariable<EthereumTransaction>)variable))
+            .collect(Collectors.toList());
     }
 
     static {
         DEFAULT_VARIABLES = new HashSet<>();
-        addVariable(DEFAULT_VARIABLES, SolidityBytes.DEFAULT_INSTANCE, "tx.blockHash");
-        addVariable(DEFAULT_VARIABLES, SolidityInteger.DEFAULT_INSTANCE, "tx.blockNumber");
-        addVariable(DEFAULT_VARIABLES, SolidityAddress.DEFAULT_INSTANCE, "tx.from");
-        addVariable(DEFAULT_VARIABLES, SolidityInteger.DEFAULT_INSTANCE, "tx.gas");
-        addVariable(DEFAULT_VARIABLES, SolidityInteger.DEFAULT_INSTANCE, "tx.gasPrice");
-        addVariable(DEFAULT_VARIABLES, SolidityBytes.DEFAULT_INSTANCE, "tx.hash");
-        addVariable(DEFAULT_VARIABLES, SolidityString.DEFAULT_INSTANCE, "tx.input");
-        addVariable(DEFAULT_VARIABLES, SolidityInteger.DEFAULT_INSTANCE, "tx.nonce");
-        addVariable(DEFAULT_VARIABLES, SolidityAddress.DEFAULT_INSTANCE, "tx.to");
-        addVariable(DEFAULT_VARIABLES, SolidityInteger.DEFAULT_INSTANCE, "tx.transactionIndex");
-        addVariable(DEFAULT_VARIABLES, SolidityInteger.DEFAULT_INSTANCE, "tx.value");
-        addVariable(DEFAULT_VARIABLES, SolidityInteger.DEFAULT_INSTANCE, "tx.v");
-        addVariable(DEFAULT_VARIABLES, SolidityInteger.DEFAULT_INSTANCE, "tx.r");
-        addVariable(DEFAULT_VARIABLES, SolidityInteger.DEFAULT_INSTANCE, "tx.s");
+        addVariable(DEFAULT_VARIABLES, SolidityBytes.DEFAULT_INSTANCE, "tx.blockHash",
+                EthereumTransaction::getBlockHash, ValueCasts::stringToBytes);
+        addVariable(DEFAULT_VARIABLES, SolidityInteger.DEFAULT_INSTANCE, "tx.blockNumber",
+                EthereumTransaction::getBlockNumber, ValueCasts::stringToInteger);
+        addVariable(DEFAULT_VARIABLES, SolidityAddress.DEFAULT_INSTANCE, "tx.from", EthereumTransaction::getFrom,
+                ValueCasts::stringToAddress);
+        addVariable(DEFAULT_VARIABLES, SolidityInteger.DEFAULT_INSTANCE, "tx.gas", EthereumTransaction::getGas,
+                ValueCasts::stringToInteger);
+        addVariable(DEFAULT_VARIABLES, SolidityInteger.DEFAULT_INSTANCE, "tx.gasPrice",
+                EthereumTransaction::getGasPrice, ValueCasts::stringToInteger);
+        addVariable(DEFAULT_VARIABLES, SolidityBytes.DEFAULT_INSTANCE, "tx.hash", EthereumTransaction::getHash,
+                ValueCasts::stringToBytes);
+        addVariable(DEFAULT_VARIABLES, SolidityString.DEFAULT_INSTANCE, "tx.input", EthereumTransaction::getInput,
+                null);
+        addVariable(DEFAULT_VARIABLES, SolidityInteger.DEFAULT_INSTANCE, "tx.nonce", EthereumTransaction::getNonce,
+                ValueCasts::stringToInteger);
+        addVariable(DEFAULT_VARIABLES, SolidityAddress.DEFAULT_INSTANCE, "tx.to", EthereumTransaction::getTo,
+                ValueCasts::stringToAddress);
+        addVariable(DEFAULT_VARIABLES, SolidityInteger.DEFAULT_INSTANCE, "tx.transactionIndex",
+                EthereumTransaction::getTransactionIndex, ValueCasts::stringToInteger);
+        addVariable(DEFAULT_VARIABLES, SolidityInteger.DEFAULT_INSTANCE, "tx.value", EthereumTransaction::getValue,
+                ValueCasts::stringToInteger);
+        addVariable(DEFAULT_VARIABLES, SolidityInteger.DEFAULT_INSTANCE, "tx.v", EthereumTransaction::getV,
+                ValueCasts::stringToInteger);
+        addVariable(DEFAULT_VARIABLES, SolidityInteger.DEFAULT_INSTANCE, "tx.r", EthereumTransaction::getR,
+                ValueCasts::stringToInteger);
+        addVariable(DEFAULT_VARIABLES, SolidityInteger.DEFAULT_INSTANCE, "tx.s", EthereumTransaction::getS,
+                ValueCasts::stringToInteger);
     }
 
     public void setEnclosingScope(BlockScope enclosingScope) {
         super.setEnclosingScope(enclosingScope);
     }
 
-    public Variable getSenders() {
-        return senders;
+    public ValueSupplier getSenders() {
+        return this.senders;
     }
 
-    public Variable getRecipients() {
-        return recipients;
+    public ValueSupplier getRecipients() {
+        return this.recipients;
     }
 
-    public static boolean isValidAddressListVariable(Variable variable) {
-        return variable != null && (variable == ANY || (variable.getType() instanceof SolidityArray
-                && ValueCasts.isCastSupported(((SolidityArray)variable.getType()).getBaseType(), SolidityAddress.DEFAULT_INSTANCE)));
+    public static boolean isValidAddressListVariable(ValueSupplier variable) {
+        if (variable == null || variable instanceof MethodCall) {
+            return false;
+        }
+
+        if (variable == ANY) {
+            return true;
+        }
+
+        if (variable.getType().conceptuallyEquals(SolidityAddress.DEFAULT_INSTANCE)) {
+            return true;
+        }
+         
+        return    variable.getType() instanceof SolidityArray 
+               && ((SolidityArray)variable.getType()).getBaseType().conceptuallyEquals(SolidityAddress.DEFAULT_INSTANCE);
     }
 
     @Override
     public MethodResult<Void> execute(ProgramState state) {
         return MethodResult.ofError("Method not implemented.");
+    }
+
+    @Override
+    public Stream<? extends Variable> variableStream() {
+        return this.variables.stream();
     }
 
     
