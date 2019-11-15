@@ -8,53 +8,13 @@ import java.util.stream.Stream;
 /**
  * EthereumTransaction
  */
-public class EthereumTransaction {
-    private final List<EthereumLog> logs;
-
+public abstract class EthereumTransaction {
     private final EthereumBlock block;
-    private final String from;
-    private final BigInteger gas;
-    private final BigInteger gasPrice;
-    private final String hash;
-    private final String input;
-    private final BigInteger nonce;
-    private final String to;
-    private final BigInteger transactionIndex;
-    private final BigInteger value;
-    private final BigInteger v;
-    private final String r;
-    private final String s;
+    private final List<EthereumLogEntry> logs;
 
-    EthereumTransaction(
-        EthereumBlock block,
-        String from,
-        BigInteger gas,
-        BigInteger gasPrice,
-        String hash,
-        String input,
-        BigInteger nonce,
-        String to,
-        BigInteger transactionIndex,
-        BigInteger value,
-        long v,
-        String r,
-        String s
-    )
-    {
+    protected EthereumTransaction(EthereumBlock block) {
+        assert block != null;
         this.block = block;
-        this.from = from;
-        this.gas = gas;
-        this.gasPrice = gasPrice;
-        this.hash = hash;
-        this.input = input;
-        this.nonce = nonce;
-        this.to = to;
-        this.transactionIndex = transactionIndex;
-        this.value = value;
-        this.v = BigInteger.valueOf(v);
-        this.r = r;
-        this.s = s;
-
         this.logs = new ArrayList<>();
     }
 
@@ -69,56 +29,8 @@ public class EthereumTransaction {
     public EthereumBlock getBlock() {
         return this.block;
     }
-    
-    public String getFrom() {
-        return this.from;
-    }
 
-    public BigInteger getGas() {
-        return this.gas;
-    }
-
-    public BigInteger getGasPrice() {
-        return this.gasPrice;
-    }
-
-    public String getHash() {
-        return this.hash;
-    }
-
-    public String getInput() {
-        return this.input;
-    }
-
-    public BigInteger getNonce() {
-        return this.nonce;
-    }
-
-    public String getR() {
-        return this.r;
-    }
-
-    public String getS() {
-        return this.s;
-    }
-
-    public String getTo() {
-        return this.to;
-    }
-
-    public BigInteger getTransactionIndex() {
-        return this.transactionIndex;
-    }
-
-    public BigInteger getV() {
-        return this.v;
-    }
-
-    public BigInteger getValue() {
-        return this.value;
-    }
-
-    void addLog(EthereumLog log) {
+    public void addLog(EthereumLogEntry log) {
         assert log != null;
         this.logs.add(log);
     }
@@ -127,12 +39,26 @@ public class EthereumTransaction {
         return this.logs.size();
     }
 
-    public EthereumLog getLog(int index) {
+    public EthereumLogEntry getLog(int index) {
         assert 0 <= index && index < this.logs.size();
         return this.logs.get(index);
     }
 
-    public Stream<EthereumLog> logStream() {
+    public Stream<EthereumLogEntry> logStream() {
         return this.logs.stream();
     }
+
+    public abstract String getFrom();
+    public abstract BigInteger getGas();
+    public abstract BigInteger getGasPrice();
+    public abstract String getHash();
+    public abstract String getInput();
+    public abstract BigInteger getNonce();
+    public abstract String getR();
+    public abstract String getS();
+    public abstract String getTo();
+    public abstract BigInteger getTransactionIndex() ;
+    public abstract BigInteger getV();
+    public abstract BigInteger getValue();
+    
 }

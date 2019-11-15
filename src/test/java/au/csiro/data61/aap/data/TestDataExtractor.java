@@ -16,7 +16,7 @@ import au.csiro.data61.aap.data.TransactionJsonizer.TransactionSerializer;
 import au.csiro.data61.aap.data.LogEntryJsonizer.LogEntrySerializer;
 import au.csiro.data61.aap.rpc.EthereumBlock;
 import au.csiro.data61.aap.rpc.EthereumClient;
-import au.csiro.data61.aap.rpc.EthereumLog;
+import au.csiro.data61.aap.rpc.EthereumLogEntry;
 import au.csiro.data61.aap.rpc.EthereumTransaction;
 
 /**
@@ -45,7 +45,7 @@ public class TestDataExtractor {
             SimpleModule module = new SimpleModule("Serializers");
             module.addSerializer(EthereumBlock.class, new BlockSerializer(EthereumBlock.class));
             module.addSerializer(EthereumTransaction.class, new TransactionSerializer(EthereumTransaction.class));
-            module.addSerializer(EthereumLog.class, new LogEntrySerializer(EthereumLog.class));
+            module.addSerializer(EthereumLogEntry.class, new LogEntrySerializer(EthereumLogEntry.class));
             objectMapper.registerModule(module);
 
             objectMapper.writeValue(new File(FILE_NAME), blocks);

@@ -44,7 +44,7 @@ public class EthereumClient {
                 System.out.println(String.format("\t\tTx (%s): %s -> %s", transaction.getTransactionIndex(), transaction.getFrom(), transaction.getTo()));
 
                 for (int j = 0; j < Math.min(3, transaction.logCount()); j++) {
-                    final EthereumLog log = transaction.getLog(j);
+                    final EthereumLogEntry log = transaction.getLog(j);
                     System.out.println(String.format("\t\t\tLog: %s", log.getData()));
                 }
                 if (3 < transaction.logCount()) {
@@ -130,33 +130,10 @@ public class EthereumClient {
     }
 
     private EthereumBlock transformBlockResults(EthBlock blockResult, EthLog logResult) {
-        final EthereumBlock ethBlock = this.createEthereumBlock(blockResult.getBlock());
+        final EthereumBlock ethBlock = new Web3jBlock(blockResult.getBlock());
         this.addTransactions(ethBlock, blockResult.getBlock());
         this.addLogs(ethBlock, logResult);
         return ethBlock;
-    }
-
-    private EthereumBlock createEthereumBlock(Block block) {
-        return new EthereumBlock(
-            block.getNumber(), 
-            block.getHash(), 
-            block.getParentHash(),
-            block.getNonce(),
-            block.getSha3Uncles(),
-            block.getLogsBloom(),
-            block.getTransactionsRoot(),
-            block.getStateRoot(),
-            block.getReceiptsRoot(),
-            block.getMiner(),
-            block.getDifficulty(),
-            block.getTotalDifficulty(),
-            block.getExtraData(),
-            block.getSize(), 
-            block.getGasLimit(),
-            block.getGasUsed(), 
-            block.getTimestamp(),
-            block.getUncles()
-        );
     }
 
     private void addTransactions(EthereumBlock ethBlock, Block block) {
@@ -167,22 +144,7 @@ public class EthereumClient {
     }
 
     private void addEthereumTransaction(EthereumBlock block, Transaction tx) {
-        final EthereumTransaction ethTx = new EthereumTransaction(
-            block, 
-            tx.getFrom(), 
-            tx.getGas(), 
-            tx.getGasPrice(), 
-            tx.getHash(), 
-            tx.getInput(), 
-            tx.getNonce(), 
-            tx.getTo(), 
-            tx.getTransactionIndex(), 
-            tx.getValue(), 
-            tx.getV(), 
-            tx.getR(), 
-            tx.getS()
-        );
-
+        final EthereumTransaction ethTx = new Web3jTransaction(block, tx);
         block.addTransaction(ethTx);
     }
 
@@ -201,15 +163,7 @@ public class EthereumClient {
             return;
         }
 
-        final EthereumLog ethLog = new EthereumLog(
-            tx, 
-            log.isRemoved(), 
-            log.getLogIndex(),
-            log.getAddress(), 
-            log.getData(), 
-            log.getTopics()
-        );
-
+        final EthereumLogEntry ethLog = new Web3jLogEntry(tx, log);
         tx.addLog(ethLog);
     }
 

@@ -6,14 +6,14 @@ import com.fasterxml.jackson.core.JsonGenerator;
 import com.fasterxml.jackson.databind.SerializerProvider;
 import com.fasterxml.jackson.databind.ser.std.StdSerializer;
 
-import au.csiro.data61.aap.rpc.EthereumLog;
+import au.csiro.data61.aap.rpc.EthereumLogEntry;
 
 /**
  * LogEntryJsonizer
  */
 public class LogEntryJsonizer {
 
-    public static class LogEntrySerializer extends StdSerializer<EthereumLog> {
+    public static class LogEntrySerializer extends StdSerializer<EthereumLogEntry> {
         private static final String ADDRESS = "address";
         private static final String DATA = "data";
         private static final String LOG_INDEX = "logIndex";
@@ -25,12 +25,12 @@ public class LogEntryJsonizer {
             this(null);
         }
 
-        public LogEntrySerializer(Class<EthereumLog> t) {
+        public LogEntrySerializer(Class<EthereumLogEntry> t) {
             super(t);
         }
 
         @Override
-        public void serialize(EthereumLog log, JsonGenerator gen, SerializerProvider provider) throws IOException {
+        public void serialize(EthereumLogEntry log, JsonGenerator gen, SerializerProvider provider) throws IOException {
             gen.writeStartObject();
 
             gen.writeStringField(ADDRESS, log.getAddress());

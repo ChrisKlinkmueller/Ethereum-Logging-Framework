@@ -8,15 +8,14 @@ import java.util.stream.Stream;
 /**
  * EthereumLog
  */
-public class EthereumLog {
-    private final EthereumTransaction tx;
+public class RawLogEntry extends EthereumLogEntry {
     private final boolean removed;
     private final BigInteger logIndex;
     private final String address;
     private final String data;
     private final List<String> topics;
     
-    EthereumLog(
+    RawLogEntry(
         EthereumTransaction tx,
         boolean removed,
         BigInteger logIndex,
@@ -25,7 +24,7 @@ public class EthereumLog {
         List<String> topics
     )
     {
-        this.tx = tx;
+        super(tx);
         this.removed = removed;
         this.logIndex = logIndex;
         this.address = address;
@@ -47,26 +46,6 @@ public class EthereumLog {
 
     public boolean isRemoved() {
         return removed;
-    }
-
-    public EthereumTransaction getTransaction() {
-        return this.tx;
-    }
-
-    public String getTransactionHash() {
-        return this.tx.getHash();
-    }
-
-    public BigInteger getTransactionIndex() {
-        return this.tx.getTransactionIndex();
-    }
-
-    public String getBlockHash() {
-        return this.tx.getBlockHash();
-    }
-
-    public BigInteger getBlockNumber() {
-        return this.tx.getBlockNumber();
     }
 
     public int topicCount() {

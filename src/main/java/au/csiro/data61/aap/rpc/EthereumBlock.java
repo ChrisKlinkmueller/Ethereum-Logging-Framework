@@ -6,144 +6,35 @@ import java.util.List;
 import java.util.stream.Stream;
 
 /**
- * Block
+ * EthereumBlock
  */
-public class EthereumBlock {
+public abstract class EthereumBlock {
     private final List<EthereumTransaction> transactions;
-    
-    private final BigInteger number;
-    private final String hash;
-    private final String parentHash;
-    private final BigInteger nonce;
-    private final String sha3uncles;
-    private final String logsBloom;
-    private final String transactionsRoot;
-    private final String stateRoot;
-    private final String receiptsRoot;
-    private final String miner;
-    private final BigInteger difficulty;
-    private final BigInteger totalDifficulty;
-    private final String extraData;
-    private final BigInteger size;
-    private final BigInteger gasLimit;
-    private final BigInteger gasUsed;
-    private final BigInteger timestamp;
-    private final List<String> uncles;
-    
-    EthereumBlock(
-        BigInteger number,
-        String hash,
-        String parentHash,
-        BigInteger nonce,
-        String sha3uncles,
-        String logsBloom,
-        String transactionsRoot,
-        String stateRoot,
-        String receiptsRoot,
-        String miner,
-        BigInteger difficulty,
-        BigInteger totalDifficulty,
-        String extraData,
-        BigInteger size,
-        BigInteger gasLimit,
-        BigInteger gasUsed,
-        BigInteger timestamp,
-        List<String> uncles
-    ) {
-        this.number = number;
-        this.hash = hash;
-        this.parentHash = parentHash;
-        this.nonce = nonce;
-        this.sha3uncles = sha3uncles;
-        this.logsBloom = logsBloom;
-        this.transactionsRoot = transactionsRoot;
-        this.stateRoot = stateRoot;
-        this.receiptsRoot = receiptsRoot;
-        this.miner = miner;
-        this.difficulty = difficulty;
-        this.totalDifficulty = totalDifficulty;
-        this.extraData = extraData;
-        this.size = size;
-        this.gasLimit = gasLimit;
-        this.gasUsed = gasUsed;
-        this.timestamp = timestamp;
-        this.uncles = uncles;
+
+    protected EthereumBlock() {
         this.transactions = new ArrayList<>();
     }
 
-    public String getHash() {
-        return this.hash;
-    }
+    public abstract String getHash();
+    public abstract BigInteger getDifficulty();
+    public abstract String getExtraData();
+    public abstract BigInteger getGasLimit();
+    public abstract BigInteger getGasUsed();
+    public abstract String getLogsBloom();
+    public abstract String getMiner();
+    public abstract BigInteger getNonce();
+    public abstract BigInteger getNumber();
+    public abstract String getParentHash();
+    public abstract String getReceiptsRoot();
+    public abstract String getSha3uncles();
+    public abstract BigInteger getSize();
+    public abstract String getStateRoot();
+    public abstract BigInteger getTimestamp();
+    public abstract BigInteger getTotalDifficulty();
+    public abstract String getTransactionsRoot();
+    public abstract List<String> getUncles();
 
-    public BigInteger getDifficulty() {
-        return this.difficulty;
-    }
-
-    public String getExtraData() {
-        return this.extraData;
-    }
-
-    public BigInteger getGasLimit() {
-        return this.gasLimit;
-    }
-
-    public BigInteger getGasUsed() {
-        return this.gasUsed;
-    }
-
-    public String getLogsBloom() {
-        return this.logsBloom;
-    }
-
-    public String getMiner() {
-        return this.miner;
-    }
-
-    public BigInteger getNonce() {
-        return this.nonce;
-    }
-
-    public BigInteger getNumber() {
-        return this.number;
-    }
-
-    public String getParentHash() {
-        return this.parentHash;
-    }
-
-    public String getReceiptsRoot() {
-        return this.receiptsRoot;
-    }
-
-    public String getSha3uncles() {
-        return this.sha3uncles;
-    }
-
-    public BigInteger getSize() {
-        return this.size;
-    }
-
-    public String getStateRoot() {
-        return this.stateRoot;
-    }
-
-    public BigInteger getTimestamp() {
-        return this.timestamp;
-    }
-
-    public BigInteger getTotalDifficulty() {
-        return this.totalDifficulty;
-    }
-
-    public String getTransactionsRoot() {
-        return this.transactionsRoot;
-    }
-
-    public List<String> getUncles() {
-        return this.uncles;
-    }
-
-    void addTransaction(EthereumTransaction tx) {
+    public void addTransaction(EthereumTransaction tx) {
         assert tx != null;
         this.transactions.add(tx);
     }
