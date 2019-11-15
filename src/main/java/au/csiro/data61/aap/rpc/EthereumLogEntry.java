@@ -1,20 +1,20 @@
 package au.csiro.data61.aap.rpc;
 
 import java.math.BigInteger;
-import java.util.stream.Stream;
+import java.util.List;
 
 /**
  * EthereumLog
  */
 public abstract class EthereumLogEntry {
-    private final EthereumTransaction tx;
-    
-    protected EthereumLogEntry(EthereumTransaction tx) {
-        this.tx = tx;
-    }
+    private EthereumTransaction tx;
 
     public EthereumTransaction getTransaction() {
         return this.tx;
+    }
+    
+    public void setTransaction(EthereumTransaction tx) {
+        this.tx = tx;
     }
 
     public String getTransactionHash() {
@@ -37,8 +37,6 @@ public abstract class EthereumLogEntry {
     public abstract String getData();
     public abstract BigInteger getLogIndex();
     public abstract boolean isRemoved();
-    public abstract int topicCount() ;
-    public abstract String getTopic(int index);
-    public abstract Stream<String> topicStream();
+    public abstract List<String> getTopics();
     
 }

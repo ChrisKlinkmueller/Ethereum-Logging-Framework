@@ -9,13 +9,19 @@ import java.util.stream.Stream;
  * EthereumTransaction
  */
 public abstract class EthereumTransaction {
-    private final EthereumBlock block;
+    private EthereumBlock block;
     private final List<EthereumLogEntry> logs;
 
-    protected EthereumTransaction(EthereumBlock block) {
-        assert block != null;
-        this.block = block;
+    public EthereumTransaction() {
         this.logs = new ArrayList<>();
+    }
+
+    public EthereumBlock getBlock() {
+        return this.block;
+    }
+
+    public void setBlock(EthereumBlock block) {
+        this.block = block;
     }
 
 	public String getBlockHash() {
@@ -24,10 +30,6 @@ public abstract class EthereumTransaction {
 
     public BigInteger getBlockNumber() {
         return this.block.getNumber();
-    }
-
-    public EthereumBlock getBlock() {
-        return this.block;
     }
 
     public void addLog(EthereumLogEntry log) {

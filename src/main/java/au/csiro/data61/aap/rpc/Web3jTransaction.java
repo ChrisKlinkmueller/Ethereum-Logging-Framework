@@ -11,9 +11,10 @@ class Web3jTransaction extends EthereumTransaction {
     private final Transaction tx;
 
     public Web3jTransaction(EthereumBlock block, Transaction tx) {
-        super(block);
+        assert block != null;
         assert tx != null;
         this.tx = tx;
+        this.setBlock(block);
     }
 
     @Override

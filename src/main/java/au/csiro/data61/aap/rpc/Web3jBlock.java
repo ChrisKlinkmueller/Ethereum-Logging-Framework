@@ -73,7 +73,7 @@ class Web3jBlock extends EthereumBlock {
 
     @Override
     public String getSha3uncles() {
-        return this.getSha3uncles();
+        return this.block.getSha3Uncles();
     }
 
     @Override
@@ -93,7 +93,7 @@ class Web3jBlock extends EthereumBlock {
 
     @Override
     public BigInteger getTotalDifficulty() {
-        return this.getTotalDifficulty();
+        return this.block.getTotalDifficulty();
     }
 
     @Override
@@ -103,7 +103,7 @@ class Web3jBlock extends EthereumBlock {
 
     @Override
     public List<String> getUncles() {
-        return this.getUncles();
+        return this.block.getUncles();
     }
 
     

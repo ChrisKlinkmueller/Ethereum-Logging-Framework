@@ -1,7 +1,8 @@
 package au.csiro.data61.aap.rpc;
 
 import java.math.BigInteger;
-import java.util.stream.Stream;
+import java.util.Collections;
+import java.util.List;
 
 import org.web3j.protocol.core.methods.response.Log;
 
@@ -12,8 +13,9 @@ class Web3jLogEntry extends EthereumLogEntry {
     private final Log log;
 
     protected Web3jLogEntry(EthereumTransaction tx, Log log) {
-        super(tx);
+        assert tx != null;
         assert log != null;
+        this.setTransaction(tx);
         this.log = log;
     }
 
@@ -38,18 +40,8 @@ class Web3jLogEntry extends EthereumLogEntry {
     }
 
     @Override
-    public int topicCount() {
-        return this.log.getTopics().size();
-    }
-
-    @Override
-    public String getTopic(int index) {
-        return this.log.getTopics().get(index);
-    }
-
-    @Override
-    public Stream<String> topicStream() {
-        return this.log.getTopics().stream();
+    public List<String> getTopics() {
+        return Collections.unmodifiableList(this.log.getTopics());
     }
 
     

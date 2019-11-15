@@ -1,11 +1,16 @@
 package au.csiro.data61.aap.data;
 
 import java.io.IOException;
+import java.util.List;
 
 import com.fasterxml.jackson.core.JsonGenerator;
 import com.fasterxml.jackson.databind.SerializerProvider;
 import com.fasterxml.jackson.databind.ser.std.StdSerializer;
+
+import au.csiro.data61.aap.data.JsonUtil.EthereumJsonDeserializer;
 import au.csiro.data61.aap.rpc.EthereumTransaction;
+import au.csiro.data61.aap.rpc.RawLogEntry;
+import au.csiro.data61.aap.rpc.RawTransaction;
 
 /**
  * TransactionJsonizer
@@ -24,17 +29,12 @@ public class TransactionJsonizer {
     private static final String HASH = "hash";
     private static final String LOG_ENTRIES = "logEntries";
     private static final String TRANSACTION_INDEX = "transactionIndex";
-
     
     public static class TransactionSerializer extends StdSerializer<EthereumTransaction> {
         private static final long serialVersionUID = -4264501643169092514L;
 
         public TransactionSerializer() {
-            this(null);
-        }
-
-        public TransactionSerializer(Class<EthereumTransaction> t) {
-            super(t);
+            super(EthereumTransaction.class);
         }
 
         @Override
@@ -61,9 +61,40 @@ public class TransactionJsonizer {
             gen.writeEndArray();
 
             gen.writeEndObject();
-        }
-
-        
+        }        
     }
     
+    public static class TransactionDeserializer extends EthereumJsonDeserializer<RawTransaction> {
+        private static final long serialVersionUID = 3840861880467686269L;
+
+        public TransactionDeserializer() {
+            super(RawTransaction.class);
+            this.addExtractor(FROM, JsonUtil.getStringExtractor(RawTransaction::setFrom));
+            this.addExtractor(GAS, JsonUtil.getIntegerExtractor(RawTransaction::setGas));
+            this.addExtractor(GAS_PRICE, JsonUtil.getIntegerExtractor(RawTransaction::setGasPrice));
+            this.addExtractor(HASH, JsonUtil.getStringExtractor(RawTransaction::setHash));
+            this.addExtractor(INPUT, JsonUtil.getStringExtractor(RawTransaction::setInput));
+            this.addExtractor(NONCE, JsonUtil.getIntegerExtractor(RawTransaction::setNonce));
+            this.addExtractor(TRANSACTION_INDEX, JsonUtil.getIntegerExtractor(RawTransaction::setTransactionIndex));
+            this.addExtractor(TO, JsonUtil.getStringExtractor(RawTransaction::setTo));
+            this.addExtractor(VALUE, JsonUtil.getIntegerExtractor(RawTransaction::setValue));
+            this.addExtractor(V, JsonUtil.getIntegerExtractor(RawTransaction::setV));
+            this.addExtractor(R, JsonUtil.getStringExtractor(RawTransaction::setR));
+            this.addExtractor(S, JsonUtil.getStringExtractor(RawTransaction::setS));
+            this.addExtractor(LOG_ENTRIES, JsonUtil.getListExtractor(this::addLogs, RawLogEntry.class));
+        }
+
+        private void addLogs(RawTransaction tx, List<RawLogEntry> entries) {
+            entries.forEach(e -> {
+                tx.addLog(e);
+                e.setTransaction(tx);
+            });
+        }
+
+        @Override
+        protected RawTransaction createObject() {
+            return new RawTransaction();
+        }
+        
+    }
 }

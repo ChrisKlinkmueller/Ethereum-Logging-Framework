@@ -1,23 +1,23 @@
 package au.csiro.data61.aap.data;
 
+import java.io.BufferedReader;
 import java.io.File;
+import java.io.FileReader;
 import java.io.IOException;
 import java.math.BigInteger;
 import java.net.ConnectException;
 import java.net.URISyntaxException;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.stream.Collectors;
 
+import com.fasterxml.jackson.core.JsonProcessingException;
+import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.ObjectMapper;
-import com.fasterxml.jackson.databind.module.SimpleModule;
 
-import au.csiro.data61.aap.data.BlockJsonizer.BlockSerializer;
-import au.csiro.data61.aap.data.TransactionJsonizer.TransactionSerializer;
-import au.csiro.data61.aap.data.LogEntryJsonizer.LogEntrySerializer;
 import au.csiro.data61.aap.rpc.EthereumBlock;
 import au.csiro.data61.aap.rpc.EthereumClient;
-import au.csiro.data61.aap.rpc.EthereumLogEntry;
-import au.csiro.data61.aap.rpc.EthereumTransaction;
+import au.csiro.data61.aap.rpc.RawBlock;
 
 /**
  * TestDataExtractor
@@ -25,35 +25,64 @@ import au.csiro.data61.aap.rpc.EthereumTransaction;
 public class TestDataExtractor {
     private static final String FILE_NAME = "C:/Development/xes-blockchain/v0.2/src/test/resources/block_data.json";
     private static final long START_BLOCK = 6000000;
-    private static final long BLOCKS = 1000;
-
+    private static final long BLOCKS = 100;
 
     public static void main(String[] args) {
-        final EthereumClient client = createClient();
-        if (client == null) {
-            return;
+        
+        
+    }
+
+    public static List<EthereumBlock> readBlock() {
+        final String content = readContent();
+        if (content == null) {
+            return null;
         }
 
-        final List<EthereumBlock> blocks = queryBlocks(client);
-        if (blocks == null) {
-            client.close();
-            return;
-        }
-
+        final ObjectMapper mapper = JsonUtil.buildObjectMapper();
         try {
-            final ObjectMapper objectMapper = new ObjectMapper();
-            SimpleModule module = new SimpleModule("Serializers");
-            module.addSerializer(EthereumBlock.class, new BlockSerializer(EthereumBlock.class));
-            module.addSerializer(EthereumTransaction.class, new TransactionSerializer(EthereumTransaction.class));
-            module.addSerializer(EthereumLogEntry.class, new LogEntrySerializer(EthereumLogEntry.class));
-            objectMapper.registerModule(module);
-
-            objectMapper.writeValue(new File(FILE_NAME), blocks);
-        } catch (IOException e) {
+            List<RawBlock> blocks = mapper.readValue(content, new TypeReference<List<RawBlock>>() {});
+            return blocks.stream().map(b -> (EthereumBlock)b).collect(Collectors.toList());
+        } catch (JsonProcessingException e) {
             e.printStackTrace();
         }
+        return null;
+    }
 
+    public static void exportBlocks() {
+        final EthereumClient client = createClient(); 
+        if (client == null) { 
+            return; 
+        }
+         
+        final List<EthereumBlock> blocks = queryBlocks(client); 
+        if (blocks == null) {
+            client.close(); 
+            return; 
+        }
+        
+        try { 
+            final ObjectMapper objectMapper = JsonUtil.buildObjectMapper();
+            objectMapper.writeValue(new File(FILE_NAME), blocks); 
+        } catch (IOException e) { 
+            e.printStackTrace(); 
+        }
+        
         client.close();
+        
+    }
+
+    private static String readContent() {
+        try (BufferedReader reader = new BufferedReader(new FileReader(new File(FILE_NAME)))){
+            StringBuilder builder = new StringBuilder();
+            String line = null;
+            while ((line = reader.readLine()) != null) {
+                builder.append(line);
+            }
+            return builder.toString();
+        } catch (Exception e) {
+            e.printStackTrace();
+        }        
+        return null;
     }
 
     private static List<EthereumBlock> queryBlocks(EthereumClient client) {
