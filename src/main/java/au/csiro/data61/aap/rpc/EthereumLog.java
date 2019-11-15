@@ -1,5 +1,6 @@
 package au.csiro.data61.aap.rpc;
 
+import java.math.BigInteger;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.stream.Stream;
@@ -10,6 +11,7 @@ import java.util.stream.Stream;
 public class EthereumLog {
     private final EthereumTransaction tx;
     private final boolean removed;
+    private final BigInteger logIndex;
     private final String address;
     private final String data;
     private final List<String> topics;
@@ -17,6 +19,7 @@ public class EthereumLog {
     EthereumLog(
         EthereumTransaction tx,
         boolean removed,
+        BigInteger logIndex,
         String address,
         String data,
         List<String> topics
@@ -24,6 +27,7 @@ public class EthereumLog {
     {
         this.tx = tx;
         this.removed = removed;
+        this.logIndex = logIndex;
         this.address = address;
         this.data = data;
         this.topics = topics == null ? new ArrayList<>() : new ArrayList<>(topics);
@@ -35,6 +39,10 @@ public class EthereumLog {
 
     public String getData() {
         return data;
+    }
+
+    public BigInteger getLogIndex() {
+        return this.logIndex;
     }
 
     public boolean isRemoved() {
@@ -49,7 +57,7 @@ public class EthereumLog {
         return this.tx.getHash();
     }
 
-    public String getTransactionIndex() {
+    public BigInteger getTransactionIndex() {
         return this.tx.getTransactionIndex();
     }
 
@@ -57,7 +65,7 @@ public class EthereumLog {
         return this.tx.getBlockHash();
     }
 
-    public String getBlockNumber() {
+    public BigInteger getBlockNumber() {
         return this.tx.getBlockNumber();
     }
 

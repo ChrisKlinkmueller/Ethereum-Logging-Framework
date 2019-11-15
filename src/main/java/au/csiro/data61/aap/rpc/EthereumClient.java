@@ -68,7 +68,7 @@ public class EthereumClient {
     private final WebSocketService wsService;
     private final Web3j web3j;
 
-    EthereumClient() throws URISyntaxException, ConnectException {
+    public EthereumClient() throws URISyntaxException, ConnectException {
         this(URL);
     }
 
@@ -138,23 +138,24 @@ public class EthereumClient {
 
     private EthereumBlock createEthereumBlock(Block block) {
         return new EthereumBlock(
-            block.getNumberRaw(), 
+            block.getNumber(), 
             block.getHash(), 
             block.getParentHash(),
-            block.getNonceRaw(),
+            block.getNonce(),
             block.getSha3Uncles(),
             block.getLogsBloom(),
             block.getTransactionsRoot(),
             block.getStateRoot(),
             block.getReceiptsRoot(),
             block.getMiner(),
-            block.getDifficultyRaw(),
-            block.getTotalDifficultyRaw(),
+            block.getDifficulty(),
+            block.getTotalDifficulty(),
             block.getExtraData(),
-            block.getSizeRaw(), 
-            block.getGasLimitRaw(),
-            block.getGasUsedRaw(), 
-            block.getTimestampRaw()
+            block.getSize(), 
+            block.getGasLimit(),
+            block.getGasUsed(), 
+            block.getTimestamp(),
+            block.getUncles()
         );
     }
 
@@ -169,18 +170,19 @@ public class EthereumClient {
         final EthereumTransaction ethTx = new EthereumTransaction(
             block, 
             tx.getFrom(), 
-            tx.getGasRaw(), 
-            tx.getGasPriceRaw(), 
+            tx.getGas(), 
+            tx.getGasPrice(), 
             tx.getHash(), 
             tx.getInput(), 
-            tx.getNonceRaw(), 
+            tx.getNonce(), 
             tx.getTo(), 
-            tx.getTransactionIndexRaw(), 
-            tx.getValueRaw(), 
+            tx.getTransactionIndex(), 
+            tx.getValue(), 
             tx.getV(), 
             tx.getR(), 
             tx.getS()
         );
+
         block.addTransaction(ethTx);
     }
 
@@ -202,6 +204,7 @@ public class EthereumClient {
         final EthereumLog ethLog = new EthereumLog(
             tx, 
             log.isRemoved(), 
+            log.getLogIndex(),
             log.getAddress(), 
             log.getData(), 
             log.getTopics()

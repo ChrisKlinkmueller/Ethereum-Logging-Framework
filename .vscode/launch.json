@@ -2,6 +2,13 @@
     "configurations": [
         {
             "type": "java",
+            "name": "CodeLens (Launch) - TestDataExtractor",
+            "request": "launch",
+            "mainClass": "au.csiro.data61.aap.data.TestDataExtractor",
+            "projectName": "xes-blockchain"
+        },
+        {
+            "type": "java",
             "name": "CodeLens (Launch) - BasicProgramTest",
             "request": "launch",
             "mainClass": "au.csiro.data61.aap.program.BasicProgramTest",

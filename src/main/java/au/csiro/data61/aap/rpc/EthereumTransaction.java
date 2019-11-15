@@ -1,5 +1,6 @@
 package au.csiro.data61.aap.rpc;
 
+import java.math.BigInteger;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.stream.Stream;
@@ -12,29 +13,29 @@ public class EthereumTransaction {
 
     private final EthereumBlock block;
     private final String from;
-    private final String gas;
-    private final String gasPrice;
+    private final BigInteger gas;
+    private final BigInteger gasPrice;
     private final String hash;
     private final String input;
-    private final String nonce;
+    private final BigInteger nonce;
     private final String to;
-    private final String transactionIndex;
-    private final String value;
-    private final long v;
+    private final BigInteger transactionIndex;
+    private final BigInteger value;
+    private final BigInteger v;
     private final String r;
     private final String s;
 
     EthereumTransaction(
         EthereumBlock block,
         String from,
-        String gas,
-        String gasPrice,
+        BigInteger gas,
+        BigInteger gasPrice,
         String hash,
         String input,
-        String nonce,
+        BigInteger nonce,
         String to,
-        String transactionIndex,
-        String value,
+        BigInteger transactionIndex,
+        BigInteger value,
         long v,
         String r,
         String s
@@ -50,18 +51,18 @@ public class EthereumTransaction {
         this.to = to;
         this.transactionIndex = transactionIndex;
         this.value = value;
-        this.v = v;
+        this.v = BigInteger.valueOf(v);
         this.r = r;
         this.s = s;
 
         this.logs = new ArrayList<>();
     }
-    
-    public String getBlockHash() {
+
+	public String getBlockHash() {
         return this.block.getHash();
     }
 
-    public String getBlockNumber() {
+    public BigInteger getBlockNumber() {
         return this.block.getNumber();
     }
 
@@ -73,11 +74,11 @@ public class EthereumTransaction {
         return this.from;
     }
 
-    public String getGas() {
+    public BigInteger getGas() {
         return this.gas;
     }
 
-    public String getGasPrice() {
+    public BigInteger getGasPrice() {
         return this.gasPrice;
     }
 
@@ -89,7 +90,7 @@ public class EthereumTransaction {
         return this.input;
     }
 
-    public String getNonce() {
+    public BigInteger getNonce() {
         return this.nonce;
     }
 
@@ -105,15 +106,15 @@ public class EthereumTransaction {
         return this.to;
     }
 
-    public String getTransactionIndex() {
+    public BigInteger getTransactionIndex() {
         return this.transactionIndex;
     }
 
-    public long getV() {
+    public BigInteger getV() {
         return this.v;
     }
 
-    public String getValue() {
+    public BigInteger getValue() {
         return this.value;
     }
 

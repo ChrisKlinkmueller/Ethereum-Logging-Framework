@@ -1,5 +1,6 @@
 package au.csiro.data61.aap.rpc;
 
+import java.math.BigInteger;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.stream.Stream;
@@ -10,42 +11,44 @@ import java.util.stream.Stream;
 public class EthereumBlock {
     private final List<EthereumTransaction> transactions;
     
-    private final String number;
+    private final BigInteger number;
     private final String hash;
     private final String parentHash;
-    private final String nonce;
+    private final BigInteger nonce;
     private final String sha3uncles;
     private final String logsBloom;
     private final String transactionsRoot;
     private final String stateRoot;
     private final String receiptsRoot;
     private final String miner;
-    private final String difficulty;
-    private final String totalDifficulty;
+    private final BigInteger difficulty;
+    private final BigInteger totalDifficulty;
     private final String extraData;
-    private final String size;
-    private final String gasLimit;
-    private final String gasUsed;
-    private final String timestamp;
+    private final BigInteger size;
+    private final BigInteger gasLimit;
+    private final BigInteger gasUsed;
+    private final BigInteger timestamp;
+    private final List<String> uncles;
     
     EthereumBlock(
-        String number,
+        BigInteger number,
         String hash,
         String parentHash,
-        String nonce,
+        BigInteger nonce,
         String sha3uncles,
         String logsBloom,
         String transactionsRoot,
         String stateRoot,
         String receiptsRoot,
         String miner,
-        String difficulty,
-        String totalDifficulty,
+        BigInteger difficulty,
+        BigInteger totalDifficulty,
         String extraData,
-        String size,
-        String gasLimit,
-        String gasUsed,
-        String timestamp
+        BigInteger size,
+        BigInteger gasLimit,
+        BigInteger gasUsed,
+        BigInteger timestamp,
+        List<String> uncles
     ) {
         this.number = number;
         this.hash = hash;
@@ -64,7 +67,7 @@ public class EthereumBlock {
         this.gasLimit = gasLimit;
         this.gasUsed = gasUsed;
         this.timestamp = timestamp;
-
+        this.uncles = uncles;
         this.transactions = new ArrayList<>();
     }
 
@@ -72,7 +75,7 @@ public class EthereumBlock {
         return this.hash;
     }
 
-    public String getDifficulty() {
+    public BigInteger getDifficulty() {
         return this.difficulty;
     }
 
@@ -80,11 +83,11 @@ public class EthereumBlock {
         return this.extraData;
     }
 
-    public String getGasLimit() {
+    public BigInteger getGasLimit() {
         return this.gasLimit;
     }
 
-    public String getGasUsed() {
+    public BigInteger getGasUsed() {
         return this.gasUsed;
     }
 
@@ -96,11 +99,11 @@ public class EthereumBlock {
         return this.miner;
     }
 
-    public String getNonce() {
+    public BigInteger getNonce() {
         return this.nonce;
     }
 
-    public String getNumber() {
+    public BigInteger getNumber() {
         return this.number;
     }
 
@@ -116,7 +119,7 @@ public class EthereumBlock {
         return this.sha3uncles;
     }
 
-    public String getSize() {
+    public BigInteger getSize() {
         return this.size;
     }
 
@@ -124,16 +127,20 @@ public class EthereumBlock {
         return this.stateRoot;
     }
 
-    public String getTimestamp() {
+    public BigInteger getTimestamp() {
         return this.timestamp;
     }
 
-    public String getTotalDifficulty() {
+    public BigInteger getTotalDifficulty() {
         return this.totalDifficulty;
     }
 
     public String getTransactionsRoot() {
         return this.transactionsRoot;
+    }
+
+    public List<String> getUncles() {
+        return this.uncles;
     }
 
     void addTransaction(EthereumTransaction tx) {
