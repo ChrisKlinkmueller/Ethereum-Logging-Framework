@@ -161,7 +161,7 @@ public class BlockScope extends Scope {
                 if (!result.isSuccessful() && !state.continueAfterException()) {
                     return result;
                 }
-            } catch (Exception ex) {
+            } catch (Throwable ex) {
                 final String message = String.format("Error processing block %s.", currentBlock);
                 state.reportException(message, ex);
                 if (!state.continueAfterException()) {

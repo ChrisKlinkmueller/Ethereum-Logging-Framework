@@ -18,6 +18,7 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import au.csiro.data61.aap.rpc.EthereumBlock;
 import au.csiro.data61.aap.rpc.EthereumClient;
 import au.csiro.data61.aap.rpc.RawBlock;
+import au.csiro.data61.aap.rpc.Web3jClient;
 
 /**
  * TestDataExtractor
@@ -92,7 +93,7 @@ public class TestDataExtractor {
             try {
                 final EthereumBlock block = client.queryBlockData(BigInteger.valueOf(blockNumber));
                 blocks.add(block);
-            } catch (IOException ex) {
+            } catch (Throwable ex) {
                 ex.printStackTrace();
                 return null;
             }
@@ -103,7 +104,7 @@ public class TestDataExtractor {
 
     private static EthereumClient createClient() {
         try {
-            return new EthereumClient();
+            return new Web3jClient();
         } catch (ConnectException | URISyntaxException e) {
             e.printStackTrace();
         }

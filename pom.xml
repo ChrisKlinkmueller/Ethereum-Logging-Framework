@@ -20,6 +20,7 @@
     <junit.platform.version>1.5.2</junit.platform.version>
     <web3j.version>4.5.5</web3j.version>
     <logback-classic.version>1.2.3</logback-classic.version>
+    <jackson.version>2.10.1</jackson.version>
 	</properties>
 
   <dependencies>
@@ -50,8 +51,7 @@
     <dependency>
       <groupId>com.fasterxml.jackson.core</groupId>
       <artifactId>jackson-databind</artifactId>
-      <version>2.10.1</version>
-      <scope>test</scope>
+      <version>${jackson.version}</version>
     </dependency>
     <dependency>
         <groupId>org.antlr</groupId>
