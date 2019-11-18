@@ -18,3 +18,7 @@
 
 ## Statement
 - (Done) Type of left and right side must be compatible
+
+## Configuration
+- Outputfolder must be set
+- Client must be connected

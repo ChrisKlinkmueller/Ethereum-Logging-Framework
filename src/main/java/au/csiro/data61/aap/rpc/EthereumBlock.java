@@ -2,13 +2,14 @@ package au.csiro.data61.aap.rpc;
 
 import java.math.BigInteger;
 import java.util.ArrayList;
+import java.util.Iterator;
 import java.util.List;
 import java.util.stream.Stream;
 
 /**
  * EthereumBlock
  */
-public abstract class EthereumBlock {
+public abstract class EthereumBlock implements Iterable<EthereumTransaction> {
     private final List<EthereumTransaction> transactions;
 
     protected EthereumBlock() {
@@ -50,5 +51,10 @@ public abstract class EthereumBlock {
 
     public Stream<EthereumTransaction> transactionStream() {
         return this.transactions.stream();
+    }
+
+    @Override
+    public Iterator<EthereumTransaction> iterator() {
+        return this.transactions.iterator();
     }
 }
