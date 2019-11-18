@@ -60,7 +60,7 @@ public class EtlState {
         return this.csvExporter;
     }
 
-    public void startBlock(String filepath) throws Throwable {
+    public void setOutputFolder(String filepath) throws Throwable {
         final Path outputFolder = Path.of(filepath);
         if (!outputFolder.toFile().exists()) {
             throw new EtlException(String.format("Folder '%s' does not exist.", outputFolder.toString()));
@@ -72,5 +72,21 @@ public class EtlState {
 
     public void startBlock(BigInteger blockNumber) {
         Arrays.stream(this.exporters).forEach(e -> e.startBlock(blockNumber));
+    }
+
+    public void endBlock() throws Throwable {
+        for (Exporter ex : this.exporters) {
+            ex.endBlock();
+        }
+    }
+
+    public void endProgram() throws Throwable {
+        for (Exporter ex : this.exporters) {
+            ex.endProgram();
+        }
+    }
+
+    public void close() {
+        this.getEthereumSources().close();
     }
 }

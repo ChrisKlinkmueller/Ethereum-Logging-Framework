@@ -63,10 +63,14 @@ public interface Instruction {
             for (Instruction instruction : instructions) {
                 instruction.execute(state);
             }
+            state.endProgram();
         }
-        catch (EtlException ex) {
+        catch (Throwable ex) {
             final String message = "Error when executing the program.";
             state.getExceptionHandler().handleExceptionAndDecideOnAbort(message);
+        }
+        finally {
+            state.close();
         }
     }
 
@@ -118,11 +122,15 @@ public interface Instruction {
                 if (!block.getNumber().equals(currentBlock)) {
                     currentBlock = block.getNumber();
                 }
+
+                state.startBlock(currentBlock);
                 state.getEthereumSources().setCurrentBlock(block);
                 
                 for (Instruction instruction : instructions) { 
                     instruction.execute(state);
                 }
+
+                state.endBlock();
             }
             catch (Throwable throwable) {
                 final String message = String.format("Error when processing block number '%s'.", currentBlock.toString());

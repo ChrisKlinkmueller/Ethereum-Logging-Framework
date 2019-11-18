@@ -33,4 +33,8 @@ public class ValueStore {
         assert names != null;
         names.stream().forEach(name -> this.removeValue(name));
     }
+
+	public boolean containsName(String name) {
+		return this.values.containsKey(name);
+	}
 }
