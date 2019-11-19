@@ -17,6 +17,7 @@ public class DataSource {
     private EthereumClient client;
     private EthereumBlock currentBlock;
     private EthereumTransaction currentTransaction;
+    private EthereumLogEntry currentLogEntry;
 
     public EthereumClient getClient() {
         return this.client;
@@ -36,6 +37,14 @@ public class DataSource {
 
     public void setCurrentTransaction(EthereumTransaction currentTransaction) {
         this.currentTransaction = currentTransaction;
+    }
+
+    public EthereumLogEntry getCurrentLogEntry() {
+        return this.currentLogEntry;
+    }
+
+    public void setCurrentLogEntry(EthereumLogEntry currentLogEntry) {
+        this.currentLogEntry = currentLogEntry;
     }
 
     public Stream<EthereumTransaction> transactionStream() {
