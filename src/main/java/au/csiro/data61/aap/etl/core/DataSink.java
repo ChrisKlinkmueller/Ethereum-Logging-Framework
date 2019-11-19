@@ -1,12 +1,13 @@
-package au.csiro.data61.aap.etl.export;
+package au.csiro.data61.aap.etl.core;
 
 import java.math.BigInteger;
 import java.nio.file.Path;
+import java.util.Arrays;
 
 /**
  * Exporter
  */
-public abstract class Exporter {
+public abstract class DataSink {
     private Path outputFolder;
     private boolean streaming;
     private BigInteger currentBlock;
@@ -38,6 +39,11 @@ public abstract class Exporter {
         if (!this.streaming) {
             this.writeState(String.format("all_blocks"));
         }
+    }
+
+    protected boolean validVariables(SinkVariable... variables) {
+        return Arrays.stream(variables)
+            .allMatch(v -> v != null && v.getName() != null);
     }
 
     protected abstract void writeState(String namePrefix) throws Throwable;

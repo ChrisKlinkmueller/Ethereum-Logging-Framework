@@ -1,4 +1,4 @@
-package au.csiro.data61.aap.etl;
+package au.csiro.data61.aap.etl.core;
 
 import java.math.BigInteger;
 import java.util.Arrays;
@@ -18,7 +18,7 @@ import au.csiro.data61.aap.rpc.EthereumTransaction;
  */
 @FunctionalInterface
 public interface Instruction {
-    public void execute(EtlState state) throws EtlException;
+    public void execute(ProgramState state) throws EtlException;
 
     //#region MethodCall
 
@@ -28,7 +28,7 @@ public interface Instruction {
         return state -> callMethod(state, parameterAccessors, method, resultStorer);
     }
 
-    private static Object callMethod(EtlState state, List<ValueAccessor> parameterAccessors, Method method, ValueMutator resultStorer) throws EtlException {
+    private static Object callMethod(ProgramState state, List<ValueAccessor> parameterAccessors, Method method, ValueMutator resultStorer) throws EtlException {
         Object[] parameterValues = new Object[parameterAccessors.size()];
         for (int i = 0; i < parameterAccessors.size(); i++) {
             parameterValues[i] = parameterAccessors.get(i).getValue(state);
@@ -58,7 +58,7 @@ public interface Instruction {
         return state -> executeProgram(state, instructions);
     }
 
-    private static void executeProgram(EtlState state, List<Instruction> instructions)  {
+    private static void executeProgram(ProgramState state, List<Instruction> instructions)  {
         try {
             for (Instruction instruction : instructions) {
                 instruction.execute(state);
@@ -95,14 +95,14 @@ public interface Instruction {
         assert mutator != null;
         assert blockValue != null;
         return (state) -> {
-            final EthereumBlock block = state.getEthereumSources().getCurrentBlock();
+            final EthereumBlock block = state.getDataSource().getCurrentBlock();
             final Object value = blockValue.apply(block);
             mutator.setValue(value, state);
         };
     }
 
     private static void executeBlockScope(
-        EtlState state, 
+        ProgramState state, 
         ValueAccessor fromBlock, 
         ValueAccessor toBlock, 
         List<Instruction> instructions
@@ -114,7 +114,7 @@ public interface Instruction {
         BigInteger currentBlock = startBlock;
         while (currentBlock.compareTo(stopBlock) <= 0) {
             try {
-                while (state.getEthereumSources().getClient().queryBlockNumber().compareTo(currentBlock) < 0) {
+                while (state.getDataSource().getClient().queryBlockNumber().compareTo(currentBlock) < 0) {
                     Thread.sleep(3000);
                 }
 
@@ -124,7 +124,7 @@ public interface Instruction {
                 }
 
                 state.startBlock(currentBlock);
-                state.getEthereumSources().setCurrentBlock(block);
+                state.getDataSource().setCurrentBlock(block);
                 
                 for (Instruction instruction : instructions) { 
                     instruction.execute(state);
@@ -140,7 +140,7 @@ public interface Instruction {
                 }                
             }
             finally {
-                state.getEthereumSources().setCurrentBlock(null);
+                state.getDataSource().setCurrentBlock(null);
             }
 
             currentBlock = currentBlock.add(BigInteger.ONE);
@@ -148,10 +148,10 @@ public interface Instruction {
     }
 
     public static final int KNOWN_BLOCKS_LENGTH = 30;
-    private static EthereumBlock queryConfirmedBlock(EtlState state, BigInteger currentBlock, LinkedList<EthereumBlock> knownBlocks) throws Throwable {
+    private static EthereumBlock queryConfirmedBlock(ProgramState state, BigInteger currentBlock, LinkedList<EthereumBlock> knownBlocks) throws Throwable {
         BigInteger queryBlockNumber = currentBlock;
         do {
-            final EthereumBlock block = state.getEthereumSources().getClient().queryBlockData(queryBlockNumber);
+            final EthereumBlock block = state.getDataSource().getClient().queryBlockData(queryBlockNumber);
             if (knownBlocks.isEmpty() || knownBlocks.getLast().getHash().equals(block.getParentHash())) {
                 appendBlock(knownBlocks, block);
                 return block;
@@ -187,14 +187,14 @@ public interface Instruction {
         return (state) -> executeTransactionScope(state, senders, recipients, instructions);
     }
 
-    private static void executeTransactionScope(EtlState state, ValueAccessor senders, ValueAccessor recipients, List<Instruction> instructions) throws EtlException {
+    private static void executeTransactionScope(ProgramState state, ValueAccessor senders, ValueAccessor recipients, List<Instruction> instructions) throws EtlException {
         final Predicate<String> senderFilter = addressFilter(state, senders);
         final Predicate<String> recipientFilter = addressFilter(state, recipients);
 
-        for (EthereumTransaction tx : state.getEthereumSources().getCurrentBlock()) {
+        for (EthereumTransaction tx : state.getDataSource().getCurrentBlock()) {
             if (senderFilter.test(tx.getFrom()) && recipientFilter.test(tx.getTo())) {
                 try {
-                    state.getEthereumSources().setCurrentTransaction(tx);
+                    state.getDataSource().setCurrentTransaction(tx);
                     for (Instruction instruction : instructions) {
                         instruction.execute(state);
                     }
@@ -207,13 +207,13 @@ public interface Instruction {
                     }
                 }
                 finally {
-                    state.getEthereumSources().setCurrentTransaction(null);
+                    state.getDataSource().setCurrentTransaction(null);
                 }
             }
         }
     }
 
-    private static Predicate<String> addressFilter(EtlState state, ValueAccessor addresses) throws EtlException {
+    private static Predicate<String> addressFilter(ProgramState state, ValueAccessor addresses) throws EtlException {
         final Object addressList = addresses.getValue(state);
         if (addressList == null) {
             return address -> true;

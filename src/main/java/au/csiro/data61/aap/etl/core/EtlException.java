@@ -1,4 +1,4 @@
-package au.csiro.data61.aap.etl;
+package au.csiro.data61.aap.etl.core;
 
 /**
  * EtlException

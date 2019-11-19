@@ -1,4 +1,4 @@
-package au.csiro.data61.aap.etl;
+package au.csiro.data61.aap.etl.core;
 
 import java.util.HashMap;
 import java.util.List;

@@ -1,11 +1,11 @@
-package au.csiro.data61.aap.etl;
+package au.csiro.data61.aap.etl.core;
 
 /**
  * ValueGetter
  */
 @FunctionalInterface
 public interface ValueAccessor {
-    public Object getValue(EtlState state) throws EtlException;
+    public Object getValue(ProgramState state) throws EtlException;
     
     public static ValueAccessor createLiteralAccessor(Object value) {
         return (state) -> value;

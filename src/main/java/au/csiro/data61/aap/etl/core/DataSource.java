@@ -1,4 +1,4 @@
-package au.csiro.data61.aap.etl;
+package au.csiro.data61.aap.etl.core;
 
 import java.net.ConnectException;
 import java.net.URISyntaxException;
@@ -13,7 +13,7 @@ import au.csiro.data61.aap.rpc.Web3jClient;
 /**
  * EthereumSources
  */
-public class EthereumSources {
+public class DataSource {
     private EthereumClient client;
     private EthereumBlock currentBlock;
     private EthereumTransaction currentTransaction;

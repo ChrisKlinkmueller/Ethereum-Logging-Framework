@@ -1,4 +1,4 @@
-package au.csiro.data61.aap.etl.export;
+package au.csiro.data61.aap.etl.core;
 
 import java.io.BufferedWriter;
 import java.io.FileWriter;
@@ -7,20 +7,33 @@ import java.nio.file.Paths;
 import java.util.Arrays;
 import java.util.LinkedList;
 import java.util.List;
+import java.util.Objects;
 import java.util.stream.Collectors;
+
+import au.csiro.data61.aap.etl.core.DataSink;
 
 /**
  * LineExporter
  */
-public class LineExporter extends Exporter {
+public class TextSink extends DataSink {
     private final List<String> lines;
 
-    public LineExporter() {
+    public TextSink() {
         this.lines = new LinkedList<String>();
     }
 
-    public void addLine(String... parts) {
-        this.lines.add(Arrays.stream(parts).collect(Collectors.joining()));
+    public void addLine(SinkVariable... variables) {
+        assert this.validVariables(variables);
+        this.lines.add(
+            Arrays.stream(variables)
+                .map(variable -> variable.getValue() == null ? "" : variable.getValue().toString())
+                .collect(Collectors.joining())
+        );
+    }
+
+    @Override
+    protected boolean validVariables(SinkVariable... variables) {
+        return Arrays.stream(variables).allMatch(Objects::nonNull);
     }
 
     @Override
