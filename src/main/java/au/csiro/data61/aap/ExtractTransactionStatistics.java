@@ -11,9 +11,10 @@ import au.csiro.data61.aap.etl.configuration.ProgramBuilder;
 import au.csiro.data61.aap.etl.core.Instruction;
 import au.csiro.data61.aap.etl.core.Method;
 import au.csiro.data61.aap.etl.core.ProgramState;
+import au.csiro.data61.aap.etl.core.SetOutputFolderInstruction;
 import au.csiro.data61.aap.etl.core.ValueAccessor;
+import au.csiro.data61.aap.etl.core.writers.AddCsvRowInstruction;
 import au.csiro.data61.aap.etl.library.ConfigurationMethods;
-import au.csiro.data61.aap.etl.library.output.CsvRowCreator;
 import au.csiro.data61.aap.etl.library.types.types.IntegerOperations;
 import au.csiro.data61.aap.etl.library.values.DataSourceVariables;
 import au.csiro.data61.aap.etl.library.values.Literal;
@@ -52,7 +53,7 @@ public class ExtractTransactionStatistics {
 
             Method connectionMethod = ConfigurationMethods::connectClient;
             builder.addMethodCall(connectionMethod, Arrays.asList(Literal.stringLiteral(URL)), null);
-            builder.addMethodCall(ConfigurationMethods::setOutputFolder, Arrays.asList(Literal.stringLiteral(FOLDER)), null);
+            builder.addMethodCall(new SetOutputFolderInstruction(), Arrays.asList(Literal.stringLiteral(FOLDER)), null);
 
             builder.prepareBlockRangeBuild();
                 addDataSourceVariableInstructions(builder, BLOCK_VARIABLES, DataSourceVariables::createValueCreationInstruction);
@@ -80,7 +81,7 @@ public class ExtractTransactionStatistics {
         final List<ValueAccessor> valueAccessors = names.stream()
             .map(name -> Variables.createValueAccessor(name))
             .collect(Collectors.toList());
-        final Instruction export = new CsvRowCreator("block_statistics", names, valueAccessors);
+        final Instruction export = new AddCsvRowInstruction("block_statistics", names, valueAccessors);
         builder.addInstruction(export);
     }
 

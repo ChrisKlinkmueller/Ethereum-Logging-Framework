@@ -47,11 +47,11 @@ public class BlockRangeFilter extends Filter {
                     currentBlock = block.getNumber();
                 }
 
-                state.startBlock(currentBlock);
+                state.getWriters().startNewBlock(currentBlock);
                 state.getDataSource().setCurrentBlock(block);
                 this.executeInstructions(state);
+                state.getWriters().writeBlock();
 
-                state.endBlock();
             } catch (final Throwable throwable) {
                 final String message = String.format("Error when processing block number '%s'.", currentBlock.toString());
                 final boolean abort = state.getExceptionHandler().handleExceptionAndDecideOnAbort(message, throwable);

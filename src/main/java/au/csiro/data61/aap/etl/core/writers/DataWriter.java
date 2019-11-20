@@ -1,4 +1,4 @@
-package au.csiro.data61.aap.etl.core;
+package au.csiro.data61.aap.etl.core.writers;
 
 import java.math.BigInteger;
 import java.nio.file.Path;
@@ -6,7 +6,7 @@ import java.nio.file.Path;
 /**
  * Exporter
  */
-public abstract class DataSink {
+public abstract class DataWriter {
     private Path outputFolder;
     private boolean streaming;
     private BigInteger currentBlock;
@@ -28,13 +28,13 @@ public abstract class DataSink {
         this.currentBlock = blocknumber;
     }
 
-    void endBlock() throws Throwable {
+    public final void endBlock() throws Throwable {
         if (this.streaming) {
             this.writeState(this.currentBlock.toString());
         }
     } 
 
-    void endProgram() throws Throwable {
+    public final void endProgram() throws Throwable {
         if (!this.streaming) {
             this.writeState("all");
         }

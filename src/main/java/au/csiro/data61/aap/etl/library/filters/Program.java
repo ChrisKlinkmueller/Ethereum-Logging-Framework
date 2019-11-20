@@ -22,7 +22,7 @@ public class Program extends Filter {
     public void execute(ProgramState state) {
         try {
             this.executeInstructions(state);
-            state.endProgram();
+            state.getWriters().writeAllData();
         } catch (final Throwable ex) {
             final String message = "Error when executing the program.";
             state.getExceptionHandler().handleExceptionAndDecideOnAbort(message, ex);

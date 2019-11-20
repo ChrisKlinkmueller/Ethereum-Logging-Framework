@@ -1,4 +1,4 @@
-package au.csiro.data61.aap.etl.core;
+package au.csiro.data61.aap.etl.core.writers;
 
 import java.io.BufferedWriter;
 import java.io.FileWriter;
@@ -11,12 +11,10 @@ import java.util.Map;
 import java.util.stream.Collectors;
 import java.util.stream.IntStream;
 
-import au.csiro.data61.aap.etl.core.DataSink;
-
 /**
  * CSVExporter
  */
-public class CsvSink extends DataSink {
+public class CsvWriter extends DataWriter {
     public static final String DEFAULT_DELIMITER = ",";
 
     private final Map<String, Map<String, ArrayList<Object>>> tables;
@@ -24,7 +22,7 @@ public class CsvSink extends DataSink {
     private final Map<String, Integer> rowCounts;
     private String delimiter;
 
-    public CsvSink() {
+    public CsvWriter() {
         this.delimiter = DEFAULT_DELIMITER;
         this.tables = new HashMap<>();
         this.rowCounts = new HashMap<>();

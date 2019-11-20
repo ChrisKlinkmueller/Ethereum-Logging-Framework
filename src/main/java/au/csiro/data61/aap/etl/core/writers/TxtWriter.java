@@ -1,4 +1,4 @@
-package au.csiro.data61.aap.etl.core;
+package au.csiro.data61.aap.etl.core.writers;
 
 import java.io.BufferedWriter;
 import java.io.FileWriter;
@@ -10,10 +10,10 @@ import java.util.List;
 /**
  * LineExporter
  */
-public class TextSink extends DataSink {
+public class TxtWriter extends DataWriter {
     private final List<String> lines;
 
-    public TextSink() {
+    public TxtWriter() {
         this.lines = new LinkedList<String>();
     }
 
