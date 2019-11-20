@@ -14,12 +14,12 @@ import au.csiro.data61.aap.etl.core.ProgramState;
 import au.csiro.data61.aap.etl.core.SetOutputFolderInstruction;
 import au.csiro.data61.aap.etl.core.values.ValueAccessor;
 import au.csiro.data61.aap.etl.core.writers.AddCsvRowInstruction;
-import au.csiro.data61.aap.etl.library.ConfigurationMethods;
 import au.csiro.data61.aap.etl.library.types.types.IntegerOperations;
 import au.csiro.data61.aap.etl.core.filters.BlockVariables;
 import au.csiro.data61.aap.etl.core.filters.EthereumVariables;
 import au.csiro.data61.aap.etl.core.values.Literal;
 import au.csiro.data61.aap.etl.core.filters.TransactionVariables;
+import au.csiro.data61.aap.etl.core.readers.ClientConnectionMethod;
 import au.csiro.data61.aap.etl.core.values.UserVariables;
 
 /**
@@ -53,7 +53,7 @@ public class ExtractTransactionStatistics {
         final ProgramBuilder builder = new ProgramBuilder();
         builder.prepareProgramBuild();
 
-            Method connectionMethod = ConfigurationMethods::connectClient;
+            Method connectionMethod = new ClientConnectionMethod();
             builder.addMethodCall(connectionMethod, Arrays.asList(Literal.stringLiteral(URL)), null);
             builder.addMethodCall(new SetOutputFolderInstruction(), Arrays.asList(Literal.stringLiteral(FOLDER)), null);
 
