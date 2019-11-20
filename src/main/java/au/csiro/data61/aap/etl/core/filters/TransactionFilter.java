@@ -24,7 +24,7 @@ public class TransactionFilter extends Filter {
     }
 
     public TransactionFilter(ValueAccessor senders, ValueAccessor recipients, List<Instruction> instructions) {
-        super(instructions);
+        super(instructions, EthereumVariables.getTransactionValueCreators(), EthereumVariables.getTransactionRemovers());
         this.recipients = recipients;
         this.senders = senders;
     }

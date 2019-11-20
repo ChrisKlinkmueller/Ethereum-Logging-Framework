@@ -1,6 +1,7 @@
 package au.csiro.data61.aap.etl.core.filters;
 
 import java.util.Arrays;
+import java.util.Collections;
 import java.util.List;
 
 import au.csiro.data61.aap.etl.core.Instruction;
@@ -16,7 +17,7 @@ public class Program extends Filter {
     }
 
     public Program(List<Instruction> instructions) {
-        super(instructions);
+        super(instructions, Collections.emptyList(), Collections.emptyList());
     }
 
     public void execute(ProgramState state) {

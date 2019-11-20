@@ -25,7 +25,7 @@ public class BlockRangeFilter extends Filter {
     }
 
     public BlockRangeFilter(final ValueAccessor fromBlock, final ValueAccessor toBlock, final List<Instruction> instructions) {
-        super(instructions);
+        super(instructions, EthereumVariables.getBlockValueCreators(), EthereumVariables.getBlockValueRemovers());
         assert fromBlock != null;
         assert toBlock != null;
         assert instructions != null && instructions.stream().allMatch(Objects::nonNull);
@@ -49,6 +49,7 @@ public class BlockRangeFilter extends Filter {
 
                 state.getWriters().startNewBlock(currentBlock);
                 state.getReader().setCurrentBlock(block);
+
                 this.executeInstructions(state);
                 state.getWriters().writeBlock();
 

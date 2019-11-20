@@ -23,7 +23,7 @@ public class LogEntryFilter extends Filter {
     }
 
     public LogEntryFilter(ValueAccessor addresses, Event event, List<Instruction> instructions) {
-        super(instructions);
+        super(instructions, EthereumVariables.getLogEntryValueCreators(), EthereumVariables.getLogEntryRemovers());
         assert event != null;
         assert instructions != null;
         this.addresses = addresses;
