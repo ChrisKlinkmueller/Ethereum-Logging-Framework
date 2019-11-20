@@ -6,7 +6,7 @@ import java.util.LinkedList;
 import java.util.List;
 import java.util.Objects;
 
-import au.csiro.data61.aap.etl.core.EtlException;
+import au.csiro.data61.aap.etl.core.exceptions.ProgramException;
 import au.csiro.data61.aap.etl.core.Instruction;
 import au.csiro.data61.aap.etl.core.ProgramState;
 import au.csiro.data61.aap.etl.core.ValueAccessor;
@@ -33,7 +33,7 @@ public class BlockRangeFilter extends Filter {
         this.toBlock = toBlock;
     }
 
-    public void execute(final ProgramState state) throws EtlException {
+    public void execute(final ProgramState state) throws ProgramException {
         final LinkedList<EthereumBlock> knownBlocks = new LinkedList<>();
         final BigInteger startBlock = (BigInteger) fromBlock.getValue(state);
         final BigInteger stopBlock = (BigInteger) toBlock.getValue(state);

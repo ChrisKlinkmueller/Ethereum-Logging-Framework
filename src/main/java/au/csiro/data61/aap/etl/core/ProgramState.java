@@ -2,6 +2,8 @@ package au.csiro.data61.aap.etl.core;
 
 import java.nio.file.Path;
 
+import au.csiro.data61.aap.etl.core.exceptions.ProgramException;
+import au.csiro.data61.aap.etl.core.exceptions.ExceptionHandler;
 import au.csiro.data61.aap.etl.core.readers.DataReader;
 import au.csiro.data61.aap.etl.core.writers.Writers;
 
@@ -33,17 +35,17 @@ public class ProgramState {
         return this.exceptionHandler;
     }
 
-    public void setOutputFolder(String folderPath) throws EtlException {
+    public void setOutputFolder(String folderPath) throws ProgramException {
         final Path outputFolder = Path.of(folderPath);
         if (!outputFolder.toFile().exists()) {
-            throw new EtlException(String.format("Folder '%s' does not exist.", outputFolder.toString()));
+            throw new ProgramException(String.format("Folder '%s' does not exist.", outputFolder.toString()));
         }
 
         try  {
             this.exceptionHandler.setOutputFolder(outputFolder);
         }
         catch (Throwable cause) {
-            throw new EtlException("Error when setting the output folder.", cause);
+            throw new ProgramException("Error when setting the output folder.", cause);
         }
     }
 

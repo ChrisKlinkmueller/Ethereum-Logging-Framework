@@ -1,11 +1,13 @@
 package au.csiro.data61.aap.etl.core;
 
+import au.csiro.data61.aap.etl.core.exceptions.ProgramException;
+
 /**
  * ValueGetter
  */
 @FunctionalInterface
 public interface ValueAccessor {
-    public Object getValue(ProgramState state) throws EtlException;
+    public Object getValue(ProgramState state) throws ProgramException;
     
     public static ValueAccessor createLiteralAccessor(Object value) {
         return (state) -> value;

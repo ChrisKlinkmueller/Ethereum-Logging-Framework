@@ -1,4 +1,4 @@
-package au.csiro.data61.aap.etl.core;
+package au.csiro.data61.aap.etl.core.exceptions;
 
 import java.nio.file.Path;
 import java.nio.file.Paths;

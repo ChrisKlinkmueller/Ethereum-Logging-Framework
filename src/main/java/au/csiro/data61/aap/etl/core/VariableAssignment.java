@@ -1,5 +1,7 @@
 package au.csiro.data61.aap.etl.core;
 
+import au.csiro.data61.aap.etl.core.exceptions.ProgramException;
+
 /**
  * VariableDefinition
  */
@@ -15,7 +17,7 @@ public class VariableAssignment implements Instruction {
     }
 
     @Override
-    public void execute(ProgramState state) throws EtlException {
+    public void execute(ProgramState state) throws ProgramException {
         final Object value = this.valueAccessor.getValue(state);
         this.valueMutator.setValue(value, state);
     }    

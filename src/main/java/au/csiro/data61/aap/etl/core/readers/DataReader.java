@@ -4,7 +4,7 @@ import java.net.ConnectException;
 import java.net.URISyntaxException;
 import java.util.stream.Stream;
 
-import au.csiro.data61.aap.etl.core.EtlException;
+import au.csiro.data61.aap.etl.core.exceptions.ProgramException;
 
 /**
  * EthereumSources
@@ -54,16 +54,16 @@ public class DataReader {
                 : this.currentTransaction.logStream();
     }
 
-    public void connect(String url) throws EtlException {
+    public void connect(String url) throws ProgramException {
         assert url != null;
         if (this.client != null) {
-            throw new EtlException("Already connected to Ethereum node.");
+            throw new ProgramException("Already connected to Ethereum node.");
         }
 
         try {
             this.client = new Web3jClient(url);
         } catch (ConnectException | URISyntaxException e) {
-            throw new EtlException(String.format("Error when connecting to Ethereum node using URL '%s'.", url), e);
+            throw new ProgramException(String.format("Error when connecting to Ethereum node using URL '%s'.", url), e);
         }
     }
     

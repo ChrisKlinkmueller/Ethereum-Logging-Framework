@@ -1,6 +1,6 @@
 package au.csiro.data61.aap.etl.library.values;
 
-import au.csiro.data61.aap.etl.core.EtlException;
+import au.csiro.data61.aap.etl.core.exceptions.ProgramException;
 import au.csiro.data61.aap.etl.core.ValueAccessor;
 import au.csiro.data61.aap.etl.core.ValueMutator;
 
@@ -13,7 +13,7 @@ public class Variables {
         assert name != null;
         return state -> {
             if (!state.getValueStore().containsName(name)) {
-                throw new EtlException(String.format("Variable '%s' does not exist.", name));
+                throw new ProgramException(String.format("Variable '%s' does not exist.", name));
             }
             return state.getValueStore().getValue(name);
         };

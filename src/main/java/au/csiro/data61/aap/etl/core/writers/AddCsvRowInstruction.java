@@ -4,7 +4,7 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
 
-import au.csiro.data61.aap.etl.core.EtlException;
+import au.csiro.data61.aap.etl.core.exceptions.ProgramException;
 import au.csiro.data61.aap.etl.core.Instruction;
 import au.csiro.data61.aap.etl.core.ProgramState;
 import au.csiro.data61.aap.etl.core.ValueAccessor;
@@ -28,7 +28,7 @@ public class AddCsvRowInstruction implements Instruction {
     }
 
     @Override
-    public void execute(ProgramState state) throws EtlException {
+    public void execute(ProgramState state) throws ProgramException {
         final CsvWriter writer = state.getWriters().getCsvWriter();
         writer.beginRow(tableName);
 

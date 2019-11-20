@@ -3,7 +3,7 @@ package au.csiro.data61.aap.etl.library.values;
 import java.math.BigInteger;
 import java.util.List;
 
-import au.csiro.data61.aap.etl.core.EtlException;
+import au.csiro.data61.aap.etl.core.exceptions.ProgramException;
 import au.csiro.data61.aap.etl.core.ProgramState;
 import au.csiro.data61.aap.etl.core.ValueAccessor;
 
@@ -18,7 +18,7 @@ public class Literal implements ValueAccessor {
     }
 
     @Override
-    public Object getValue(ProgramState state) throws EtlException {
+    public Object getValue(ProgramState state) throws ProgramException {
         return this.value;
     }
 

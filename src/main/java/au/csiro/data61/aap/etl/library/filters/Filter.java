@@ -4,7 +4,7 @@ import java.util.LinkedList;
 import java.util.List;
 import java.util.Objects;
 
-import au.csiro.data61.aap.etl.core.EtlException;
+import au.csiro.data61.aap.etl.core.exceptions.ProgramException;
 import au.csiro.data61.aap.etl.core.Instruction;
 import au.csiro.data61.aap.etl.core.ProgramState;
 
@@ -19,7 +19,7 @@ public abstract class Filter implements Instruction {
         this.instructions = new LinkedList<>(instructions);
     }
 
-    protected void executeInstructions(ProgramState state) throws EtlException {
+    protected void executeInstructions(ProgramState state) throws ProgramException {
         for (Instruction instruction : this.instructions) {
             instruction.execute(state);
         }

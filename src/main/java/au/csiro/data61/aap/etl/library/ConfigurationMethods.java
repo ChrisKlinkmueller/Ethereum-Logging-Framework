@@ -1,6 +1,6 @@
 package au.csiro.data61.aap.etl.library;
 
-import au.csiro.data61.aap.etl.core.EtlException;
+import au.csiro.data61.aap.etl.core.exceptions.ProgramException;
 import au.csiro.data61.aap.etl.core.ProgramState;
 
 /**
@@ -8,7 +8,7 @@ import au.csiro.data61.aap.etl.core.ProgramState;
  */
 public class ConfigurationMethods {
 
-    public static Object connectClient(Object[] parameters, ProgramState state) throws EtlException {
+    public static Object connectClient(Object[] parameters, ProgramState state) throws ProgramException {
         assert parameters != null && parameters.length == 1;
         assert parameters[0] instanceof String;
         final String url = (String) parameters[0];

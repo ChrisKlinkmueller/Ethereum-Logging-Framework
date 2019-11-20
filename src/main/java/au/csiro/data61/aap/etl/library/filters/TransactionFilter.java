@@ -6,7 +6,7 @@ import java.util.List;
 import java.util.Set;
 import java.util.function.Predicate;
 
-import au.csiro.data61.aap.etl.core.EtlException;
+import au.csiro.data61.aap.etl.core.exceptions.ProgramException;
 import au.csiro.data61.aap.etl.core.Instruction;
 import au.csiro.data61.aap.etl.core.ProgramState;
 import au.csiro.data61.aap.etl.core.ValueAccessor;
@@ -29,7 +29,7 @@ public class TransactionFilter extends Filter {
         this.senders = senders;
     }
 
-    public void execute(ProgramState state) throws EtlException {
+    public void execute(ProgramState state) throws ProgramException {
         final Predicate<String> senderFilter = this.createAddressFilter(state, this.senders);
         final Predicate<String> recipientFilter = this.createAddressFilter(state, this.recipients);
 
@@ -43,7 +43,7 @@ public class TransactionFilter extends Filter {
                     final String message = String.format("Error mapping transaction '%s' in block '%s'.", tx.getTransactionIndex(), tx.getBlockNumber());
                     final boolean abort = state.getExceptionHandler().handleExceptionAndDecideOnAbort(message, cause);
                     if (abort) {
-                        throw new EtlException(message, cause);
+                        throw new ProgramException(message, cause);
                     }
                 }
                 finally {
@@ -53,7 +53,7 @@ public class TransactionFilter extends Filter {
         }
     }
 
-    private Predicate<String> createAddressFilter(ProgramState state, ValueAccessor addresses) throws EtlException {
+    private Predicate<String> createAddressFilter(ProgramState state, ValueAccessor addresses) throws ProgramException {
         if (addresses == null) {
             return address -> true;
         }
@@ -79,11 +79,11 @@ public class TransactionFilter extends Filter {
             }
             catch (ClassCastException ex) {
                 final String message = "Cannot convert address list.";
-                throw new EtlException(message, ex);
+                throw new ProgramException(message, ex);
             }
         }
         else {
-            throw new EtlException(String.format("Value of type '%s' for addresslist not supported.", addressList.getClass()));
+            throw new ProgramException(String.format("Value of type '%s' for addresslist not supported.", addressList.getClass()));
         }
     }
 }

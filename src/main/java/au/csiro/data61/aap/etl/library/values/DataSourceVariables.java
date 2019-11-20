@@ -8,7 +8,7 @@ import java.util.stream.Stream;
 
 import org.web3j.abi.TypeReference;
 
-import au.csiro.data61.aap.etl.core.EtlException;
+import au.csiro.data61.aap.etl.core.exceptions.ProgramException;
 import au.csiro.data61.aap.etl.core.Instruction;
 import au.csiro.data61.aap.etl.core.ProgramState;
 import au.csiro.data61.aap.etl.core.ValueAccessor;
@@ -120,7 +120,7 @@ public class DataSourceVariables {
                 return state.getDataSource().getClient().queryBlockNumber();
             }
             catch (Throwable error) {
-                throw new EtlException("Error when retrieving the current block number.", error);
+                throw new ProgramException("Error when retrieving the current block number.", error);
             }
         };
     }
