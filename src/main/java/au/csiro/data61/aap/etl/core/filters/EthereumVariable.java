@@ -1,4 +1,4 @@
-package au.csiro.data61.aap.etl.core.variables;
+package au.csiro.data61.aap.etl.core.filters;
 
 import java.util.Set;
 import java.util.function.Function;
@@ -7,6 +7,7 @@ import org.web3j.abi.TypeReference;
 
 import au.csiro.data61.aap.etl.core.Instruction;
 import au.csiro.data61.aap.etl.core.ProgramState;
+import au.csiro.data61.aap.etl.core.values.UserVariables;
 import au.csiro.data61.aap.etl.core.values.ValueAccessor;
 
 /**

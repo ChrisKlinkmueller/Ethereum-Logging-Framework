@@ -16,11 +16,11 @@ import au.csiro.data61.aap.etl.core.values.ValueAccessor;
 import au.csiro.data61.aap.etl.core.writers.AddCsvRowInstruction;
 import au.csiro.data61.aap.etl.library.ConfigurationMethods;
 import au.csiro.data61.aap.etl.library.types.types.IntegerOperations;
-import au.csiro.data61.aap.etl.core.variables.BlockVariables;
-import au.csiro.data61.aap.etl.core.variables.EthereumVariables;
-import au.csiro.data61.aap.etl.core.variables.Literal;
-import au.csiro.data61.aap.etl.core.variables.TransactionVariables;
-import au.csiro.data61.aap.etl.core.variables.UserVariables;
+import au.csiro.data61.aap.etl.core.filters.BlockVariables;
+import au.csiro.data61.aap.etl.core.filters.EthereumVariables;
+import au.csiro.data61.aap.etl.core.values.Literal;
+import au.csiro.data61.aap.etl.core.filters.TransactionVariables;
+import au.csiro.data61.aap.etl.core.values.UserVariables;
 
 /**
  * ExtractTransactionStatistics

@@ -1,4 +1,4 @@
-package au.csiro.data61.aap.etl.core.variables;
+package au.csiro.data61.aap.etl.core.values;
 
 import java.math.BigInteger;
 import java.util.List;

@@ -15,9 +15,9 @@ import au.csiro.data61.aap.etl.core.VariableAssignment;
 import au.csiro.data61.aap.etl.core.filters.BlockRangeFilter;
 import au.csiro.data61.aap.etl.core.filters.Program;
 import au.csiro.data61.aap.etl.core.filters.TransactionFilter;
-import au.csiro.data61.aap.etl.core.variables.EthereumVariables;
-import au.csiro.data61.aap.etl.core.variables.Literal;
-import au.csiro.data61.aap.etl.core.variables.UserVariables;
+import au.csiro.data61.aap.etl.core.filters.EthereumVariables;
+import au.csiro.data61.aap.etl.core.values.Literal;
+import au.csiro.data61.aap.etl.core.values.UserVariables;
 
 /**
  * ProgramFactory

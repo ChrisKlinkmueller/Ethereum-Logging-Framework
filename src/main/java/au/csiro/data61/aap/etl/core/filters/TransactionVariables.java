@@ -1,4 +1,4 @@
-package au.csiro.data61.aap.etl.core.variables;
+package au.csiro.data61.aap.etl.core.filters;
 
 import java.util.HashSet;
 import java.util.Set;
