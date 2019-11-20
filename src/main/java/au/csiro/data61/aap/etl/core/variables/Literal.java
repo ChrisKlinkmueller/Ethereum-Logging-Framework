@@ -5,7 +5,7 @@ import java.util.List;
 
 import au.csiro.data61.aap.etl.core.exceptions.ProgramException;
 import au.csiro.data61.aap.etl.core.ProgramState;
-import au.csiro.data61.aap.etl.core.ValueAccessor;
+import au.csiro.data61.aap.etl.core.values.ValueAccessor;
 
 /**
  * Literal

@@ -12,7 +12,7 @@ import au.csiro.data61.aap.etl.core.Instruction;
 import au.csiro.data61.aap.etl.core.Method;
 import au.csiro.data61.aap.etl.core.ProgramState;
 import au.csiro.data61.aap.etl.core.SetOutputFolderInstruction;
-import au.csiro.data61.aap.etl.core.ValueAccessor;
+import au.csiro.data61.aap.etl.core.values.ValueAccessor;
 import au.csiro.data61.aap.etl.core.writers.AddCsvRowInstruction;
 import au.csiro.data61.aap.etl.library.ConfigurationMethods;
 import au.csiro.data61.aap.etl.library.types.types.IntegerOperations;

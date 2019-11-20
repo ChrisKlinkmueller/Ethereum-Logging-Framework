@@ -5,6 +5,7 @@ import java.nio.file.Path;
 import au.csiro.data61.aap.etl.core.exceptions.ProgramException;
 import au.csiro.data61.aap.etl.core.exceptions.ExceptionHandler;
 import au.csiro.data61.aap.etl.core.readers.DataReader;
+import au.csiro.data61.aap.etl.core.values.ValueStore;
 import au.csiro.data61.aap.etl.core.writers.DataWriters;
 
 /**

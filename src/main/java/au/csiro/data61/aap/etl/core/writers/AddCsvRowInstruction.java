@@ -7,7 +7,7 @@ import java.util.Objects;
 import au.csiro.data61.aap.etl.core.exceptions.ProgramException;
 import au.csiro.data61.aap.etl.core.Instruction;
 import au.csiro.data61.aap.etl.core.ProgramState;
-import au.csiro.data61.aap.etl.core.ValueAccessor;
+import au.csiro.data61.aap.etl.core.values.ValueAccessor;
 
 /**
  * CsvRowCreator

@@ -1,5 +1,6 @@
-package au.csiro.data61.aap.etl.core;
+package au.csiro.data61.aap.etl.core.values;
 
+import au.csiro.data61.aap.etl.core.ProgramState;
 import au.csiro.data61.aap.etl.core.exceptions.ProgramException;
 
 /**

@@ -7,8 +7,8 @@ import au.csiro.data61.aap.etl.core.exceptions.ProgramException;
 import au.csiro.data61.aap.etl.core.Instruction;
 import au.csiro.data61.aap.etl.core.Method;
 import au.csiro.data61.aap.etl.core.ProgramState;
-import au.csiro.data61.aap.etl.core.ValueAccessor;
-import au.csiro.data61.aap.etl.core.ValueMutator;
+import au.csiro.data61.aap.etl.core.values.ValueAccessor;
+import au.csiro.data61.aap.etl.core.values.ValueMutator;
 
 /**
  * MethodCall

@@ -1,6 +1,8 @@
 package au.csiro.data61.aap.etl.core;
 
 import au.csiro.data61.aap.etl.core.exceptions.ProgramException;
+import au.csiro.data61.aap.etl.core.values.ValueAccessor;
+import au.csiro.data61.aap.etl.core.values.ValueMutator;
 
 /**
  * VariableDefinition

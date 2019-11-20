@@ -7,7 +7,7 @@ import java.util.stream.Stream;
 import org.web3j.abi.TypeReference;
 
 import au.csiro.data61.aap.etl.core.Instruction;
-import au.csiro.data61.aap.etl.core.ValueAccessor;
+import au.csiro.data61.aap.etl.core.values.ValueAccessor;
 import au.csiro.data61.aap.etl.core.exceptions.ProgramException;
 
 /**
