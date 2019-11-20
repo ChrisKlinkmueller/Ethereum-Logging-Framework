@@ -9,16 +9,6 @@ public class XesSink extends DataSink {
 
     @Override
     protected void writeState(String namePrefix) throws Throwable {
-        throw new UnsupportedOperationException();
-    }
-
-    public void addEvent(SinkVariable... variables) {
-        assert this.validVariables(variables);
-        throw new UnsupportedOperationException();
-    }
-
-    public void addTrace(SinkVariable... variables) {
-        assert this.validVariables(variables);
-        throw new UnsupportedOperationException();
+        return;
     }
 }

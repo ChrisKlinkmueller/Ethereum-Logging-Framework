@@ -4,13 +4,8 @@ import java.io.BufferedWriter;
 import java.io.FileWriter;
 import java.nio.file.Path;
 import java.nio.file.Paths;
-import java.util.Arrays;
 import java.util.LinkedList;
 import java.util.List;
-import java.util.Objects;
-import java.util.stream.Collectors;
-
-import au.csiro.data61.aap.etl.core.DataSink;
 
 /**
  * LineExporter
@@ -20,20 +15,6 @@ public class TextSink extends DataSink {
 
     public TextSink() {
         this.lines = new LinkedList<String>();
-    }
-
-    public void addLine(SinkVariable... variables) {
-        assert this.validVariables(variables);
-        this.lines.add(
-            Arrays.stream(variables)
-                .map(variable -> variable.getValue() == null ? "" : variable.getValue().toString())
-                .collect(Collectors.joining())
-        );
-    }
-
-    @Override
-    protected boolean validVariables(SinkVariable... variables) {
-        return Arrays.stream(variables).allMatch(Objects::nonNull);
     }
 
     @Override

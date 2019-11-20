@@ -2,6 +2,20 @@
     "configurations": [
         {
             "type": "java",
+            "name": "CodeLens (Launch) - ExtractTransactionStatistics",
+            "request": "launch",
+            "mainClass": "au.csiro.data61.aap.ExtractTransactionStatistics",
+            "projectName": "xes-blockchain"
+        },
+        {
+            "type": "java",
+            "name": "CodeLens (Launch) - DataSourceVariables",
+            "request": "launch",
+            "mainClass": "au.csiro.data61.aap.etl.library.values.DataSourceVariables",
+            "projectName": "xes-blockchain"
+        },
+        {
+            "type": "java",
             "name": "CodeLens (Launch) - TestDataExtractor",
             "request": "launch",
             "mainClass": "au.csiro.data61.aap.data.TestDataExtractor",

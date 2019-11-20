@@ -3,6 +3,7 @@
 # Edit at https://www.gitignore.io/?templates=java,visualstudiocode
 
 block_data.json
+/test_output
 
 ### Java ###
 # Compiled class file

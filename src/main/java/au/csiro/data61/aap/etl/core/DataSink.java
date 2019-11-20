@@ -2,7 +2,6 @@ package au.csiro.data61.aap.etl.core;
 
 import java.math.BigInteger;
 import java.nio.file.Path;
-import java.util.Arrays;
 
 /**
  * Exporter
@@ -29,21 +28,16 @@ public abstract class DataSink {
         this.currentBlock = blocknumber;
     }
 
-    public void endBlock() throws Throwable {
+    void endBlock() throws Throwable {
         if (this.streaming) {
-            this.writeState(String.format("block_", this.currentBlock));
+            this.writeState(this.currentBlock.toString());
         }
     } 
 
-    public void endProgram() throws Throwable {
+    void endProgram() throws Throwable {
         if (!this.streaming) {
-            this.writeState(String.format("all_blocks"));
+            this.writeState("all");
         }
-    }
-
-    protected boolean validVariables(SinkVariable... variables) {
-        return Arrays.stream(variables)
-            .allMatch(v -> v != null && v.getName() != null);
     }
 
     protected abstract void writeState(String namePrefix) throws Throwable;
