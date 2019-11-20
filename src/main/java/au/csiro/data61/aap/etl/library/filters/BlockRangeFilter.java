@@ -10,7 +10,7 @@ import au.csiro.data61.aap.etl.core.EtlException;
 import au.csiro.data61.aap.etl.core.Instruction;
 import au.csiro.data61.aap.etl.core.ProgramState;
 import au.csiro.data61.aap.etl.core.ValueAccessor;
-import au.csiro.data61.aap.rpc.EthereumBlock;
+import au.csiro.data61.aap.etl.core.readers.EthereumBlock;
 
 /**
  * BlockRange

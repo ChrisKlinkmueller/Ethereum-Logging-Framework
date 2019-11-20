@@ -6,10 +6,9 @@ import java.util.function.Consumer;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
-import au.csiro.data61.aap.rpc.EthereumBlock;
-import au.csiro.data61.aap.rpc.EthereumClient;
-import au.csiro.data61.aap.rpc.EthereumTransaction;
-
+import au.csiro.data61.aap.etl.core.readers.EthereumBlock;
+import au.csiro.data61.aap.etl.core.readers.EthereumClient;
+import au.csiro.data61.aap.etl.core.readers.EthereumTransaction;
 /**
  * ProgramState
  */

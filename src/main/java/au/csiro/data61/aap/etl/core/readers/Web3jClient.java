@@ -1,4 +1,4 @@
-package au.csiro.data61.aap.rpc;
+package au.csiro.data61.aap.etl.core.readers;
 
 import java.io.IOException;
 import java.math.BigInteger;

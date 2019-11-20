@@ -2,6 +2,7 @@ package au.csiro.data61.aap.etl.core;
 
 import java.nio.file.Path;
 
+import au.csiro.data61.aap.etl.core.readers.DataReader;
 import au.csiro.data61.aap.etl.core.writers.Writers;
 
 /**
@@ -9,13 +10,13 @@ import au.csiro.data61.aap.etl.core.writers.Writers;
  */
 public class ProgramState {
     private final ValueStore valueStore;
-    private final DataSource dataSource;
+    private final DataReader dataSource;
     private final Writers writers;    
     private final ExceptionHandler exceptionHandler;
 
     public ProgramState() {
         this.valueStore = new ValueStore();
-        this.dataSource = new DataSource();
+        this.dataSource = new DataReader();
         this.exceptionHandler = new ExceptionHandler();
         this.writers = new Writers();
     }
@@ -24,7 +25,7 @@ public class ProgramState {
         return this.valueStore;
     }
 
-    public DataSource getDataSource() {
+    public DataReader getDataSource() {
         return this.dataSource;
     }
 

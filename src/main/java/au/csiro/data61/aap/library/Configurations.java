@@ -4,13 +4,13 @@ import java.util.LinkedList;
 import java.util.List;
 import java.util.stream.Stream;
 
+import au.csiro.data61.aap.etl.core.readers.EthereumClient;
+import au.csiro.data61.aap.etl.core.readers.Web3jClient;
 import au.csiro.data61.aap.program.ExceptionHandlingStrategy;
 import au.csiro.data61.aap.program.Method;
 import au.csiro.data61.aap.program.ProgramState;
 import au.csiro.data61.aap.program.types.SolidityString;
 import au.csiro.data61.aap.program.types.SolidityVoid;
-import au.csiro.data61.aap.rpc.EthereumClient;
-import au.csiro.data61.aap.rpc.Web3jClient;
 
 /**
  * Configurations

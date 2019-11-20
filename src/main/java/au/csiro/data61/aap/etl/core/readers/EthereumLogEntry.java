@@ -1,5 +1,4 @@
-package au.csiro.data61.aap.rpc;
-
+package au.csiro.data61.aap.etl.core.readers;
 import java.math.BigInteger;
 import java.util.List;
 

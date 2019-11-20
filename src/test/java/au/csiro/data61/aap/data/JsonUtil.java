@@ -21,12 +21,12 @@ import com.fasterxml.jackson.databind.deser.std.StdDeserializer;
 import com.fasterxml.jackson.databind.module.SimpleModule;
 import com.fasterxml.jackson.databind.node.ArrayNode;
 
-import au.csiro.data61.aap.rpc.EthereumBlock;
-import au.csiro.data61.aap.rpc.EthereumLogEntry;
-import au.csiro.data61.aap.rpc.EthereumTransaction;
-import au.csiro.data61.aap.rpc.RawBlock;
-import au.csiro.data61.aap.rpc.RawLogEntry;
-import au.csiro.data61.aap.rpc.RawTransaction;
+import au.csiro.data61.aap.etl.core.readers.EthereumBlock;
+import au.csiro.data61.aap.etl.core.readers.EthereumLogEntry;
+import au.csiro.data61.aap.etl.core.readers.EthereumTransaction;
+import au.csiro.data61.aap.etl.core.readers.RawBlock;
+import au.csiro.data61.aap.etl.core.readers.RawLogEntry;
+import au.csiro.data61.aap.etl.core.readers.RawTransaction;
 
 /**
  * JsonUtil

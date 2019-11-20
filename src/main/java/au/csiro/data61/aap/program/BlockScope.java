@@ -8,6 +8,7 @@ import java.util.function.Predicate;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
+import au.csiro.data61.aap.etl.core.readers.EthereumBlock;
 import au.csiro.data61.aap.program.suppliers.BlockchainVariable;
 import au.csiro.data61.aap.program.suppliers.Literal;
 import au.csiro.data61.aap.program.suppliers.MethodCall;
@@ -18,7 +19,6 @@ import au.csiro.data61.aap.program.types.SolidityBytes;
 import au.csiro.data61.aap.program.types.SolidityInteger;
 import au.csiro.data61.aap.program.types.SolidityString;
 import au.csiro.data61.aap.program.types.ValueCasts;
-import au.csiro.data61.aap.rpc.EthereumBlock;
 import au.csiro.data61.aap.util.MethodResult;
 
 /**

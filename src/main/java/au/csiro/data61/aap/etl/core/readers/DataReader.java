@@ -1,19 +1,15 @@
-package au.csiro.data61.aap.etl.core;
+package au.csiro.data61.aap.etl.core.readers;
 
 import java.net.ConnectException;
 import java.net.URISyntaxException;
 import java.util.stream.Stream;
 
-import au.csiro.data61.aap.rpc.EthereumBlock;
-import au.csiro.data61.aap.rpc.EthereumClient;
-import au.csiro.data61.aap.rpc.EthereumLogEntry;
-import au.csiro.data61.aap.rpc.EthereumTransaction;
-import au.csiro.data61.aap.rpc.Web3jClient;
+import au.csiro.data61.aap.etl.core.EtlException;
 
 /**
  * EthereumSources
  */
-public class DataSource {
+public class DataReader {
     private EthereumClient client;
     private EthereumBlock currentBlock;
     private EthereumTransaction currentTransaction;
