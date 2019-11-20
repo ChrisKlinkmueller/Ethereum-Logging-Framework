@@ -1,6 +1,7 @@
 package au.csiro.data61.aap.etl.library.values;
 
 import java.math.BigInteger;
+import java.util.List;
 
 import au.csiro.data61.aap.etl.core.EtlException;
 import au.csiro.data61.aap.etl.core.ProgramState;
@@ -19,6 +20,10 @@ public class Literal implements ValueAccessor {
     @Override
     public Object getValue(ProgramState state) throws EtlException {
         return this.value;
+    }
+
+    public static Literal addressLiteral(List<String> addresses) {
+        return new Literal(addresses);
     }
 
     public static Literal stringLiteral(String value) {

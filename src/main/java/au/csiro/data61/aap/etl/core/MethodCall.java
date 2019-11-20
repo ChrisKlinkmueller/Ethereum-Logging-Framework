@@ -1,4 +1,4 @@
-package au.csiro.data61.aap.etl.library;
+package au.csiro.data61.aap.etl.core;
 
 import java.util.List;
 import java.util.Objects;

@@ -25,8 +25,6 @@ public class TransactionFilter extends Filter {
 
     public TransactionFilter(ValueAccessor senders, ValueAccessor recipients, List<Instruction> instructions) {
         super(instructions);
-        assert senders != null;
-        assert recipients != null;
         this.recipients = recipients;
         this.senders = senders;
     }
@@ -56,6 +54,10 @@ public class TransactionFilter extends Filter {
     }
 
     private Predicate<String> createAddressFilter(ProgramState state, ValueAccessor addresses) throws EtlException {
+        if (addresses == null) {
+            return address -> true;
+        }
+
         final Object addressList = addresses.getValue(state);
         if (addressList == null) {
             return address -> true;

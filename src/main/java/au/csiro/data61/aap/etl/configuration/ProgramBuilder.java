@@ -8,12 +8,16 @@ import java.util.function.Function;
 
 import au.csiro.data61.aap.etl.core.Instruction;
 import au.csiro.data61.aap.etl.core.Method;
+import au.csiro.data61.aap.etl.core.MethodCall;
 import au.csiro.data61.aap.etl.core.ValueAccessor;
 import au.csiro.data61.aap.etl.core.ValueMutator;
-import au.csiro.data61.aap.etl.library.MethodCall;
+import au.csiro.data61.aap.etl.core.VariableAssignment;
 import au.csiro.data61.aap.etl.library.filters.BlockRangeFilter;
 import au.csiro.data61.aap.etl.library.filters.Program;
+import au.csiro.data61.aap.etl.library.filters.TransactionFilter;
 import au.csiro.data61.aap.etl.library.values.DataSourceVariables;
+import au.csiro.data61.aap.etl.library.values.Literal;
+import au.csiro.data61.aap.etl.library.values.Variables;
 
 /**
  * ProgramFactory
@@ -35,15 +39,6 @@ public class ProgramBuilder {
         this.addScope(FactoryState.PROGRAM);
     }
 
-    public Instruction buildProgram() throws BuildException {
-        if (this.states.peek() != FactoryState.PROGRAM) {
-            throw new BuildException(String.format("Cannot build a program, when construction of %s has not been finished.", this.states.peek()));
-        }
-        
-        final Program program = new Program(this.instructions.pop());
-        return program;
-    }
-
     public void prepareBlockRangeBuild() throws BuildException {
         if (this.states.peek() != FactoryState.PROGRAM) {
             throw new BuildException("A block range filter can only be added to a program.");
@@ -51,9 +46,26 @@ public class ProgramBuilder {
         this.addScope(FactoryState.BLOCK_RANGE_FILTER);        
     }
 
+    public void prepareTransactionFilterBuild() throws BuildException {
+        if (this.states.peek() != FactoryState.BLOCK_RANGE_FILTER) {
+            throw new BuildException("A block range filter can only be added to a block filter.");
+        }
+        this.addScope(FactoryState.TRANSACTION_FILTER);  
+    }
+
     private void addScope(FactoryState state) {
         this.states.push(state);
         this.instructions.add(new LinkedList<>());
+    }
+
+    public Instruction buildProgram() throws BuildException {
+        if (this.states.peek() != FactoryState.PROGRAM) {
+            throw new BuildException(String.format("Cannot build a program, when construction of %s has not been finished.", this.states.peek()));
+        }
+        
+        final Program program = new Program(this.instructions.pop());
+        this.states.pop();
+        return program;
     }
 
     public void buildBlockRange(ValueAccessor fromBlock, ValueAccessor toBlock) throws BuildException {
@@ -61,13 +73,28 @@ public class ProgramBuilder {
         assert toBlock != null;
 
         if (this.states.peek() != FactoryState.BLOCK_RANGE_FILTER) {
-            throw new BuildException(String.format("Cannot build a program, when construction of %s has not been finished.", this.states.peek()));
+            throw new BuildException(String.format("Cannot build a block filter, when construction of %s has not been finished.", this.states.peek()));
         }
 
         final List<Instruction> instructions = this.instructions.pop();
         final BlockRangeFilter blockRange = new BlockRangeFilter(fromBlock, toBlock, instructions);
         this.instructions.peek().add(blockRange);
+        this.states.pop();
+    }
 
+    public void buildTransactionFilter(List<String> senders, List<String> recipients) throws BuildException {
+        if (this.states.peek() != FactoryState.TRANSACTION_FILTER) {
+            throw new BuildException(String.format("Cannot build a transaction filter, when construction of %s has not been finished.", this.states.peek()));
+        }
+
+        final List<Instruction> instructions = this.instructions.pop();
+        final TransactionFilter filter = new TransactionFilter(
+            senders == null ? null : Literal.addressLiteral(senders), 
+            recipients == null ? null : Literal.addressLiteral(recipients), 
+            instructions
+        );
+
+        this.instructions.peek().add(filter);        
         this.states.pop();
     }
 
@@ -102,6 +129,11 @@ public class ProgramBuilder {
         }
         this.instructions.peek().add(instruction);
     }
+
+	public void addVariableAssignmentWithIntegerValue(String name, long value) {
+        final Instruction varAssignment = new VariableAssignment(Variables.createValueMutator(name), Literal.integerLiteral(value));
+        this.instructions.peek().add(varAssignment);
+	}
 
     private static enum FactoryState {
         PROGRAM,

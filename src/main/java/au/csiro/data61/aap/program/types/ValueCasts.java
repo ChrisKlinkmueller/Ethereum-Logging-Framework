@@ -29,7 +29,8 @@ public class ValueCasts {
     }
 
     private static void addCast(Class<? extends SolidityType> from, Class<? extends SolidityType> to, ValueCast cast) {
-        CASTS.putIfAbsent(from, new HashMap<>()).put(to, cast);
+        CASTS.putIfAbsent(from, new HashMap<>()); 
+        CASTS.get(from).put(to, cast);
     }
 
     public static boolean isCastSupported(SolidityType from,SolidityType to) {

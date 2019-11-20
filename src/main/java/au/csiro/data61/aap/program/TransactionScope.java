@@ -42,6 +42,13 @@ public class TransactionScope extends Scope {
             .collect(Collectors.toList());
     }
 
+    public static void main(String[] args) {
+        DEFAULT_VARIABLES.stream().forEach(var -> {
+            String name = var.getName().replaceAll("\\.", "_").toUpperCase(); 
+            System.out.println(String.format("\taddTransactionVariable(%s, \"\", EthereumTransaction::)", name));
+        });
+    }
+
     static {
         DEFAULT_VARIABLES = new HashSet<>();
         addVariable(DEFAULT_VARIABLES, SolidityBytes.DEFAULT_INSTANCE, "tx.blockHash",
