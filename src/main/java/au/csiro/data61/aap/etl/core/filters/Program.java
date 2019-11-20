@@ -1,4 +1,4 @@
-package au.csiro.data61.aap.etl.library.filters;
+package au.csiro.data61.aap.etl.core.filters;
 
 import java.util.Arrays;
 import java.util.List;
