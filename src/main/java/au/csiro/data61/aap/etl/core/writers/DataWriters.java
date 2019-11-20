@@ -7,13 +7,13 @@ import java.util.Arrays;
 /**
  * Sinks
  */
-public class Writers {
+public class DataWriters {
     private final DataWriter[] writers;
     private final CsvWriter csvWriter;
     private final TxtWriter txtWriter;
     private final XesWriter xesWriter;
     
-    public Writers() {
+    public DataWriters() {
         this.csvWriter = new CsvWriter();
         this.txtWriter = new TxtWriter();
         this.xesWriter = new XesWriter();

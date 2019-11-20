@@ -5,22 +5,22 @@ import java.nio.file.Path;
 import au.csiro.data61.aap.etl.core.exceptions.ProgramException;
 import au.csiro.data61.aap.etl.core.exceptions.ExceptionHandler;
 import au.csiro.data61.aap.etl.core.readers.DataReader;
-import au.csiro.data61.aap.etl.core.writers.Writers;
+import au.csiro.data61.aap.etl.core.writers.DataWriters;
 
 /**
  * EtlState
  */
 public class ProgramState {
     private final ValueStore valueStore;
-    private final DataReader dataSource;
-    private final Writers writers;    
+    private final DataReader reader;
+    private final DataWriters writers;    
     private final ExceptionHandler exceptionHandler;
 
     public ProgramState() {
         this.valueStore = new ValueStore();
-        this.dataSource = new DataReader();
+        this.reader = new DataReader();
         this.exceptionHandler = new ExceptionHandler();
-        this.writers = new Writers();
+        this.writers = new DataWriters();
     }
 
     public ValueStore getValueStore() {
@@ -28,7 +28,7 @@ public class ProgramState {
     }
 
     public DataReader getDataSource() {
-        return this.dataSource;
+        return this.reader;
     }
 
     public ExceptionHandler getExceptionHandler() {
@@ -49,7 +49,7 @@ public class ProgramState {
         }
     }
 
-    public Writers getWriters() {
+    public DataWriters getWriters() {
         return this.writers;
     }
 
