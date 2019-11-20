@@ -16,9 +16,11 @@ import au.csiro.data61.aap.etl.core.ValueAccessor;
 import au.csiro.data61.aap.etl.core.writers.AddCsvRowInstruction;
 import au.csiro.data61.aap.etl.library.ConfigurationMethods;
 import au.csiro.data61.aap.etl.library.types.types.IntegerOperations;
-import au.csiro.data61.aap.etl.library.values.DataSourceVariables;
-import au.csiro.data61.aap.etl.library.values.Literal;
-import au.csiro.data61.aap.etl.library.values.Variables;
+import au.csiro.data61.aap.etl.core.variables.BlockVariables;
+import au.csiro.data61.aap.etl.core.variables.EthereumVariables;
+import au.csiro.data61.aap.etl.core.variables.Literal;
+import au.csiro.data61.aap.etl.core.variables.TransactionVariables;
+import au.csiro.data61.aap.etl.core.variables.UserVariables;
 
 /**
  * ExtractTransactionStatistics
@@ -27,10 +29,10 @@ public class ExtractTransactionStatistics {
     private static final String URL = "ws://localhost:8546/";
     private static final String FOLDER = "C:/Development/xes-blockchain/v0.2/test_output";
     private static final String[] BLOCK_VARIABLES = {
-        DataSourceVariables.BLOCK_HASH, 
-        DataSourceVariables.BLOCK_NUMBER, 
-        DataSourceVariables.BLOCK_TRANSACTIONS, 
-        DataSourceVariables.BLOCK_GAS_USED
+        BlockVariables.BLOCK_HASH, 
+        BlockVariables.BLOCK_NUMBER, 
+        BlockVariables.BLOCK_TRANSACTIONS, 
+        BlockVariables.BLOCK_GAS_USED
     };
     private static final long START = 6000000l;
     private static final long END = 6000100l;
@@ -56,21 +58,21 @@ public class ExtractTransactionStatistics {
             builder.addMethodCall(new SetOutputFolderInstruction(), Arrays.asList(Literal.stringLiteral(FOLDER)), null);
 
             builder.prepareBlockRangeBuild();
-                addDataSourceVariableInstructions(builder, BLOCK_VARIABLES, DataSourceVariables::createValueCreationInstruction);
+                addDataSourceVariableInstructions(builder, BLOCK_VARIABLES, EthereumVariables::createValueCreationInstruction);
                 builder.addVariableAssignmentWithIntegerValue(TOTAL_EARNINGS, 0);
                 
                 builder.prepareTransactionFilterBuild();
-                    addDataSourceVariableInstructions(builder, new String[]{DataSourceVariables.TX_VALUE}, DataSourceVariables::createValueCreationInstruction);
+                    addDataSourceVariableInstructions(builder, new String[]{TransactionVariables.TX_VALUE}, EthereumVariables::createValueCreationInstruction);
                     builder.addMethodCall(
                         IntegerOperations::add, 
-                        Arrays.asList(Variables.createValueAccessor(TOTAL_EARNINGS), Variables.createValueAccessor(DataSourceVariables.TX_VALUE)), 
-                        Variables.createValueMutator(TOTAL_EARNINGS)
+                        Arrays.asList(UserVariables.createValueAccessor(TOTAL_EARNINGS), UserVariables.createValueAccessor(TransactionVariables.TX_VALUE)), 
+                        UserVariables.createValueMutator(TOTAL_EARNINGS)
                     );
-                    addDataSourceVariableInstructions(builder, new String[]{DataSourceVariables.TX_VALUE}, DataSourceVariables::createValueRemovalInstruction);
+                    addDataSourceVariableInstructions(builder, new String[]{TransactionVariables.TX_VALUE}, EthereumVariables::createValueRemovalInstruction);
                 builder.buildTransactionFilter(null, null);
                 
                 addCsvExport(builder);
-                addDataSourceVariableInstructions(builder, BLOCK_VARIABLES, DataSourceVariables::createValueRemovalInstruction);
+                addDataSourceVariableInstructions(builder, BLOCK_VARIABLES, EthereumVariables::createValueRemovalInstruction);
             builder.buildBlockRange(Literal.integerLiteral(START), Literal.integerLiteral(END));
         
         return builder.buildProgram();
@@ -79,7 +81,7 @@ public class ExtractTransactionStatistics {
     private static void addCsvExport(ProgramBuilder builder) throws BuildException {
         final List<String> names = Stream.concat(Arrays.stream(BLOCK_VARIABLES), Stream.of(TOTAL_EARNINGS)).collect(Collectors.toList());
         final List<ValueAccessor> valueAccessors = names.stream()
-            .map(name -> Variables.createValueAccessor(name))
+            .map(name -> UserVariables.createValueAccessor(name))
             .collect(Collectors.toList());
         final Instruction export = new AddCsvRowInstruction("block_statistics", names, valueAccessors);
         builder.addInstruction(export);

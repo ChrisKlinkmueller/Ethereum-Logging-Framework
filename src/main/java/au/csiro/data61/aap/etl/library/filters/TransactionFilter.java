@@ -33,10 +33,10 @@ public class TransactionFilter extends Filter {
         final Predicate<String> senderFilter = this.createAddressFilter(state, this.senders);
         final Predicate<String> recipientFilter = this.createAddressFilter(state, this.recipients);
 
-        for (EthereumTransaction tx : state.getDataSource().getCurrentBlock()) {
+        for (EthereumTransaction tx : state.getReader().getCurrentBlock()) {
             if (senderFilter.test(tx.getFrom()) && recipientFilter.test(tx.getTo())) {
                 try {
-                    state.getDataSource().setCurrentTransaction(tx);
+                    state.getReader().setCurrentTransaction(tx);
                     this.executeInstructions(state);
                 }
                 catch (Throwable cause) {
@@ -47,7 +47,7 @@ public class TransactionFilter extends Filter {
                     }
                 }
                 finally {
-                    state.getDataSource().setCurrentTransaction(null);
+                    state.getReader().setCurrentTransaction(null);
                 }
             }
         }

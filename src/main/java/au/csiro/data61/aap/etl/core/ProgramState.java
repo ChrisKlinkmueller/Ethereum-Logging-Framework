@@ -27,7 +27,7 @@ public class ProgramState {
         return this.valueStore;
     }
 
-    public DataReader getDataSource() {
+    public DataReader getReader() {
         return this.reader;
     }
 
@@ -54,6 +54,6 @@ public class ProgramState {
     }
 
     public void close() {
-        this.getDataSource().close();
+        this.getReader().close();
     }
 }

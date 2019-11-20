@@ -8,8 +8,8 @@ import au.csiro.data61.aap.etl.core.ProgramState;
 public class Statistics {
 
     public static Object countTransactions(Object[] parameters, ProgramState state) {
-        assert state != null && state.getDataSource().getCurrentBlock() != null;
-        return state.getDataSource().getCurrentBlock().transactionCount();
+        assert state != null && state.getReader().getCurrentBlock() != null;
+        return state.getReader().getCurrentBlock().transactionCount();
     }
     
 }

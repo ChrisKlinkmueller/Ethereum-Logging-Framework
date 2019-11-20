@@ -1,21 +1,23 @@
-package au.csiro.data61.aap.etl.library.values;
+package au.csiro.data61.aap.etl.core.variables;
 
+import java.util.Set;
 import java.util.function.Function;
 
 import org.web3j.abi.TypeReference;
 
 import au.csiro.data61.aap.etl.core.Instruction;
 import au.csiro.data61.aap.etl.core.ProgramState;
+import au.csiro.data61.aap.etl.core.ValueAccessor;
 
 /**
  * DataSourceVariable
  */
-class DataSourceVariable {
+class EthereumVariable {
     private final String name;
     private final TypeReference<?> type;     
     private final Function<ProgramState, Object> valueExtractor;
 
-    public DataSourceVariable(final String name, final TypeReference<?> type, final Function<ProgramState, Object> valueExtractor) {
+    public EthereumVariable(final String name, final TypeReference<?> type, final Function<ProgramState, Object> valueExtractor) {
         assert name != null;
         assert type != null;
         assert valueExtractor != null;
@@ -53,5 +55,18 @@ class DataSourceVariable {
 
     TypeReference<?> getType() {
         return this.type;
+    }
+
+    ValueAccessor getAccessor() {
+        return UserVariables.createValueAccessor(this.name);
+    }
+
+    static <T> void addVariable(Set<EthereumVariable> variables, String name, String type, Function<ProgramState, Object> valueExtractor) {
+        try {
+            variables.add(new EthereumVariable(name, TypeReference.makeTypeReference(type), valueExtractor));
+        }
+        catch (Throwable error) {
+            error.printStackTrace();
+        }
     }
 }

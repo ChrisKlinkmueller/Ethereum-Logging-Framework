@@ -15,9 +15,9 @@ import au.csiro.data61.aap.etl.core.VariableAssignment;
 import au.csiro.data61.aap.etl.library.filters.BlockRangeFilter;
 import au.csiro.data61.aap.etl.library.filters.Program;
 import au.csiro.data61.aap.etl.library.filters.TransactionFilter;
-import au.csiro.data61.aap.etl.library.values.DataSourceVariables;
-import au.csiro.data61.aap.etl.library.values.Literal;
-import au.csiro.data61.aap.etl.library.values.Variables;
+import au.csiro.data61.aap.etl.core.variables.EthereumVariables;
+import au.csiro.data61.aap.etl.core.variables.Literal;
+import au.csiro.data61.aap.etl.core.variables.UserVariables;
 
 /**
  * ProgramFactory
@@ -115,11 +115,11 @@ public class ProgramBuilder {
     }
 
     public void addDataSourceVariableCreationInstruction(String name) throws BuildException {
-        this.addDataSourceInstruction(name, DataSourceVariables::createValueCreationInstruction);        
+        this.addDataSourceInstruction(name, EthereumVariables::createValueCreationInstruction);        
     }
 
     public void addDataSourceVariableRemovalInstruction(String name) throws BuildException {
-        this.addDataSourceInstruction(name, DataSourceVariables::createValueRemovalInstruction);
+        this.addDataSourceInstruction(name, EthereumVariables::createValueRemovalInstruction);
     }
 
     private void addDataSourceInstruction(String name, Function<String, Instruction> instructionRetriever) throws BuildException {
@@ -131,7 +131,7 @@ public class ProgramBuilder {
     }
 
 	public void addVariableAssignmentWithIntegerValue(String name, long value) {
-        final Instruction varAssignment = new VariableAssignment(Variables.createValueMutator(name), Literal.integerLiteral(value));
+        final Instruction varAssignment = new VariableAssignment(UserVariables.createValueMutator(name), Literal.integerLiteral(value));
         this.instructions.peek().add(varAssignment);
 	}
 

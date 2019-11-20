@@ -1,4 +1,4 @@
-package au.csiro.data61.aap.etl.library.values;
+package au.csiro.data61.aap.etl.core.variables;
 
 import au.csiro.data61.aap.etl.core.exceptions.ProgramException;
 import au.csiro.data61.aap.etl.core.ValueAccessor;
@@ -7,7 +7,7 @@ import au.csiro.data61.aap.etl.core.ValueMutator;
 /**
  * Variables
  */
-public class Variables {
+public class UserVariables {
 
     public static ValueAccessor createValueAccessor(String name) {
         assert name != null;

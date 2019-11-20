@@ -12,7 +12,7 @@ public class ConfigurationMethods {
         assert parameters != null && parameters.length == 1;
         assert parameters[0] instanceof String;
         final String url = (String) parameters[0];
-        state.getDataSource().connect(url);
+        state.getReader().connect(url);
         return null;
     }
 

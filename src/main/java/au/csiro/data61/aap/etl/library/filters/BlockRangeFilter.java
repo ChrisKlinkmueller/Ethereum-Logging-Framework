@@ -48,7 +48,7 @@ public class BlockRangeFilter extends Filter {
                 }
 
                 state.getWriters().startNewBlock(currentBlock);
-                state.getDataSource().setCurrentBlock(block);
+                state.getReader().setCurrentBlock(block);
                 this.executeInstructions(state);
                 state.getWriters().writeBlock();
 
@@ -59,7 +59,7 @@ public class BlockRangeFilter extends Filter {
                     return;
                 }
             } finally {
-                state.getDataSource().setCurrentBlock(null);
+                state.getReader().setCurrentBlock(null);
             }
 
             currentBlock = currentBlock.add(BigInteger.ONE);
@@ -68,7 +68,7 @@ public class BlockRangeFilter extends Filter {
 
     private void waitForBlockExistence(final ProgramState state, final BigInteger currentBlock)
             throws Throwable, InterruptedException {
-        while (state.getDataSource().getClient().queryBlockNumber().compareTo(currentBlock) < 0) {
+        while (state.getReader().getClient().queryBlockNumber().compareTo(currentBlock) < 0) {
             Thread.sleep(3000);
         }
     }
@@ -77,7 +77,7 @@ public class BlockRangeFilter extends Filter {
             final LinkedList<EthereumBlock> knownBlocks) throws Throwable {
         BigInteger queryBlockNumber = currentBlock;
         do {
-            final EthereumBlock block = state.getDataSource().getClient().queryBlockData(queryBlockNumber);
+            final EthereumBlock block = state.getReader().getClient().queryBlockData(queryBlockNumber);
             if (knownBlocks.isEmpty() || knownBlocks.getLast().getHash().equals(block.getParentHash())) {
                 appendBlock(knownBlocks, block);
                 return block;
