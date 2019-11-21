@@ -2,8 +2,8 @@ package au.csiro.data61.aap.etl.core.filters;
 
 import java.util.HashSet;
 import java.util.Set;
-import java.util.function.Function;
 
+import au.csiro.data61.aap.etl.core.filters.EthereumVariable.ValueExtractor;
 import au.csiro.data61.aap.etl.core.readers.EthereumTransaction;
 
 /**
@@ -25,7 +25,14 @@ public class TransactionVariables {
 	public static final String TX_GASPRICE = "tx.gasPrice";
 	public static final String TX_V = "tx.v";
 	public static final String TX_NONCE = "tx.nonce";
-	public static final String TX_VALUE = "tx.value";
+    public static final String TX_VALUE = "tx.value";
+    public static final String TX_CUMULATIVE_GAS_USED = "tx.cumulativeGasUsed";
+    public static final String TX_GAS_USED = "tx.gasUsed";
+    public static final String TX_CONTRACT_ADRESS = "tx.contractAddress";
+    public static final String TX_LOGS_BLOOM = "tx.logsBloom";
+    public static final String TX_ROOT = "tx.root";
+    public static final String TX_STATUS = "tx.status";
+    public static final String TX_SUCCESS = "tx.success";
 
     static {
         TRANSACTION_VARIABLES = new HashSet<>();
@@ -43,9 +50,17 @@ public class TransactionVariables {
         addTransactionVariable(TX_TRANSACTIONINDEX, "int", EthereumTransaction::getTransactionIndex);
         addTransactionVariable(TX_NONCE, "int", EthereumTransaction::getNonce);
         addTransactionVariable(TX_S, "string", EthereumTransaction::getS);
+        addTransactionVariable(TX_CUMULATIVE_GAS_USED, "int", EthereumTransaction::getCumulativeGasUsed);
+        addTransactionVariable(TX_GAS_USED, "int", EthereumTransaction::getGasUsed);
+        addTransactionVariable(TX_CONTRACT_ADRESS, "string", EthereumTransaction::getContractAddress);
+        addTransactionVariable(TX_LOGS_BLOOM, "string", EthereumTransaction::getLogsBloom);
+        addTransactionVariable(TX_ROOT, "string", EthereumTransaction::getRoot);
+        addTransactionVariable(TX_STATUS, "string", EthereumTransaction::getStatus);
+        addTransactionVariable(TX_STATUS, "bool", EthereumTransaction::isSuccessful);
+
     }
 
-    private static void addTransactionVariable(String name, String type, Function<EthereumTransaction, Object> blockValueExtractor) {
-        EthereumVariable.addVariable(TRANSACTION_VARIABLES, name, type, state -> blockValueExtractor.apply(state.getReader().getCurrentTransaction()));
+    private static void addTransactionVariable(String name, String type, ValueExtractor<EthereumTransaction> transactionValueExtractor) {
+        EthereumVariable.addVariable(TRANSACTION_VARIABLES, name, type, state -> transactionValueExtractor.extract(state.getReader().getCurrentTransaction()));
     }
 }

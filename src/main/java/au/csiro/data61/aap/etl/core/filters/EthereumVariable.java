@@ -1,12 +1,13 @@
 package au.csiro.data61.aap.etl.core.filters;
 
+import java.io.IOException;
 import java.util.Set;
-import java.util.function.Function;
 
 import org.web3j.abi.TypeReference;
 
 import au.csiro.data61.aap.etl.core.Instruction;
 import au.csiro.data61.aap.etl.core.ProgramState;
+import au.csiro.data61.aap.etl.core.exceptions.ProgramException;
 import au.csiro.data61.aap.etl.core.values.UserVariables;
 import au.csiro.data61.aap.etl.core.values.ValueAccessor;
 
@@ -16,9 +17,9 @@ import au.csiro.data61.aap.etl.core.values.ValueAccessor;
 class EthereumVariable {
     private final String name;
     private final TypeReference<?> type;     
-    private final Function<ProgramState, Object> valueExtractor;
+    private final ValueExtractor<ProgramState> valueExtractor;
 
-    public EthereumVariable(final String name, final TypeReference<?> type, final Function<ProgramState, Object> valueExtractor) {
+    public EthereumVariable(final String name, final TypeReference<?> type, final ValueExtractor<ProgramState> valueExtractor) {
         assert name != null;
         assert type != null;
         assert valueExtractor != null;
@@ -39,10 +40,15 @@ class EthereumVariable {
         return valueCreator(this.name, this.valueExtractor);
     }
 
-    private static Instruction valueCreator(final String name, final Function<ProgramState, Object> valueExtractor) {
+    private static Instruction valueCreator(final String name, final ValueExtractor<ProgramState> valueExtractor) {
         return (state) -> {
-            final Object value = valueExtractor.apply(state);
-            state.getValueStore().setValue(name, value);
+            try {
+                final Object value = valueExtractor.extract(state);
+                state.getValueStore().setValue(name, value);
+            }
+            catch (IOException ex) {
+                throw new ProgramException(String.format("Error exctracting a value '%s'.", name), ex);
+            }
         };
     }
 
@@ -62,12 +68,17 @@ class EthereumVariable {
         return UserVariables.createValueAccessor(this.name);
     }
 
-    static <T> void addVariable(Set<EthereumVariable> variables, String name, String type, Function<ProgramState, Object> valueExtractor) {
+    static <T> void addVariable(Set<EthereumVariable> variables, String name, String type, ValueExtractor<ProgramState> valueExtractor) {
         try {
             variables.add(new EthereumVariable(name, TypeReference.makeTypeReference(type), valueExtractor));
         }
         catch (Throwable error) {
             error.printStackTrace();
         }
+    }
+
+    @FunctionalInterface
+    static interface ValueExtractor<T> {
+        public Object extract(T object) throws IOException;
     }
 }

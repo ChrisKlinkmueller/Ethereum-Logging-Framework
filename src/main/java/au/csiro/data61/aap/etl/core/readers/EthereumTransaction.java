@@ -1,5 +1,6 @@
 package au.csiro.data61.aap.etl.core.readers;
 
+import java.io.IOException;
 import java.math.BigInteger;
 import java.util.ArrayList;
 import java.util.List;
@@ -50,6 +51,16 @@ public abstract class EthereumTransaction {
         return this.logs.stream();
     }
 
+    public Boolean isSuccessful() throws IOException {
+        final String status = this.getStatus();
+        if (status == null) {
+            return null;
+        }
+        else {
+            return status.equals("1");
+        }
+    }
+
     public abstract String getFrom();
     public abstract BigInteger getGas();
     public abstract BigInteger getGasPrice();
@@ -62,5 +73,10 @@ public abstract class EthereumTransaction {
     public abstract BigInteger getTransactionIndex() ;
     public abstract BigInteger getV();
     public abstract BigInteger getValue();
-    
+    public abstract BigInteger getCumulativeGasUsed() throws IOException;
+    public abstract BigInteger getGasUsed() throws IOException;
+    public abstract String getContractAddress() throws IOException;
+    public abstract String getLogsBloom() throws IOException;
+    public abstract String getRoot() throws IOException;
+    public abstract String getStatus() throws IOException;    
 }

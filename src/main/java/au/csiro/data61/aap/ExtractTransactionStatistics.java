@@ -2,10 +2,10 @@ package au.csiro.data61.aap;
 
 import java.util.Arrays;
 import java.util.List;
-import java.util.function.Function;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
+import au.csiro.data61.aap.etl.configuration.AddressListSpecification;
 import au.csiro.data61.aap.etl.configuration.BlockNumberSpecification;
 import au.csiro.data61.aap.etl.configuration.BuildException;
 import au.csiro.data61.aap.etl.configuration.ProgramBuilder;
@@ -17,7 +17,6 @@ import au.csiro.data61.aap.etl.core.values.ValueAccessor;
 import au.csiro.data61.aap.etl.core.writers.AddCsvRowInstruction;
 import au.csiro.data61.aap.etl.library.types.types.IntegerOperations;
 import au.csiro.data61.aap.etl.core.filters.BlockVariables;
-import au.csiro.data61.aap.etl.core.filters.EthereumVariables;
 import au.csiro.data61.aap.etl.core.values.Literal;
 import au.csiro.data61.aap.etl.core.filters.TransactionVariables;
 import au.csiro.data61.aap.etl.core.readers.ClientConnectionMethod;
@@ -45,11 +44,11 @@ public class ExtractTransactionStatistics {
             program.execute(state);
         } catch (Exception e) {
             e.printStackTrace();
-        }
-        
+        }        
     }
 
     private static final String TOTAL_EARNINGS = "totalEarnings";
+    private static final String TRANSACTION_EARNINGS = "transactionEarnings";
     private static Instruction buildProgram() throws BuildException {
         final ProgramBuilder builder = new ProgramBuilder();
         builder.prepareProgramBuild();
@@ -59,21 +58,29 @@ public class ExtractTransactionStatistics {
             builder.addMethodCall(new SetOutputFolderInstruction(), Arrays.asList(Literal.stringLiteral(FOLDER)), null);
 
             builder.prepareBlockRangeBuild();
-                addDataSourceVariableInstructions(builder, BLOCK_VARIABLES, EthereumVariables::createValueCreationInstruction);
                 builder.addVariableAssignmentWithIntegerValue(TOTAL_EARNINGS, 0);
                 
                 builder.prepareTransactionFilterBuild();
-                    addDataSourceVariableInstructions(builder, new String[]{TransactionVariables.TX_VALUE}, EthereumVariables::createValueCreationInstruction);
+                    builder.addMethodCall(
+                        IntegerOperations::multiply,
+                        Arrays.asList(
+                            UserVariables.createValueAccessor(TransactionVariables.TX_GAS_USED), 
+                            UserVariables.createValueAccessor(TransactionVariables.TX_GASPRICE)
+                        ),
+                        UserVariables.createValueMutator(TRANSACTION_EARNINGS)
+                    );
+
                     builder.addMethodCall(
                         IntegerOperations::add, 
-                        Arrays.asList(UserVariables.createValueAccessor(TOTAL_EARNINGS), UserVariables.createValueAccessor(TransactionVariables.TX_VALUE)), 
+                        Arrays.asList(
+                            UserVariables.createValueAccessor(TOTAL_EARNINGS), 
+                            UserVariables.createValueAccessor(TRANSACTION_EARNINGS)
+                        ), 
                         UserVariables.createValueMutator(TOTAL_EARNINGS)
                     );
-                    addDataSourceVariableInstructions(builder, new String[]{TransactionVariables.TX_VALUE}, EthereumVariables::createValueRemovalInstruction);
-                builder.buildTransactionFilter(null, null);
+                builder.buildTransactionFilter(AddressListSpecification.ofAny(), AddressListSpecification.ofAny());
                 
                 addCsvExport(builder);
-                addDataSourceVariableInstructions(builder, BLOCK_VARIABLES, EthereumVariables::createValueRemovalInstruction);
             builder.buildBlockRange(BlockNumberSpecification.ofBlockNumber(START), BlockNumberSpecification.ofBlockNumber(END));
         
         return builder.buildProgram();
@@ -86,12 +93,5 @@ public class ExtractTransactionStatistics {
             .collect(Collectors.toList());
         final Instruction export = new AddCsvRowInstruction("block_statistics", names, valueAccessors);
         builder.addInstruction(export);
-    }
-
-    private static void addDataSourceVariableInstructions(ProgramBuilder builder, String[] variables, Function<String, Instruction> instructionCreator) throws BuildException {
-        for (String variable : variables) {
-            Instruction instruction = instructionCreator.apply(variable);
-            builder.addInstruction(instruction);
-        }
     }
 }

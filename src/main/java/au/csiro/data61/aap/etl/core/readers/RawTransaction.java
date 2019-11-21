@@ -1,5 +1,6 @@
 package au.csiro.data61.aap.etl.core.readers;
 
+import java.io.IOException;
 import java.math.BigInteger;
 
 /**
@@ -18,7 +19,14 @@ public class RawTransaction extends EthereumTransaction {
     private BigInteger v;
     private String r;
     private String s;
-    
+    private BigInteger cumulativeGasUsed;
+    private BigInteger gasUsed;
+    private String contractAddress;
+    private String logsBloom;
+    private String root;
+    private String status;
+
+    @Override
     public String getFrom() {
         return this.from;
     }
@@ -27,6 +35,7 @@ public class RawTransaction extends EthereumTransaction {
         this.from = from;
     }
 
+    @Override
     public BigInteger getGas() {
         return this.gas;
     }
@@ -35,6 +44,7 @@ public class RawTransaction extends EthereumTransaction {
         this.gas = gas;
     }
 
+    @Override
     public BigInteger getGasPrice() {
         return this.gasPrice;
     }
@@ -43,6 +53,7 @@ public class RawTransaction extends EthereumTransaction {
         this.gasPrice = gasPrice;
     }
 
+    @Override
     public String getHash() {
         return this.hash;
     }
@@ -51,6 +62,7 @@ public class RawTransaction extends EthereumTransaction {
         this.hash = hash;
     }
 
+    @Override
     public String getInput() {
         return this.input;
     }
@@ -59,6 +71,7 @@ public class RawTransaction extends EthereumTransaction {
         this.input = input;
     }
 
+    @Override
     public BigInteger getNonce() {
         return this.nonce;
     }
@@ -67,6 +80,7 @@ public class RawTransaction extends EthereumTransaction {
         this.nonce = nonce;
     }
 
+    @Override
     public String getR() {
         return this.r;
     }
@@ -75,6 +89,7 @@ public class RawTransaction extends EthereumTransaction {
         this.r = r;
     }
 
+    @Override
     public String getS() {
         return this.s;
     }
@@ -83,6 +98,7 @@ public class RawTransaction extends EthereumTransaction {
         this.s = s;
     }
 
+    @Override
     public String getTo() {
         return this.to;
     }
@@ -91,6 +107,7 @@ public class RawTransaction extends EthereumTransaction {
         this.to = to;
     }
 
+    @Override
     public BigInteger getTransactionIndex() {
         return this.transactionIndex;
     }
@@ -99,6 +116,7 @@ public class RawTransaction extends EthereumTransaction {
         this.transactionIndex = transactionIndex;
     }
 
+    @Override
     public BigInteger getV() {
         return this.v;
     }
@@ -107,11 +125,66 @@ public class RawTransaction extends EthereumTransaction {
         this.v = v;
     }
 
+    @Override
     public BigInteger getValue() {
         return this.value;
     }
 
     public void setValue(BigInteger value) {
         this.value = value;
+    }
+
+    @Override
+    public BigInteger getCumulativeGasUsed() throws IOException {
+        return this.cumulativeGasUsed;
+    }
+
+    public void setCumulativeGasUsed(BigInteger cumulativeGasUsed) {
+        this.cumulativeGasUsed = cumulativeGasUsed;
+    }
+
+    @Override
+    public BigInteger getGasUsed() throws IOException {
+        return this.gasUsed;
+    }
+
+    public void setGasUsed(BigInteger gasUsed) {
+        this.gasUsed = gasUsed;
+    }
+
+    @Override
+    public String getContractAddress() throws IOException {
+        return this.contractAddress;
+    }
+
+    public void setContractAddress(String contractAddress) {
+        this.contractAddress = contractAddress;
+    }
+
+    @Override
+    public String getLogsBloom() throws IOException {
+        return this.logsBloom;
+    }
+
+    public void setLogsBloom(String logsBloom) {
+        this.logsBloom = logsBloom;
+    }
+
+    @Override
+    public String getRoot() throws IOException {
+        return this.root;
+    }
+
+    public void setRoot(String root) {
+        this.root = root;
+    }
+
+    @Override
+    public String getStatus() throws IOException {
+        return this.status;
+    }
+
+    public void setStatus(String status) {
+        this.status = status;
     }
 }

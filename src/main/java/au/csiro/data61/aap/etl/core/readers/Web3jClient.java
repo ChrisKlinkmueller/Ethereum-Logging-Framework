@@ -14,9 +14,11 @@ import org.web3j.protocol.core.DefaultBlockParameterNumber;
 import org.web3j.protocol.core.methods.request.EthFilter;
 import org.web3j.protocol.core.methods.response.EthBlock;
 import org.web3j.protocol.core.methods.response.EthBlockNumber;
+import org.web3j.protocol.core.methods.response.EthGetTransactionReceipt;
 import org.web3j.protocol.core.methods.response.EthLog;
 import org.web3j.protocol.core.methods.response.Log;
 import org.web3j.protocol.core.methods.response.Transaction;
+import org.web3j.protocol.core.methods.response.TransactionReceipt;
 import org.web3j.protocol.core.methods.response.EthBlock.Block;
 import org.web3j.protocol.websocket.WebSocketClient;
 import org.web3j.protocol.websocket.WebSocketService;
@@ -92,6 +94,11 @@ public class Web3jClient implements EthereumClient {
         }
     }
 
+    TransactionReceipt queryTransactionReceipt(String hash) throws IOException {
+        final EthGetTransactionReceipt transactionReceipt = this.web3j.ethGetTransactionReceipt(hash).send();
+        return transactionReceipt.getResult();
+    }
+
     private EthereumBlock transformBlockResults(EthBlock blockResult, EthLog logResult) {
         final EthereumBlock ethBlock = new Web3jBlock(blockResult.getBlock());
         this.addTransactions(ethBlock, blockResult.getBlock());
@@ -107,7 +114,7 @@ public class Web3jClient implements EthereumClient {
     }
 
     private void addEthereumTransaction(EthereumBlock block, Transaction tx) {
-        final EthereumTransaction ethTx = new Web3jTransaction(block, tx);
+        final EthereumTransaction ethTx = new Web3jTransaction(this, block, tx);
         block.addTransaction(ethTx);
     }
 

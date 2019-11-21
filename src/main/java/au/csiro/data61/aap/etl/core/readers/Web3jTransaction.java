@@ -1,20 +1,27 @@
 package au.csiro.data61.aap.etl.core.readers;
 
+import java.io.IOException;
 import java.math.BigInteger;
+import java.util.function.Function;
 
 import org.web3j.protocol.core.methods.response.Transaction;
+import org.web3j.protocol.core.methods.response.TransactionReceipt;
 
 /**
  * Web3jTransaction
  */
 class Web3jTransaction extends EthereumTransaction {
     private final Transaction tx;
+    private TransactionReceipt receipt;
+    private final Web3jClient client;
 
-    public Web3jTransaction(EthereumBlock block, Transaction tx) {
+    public Web3jTransaction(final Web3jClient client, final EthereumBlock block, final Transaction tx) {
         assert block != null;
         assert tx != null;
+        assert client != null;
         this.tx = tx;
         this.setBlock(block);
+        this.client = client;
     }
 
     @Override
@@ -75,6 +82,43 @@ class Web3jTransaction extends EthereumTransaction {
     @Override
     public BigInteger getValue() {
         return this.tx.getValue();
+    }
+
+    @Override
+    public BigInteger getCumulativeGasUsed() throws IOException {
+        return this.loadReceipt(TransactionReceipt::getCumulativeGasUsed);
+    }
+
+    @Override
+    public BigInteger getGasUsed() throws IOException {
+        return this.loadReceipt(TransactionReceipt::getGasUsed);
+    }
+
+    @Override
+    public String getContractAddress() throws IOException {
+        return this.loadReceipt(TransactionReceipt::getContractAddress);
+    }
+
+    @Override
+    public String getLogsBloom() throws IOException {
+        return this.loadReceipt(TransactionReceipt::getLogsBloom);
+    }
+
+    @Override
+    public String getRoot() throws IOException {
+        return this.loadReceipt(TransactionReceipt::getRoot);
+    }
+
+    @Override
+    public String getStatus() throws IOException {
+        return this.loadReceipt(TransactionReceipt::getStatus);
+    }
+
+    private <T> T loadReceipt(Function<TransactionReceipt, T> attributeAccessor) throws IOException {
+        if (this.receipt == null) {
+            this.receipt = this.client.queryTransactionReceipt(this.getHash());
+        }
+        return attributeAccessor.apply(this.receipt);
     }
 
     

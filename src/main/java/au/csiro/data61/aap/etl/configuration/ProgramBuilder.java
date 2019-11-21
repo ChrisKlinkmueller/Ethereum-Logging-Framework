@@ -5,7 +5,6 @@ import java.util.LinkedList;
 import java.util.List;
 import java.util.Objects;
 import java.util.Stack;
-import java.util.function.Function;
 import java.util.stream.Collectors;
 
 import au.csiro.data61.aap.etl.configuration.BlockNumberSpecification.Type;
@@ -18,7 +17,6 @@ import au.csiro.data61.aap.etl.core.VariableAssignment;
 import au.csiro.data61.aap.etl.core.filters.BlockFilter;
 import au.csiro.data61.aap.etl.core.filters.Program;
 import au.csiro.data61.aap.etl.core.filters.TransactionFilter;
-import au.csiro.data61.aap.etl.core.filters.EthereumVariables;
 import au.csiro.data61.aap.etl.core.values.Literal;
 import au.csiro.data61.aap.etl.core.values.UserVariables;
 
@@ -134,22 +132,6 @@ public class ProgramBuilder {
 
         final Instruction methodCall = new MethodCall(method, parameterAccessors, resultStorer);
         this.instructions.peek().add(methodCall);
-    }
-
-    public void addDataSourceVariableCreationInstruction(String name) throws BuildException {
-        this.addDataSourceInstruction(name, EthereumVariables::createValueCreationInstruction);        
-    }
-
-    public void addDataSourceVariableRemovalInstruction(String name) throws BuildException {
-        this.addDataSourceInstruction(name, EthereumVariables::createValueRemovalInstruction);
-    }
-
-    private void addDataSourceInstruction(String name, Function<String, Instruction> instructionRetriever) throws BuildException {
-        final Instruction instruction = instructionRetriever.apply(name);
-        if (instruction == null) {
-            throw new BuildException(String.format("'%s' is not a valid Ethereum variable.", name));
-        }
-        this.instructions.peek().add(instruction);
     }
 
 	public void addVariableAssignmentWithIntegerValue(String name, long value) {
