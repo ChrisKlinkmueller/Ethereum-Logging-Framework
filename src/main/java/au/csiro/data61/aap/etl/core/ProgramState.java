@@ -41,9 +41,10 @@ public class ProgramState {
         if (!outputFolder.toFile().exists()) {
             throw new ProgramException(String.format("Folder '%s' does not exist.", outputFolder.toString()));
         }
-
+            
         try  {
             this.exceptionHandler.setOutputFolder(outputFolder);
+            this.writers.setOutputFolder(outputFolder);
         }
         catch (Throwable cause) {
             throw new ProgramException("Error when setting the output folder.", cause);

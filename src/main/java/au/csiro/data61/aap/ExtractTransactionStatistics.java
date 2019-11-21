@@ -35,7 +35,7 @@ public class ExtractTransactionStatistics {
         BlockVariables.BLOCK_GAS_USED
     };
     private static final long START = 6000000l;
-    private static final long END = 6000100l;
+    private static final long END = 6001000l;
     
     public static void main(String[] args) {
         try {

@@ -2,38 +2,90 @@ package au.csiro.data61.aap.etl.core.filters;
 
 import java.util.Arrays;
 import java.util.List;
-
-import org.web3j.abi.datatypes.Event;
+import java.util.function.BiPredicate;
+import java.util.stream.Collectors;
 
 import au.csiro.data61.aap.etl.core.exceptions.ProgramException;
+import au.csiro.data61.aap.etl.core.readers.EthereumLogEntry;
+import au.csiro.data61.aap.etl.core.readers.EthereumTransaction;
 import au.csiro.data61.aap.etl.core.Instruction;
 import au.csiro.data61.aap.etl.core.ProgramState;
-import au.csiro.data61.aap.etl.core.values.ValueAccessor;
 
 /**
  * LogEntryFilter
  * To understand how to decode event data and topics, see: https://www.programcreek.com/java-api-examples/?class=org.web3j.abi.FunctionReturnDecoder&method=decode 
  */
 public class LogEntryFilter extends Filter {
-    private final ValueAccessor addresses;
-    private final Event event;
+    private final BiPredicate<ProgramState, String> contractCriterion;
+    private final LogEntrySignature signature;
 
-    public LogEntryFilter(ValueAccessor addresses, Event event, Instruction... instructions) {
-        this(addresses, event, Arrays.asList(instructions));
+    public LogEntryFilter(BiPredicate<ProgramState, String> contractCriterion, LogEntrySignature signature, Instruction... instructions) {
+        this(contractCriterion, signature, Arrays.asList(instructions));
     }
 
-    public LogEntryFilter(ValueAccessor addresses, Event event, List<Instruction> instructions) {
+    public LogEntryFilter(BiPredicate<ProgramState, String> contractCriterion, LogEntrySignature signature, List<Instruction> instructions) {
         super(instructions, EthereumVariables.getLogEntryValueCreators(), EthereumVariables.getLogEntryRemovers());
-        assert event != null;
+        assert signature != null;
         assert instructions != null;
-        this.addresses = addresses;
-        this.event = event;
+        this.contractCriterion = contractCriterion;
+        this.signature = signature;
     }
 
     @Override
     public void execute(ProgramState state) throws ProgramException {
-        throw new UnsupportedOperationException();
+        final List<EthereumLogEntry> logEntries = this.getEntries(state);
+        for (EthereumLogEntry logEntry : logEntries) {
+            processLogEntry(state, logEntry);
+        }
+    }
+    
+    private void processLogEntry(ProgramState state, EthereumLogEntry logEntry) throws ProgramException {
+        try {
+            if (this.isValidLogEntry(state, logEntry)) {
+                state.getReader().setCurrentLogEntry(logEntry);
+                this.signature.addLogEntryValues(state, logEntry);
+                this.executeInstructions(state);
+            }
+        }
+        catch (Throwable cause) {
+            final String message = String.format(
+                "Error mapping log entry '%s' in transaction '%s 'in block '%s'.", 
+                logEntry.getLogIndex(), 
+                logEntry.getTransactionIndex(), 
+                logEntry.getBlockNumber()
+            );
+            final boolean abort = state.getExceptionHandler().handleExceptionAndDecideOnAbort(message, cause);
+            if (abort) {
+                throw new ProgramException(message, cause);
+            }
+        }
+        finally {
+            state.getReader().setCurrentTransaction(null);
+        }
     }
 
+    private boolean isValidLogEntry(ProgramState state, EthereumLogEntry logEntry) {
+        return    this.contractCriterion.test(state, logEntry.getAddress())
+               && this.signature.hasSignature(logEntry);
+    }
+
+    private List<EthereumLogEntry> getEntries(ProgramState state) throws ProgramException {
+        if (state.getReader().getCurrentTransaction()   != null) {
+            return state.getReader()
+                .getCurrentTransaction()
+                .logStream()
+                .collect(Collectors.toList());
+        }
+        else if (state.getReader().getCurrentBlock() != null) {
+            return state.getReader()
+                .getCurrentBlock()
+                .transactionStream()
+                .flatMap(EthereumTransaction::logStream)
+                .collect(Collectors.toList());
+        }   
+        else {
+            throw new ProgramException("Log entries can only be extracted from blocks or transactions, but there is no open block or transaction.");
+        }
+    }
     
 }

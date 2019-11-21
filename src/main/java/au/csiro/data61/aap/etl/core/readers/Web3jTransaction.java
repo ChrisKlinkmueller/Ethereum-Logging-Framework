@@ -115,10 +115,11 @@ class Web3jTransaction extends EthereumTransaction {
     }
 
     private <T> T loadReceipt(Function<TransactionReceipt, T> attributeAccessor) throws IOException {
-        if (this.receipt == null) {
-            this.receipt = this.client.queryTransactionReceipt(this.getHash());
-        }
-        return attributeAccessor.apply(this.receipt);
+        //if (this.receipt == null) {
+        //    this.receipt = this.client.queryTransactionReceipt(this.getHash());
+        //}
+        //return attributeAccessor.apply(this.receipt);
+        return null;
     }
 
     

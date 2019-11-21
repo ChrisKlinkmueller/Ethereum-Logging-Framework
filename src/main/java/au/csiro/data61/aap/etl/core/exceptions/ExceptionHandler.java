@@ -24,7 +24,7 @@ public class ExceptionHandler {
     }
 
     public void setOutputFolder(Path outputFolder) throws Throwable {
-        final Path filepath = Paths.get(outputFolder.getFileName().toString(), FILENAME);
+        final Path filepath = Paths.get(outputFolder.toFile().getAbsolutePath(), FILENAME);
         final FileHandler fileHandler = new FileHandler(filepath.toString());
         this.logger.addHandler(fileHandler);
         

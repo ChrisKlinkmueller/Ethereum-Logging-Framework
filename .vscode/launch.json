@@ -2,6 +2,20 @@
     "configurations": [
         {
             "type": "java",
+            "name": "CodeLens (Launch) - ExtractCryptoKitties",
+            "request": "launch",
+            "mainClass": "au.csiro.data61.aap.ExtractCryptoKitties",
+            "projectName": "xes-blockchain"
+        },
+        {
+            "type": "java",
+            "name": "CodeLens (Launch) - LogEntrySignature",
+            "request": "launch",
+            "mainClass": "au.csiro.data61.aap.etl.core.filters.LogEntrySignature",
+            "projectName": "xes-blockchain"
+        },
+        {
+            "type": "java",
             "name": "CodeLens (Launch) - TransactionScope",
             "request": "launch",
             "mainClass": "au.csiro.data61.aap.program.TransactionScope",

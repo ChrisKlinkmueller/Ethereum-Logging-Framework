@@ -15,6 +15,7 @@ import au.csiro.data61.aap.etl.core.values.ValueAccessor;
 import au.csiro.data61.aap.etl.core.values.ValueMutator;
 import au.csiro.data61.aap.etl.core.VariableAssignment;
 import au.csiro.data61.aap.etl.core.filters.BlockFilter;
+import au.csiro.data61.aap.etl.core.filters.LogEntryFilter;
 import au.csiro.data61.aap.etl.core.filters.Program;
 import au.csiro.data61.aap.etl.core.filters.TransactionFilter;
 import au.csiro.data61.aap.etl.core.values.Literal;
@@ -42,6 +43,10 @@ public class ProgramBuilder {
 
     public void prepareTransactionFilterBuild() throws BuildException {
         this.prepareBuild(FactoryState.TRANSACTION_FILTER, FactoryState.BLOCK_RANGE_FILTER);
+    }
+
+    public void prepareLogEntryFilterBuilder() throws BuildException {
+        this.prepareBuild(FactoryState.LOG_ENTRY_FILTER, FactoryState.BLOCK_RANGE_FILTER, FactoryState.TRANSACTION_FILTER);
     }
 
     private void prepareBuild(FactoryState newState, FactoryState... possibleCurrentStates) throws BuildException  {
@@ -108,6 +113,21 @@ public class ProgramBuilder {
         );
 
         this.closeScope(filter);        
+    }
+
+    public void buildLogEntryFilter(AddressListSpecification contracts, LogEntrySignatureSpecification signature) throws BuildException {
+        assert contracts != null;
+        assert signature != null;
+
+        if (this.states.peek() != FactoryState.LOG_ENTRY_FILTER) {
+            throw new BuildException(String.format("Cannot build a log entry filter, when construction of %s has not been finished.", this.states.peek()));
+        }
+
+        final LogEntryFilter filter = new LogEntryFilter(
+            contracts.getAddressCheck(), 
+            signature.getSignature(), 
+            this.instructions.peek());
+        this.closeScope(filter);
     }
 
     private void closeScope(Instruction instruction) {
