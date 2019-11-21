@@ -26,7 +26,7 @@ public class BlockFilter extends Filter {
     }
 
     public BlockFilter(final ValueAccessor fromBlock, final BiPredicate<ProgramState, BigInteger> stopCriteria, final List<Instruction> instructions) {
-        super(instructions, EthereumVariables.getBlockValueCreators(), EthereumVariables.getBlockValueRemovers());
+        super(instructions);
         assert fromBlock != null;
         assert stopCriteria != null;
         assert instructions != null && instructions.stream().allMatch(Objects::nonNull);

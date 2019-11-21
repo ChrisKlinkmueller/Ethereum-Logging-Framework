@@ -24,7 +24,7 @@ public class LogEntryFilter extends Filter {
     }
 
     public LogEntryFilter(BiPredicate<ProgramState, String> contractCriterion, LogEntrySignature signature, List<Instruction> instructions) {
-        super(instructions, EthereumVariables.getLogEntryValueCreators(), EthereumVariables.getLogEntryRemovers());
+        super(instructions);
         assert signature != null;
         assert instructions != null;
         this.contractCriterion = contractCriterion;

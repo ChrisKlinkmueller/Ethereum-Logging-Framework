@@ -1,10 +1,11 @@
 package au.csiro.data61.aap.etl.core.readers;
 
-import java.io.IOException;
 import java.math.BigInteger;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.stream.Stream;
+
+import au.csiro.data61.aap.etl.core.exceptions.ProgramException;
 
 /**
  * EthereumTransaction
@@ -51,7 +52,7 @@ public abstract class EthereumTransaction {
         return this.logs.stream();
     }
 
-    public Boolean isSuccessful() throws IOException {
+    public Boolean isSuccessful() throws ProgramException {
         final String status = this.getStatus();
         if (status == null) {
             return null;
@@ -73,10 +74,10 @@ public abstract class EthereumTransaction {
     public abstract BigInteger getTransactionIndex() ;
     public abstract BigInteger getV();
     public abstract BigInteger getValue();
-    public abstract BigInteger getCumulativeGasUsed() throws IOException;
-    public abstract BigInteger getGasUsed() throws IOException;
-    public abstract String getContractAddress() throws IOException;
-    public abstract String getLogsBloom() throws IOException;
-    public abstract String getRoot() throws IOException;
-    public abstract String getStatus() throws IOException;    
+    public abstract BigInteger getCumulativeGasUsed() throws ProgramException;
+    public abstract BigInteger getGasUsed() throws ProgramException;
+    public abstract String getContractAddress() throws ProgramException;
+    public abstract String getLogsBloom() throws ProgramException;
+    public abstract String getRoot() throws ProgramException;
+    public abstract String getStatus() throws ProgramException;    
 }

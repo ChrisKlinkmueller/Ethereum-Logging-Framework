@@ -1,7 +1,8 @@
 package au.csiro.data61.aap.etl.core.readers;
 
-import java.io.IOException;
 import java.math.BigInteger;
+
+import au.csiro.data61.aap.etl.core.exceptions.ProgramException;
 
 /**
  * EthereumTransaction
@@ -135,7 +136,7 @@ public class RawTransaction extends EthereumTransaction {
     }
 
     @Override
-    public BigInteger getCumulativeGasUsed() throws IOException {
+    public BigInteger getCumulativeGasUsed() throws ProgramException {
         return this.cumulativeGasUsed;
     }
 
@@ -144,7 +145,7 @@ public class RawTransaction extends EthereumTransaction {
     }
 
     @Override
-    public BigInteger getGasUsed() throws IOException {
+    public BigInteger getGasUsed() throws ProgramException {
         return this.gasUsed;
     }
 
@@ -153,7 +154,7 @@ public class RawTransaction extends EthereumTransaction {
     }
 
     @Override
-    public String getContractAddress() throws IOException {
+    public String getContractAddress() throws ProgramException {
         return this.contractAddress;
     }
 
@@ -162,7 +163,7 @@ public class RawTransaction extends EthereumTransaction {
     }
 
     @Override
-    public String getLogsBloom() throws IOException {
+    public String getLogsBloom() throws ProgramException {
         return this.logsBloom;
     }
 
@@ -171,7 +172,7 @@ public class RawTransaction extends EthereumTransaction {
     }
 
     @Override
-    public String getRoot() throws IOException {
+    public String getRoot() throws ProgramException {
         return this.root;
     }
 
@@ -180,7 +181,7 @@ public class RawTransaction extends EthereumTransaction {
     }
 
     @Override
-    public String getStatus() throws IOException {
+    public String getStatus() throws ProgramException {
         return this.status;
     }
 

@@ -19,7 +19,7 @@ import au.csiro.data61.aap.etl.core.filters.LogEntryFilter;
 import au.csiro.data61.aap.etl.core.filters.Program;
 import au.csiro.data61.aap.etl.core.filters.TransactionFilter;
 import au.csiro.data61.aap.etl.core.values.Literal;
-import au.csiro.data61.aap.etl.core.values.UserVariables;
+import au.csiro.data61.aap.etl.core.values.Variables;
 
 /**
  * ProgramFactory
@@ -155,7 +155,7 @@ public class ProgramBuilder {
     }
 
 	public void addVariableAssignmentWithIntegerValue(String name, long value) {
-        final Instruction varAssignment = new VariableAssignment(UserVariables.createValueMutator(name), Literal.integerLiteral(value));
+        final Instruction varAssignment = new VariableAssignment(Variables.createValueMutator(name), Literal.integerLiteral(value));
         this.instructions.peek().add(varAssignment);
 	}
 

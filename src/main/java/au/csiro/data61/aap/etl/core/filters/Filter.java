@@ -14,11 +14,9 @@ import au.csiro.data61.aap.etl.core.ProgramState;
 public abstract class Filter implements Instruction {
     private final List<Instruction> instructions;
 
-    public Filter(List<Instruction> instructions, List<Instruction> valueCreators, List<Instruction> blockValueRemovers) {
+    public Filter(List<Instruction> instructions) {
         assert instructions != null && instructions.stream().allMatch(Objects::nonNull);
-        this.instructions = new LinkedList<>(valueCreators);
-        this.instructions.addAll(instructions);
-        this.instructions.addAll(blockValueRemovers);
+        this.instructions = new LinkedList<>(instructions);
     }
 
     protected void executeInstructions(ProgramState state) throws ProgramException {

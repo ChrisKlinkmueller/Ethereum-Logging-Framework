@@ -1,11 +1,12 @@
 package au.csiro.data61.aap.etl.core.readers;
 
-import java.io.IOException;
 import java.math.BigInteger;
 import java.util.function.Function;
 
 import org.web3j.protocol.core.methods.response.Transaction;
 import org.web3j.protocol.core.methods.response.TransactionReceipt;
+
+import au.csiro.data61.aap.etl.core.exceptions.ProgramException;
 
 /**
  * Web3jTransaction
@@ -85,41 +86,45 @@ class Web3jTransaction extends EthereumTransaction {
     }
 
     @Override
-    public BigInteger getCumulativeGasUsed() throws IOException {
+    public BigInteger getCumulativeGasUsed() throws ProgramException {
         return this.loadReceipt(TransactionReceipt::getCumulativeGasUsed);
     }
 
     @Override
-    public BigInteger getGasUsed() throws IOException {
+    public BigInteger getGasUsed() throws ProgramException {
         return this.loadReceipt(TransactionReceipt::getGasUsed);
     }
 
     @Override
-    public String getContractAddress() throws IOException {
+    public String getContractAddress() throws ProgramException {
         return this.loadReceipt(TransactionReceipt::getContractAddress);
     }
 
     @Override
-    public String getLogsBloom() throws IOException {
+    public String getLogsBloom() throws ProgramException {
         return this.loadReceipt(TransactionReceipt::getLogsBloom);
     }
 
     @Override
-    public String getRoot() throws IOException {
+    public String getRoot() throws ProgramException {
         return this.loadReceipt(TransactionReceipt::getRoot);
     }
 
     @Override
-    public String getStatus() throws IOException {
+    public String getStatus() throws ProgramException {
         return this.loadReceipt(TransactionReceipt::getStatus);
     }
 
-    private <T> T loadReceipt(Function<TransactionReceipt, T> attributeAccessor) throws IOException {
-        //if (this.receipt == null) {
-        //    this.receipt = this.client.queryTransactionReceipt(this.getHash());
-        //}
-        //return attributeAccessor.apply(this.receipt);
-        return null;
+    private <T> T loadReceipt(Function<TransactionReceipt, T> attributeAccessor) throws ProgramException {
+        if (this.receipt == null) {
+            try {
+                this.receipt = this.client.queryTransactionReceipt(this.getHash());
+            }
+            catch (Throwable cause) {
+                throw new ProgramException(String.format("Error loading attributes for transaction '%s'.", this.getHash()), cause);
+            }
+        }
+        return attributeAccessor.apply(this.receipt);
     }
 
     

@@ -1,9 +1,9 @@
-package au.csiro.data61.aap.etl.core.filters;
+package au.csiro.data61.aap.etl.core.values;
 
 import java.util.HashSet;
 import java.util.Set;
 
-import au.csiro.data61.aap.etl.core.filters.EthereumVariable.ValueExtractor;
+import au.csiro.data61.aap.etl.core.exceptions.ProgramException;
 import au.csiro.data61.aap.etl.core.readers.EthereumTransaction;
 
 /**
@@ -61,6 +61,21 @@ public class TransactionVariables {
     }
 
     private static void addTransactionVariable(String name, String type, ValueExtractor<EthereumTransaction> transactionValueExtractor) {
-        EthereumVariable.addVariable(TRANSACTION_VARIABLES, name, type, state -> transactionValueExtractor.extract(state.getReader().getCurrentTransaction()));
+        EthereumVariable.addVariable(
+            TRANSACTION_VARIABLES, 
+            name, type, 
+            state -> { 
+                final EthereumTransaction tx = state.getReader().getCurrentTransaction() == null 
+                    ? state.getReader().getCurrentLogEntry().getTransaction()
+                    : state.getReader().getCurrentTransaction()
+                ;
+                return transactionValueExtractor.extractValue(tx);
+            }
+        );
+    }
+
+    @FunctionalInterface
+    private static interface ValueExtractor<T> {
+        public Object extractValue(T entity) throws ProgramException; 
     }
 }

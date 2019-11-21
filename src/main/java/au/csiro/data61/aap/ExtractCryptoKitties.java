@@ -13,12 +13,12 @@ import au.csiro.data61.aap.etl.core.Instruction;
 import au.csiro.data61.aap.etl.core.Method;
 import au.csiro.data61.aap.etl.core.ProgramState;
 import au.csiro.data61.aap.etl.core.SetOutputFolderInstruction;
-import au.csiro.data61.aap.etl.core.filters.BlockVariables;
-import au.csiro.data61.aap.etl.core.filters.LogEntryVariables;
-import au.csiro.data61.aap.etl.core.filters.TransactionVariables;
+import au.csiro.data61.aap.etl.core.values.BlockVariables;
+import au.csiro.data61.aap.etl.core.values.LogEntryVariables;
+import au.csiro.data61.aap.etl.core.values.TransactionVariables;
 import au.csiro.data61.aap.etl.core.readers.ClientConnectionMethod;
 import au.csiro.data61.aap.etl.core.values.Literal;
-import au.csiro.data61.aap.etl.core.values.UserVariables;
+import au.csiro.data61.aap.etl.core.values.Variables;
 import au.csiro.data61.aap.etl.core.values.ValueAccessor;
 import au.csiro.data61.aap.etl.core.writers.AddCsvRowInstruction;
 
@@ -75,7 +75,7 @@ public class ExtractCryptoKitties {
             "kittyId"
         );
         final List<ValueAccessor> valueAccessors = names.stream()
-            .map(name -> UserVariables.createValueAccessor(name))
+            .map(name -> Variables.createValueAccessor(name))
             .collect(Collectors.toList());
         final Instruction export = new AddCsvRowInstruction("events", names, valueAccessors);
         builder.addInstruction(export);

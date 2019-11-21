@@ -21,7 +21,7 @@ public class TransactionFilter extends Filter {
     }
 
     public TransactionFilter(BiPredicate<ProgramState, String> senderCriterion, BiPredicate<ProgramState, String> recipientCiterion, List<Instruction> instructions) {
-        super(instructions, EthereumVariables.getTransactionValueCreators(), EthereumVariables.getTransactionRemovers());
+        super(instructions);
         assert senderCriterion != null;
         assert recipientCiterion != null;
         this.recipientCiterion = recipientCiterion;

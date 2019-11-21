@@ -5,9 +5,9 @@ import java.util.function.BiPredicate;
 
 import au.csiro.data61.aap.etl.core.ProgramState;
 import au.csiro.data61.aap.etl.core.exceptions.ProgramException;
-import au.csiro.data61.aap.etl.core.filters.EthereumVariables;
+import au.csiro.data61.aap.etl.core.values.EthereumVariables;
 import au.csiro.data61.aap.etl.core.values.Literal;
-import au.csiro.data61.aap.etl.core.values.UserVariables;
+import au.csiro.data61.aap.etl.core.values.Variables;
 import au.csiro.data61.aap.etl.core.values.ValueAccessor;
 
 /**
@@ -39,7 +39,7 @@ public class BlockNumberSpecification {
 
     public static BlockNumberSpecification ofVariableName(String name) {
         assert name != null;
-        final ValueAccessor accessor = UserVariables.createValueAccessor(name);            
+        final ValueAccessor accessor = Variables.createValueAccessor(name);            
         return new BlockNumberSpecification(accessor, createStopCriterion(accessor), Type.VARIABLE);
     }
 

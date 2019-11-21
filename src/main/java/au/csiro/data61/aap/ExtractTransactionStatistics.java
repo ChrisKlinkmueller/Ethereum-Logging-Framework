@@ -16,11 +16,11 @@ import au.csiro.data61.aap.etl.core.SetOutputFolderInstruction;
 import au.csiro.data61.aap.etl.core.values.ValueAccessor;
 import au.csiro.data61.aap.etl.core.writers.AddCsvRowInstruction;
 import au.csiro.data61.aap.etl.library.types.types.IntegerOperations;
-import au.csiro.data61.aap.etl.core.filters.BlockVariables;
+import au.csiro.data61.aap.etl.core.values.BlockVariables;
 import au.csiro.data61.aap.etl.core.values.Literal;
-import au.csiro.data61.aap.etl.core.filters.TransactionVariables;
+import au.csiro.data61.aap.etl.core.values.TransactionVariables;
 import au.csiro.data61.aap.etl.core.readers.ClientConnectionMethod;
-import au.csiro.data61.aap.etl.core.values.UserVariables;
+import au.csiro.data61.aap.etl.core.values.Variables;
 
 /**
  * ExtractTransactionStatistics
@@ -64,19 +64,19 @@ public class ExtractTransactionStatistics {
                     builder.addMethodCall(
                         IntegerOperations::multiply,
                         Arrays.asList(
-                            UserVariables.createValueAccessor(TransactionVariables.TX_GAS_USED), 
-                            UserVariables.createValueAccessor(TransactionVariables.TX_GASPRICE)
+                            Variables.createValueAccessor(TransactionVariables.TX_GAS_USED), 
+                            Variables.createValueAccessor(TransactionVariables.TX_GASPRICE)
                         ),
-                        UserVariables.createValueMutator(TRANSACTION_EARNINGS)
+                        Variables.createValueMutator(TRANSACTION_EARNINGS)
                     );
 
                     builder.addMethodCall(
                         IntegerOperations::add, 
                         Arrays.asList(
-                            UserVariables.createValueAccessor(TOTAL_EARNINGS), 
-                            UserVariables.createValueAccessor(TRANSACTION_EARNINGS)
+                            Variables.createValueAccessor(TOTAL_EARNINGS), 
+                            Variables.createValueAccessor(TRANSACTION_EARNINGS)
                         ), 
-                        UserVariables.createValueMutator(TOTAL_EARNINGS)
+                        Variables.createValueMutator(TOTAL_EARNINGS)
                     );
                 builder.buildTransactionFilter(AddressListSpecification.ofAny(), AddressListSpecification.ofAny());
                 
@@ -89,7 +89,7 @@ public class ExtractTransactionStatistics {
     private static void addCsvExport(ProgramBuilder builder) throws BuildException {
         final List<String> names = Stream.concat(Arrays.stream(BLOCK_VARIABLES), Stream.of(TOTAL_EARNINGS)).collect(Collectors.toList());
         final List<ValueAccessor> valueAccessors = names.stream()
-            .map(name -> UserVariables.createValueAccessor(name))
+            .map(name -> Variables.createValueAccessor(name))
             .collect(Collectors.toList());
         final Instruction export = new AddCsvRowInstruction("block_statistics", names, valueAccessors);
         builder.addInstruction(export);
