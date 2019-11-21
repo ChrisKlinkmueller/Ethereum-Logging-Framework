@@ -36,7 +36,7 @@ public class ProgramState {
         return this.exceptionHandler;
     }
 
-    public void setOutputFolder(String folderPath) throws ProgramException {
+    private void setOutputFolder(String folderPath) throws ProgramException {
         final Path outputFolder = Path.of(folderPath);
         if (!outputFolder.toFile().exists()) {
             throw new ProgramException(String.format("Folder '%s' does not exist.", outputFolder.toString()));
@@ -57,5 +57,25 @@ public class ProgramState {
 
     public void close() {
         this.getReader().close();
+    }
+
+    public static Object connectClient(Object[] parameters, ProgramState state) throws ProgramException {
+        assert parameters != null && parameters.length == 1;
+        assert parameters[0] instanceof String;
+        final String url = (String) parameters[0];
+        state.getReader().connect(url);
+        return null;
+    }
+
+    public static Object setOutputFolder(Object[] parameters, ProgramState state) throws ProgramException {
+        assert parameters != null && parameters.length == 1;
+        assert parameters[0] instanceof String;
+        final String outputFolder = (String) parameters[0];
+        try {
+            state.setOutputFolder(outputFolder);
+        } catch (Throwable e) {
+            throw new ProgramException("Error when setting the output folder.", e);
+        }
+        return null;
     }
 }

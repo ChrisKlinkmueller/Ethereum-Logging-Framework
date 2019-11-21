@@ -23,9 +23,9 @@ import au.csiro.data61.aap.program.types.SolidityBool;
 import au.csiro.data61.aap.program.types.SolidityBytes;
 import au.csiro.data61.aap.program.types.SolidityFixed;
 import au.csiro.data61.aap.program.types.SolidityInteger;
+import au.csiro.data61.aap.program.types.SolidityString;
 import au.csiro.data61.aap.program.types.SolidityType;
 import au.csiro.data61.aap.program.types.ValueCasts;
-import au.csiro.data61.aap.program.types.SolidityString;
 
 /**
  * AnalyzerUtils

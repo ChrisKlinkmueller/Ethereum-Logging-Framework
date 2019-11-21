@@ -10,16 +10,13 @@ import au.csiro.data61.aap.etl.configuration.BlockNumberSpecification;
 import au.csiro.data61.aap.etl.configuration.BuildException;
 import au.csiro.data61.aap.etl.configuration.ProgramBuilder;
 import au.csiro.data61.aap.etl.core.Instruction;
-import au.csiro.data61.aap.etl.core.Method;
 import au.csiro.data61.aap.etl.core.ProgramState;
-import au.csiro.data61.aap.etl.core.SetOutputFolderInstruction;
 import au.csiro.data61.aap.etl.core.values.ValueAccessor;
 import au.csiro.data61.aap.etl.core.writers.AddCsvRowInstruction;
-import au.csiro.data61.aap.etl.library.types.types.IntegerOperations;
+import au.csiro.data61.aap.etl.library.types.IntegerOperations;
 import au.csiro.data61.aap.etl.core.values.BlockVariables;
 import au.csiro.data61.aap.etl.core.values.Literal;
 import au.csiro.data61.aap.etl.core.values.TransactionVariables;
-import au.csiro.data61.aap.etl.core.readers.ClientConnectionMethod;
 import au.csiro.data61.aap.etl.core.values.Variables;
 
 /**
@@ -53,10 +50,9 @@ public class ExtractTransactionStatistics {
         final ProgramBuilder builder = new ProgramBuilder();
         builder.prepareProgramBuild();
 
-            Method connectionMethod = new ClientConnectionMethod();
-            builder.addMethodCall(connectionMethod, Arrays.asList(Literal.stringLiteral(URL)), null);
-            builder.addMethodCall(new SetOutputFolderInstruction(), Arrays.asList(Literal.stringLiteral(FOLDER)), null);
-
+            builder.addMethodCall(ProgramState::setOutputFolder, Arrays.asList(Literal.stringLiteral(FOLDER)), null);
+            builder.addMethodCall(ProgramState::connectClient, Arrays.asList(Literal.stringLiteral(URL)), null);
+            
             builder.prepareBlockRangeBuild();
                 builder.addVariableAssignmentWithIntegerValue(TOTAL_EARNINGS, 0);
                 

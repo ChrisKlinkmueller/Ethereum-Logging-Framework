@@ -10,13 +10,10 @@ import au.csiro.data61.aap.etl.configuration.BuildException;
 import au.csiro.data61.aap.etl.configuration.LogEntrySignatureSpecification;
 import au.csiro.data61.aap.etl.configuration.ProgramBuilder;
 import au.csiro.data61.aap.etl.core.Instruction;
-import au.csiro.data61.aap.etl.core.Method;
 import au.csiro.data61.aap.etl.core.ProgramState;
-import au.csiro.data61.aap.etl.core.SetOutputFolderInstruction;
 import au.csiro.data61.aap.etl.core.values.BlockVariables;
 import au.csiro.data61.aap.etl.core.values.LogEntryVariables;
 import au.csiro.data61.aap.etl.core.values.TransactionVariables;
-import au.csiro.data61.aap.etl.core.readers.ClientConnectionMethod;
 import au.csiro.data61.aap.etl.core.values.Literal;
 import au.csiro.data61.aap.etl.core.values.Variables;
 import au.csiro.data61.aap.etl.core.values.ValueAccessor;
@@ -45,9 +42,8 @@ public class ExtractCryptoKitties {
         final ProgramBuilder builder = new ProgramBuilder();
 
         builder.prepareProgramBuild();
-            builder.addMethodCall(new SetOutputFolderInstruction(), Arrays.asList(Literal.stringLiteral(FOLDER)), null);
-            Method connectionMethod = new ClientConnectionMethod();
-            builder.addMethodCall(connectionMethod, Arrays.asList(Literal.stringLiteral(URL)), null);
+            builder.addMethodCall(ProgramState::setOutputFolder, Arrays.asList(Literal.stringLiteral(FOLDER)), null);
+            builder.addMethodCall(ProgramState::connectClient, Arrays.asList(Literal.stringLiteral(URL)), null);
             builder.prepareBlockRangeBuild();
                 builder.prepareTransactionFilterBuild();
                     builder.prepareLogEntryFilterBuilder();

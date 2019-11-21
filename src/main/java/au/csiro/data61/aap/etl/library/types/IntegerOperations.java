@@ -1,4 +1,4 @@
-package au.csiro.data61.aap.etl.library.types.types;
+package au.csiro.data61.aap.etl.library.types;
 
 import java.math.BigInteger;
 import java.util.function.BiFunction;
