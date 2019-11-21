@@ -1,18 +1,21 @@
 package au.csiro.data61.aap.etl.configuration;
 
+import java.util.Arrays;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Objects;
 import java.util.Stack;
 import java.util.function.Function;
+import java.util.stream.Collectors;
 
+import au.csiro.data61.aap.etl.configuration.BlockNumberSpecification.Type;
 import au.csiro.data61.aap.etl.core.Instruction;
 import au.csiro.data61.aap.etl.core.Method;
 import au.csiro.data61.aap.etl.core.MethodCall;
 import au.csiro.data61.aap.etl.core.values.ValueAccessor;
 import au.csiro.data61.aap.etl.core.values.ValueMutator;
 import au.csiro.data61.aap.etl.core.VariableAssignment;
-import au.csiro.data61.aap.etl.core.filters.BlockRangeFilter;
+import au.csiro.data61.aap.etl.core.filters.BlockFilter;
 import au.csiro.data61.aap.etl.core.filters.Program;
 import au.csiro.data61.aap.etl.core.filters.TransactionFilter;
 import au.csiro.data61.aap.etl.core.filters.EthereumVariables;
@@ -32,29 +35,36 @@ public class ProgramBuilder {
     }
 
     public void prepareProgramBuild() throws BuildException  {
-        if (!this.states.isEmpty()) {
-            throw new BuildException("Cannot build a program, while another program is still being build.");
-        }
-        
-        this.addScope(FactoryState.PROGRAM);
+        this.prepareBuild(FactoryState.PROGRAM);
     }
 
     public void prepareBlockRangeBuild() throws BuildException {
-        if (this.states.peek() != FactoryState.PROGRAM) {
-            throw new BuildException("A block range filter can only be added to a program.");
-        }
-        this.addScope(FactoryState.BLOCK_RANGE_FILTER);        
+        this.prepareBuild(FactoryState.BLOCK_RANGE_FILTER, FactoryState.PROGRAM);     
     }
 
     public void prepareTransactionFilterBuild() throws BuildException {
-        if (this.states.peek() != FactoryState.BLOCK_RANGE_FILTER) {
-            throw new BuildException("A block range filter can only be added to a block filter.");
-        }
-        this.addScope(FactoryState.TRANSACTION_FILTER);  
+        this.prepareBuild(FactoryState.TRANSACTION_FILTER, FactoryState.BLOCK_RANGE_FILTER);
     }
 
-    private void addScope(FactoryState state) {
-        this.states.push(state);
+    private void prepareBuild(FactoryState newState, FactoryState... possibleCurrentStates) throws BuildException  {
+        final boolean areStatesEmpty = this.states.isEmpty() && possibleCurrentStates.length == 0;
+        final boolean currentStatesMatches = !this.states.isEmpty()
+            && Arrays.stream(possibleCurrentStates).anyMatch(s -> this.states.peek() == s);
+        
+        if (!(areStatesEmpty || currentStatesMatches)) {
+            throw new BuildException(
+                possibleCurrentStates == null 
+                ? String.format("A %s can only be build when no other filter is being build.", newState)
+                : String.format(
+                    "A %s cannot be added to %s, but only to: %s.", 
+                    newState, 
+                    this.states.peek(), 
+                    Arrays.stream(possibleCurrentStates).map(state -> state.toString()).collect(Collectors.joining(", "))
+                )
+            );
+        }
+       
+        this.states.push(newState);
         this.instructions.add(new LinkedList<>());
     }
 
@@ -63,38 +73,50 @@ public class ProgramBuilder {
             throw new BuildException(String.format("Cannot build a program, when construction of %s has not been finished.", this.states.peek()));
         }
         
-        final Program program = new Program(this.instructions.pop());
-        this.states.pop();
+        final Program program = new Program(this.instructions.peek());
+        this.closeScope(program);
         return program;
     }
 
-    public void buildBlockRange(ValueAccessor fromBlock, ValueAccessor toBlock) throws BuildException {
-        assert fromBlock != null;
-        assert toBlock != null;
+    public void buildBlockRange(BlockNumberSpecification fromBlock, BlockNumberSpecification toBlock) throws BuildException {
+        assert fromBlock != null && fromBlock.getType() != Type.CONTINUOUS;
+        assert toBlock != null && toBlock.getType() != Type.EARLIEST;
 
         if (this.states.peek() != FactoryState.BLOCK_RANGE_FILTER) {
             throw new BuildException(String.format("Cannot build a block filter, when construction of %s has not been finished.", this.states.peek()));
         }
 
-        final List<Instruction> instructions = this.instructions.pop();
-        final BlockRangeFilter blockRange = new BlockRangeFilter(fromBlock, toBlock, instructions);
-        this.instructions.peek().add(blockRange);
-        this.states.pop();
+        final BlockFilter blockRange = new BlockFilter(
+            fromBlock.getValueAccessor(), 
+            toBlock.getStopCriterion(), 
+            this.instructions.peek()
+        );
+
+        this.closeScope(blockRange);
     }
 
-    public void buildTransactionFilter(List<String> senders, List<String> recipients) throws BuildException {
+    public void buildTransactionFilter(AddressListSpecification senders, AddressListSpecification recipients) throws BuildException {
+        assert senders != null;
+        assert recipients != null;
+
         if (this.states.peek() != FactoryState.TRANSACTION_FILTER) {
             throw new BuildException(String.format("Cannot build a transaction filter, when construction of %s has not been finished.", this.states.peek()));
         }
 
-        final List<Instruction> instructions = this.instructions.pop();
         final TransactionFilter filter = new TransactionFilter(
-            senders == null ? null : Literal.addressLiteral(senders), 
-            recipients == null ? null : Literal.addressLiteral(recipients), 
-            instructions
+            senders.getAddressCheck(), 
+            recipients.getAddressCheck(), 
+            this.instructions.peek()
         );
 
-        this.instructions.peek().add(filter);        
+        this.closeScope(filter);        
+    }
+
+    private void closeScope(Instruction instruction) {
+        this.instructions.pop();
+        if (!this.instructions.isEmpty()) {
+            this.instructions.peek().add(instruction);        
+        }
         this.states.pop();
     }
 

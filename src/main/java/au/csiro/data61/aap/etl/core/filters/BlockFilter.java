@@ -5,6 +5,7 @@ import java.util.Arrays;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Objects;
+import java.util.function.BiPredicate;
 
 import au.csiro.data61.aap.etl.core.exceptions.ProgramException;
 import au.csiro.data61.aap.etl.core.Instruction;
@@ -15,30 +16,29 @@ import au.csiro.data61.aap.etl.core.readers.EthereumBlock;
 /**
  * BlockRange
  */
-public class BlockRangeFilter extends Filter {
+public class BlockFilter extends Filter {
     private static final int KNOWN_BLOCKS_LENGTH = 30;
     private final ValueAccessor fromBlock;
-    private final ValueAccessor toBlock;
+    private final BiPredicate<ProgramState, BigInteger> stopCriteria;
 
-    public BlockRangeFilter(final ValueAccessor fromBlock, final ValueAccessor toBlock, final Instruction... instructions) {
-        this(fromBlock, toBlock, Arrays.asList(instructions));
+    public BlockFilter(final ValueAccessor fromBlock, BiPredicate<ProgramState, BigInteger> stopCriteria, final Instruction... instructions) {
+        this(fromBlock, stopCriteria, Arrays.asList(instructions));
     }
 
-    public BlockRangeFilter(final ValueAccessor fromBlock, final ValueAccessor toBlock, final List<Instruction> instructions) {
+    public BlockFilter(final ValueAccessor fromBlock, final BiPredicate<ProgramState, BigInteger> stopCriteria, final List<Instruction> instructions) {
         super(instructions, EthereumVariables.getBlockValueCreators(), EthereumVariables.getBlockValueRemovers());
         assert fromBlock != null;
-        assert toBlock != null;
+        assert stopCriteria != null;
         assert instructions != null && instructions.stream().allMatch(Objects::nonNull);
         this.fromBlock = fromBlock;
-        this.toBlock = toBlock;
+        this.stopCriteria = stopCriteria;
     }
 
     public void execute(final ProgramState state) throws ProgramException {
         final LinkedList<EthereumBlock> knownBlocks = new LinkedList<>();
-        final BigInteger startBlock = (BigInteger) fromBlock.getValue(state);
-        final BigInteger stopBlock = (BigInteger) toBlock.getValue(state);
+        final BigInteger startBlock = (BigInteger)fromBlock.getValue(state);
         BigInteger currentBlock = startBlock;
-        while (currentBlock.compareTo(stopBlock) <= 0) {
+        while (!this.stopCriteria.test(state, currentBlock)) {
             try {
                 this.waitForBlockExistence(state, currentBlock);
 

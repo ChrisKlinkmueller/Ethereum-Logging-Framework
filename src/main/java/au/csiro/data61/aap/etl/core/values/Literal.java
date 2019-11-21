@@ -34,6 +34,10 @@ public class Literal implements ValueAccessor {
         return new Literal(BigInteger.valueOf(value));
     }
 
+    public static Literal integerLiteral(BigInteger value) {
+        return new Literal(value);
+    }
+
     public static Literal integerLiteral(String value) {
         return value == null ? new Literal(null) : new Literal(new BigInteger(value));
     }

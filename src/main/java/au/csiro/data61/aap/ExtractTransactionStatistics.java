@@ -6,6 +6,7 @@ import java.util.function.Function;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
+import au.csiro.data61.aap.etl.configuration.BlockNumberSpecification;
 import au.csiro.data61.aap.etl.configuration.BuildException;
 import au.csiro.data61.aap.etl.configuration.ProgramBuilder;
 import au.csiro.data61.aap.etl.core.Instruction;
@@ -73,7 +74,7 @@ public class ExtractTransactionStatistics {
                 
                 addCsvExport(builder);
                 addDataSourceVariableInstructions(builder, BLOCK_VARIABLES, EthereumVariables::createValueRemovalInstruction);
-            builder.buildBlockRange(Literal.integerLiteral(START), Literal.integerLiteral(END));
+            builder.buildBlockRange(BlockNumberSpecification.ofBlockNumber(START), BlockNumberSpecification.ofBlockNumber(END));
         
         return builder.buildProgram();
     }
