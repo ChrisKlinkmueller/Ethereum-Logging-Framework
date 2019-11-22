@@ -7,17 +7,16 @@ import java.util.stream.Collectors;
 import au.csiro.data61.aap.etl.configuration.AddressListSpecification;
 import au.csiro.data61.aap.etl.configuration.BlockNumberSpecification;
 import au.csiro.data61.aap.etl.configuration.BuildException;
+import au.csiro.data61.aap.etl.configuration.CsvExportSpecification;
 import au.csiro.data61.aap.etl.configuration.LogEntrySignatureSpecification;
+import au.csiro.data61.aap.etl.configuration.MethodSpecification;
 import au.csiro.data61.aap.etl.configuration.ProgramBuilder;
+import au.csiro.data61.aap.etl.configuration.ValueAccessorSpecification;
 import au.csiro.data61.aap.etl.core.Instruction;
 import au.csiro.data61.aap.etl.core.ProgramState;
 import au.csiro.data61.aap.etl.core.values.BlockVariables;
 import au.csiro.data61.aap.etl.core.values.LogEntryVariables;
 import au.csiro.data61.aap.etl.core.values.TransactionVariables;
-import au.csiro.data61.aap.etl.core.values.Literal;
-import au.csiro.data61.aap.etl.core.values.Variables;
-import au.csiro.data61.aap.etl.core.values.ValueAccessor;
-import au.csiro.data61.aap.etl.core.writers.AddCsvRowInstruction;
 
 /**
  * ExtractCryptoKitties
@@ -42,8 +41,8 @@ public class ExtractCryptoKitties {
         final ProgramBuilder builder = new ProgramBuilder();
 
         builder.prepareProgramBuild();
-            builder.addMethodCall(ProgramState::setOutputFolder, Arrays.asList(Literal.stringLiteral(FOLDER)), null);
-            builder.addMethodCall(ProgramState::connectClient, Arrays.asList(Literal.stringLiteral(URL)), null);
+            builder.addMethodCall(MethodSpecification.of("connect", "string"), ValueAccessorSpecification.stringLiteral(URL));
+            builder.addMethodCall(MethodSpecification.of("setOutputFolder", "string"), ValueAccessorSpecification.stringLiteral(FOLDER));
             builder.prepareBlockRangeBuild();
                 builder.prepareTransactionFilterBuild();
                     builder.prepareLogEntryFilterBuilder();
@@ -58,7 +57,10 @@ public class ExtractCryptoKitties {
                         )    
                     );
                 builder.buildTransactionFilter(AddressListSpecification.ofAny(), AddressListSpecification.ofAny());
-            builder.buildBlockRange(BlockNumberSpecification.ofBlockNumber(START_BLOCK), BlockNumberSpecification.ofBlockNumber(END_BLOCK));
+            builder.buildBlockRange(
+                BlockNumberSpecification.ofBlockNumber(ValueAccessorSpecification.integerLiteral(START_BLOCK)),
+                BlockNumberSpecification.ofBlockNumber(ValueAccessorSpecification.integerLiteral(END_BLOCK))
+            );
 
         return builder.buildProgram();
     }    
@@ -70,10 +72,14 @@ public class ExtractCryptoKitties {
             LogEntryVariables.LOG_INDEX,
             "kittyId"
         );
-        final List<ValueAccessor> valueAccessors = names.stream()
-            .map(name -> Variables.createValueAccessor(name))
+        final List<ValueAccessorSpecification> valueAccessors = names.stream()
+            .map(name -> ValueAccessorSpecification.ofVariable(name))
             .collect(Collectors.toList());
-        final Instruction export = new AddCsvRowInstruction("events", names, valueAccessors);
+        final CsvExportSpecification export = CsvExportSpecification.of(
+            "events", 
+            names, 
+            valueAccessors
+        );
         builder.addInstruction(export);
     }
 

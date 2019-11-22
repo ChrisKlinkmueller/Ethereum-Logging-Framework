@@ -2,6 +2,13 @@
     "configurations": [
         {
             "type": "java",
+            "name": "CodeLens (Launch) - LibraryEntry",
+            "request": "launch",
+            "mainClass": "au.csiro.data61.aap.etl.library.LibraryEntry",
+            "projectName": "xes-blockchain"
+        },
+        {
+            "type": "java",
             "name": "CodeLens (Launch) - ExtractCryptoKitties",
             "request": "launch",
             "mainClass": "au.csiro.data61.aap.ExtractCryptoKitties",

@@ -6,7 +6,6 @@ import java.util.function.BiPredicate;
 import au.csiro.data61.aap.etl.core.ProgramState;
 import au.csiro.data61.aap.etl.core.exceptions.ProgramException;
 import au.csiro.data61.aap.etl.core.values.EthereumVariables;
-import au.csiro.data61.aap.etl.core.values.Literal;
 import au.csiro.data61.aap.etl.core.values.Variables;
 import au.csiro.data61.aap.etl.core.values.ValueAccessor;
 
@@ -43,20 +42,9 @@ public class BlockNumberSpecification {
         return new BlockNumberSpecification(accessor, createStopCriterion(accessor), Type.VARIABLE);
     }
 
-    public static BlockNumberSpecification ofBlockNumber(long number) {
-        final ValueAccessor accessor = Literal.integerLiteral(number);
-        return new BlockNumberSpecification(accessor, createStopCriterion(accessor), Type.NUMBER);
-    }
-
-    public static BlockNumberSpecification ofBlockNumber(String number) {
+    public static BlockNumberSpecification ofBlockNumber(ValueAccessorSpecification number) {
         assert number != null;
-        final ValueAccessor accessor = Literal.integerLiteral(number);
-        return new BlockNumberSpecification(accessor, createStopCriterion(accessor), Type.NUMBER);
-    }
-
-    public static BlockNumberSpecification ofBlockNumber(BigInteger number) {
-        assert number != null;
-        final ValueAccessor accessor = Literal.integerLiteral(number);
+        final ValueAccessor accessor = number.getValueAccessor();
         return new BlockNumberSpecification(accessor, createStopCriterion(accessor), Type.NUMBER);
     }
 
@@ -87,7 +75,8 @@ public class BlockNumberSpecification {
     }
 
     public static BlockNumberSpecification ofEarliest() {
-        return new BlockNumberSpecification(Literal.integerLiteral(BigInteger.ZERO), null, Type.EARLIEST);
+        final ValueAccessor accessor = ValueAccessorSpecification.integerLiteral(BigInteger.ZERO).getValueAccessor();
+        return new BlockNumberSpecification(accessor, null, Type.EARLIEST);
     }
 
     public static BlockNumberSpecification ofContinuous() {

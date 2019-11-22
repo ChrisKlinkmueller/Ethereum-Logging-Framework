@@ -9,17 +9,13 @@ import java.util.stream.Collectors;
 
 import au.csiro.data61.aap.etl.configuration.BlockNumberSpecification.Type;
 import au.csiro.data61.aap.etl.core.Instruction;
-import au.csiro.data61.aap.etl.core.Method;
 import au.csiro.data61.aap.etl.core.MethodCall;
-import au.csiro.data61.aap.etl.core.values.ValueAccessor;
-import au.csiro.data61.aap.etl.core.values.ValueMutator;
-import au.csiro.data61.aap.etl.core.VariableAssignment;
 import au.csiro.data61.aap.etl.core.filters.BlockFilter;
 import au.csiro.data61.aap.etl.core.filters.LogEntryFilter;
 import au.csiro.data61.aap.etl.core.filters.Program;
 import au.csiro.data61.aap.etl.core.filters.TransactionFilter;
-import au.csiro.data61.aap.etl.core.values.Literal;
-import au.csiro.data61.aap.etl.core.values.Variables;
+import au.csiro.data61.aap.etl.core.values.ValueAccessor;
+import au.csiro.data61.aap.etl.core.values.ValueMutator;
 
 /**
  * ProgramFactory
@@ -138,14 +134,52 @@ public class ProgramBuilder {
         this.states.pop();
     }
 
-    public void addInstruction(Instruction instruction) throws BuildException {
+    public void addInstruction(InstructionSpecification instruction) throws BuildException {
         if (instruction == null) {
             throw new BuildException(String.format("Parameter instruction is null."));
         }
-        this.instructions.peek().add(instruction);
+        this.instructions.peek().add(instruction.getInstruction());
     }
 
-    public void addMethodCall(Method method, List<ValueAccessor> parameterAccessors, ValueMutator resultStorer) throws BuildException {
+    public void addVariableAssignment(ValueMutatorSpecification variable, ValueAccessorSpecification value) {
+        final Instruction variableAssignment = this.createVariableAssignment(variable.getMutator(), value.getValueAccessor());
+        this.instructions.peek().add(variableAssignment);
+    }
+
+    private Instruction createVariableAssignment(ValueMutator variable, ValueAccessor valueAccessor) {
+        return state -> {
+            final Object value = valueAccessor.getValue(state);
+            variable.setValue(value, state);
+        };
+    }
+
+    public void addMethodCall(MethodSpecification specification, ValueAccessorSpecification... accessors) throws BuildException {
+        addMethodCall(specification, Arrays.asList(accessors));
+    }
+
+    public void addMethodCall(MethodSpecification specification, ValueMutatorSpecification mutator, ValueAccessorSpecification... accessors) throws BuildException {
+        addMethodCall(specification, mutator, Arrays.asList(accessors));
+    }
+
+    public void addMethodCall(MethodSpecification specification, List<ValueAccessorSpecification> accessors) throws BuildException {
+        addMethodCall(specification, null, accessors);
+    }
+
+    public void addMethodCall(MethodSpecification specification, ValueMutatorSpecification mutator, List<ValueAccessorSpecification> accessors) throws BuildException {
+        assert specification != null;
+        assert accessors != null && accessors.stream().allMatch(Objects::nonNull);
+        final MethodCall call = new MethodCall(
+            specification.getMethod(), 
+            accessors.stream()
+                .map(a -> a.getValueAccessor())
+                .collect(Collectors.toList()),
+            mutator == null ? null : mutator.getMutator() 
+        );
+        this.instructions.peek().add(call);
+    }
+
+
+    /*private void addMethodCall(Method method, List<ValueAccessor> parameterAccessors, ValueMutator resultStorer) throws BuildException {
         if (method == null || parameterAccessors == null || parameterAccessors.stream().anyMatch(Objects::isNull)) {
             throw new BuildException(String.format("Null parameters detected: method = %s, parameterAccessors = %s.", method, parameterAccessors));
         }
@@ -154,10 +188,10 @@ public class ProgramBuilder {
         this.instructions.peek().add(methodCall);
     }
 
-	public void addVariableAssignmentWithIntegerValue(String name, long value) {
+	private void addVariableAssignmentWithIntegerValue(String name, long value) {
         final Instruction varAssignment = new VariableAssignment(Variables.createValueMutator(name), Literal.integerLiteral(value));
         this.instructions.peek().add(varAssignment);
-	}
+	}*/
 
     private static enum FactoryState {
         PROGRAM,

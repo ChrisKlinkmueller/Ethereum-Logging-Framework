@@ -3,21 +3,19 @@ package au.csiro.data61.aap;
 import java.util.Arrays;
 import java.util.List;
 import java.util.stream.Collectors;
-import java.util.stream.Stream;
 
 import au.csiro.data61.aap.etl.configuration.AddressListSpecification;
 import au.csiro.data61.aap.etl.configuration.BlockNumberSpecification;
 import au.csiro.data61.aap.etl.configuration.BuildException;
+import au.csiro.data61.aap.etl.configuration.CsvExportSpecification;
+import au.csiro.data61.aap.etl.configuration.MethodSpecification;
 import au.csiro.data61.aap.etl.configuration.ProgramBuilder;
+import au.csiro.data61.aap.etl.configuration.ValueAccessorSpecification;
+import au.csiro.data61.aap.etl.configuration.ValueMutatorSpecification;
 import au.csiro.data61.aap.etl.core.Instruction;
 import au.csiro.data61.aap.etl.core.ProgramState;
-import au.csiro.data61.aap.etl.core.values.ValueAccessor;
-import au.csiro.data61.aap.etl.core.writers.AddCsvRowInstruction;
-import au.csiro.data61.aap.etl.library.types.IntegerOperations;
 import au.csiro.data61.aap.etl.core.values.BlockVariables;
-import au.csiro.data61.aap.etl.core.values.Literal;
 import au.csiro.data61.aap.etl.core.values.TransactionVariables;
-import au.csiro.data61.aap.etl.core.values.Variables;
 
 /**
  * ExtractTransactionStatistics
@@ -25,12 +23,6 @@ import au.csiro.data61.aap.etl.core.values.Variables;
 public class ExtractTransactionStatistics {
     private static final String URL = "ws://localhost:8546/";
     private static final String FOLDER = "C:/Development/xes-blockchain/v0.2/test_output";
-    private static final String[] BLOCK_VARIABLES = {
-        BlockVariables.BLOCK_HASH, 
-        BlockVariables.BLOCK_NUMBER, 
-        BlockVariables.BLOCK_TRANSACTIONS, 
-        BlockVariables.BLOCK_GAS_USED
-    };
     private static final long START = 6000000l;
     private static final long END = 6001000l;
     
@@ -50,44 +42,54 @@ public class ExtractTransactionStatistics {
         final ProgramBuilder builder = new ProgramBuilder();
         builder.prepareProgramBuild();
 
-            builder.addMethodCall(ProgramState::setOutputFolder, Arrays.asList(Literal.stringLiteral(FOLDER)), null);
-            builder.addMethodCall(ProgramState::connectClient, Arrays.asList(Literal.stringLiteral(URL)), null);
+        builder.addMethodCall(MethodSpecification.of("connect", "string"), ValueAccessorSpecification.stringLiteral(URL));
+        builder.addMethodCall(MethodSpecification.of("setOutputFolder", "string"), ValueAccessorSpecification.stringLiteral(FOLDER));
             
             builder.prepareBlockRangeBuild();
-                builder.addVariableAssignmentWithIntegerValue(TOTAL_EARNINGS, 0);
+                builder.addVariableAssignment(ValueMutatorSpecification.ofVariableName(TOTAL_EARNINGS), ValueAccessorSpecification.integerLiteral(0l));
                 
                 builder.prepareTransactionFilterBuild();
                     builder.addMethodCall(
-                        IntegerOperations::multiply,
-                        Arrays.asList(
-                            Variables.createValueAccessor(TransactionVariables.TX_GAS_USED), 
-                            Variables.createValueAccessor(TransactionVariables.TX_GASPRICE)
-                        ),
-                        Variables.createValueMutator(TRANSACTION_EARNINGS)
+                        MethodSpecification.of("multiply", "int", "int"), 
+                        ValueMutatorSpecification.ofVariableName(TRANSACTION_EARNINGS),
+                        ValueAccessorSpecification.ofVariable(TransactionVariables.TX_GAS_USED),
+                        ValueAccessorSpecification.ofVariable(TransactionVariables.TX_GASPRICE)
                     );
 
                     builder.addMethodCall(
-                        IntegerOperations::add, 
-                        Arrays.asList(
-                            Variables.createValueAccessor(TOTAL_EARNINGS), 
-                            Variables.createValueAccessor(TRANSACTION_EARNINGS)
-                        ), 
-                        Variables.createValueMutator(TOTAL_EARNINGS)
+                        MethodSpecification.of("add", "int", "int"), 
+                        ValueMutatorSpecification.ofVariableName(TOTAL_EARNINGS),
+                        ValueAccessorSpecification.ofVariable(TOTAL_EARNINGS),
+                        ValueAccessorSpecification.ofVariable(TRANSACTION_EARNINGS)
                     );
                 builder.buildTransactionFilter(AddressListSpecification.ofAny(), AddressListSpecification.ofAny());
                 
                 addCsvExport(builder);
-            builder.buildBlockRange(BlockNumberSpecification.ofBlockNumber(START), BlockNumberSpecification.ofBlockNumber(END));
-        
+            builder.buildBlockRange(
+                BlockNumberSpecification.ofBlockNumber(ValueAccessorSpecification.integerLiteral(START)), 
+                BlockNumberSpecification.ofBlockNumber(ValueAccessorSpecification.integerLiteral(END))
+            );
         return builder.buildProgram();
     }
 
     private static void addCsvExport(ProgramBuilder builder) throws BuildException {
-        final List<String> names = Stream.concat(Arrays.stream(BLOCK_VARIABLES), Stream.of(TOTAL_EARNINGS)).collect(Collectors.toList());
-        final List<ValueAccessor> valueAccessors = names.stream()
-            .map(name -> Variables.createValueAccessor(name))
+        final List<String> names = Arrays.asList(
+            BlockVariables.BLOCK_HASH, 
+            BlockVariables.BLOCK_NUMBER, 
+            BlockVariables.BLOCK_TRANSACTIONS, 
+            BlockVariables.BLOCK_GAS_USED,
+            BlockVariables.BLOCK_DIFFICULTY,
+            BlockVariables.BLOCK_TOTAL_DIFFICULTY,
+            TOTAL_EARNINGS
+        );
+        final List<ValueAccessorSpecification> valueAccessors = names.stream()
+            .map(name -> ValueAccessorSpecification.ofVariable(name))
             .collect(Collectors.toList());
-        final Instruction export = new AddCsvRowInstruction("block_statistics", names, valueAccessors);
+        final CsvExportSpecification export = CsvExportSpecification.of(
+            "block_statistics", 
+            names, 
+            valueAccessors
+        );
         builder.addInstruction(export);
     }
 }
