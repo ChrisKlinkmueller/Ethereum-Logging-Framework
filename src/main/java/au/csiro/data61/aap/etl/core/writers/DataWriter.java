@@ -2,6 +2,8 @@ package au.csiro.data61.aap.etl.core.writers;
 
 import java.math.BigInteger;
 import java.nio.file.Path;
+import java.util.Collection;
+import java.util.stream.Collectors;
 
 /**
  * Exporter
@@ -41,4 +43,21 @@ public abstract class DataWriter {
     }
 
     protected abstract void writeState(String namePrefix) throws Throwable;
+
+    @SuppressWarnings("unchecked")
+    protected final String asString(Object object) {
+        if (object == null) {
+            return "";
+        }
+        
+        if (Collection.class.isAssignableFrom(object.getClass())) {
+            String value = ((Collection<Object>)object)
+                .stream()
+                .map(obj -> asString(obj))
+                .collect(Collectors.joining(", "));
+            return String.format("{%s}", value);
+        }
+
+        return object.toString();
+    }
 }

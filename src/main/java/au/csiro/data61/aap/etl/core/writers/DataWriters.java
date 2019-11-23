@@ -10,17 +10,17 @@ import java.util.Arrays;
 public class DataWriters {
     private final DataWriter[] writers;
     private final CsvWriter csvWriter;
-    private final TxtWriter txtWriter;
+    private final LogWriter logWriter;
     private final XesWriter xesWriter;
     
     public DataWriters() {
         this.csvWriter = new CsvWriter();
-        this.txtWriter = new TxtWriter();
+        this.logWriter = new LogWriter();
         this.xesWriter = new XesWriter();
 
         this.writers = new DataWriter[]{
             this.csvWriter,
-            this.txtWriter,
+            this.logWriter,
             this.xesWriter
         };
     }
@@ -29,8 +29,8 @@ public class DataWriters {
         return this.xesWriter;
     }
 
-    public TxtWriter getTextWriter() {
-        return this.txtWriter;
+    public LogWriter getLogWriter() {
+        return this.logWriter;
     }
 
     public CsvWriter getCsvWriter() {

@@ -2,6 +2,13 @@
     "configurations": [
         {
             "type": "java",
+            "name": "CodeLens (Launch) - WriterUtils",
+            "request": "launch",
+            "mainClass": "au.csiro.data61.aap.etl.core.writers.WriterUtils",
+            "projectName": "xes-blockchain"
+        },
+        {
+            "type": "java",
             "name": "CodeLens (Launch) - LibraryEntry",
             "request": "launch",
             "mainClass": "au.csiro.data61.aap.etl.library.LibraryEntry",

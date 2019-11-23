@@ -6,15 +6,26 @@ import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.util.LinkedList;
 import java.util.List;
+import java.util.stream.Collectors;
 
 /**
- * LineExporter
+ * LogWriter
  */
-public class TxtWriter extends DataWriter {
+public class LogWriter extends DataWriter {
     private final List<String> lines;
 
-    public TxtWriter() {
+    public LogWriter() {
         this.lines = new LinkedList<String>();
+    }
+
+    public void addLogLine(List<Object> itemParts) {
+        assert itemParts != null;
+
+        this.lines.add(
+            itemParts.stream()
+                .map(obj -> this.asString(obj))
+                .collect(Collectors.joining())
+        );
     }
 
     @Override

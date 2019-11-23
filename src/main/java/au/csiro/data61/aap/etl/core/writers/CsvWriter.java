@@ -99,7 +99,7 @@ public class CsvWriter extends DataWriter {
                 final int index = i;
                 final String row = columns.stream()
                     .map(column -> table.get(column).get(index))
-                    .map(value -> value == null ? "" : value.toString())
+                    .map(value -> this.asString(value))
                     .collect(Collectors.joining(this.delimiter))
                 ;
                 writer.write(row);
