@@ -6,8 +6,8 @@ import java.util.stream.Collectors;
 
 import au.csiro.data61.aap.etl.library.Library;
 import au.csiro.data61.aap.etl.library.MethodSignature;
-import au.csiro.data61.aap.parser.XbelParser.MethodCallContext;
-import au.csiro.data61.aap.parser.XbelParser.MethodParameterContext;
+import au.csiro.data61.aap.etl.parsing.EthqlParser.MethodCallContext;
+import au.csiro.data61.aap.etl.parsing.EthqlParser.MethodParameterContext;
 
 /**
  * MethodCallAnalyzer

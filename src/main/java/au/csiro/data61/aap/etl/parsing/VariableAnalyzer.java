@@ -4,18 +4,18 @@ import java.util.HashMap;
 import java.util.Map;
 import java.util.Stack;
 import au.csiro.data61.aap.etl.core.values.EthereumVariables;
-import au.csiro.data61.aap.parser.XbelParser.BlockFilterContext;
-import au.csiro.data61.aap.parser.XbelParser.DocumentContext;
-import au.csiro.data61.aap.parser.XbelParser.LogEntryFilterContext;
-import au.csiro.data61.aap.parser.XbelParser.LogEntryParameterContext;
-import au.csiro.data61.aap.parser.XbelParser.ScopeContext;
-import au.csiro.data61.aap.parser.XbelParser.SmartContractVariableContext;
-import au.csiro.data61.aap.parser.XbelParser.SmartContractsFilterContext;
-import au.csiro.data61.aap.parser.XbelParser.SolTypeContext;
-import au.csiro.data61.aap.parser.XbelParser.TransactionFilterContext;
-import au.csiro.data61.aap.parser.XbelParser.VariableDefinitionContext;
-import au.csiro.data61.aap.parser.XbelParser.VariableNameContext;
-import au.csiro.data61.aap.parser.XbelParser.VariableReferenceContext;
+import au.csiro.data61.aap.etl.parsing.EthqlParser.BlockFilterContext;
+import au.csiro.data61.aap.etl.parsing.EthqlParser.DocumentContext;
+import au.csiro.data61.aap.etl.parsing.EthqlParser.LogEntryFilterContext;
+import au.csiro.data61.aap.etl.parsing.EthqlParser.LogEntryParameterContext;
+import au.csiro.data61.aap.etl.parsing.EthqlParser.ScopeContext;
+import au.csiro.data61.aap.etl.parsing.EthqlParser.SmartContractVariableContext;
+import au.csiro.data61.aap.etl.parsing.EthqlParser.SmartContractsFilterContext;
+import au.csiro.data61.aap.etl.parsing.EthqlParser.SolTypeContext;
+import au.csiro.data61.aap.etl.parsing.EthqlParser.TransactionFilterContext;
+import au.csiro.data61.aap.etl.parsing.EthqlParser.VariableDefinitionContext;
+import au.csiro.data61.aap.etl.parsing.EthqlParser.VariableNameContext;
+import au.csiro.data61.aap.etl.parsing.EthqlParser.VariableReferenceContext;
 
 /**
  * VariableCollector

@@ -10,15 +10,15 @@ import java.util.stream.Stream;
 import org.antlr.v4.runtime.ParserRuleContext;
 
 import au.csiro.data61.aap.etl.TypeUtils;
-import au.csiro.data61.aap.parser.XbelParser.AddressListContext;
-import au.csiro.data61.aap.parser.XbelParser.BlockFilterContext;
-import au.csiro.data61.aap.parser.XbelParser.BlockNumberContext;
-import au.csiro.data61.aap.parser.XbelParser.LogEntryFilterContext;
-import au.csiro.data61.aap.parser.XbelParser.LogEntryParameterContext;
-import au.csiro.data61.aap.parser.XbelParser.ScopeContext;
-import au.csiro.data61.aap.parser.XbelParser.SmartContractVariableContext;
-import au.csiro.data61.aap.parser.XbelParser.SmartContractsFilterContext;
-import au.csiro.data61.aap.parser.XbelParser.TransactionFilterContext;
+import au.csiro.data61.aap.etl.parsing.EthqlParser.AddressListContext;
+import au.csiro.data61.aap.etl.parsing.EthqlParser.BlockFilterContext;
+import au.csiro.data61.aap.etl.parsing.EthqlParser.BlockNumberContext;
+import au.csiro.data61.aap.etl.parsing.EthqlParser.LogEntryFilterContext;
+import au.csiro.data61.aap.etl.parsing.EthqlParser.LogEntryParameterContext;
+import au.csiro.data61.aap.etl.parsing.EthqlParser.ScopeContext;
+import au.csiro.data61.aap.etl.parsing.EthqlParser.SmartContractVariableContext;
+import au.csiro.data61.aap.etl.parsing.EthqlParser.SmartContractsFilterContext;
+import au.csiro.data61.aap.etl.parsing.EthqlParser.TransactionFilterContext;
 
 /**
  * FilterVerifier

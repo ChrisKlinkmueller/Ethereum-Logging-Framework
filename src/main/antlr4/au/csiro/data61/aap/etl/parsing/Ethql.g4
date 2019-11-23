@@ -2,7 +2,7 @@
 //    SQLite by Bart Kiers (https://github.com/antlr/grammars-v4/blob/master/sqlite/SQLite.g4), and
 //    Java8 by Terence Parr & Sam Harwell (https://github.com/antlr/grammars-v4/blob/master/java8/Java8.g4)
 
-grammar Xbel;
+grammar Ethql;
 
 document
     : instruction* EOF

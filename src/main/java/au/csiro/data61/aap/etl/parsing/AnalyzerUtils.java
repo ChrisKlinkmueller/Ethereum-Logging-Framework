@@ -4,8 +4,8 @@ import org.antlr.v4.runtime.Token;
 import org.antlr.v4.runtime.tree.TerminalNode;
 
 import au.csiro.data61.aap.etl.TypeUtils;
-import au.csiro.data61.aap.parser.XbelParser.ArrayValueContext;
-import au.csiro.data61.aap.parser.XbelParser.LiteralContext;
+import au.csiro.data61.aap.etl.parsing.EthqlParser.ArrayValueContext;
+import au.csiro.data61.aap.etl.parsing.EthqlParser.LiteralContext;
 
 /**
  * AnalyzerUtils

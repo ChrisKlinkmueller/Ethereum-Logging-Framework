@@ -2,12 +2,10 @@ package au.csiro.data61.aap.etl.parsing;
 
 import org.antlr.v4.runtime.Token;
 
-import au.csiro.data61.aap.parser.XbelBaseListener;
-
 /**
  * XbelAnalyzer
  */
-abstract class SemanticAnalyzer extends XbelBaseListener {
+abstract class SemanticAnalyzer extends EthqlBaseListener {
     protected final ErrorCollector errorCollector;
     
     public SemanticAnalyzer(ErrorCollector errorCollector) {

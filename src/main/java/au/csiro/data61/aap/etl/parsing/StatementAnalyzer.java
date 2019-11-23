@@ -1,7 +1,7 @@
 package au.csiro.data61.aap.etl.parsing;
 
 import au.csiro.data61.aap.etl.TypeUtils;
-import au.csiro.data61.aap.parser.XbelParser.StatementContext;
+import au.csiro.data61.aap.etl.parsing.EthqlParser.StatementContext;
 
 /**
  * StatementAnalyzer

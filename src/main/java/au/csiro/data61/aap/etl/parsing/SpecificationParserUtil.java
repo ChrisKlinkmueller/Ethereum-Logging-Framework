@@ -11,8 +11,6 @@ import org.antlr.v4.runtime.CharStream;
 import org.antlr.v4.runtime.CharStreams;
 import org.antlr.v4.runtime.CommonTokenStream;
 
-import au.csiro.data61.aap.parser.XbelLexer;
-import au.csiro.data61.aap.parser.XbelParser;
 import au.csiro.data61.aap.etl.MethodResult;
 
 /**
@@ -52,25 +50,25 @@ class SpecificationParserUtil {
         }
     }
 
-    static MethodResult<XbelParser> createParser(InputStream is, ErrorCollector errorCollector) {
+    static MethodResult<EthqlParser> createParser(InputStream is, ErrorCollector errorCollector) {
         final MethodResult<CharStream> charstreamResult = charStreamfromInputStream(is);
         return createParser(charstreamResult, errorCollector);
     }
 
-    static MethodResult<XbelParser> createParser(String string, ErrorCollector errorCollector) {
+    static MethodResult<EthqlParser> createParser(String string, ErrorCollector errorCollector) {
         final MethodResult<CharStream> charstreamResult = charStreamfromString(string);
         return createParser(charstreamResult, errorCollector);
     }
 
-    private static MethodResult<XbelParser> createParser(MethodResult<CharStream> charstreamResult, ErrorCollector errorCollector) {
+    private static MethodResult<EthqlParser> createParser(MethodResult<CharStream> charstreamResult, ErrorCollector errorCollector) {
         if (!charstreamResult.isSuccessful()) {
             return MethodResult.ofError(charstreamResult);
         }
 
         final CharStream charStream = charstreamResult.getResult();
-        final XbelLexer lexer = new XbelLexer(charStream);
+        final EthqlLexer lexer = new EthqlLexer(charStream);
         final CommonTokenStream tokens = new CommonTokenStream(lexer);        
-        final XbelParser syntacticParser = new XbelParser(tokens);
+        final EthqlParser syntacticParser = new EthqlParser(tokens);
 
         if (charStream != null) {
             lexer.removeErrorListeners();

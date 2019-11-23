@@ -10,8 +10,6 @@ import org.antlr.v4.runtime.tree.ParseTree;
 
 import au.csiro.data61.aap.etl.MethodResult;
 import au.csiro.data61.aap.etl.core.filters.Program;
-import au.csiro.data61.aap.parser.XbelLexer;
-import au.csiro.data61.aap.parser.XbelParser;
 
 /**
  * Parser
@@ -20,10 +18,10 @@ public class SpecificationParser {
     private static final Logger LOG = Logger.getLogger(SpecificationParser.class.getName());
 
     public SpecificationParserResult<Program> parseDocument(InputStream is) {
-        return this.parse(is, XbelParser::document);
+        return this.parse(is, EthqlParser::document);
     } 
 
-    protected <T> SpecificationParserResult<T> parse(InputStream is, Function<XbelParser, ParseTree> rule) {
+    protected <T> SpecificationParserResult<T> parse(InputStream is, Function<EthqlParser, ParseTree> rule) {
         if (is == null) {
             LOG.severe("The 'is' parameter was null.");
             return SpecificationParserResult.ofError("The 'is' parameter was null.");
@@ -36,12 +34,12 @@ public class SpecificationParser {
         }
 
         final ErrorCollector errorCollector = new ErrorCollector();
-        final XbelLexer lexer = new XbelLexer(charStreamResult.getResult());
+        final EthqlLexer lexer = new EthqlLexer(charStreamResult.getResult());
         lexer.removeErrorListeners();
         lexer.addErrorListener(errorCollector);
 
         final CommonTokenStream tokens = new CommonTokenStream(lexer);        
-        final XbelParser syntacticParser = new XbelParser(tokens);
+        final EthqlParser syntacticParser = new EthqlParser(tokens);
         syntacticParser.removeErrorListeners();
         syntacticParser.addErrorListener(errorCollector);
 

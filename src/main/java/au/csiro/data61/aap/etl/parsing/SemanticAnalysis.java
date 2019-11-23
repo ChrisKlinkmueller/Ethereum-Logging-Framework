@@ -7,48 +7,48 @@ import org.antlr.v4.runtime.ParserRuleContext;
 import org.antlr.v4.runtime.tree.ParseTree;
 import org.antlr.v4.runtime.tree.ParseTreeWalker;
 
-import au.csiro.data61.aap.parser.XbelBaseListener;
-import au.csiro.data61.aap.parser.XbelParser.AddressListContext;
-import au.csiro.data61.aap.parser.XbelParser.ArrayValueContext;
-import au.csiro.data61.aap.parser.XbelParser.BlockFilterContext;
-import au.csiro.data61.aap.parser.XbelParser.BlockNumberContext;
-import au.csiro.data61.aap.parser.XbelParser.BooleanArrayValueContext;
-import au.csiro.data61.aap.parser.XbelParser.ByteAndAddressArrayValueContext;
-import au.csiro.data61.aap.parser.XbelParser.DocumentContext;
-import au.csiro.data61.aap.parser.XbelParser.FilterContext;
-import au.csiro.data61.aap.parser.XbelParser.FixedArrayElementContext;
-import au.csiro.data61.aap.parser.XbelParser.FixedArrayValueContext;
-import au.csiro.data61.aap.parser.XbelParser.InstructionContext;
-import au.csiro.data61.aap.parser.XbelParser.IntArrayValueContext;
-import au.csiro.data61.aap.parser.XbelParser.LiteralContext;
-import au.csiro.data61.aap.parser.XbelParser.LiteralRuleContext;
-import au.csiro.data61.aap.parser.XbelParser.LogEntryFilterContext;
-import au.csiro.data61.aap.parser.XbelParser.LogEntryParameterContext;
-import au.csiro.data61.aap.parser.XbelParser.LogEntrySignatureContext;
-import au.csiro.data61.aap.parser.XbelParser.MethodCallContext;
-import au.csiro.data61.aap.parser.XbelParser.MethodParameterContext;
-import au.csiro.data61.aap.parser.XbelParser.ScopeContext;
-import au.csiro.data61.aap.parser.XbelParser.SkippableLogEntryParameterContext;
-import au.csiro.data61.aap.parser.XbelParser.SkippableLogEntrySignatureContext;
-import au.csiro.data61.aap.parser.XbelParser.SmartContractSignatureContext;
-import au.csiro.data61.aap.parser.XbelParser.SmartContractVariableContext;
-import au.csiro.data61.aap.parser.XbelParser.SmartContractsFilterContext;
-import au.csiro.data61.aap.parser.XbelParser.SolTypeContext;
-import au.csiro.data61.aap.parser.XbelParser.SolTypeRuleContext;
-import au.csiro.data61.aap.parser.XbelParser.StatementContext;
-import au.csiro.data61.aap.parser.XbelParser.StringArrayValueContext;
-import au.csiro.data61.aap.parser.XbelParser.TransactionFilterContext;
-import au.csiro.data61.aap.parser.XbelParser.ValueCreationContext;
-import au.csiro.data61.aap.parser.XbelParser.VariableContext;
-import au.csiro.data61.aap.parser.XbelParser.VariableDefinitionContext;
-import au.csiro.data61.aap.parser.XbelParser.VariableDefinitionRuleContext;
-import au.csiro.data61.aap.parser.XbelParser.VariableNameContext;
-import au.csiro.data61.aap.parser.XbelParser.VariableReferenceContext;
+import au.csiro.data61.aap.etl.parsing.EthqlBaseListener;
+import au.csiro.data61.aap.etl.parsing.EthqlParser.AddressListContext;
+import au.csiro.data61.aap.etl.parsing.EthqlParser.ArrayValueContext;
+import au.csiro.data61.aap.etl.parsing.EthqlParser.BlockFilterContext;
+import au.csiro.data61.aap.etl.parsing.EthqlParser.BlockNumberContext;
+import au.csiro.data61.aap.etl.parsing.EthqlParser.BooleanArrayValueContext;
+import au.csiro.data61.aap.etl.parsing.EthqlParser.ByteAndAddressArrayValueContext;
+import au.csiro.data61.aap.etl.parsing.EthqlParser.DocumentContext;
+import au.csiro.data61.aap.etl.parsing.EthqlParser.FilterContext;
+import au.csiro.data61.aap.etl.parsing.EthqlParser.FixedArrayElementContext;
+import au.csiro.data61.aap.etl.parsing.EthqlParser.FixedArrayValueContext;
+import au.csiro.data61.aap.etl.parsing.EthqlParser.InstructionContext;
+import au.csiro.data61.aap.etl.parsing.EthqlParser.IntArrayValueContext;
+import au.csiro.data61.aap.etl.parsing.EthqlParser.LiteralContext;
+import au.csiro.data61.aap.etl.parsing.EthqlParser.LiteralRuleContext;
+import au.csiro.data61.aap.etl.parsing.EthqlParser.LogEntryFilterContext;
+import au.csiro.data61.aap.etl.parsing.EthqlParser.LogEntryParameterContext;
+import au.csiro.data61.aap.etl.parsing.EthqlParser.LogEntrySignatureContext;
+import au.csiro.data61.aap.etl.parsing.EthqlParser.MethodCallContext;
+import au.csiro.data61.aap.etl.parsing.EthqlParser.MethodParameterContext;
+import au.csiro.data61.aap.etl.parsing.EthqlParser.ScopeContext;
+import au.csiro.data61.aap.etl.parsing.EthqlParser.SkippableLogEntryParameterContext;
+import au.csiro.data61.aap.etl.parsing.EthqlParser.SkippableLogEntrySignatureContext;
+import au.csiro.data61.aap.etl.parsing.EthqlParser.SmartContractSignatureContext;
+import au.csiro.data61.aap.etl.parsing.EthqlParser.SmartContractVariableContext;
+import au.csiro.data61.aap.etl.parsing.EthqlParser.SmartContractsFilterContext;
+import au.csiro.data61.aap.etl.parsing.EthqlParser.SolTypeContext;
+import au.csiro.data61.aap.etl.parsing.EthqlParser.SolTypeRuleContext;
+import au.csiro.data61.aap.etl.parsing.EthqlParser.StatementContext;
+import au.csiro.data61.aap.etl.parsing.EthqlParser.StringArrayValueContext;
+import au.csiro.data61.aap.etl.parsing.EthqlParser.TransactionFilterContext;
+import au.csiro.data61.aap.etl.parsing.EthqlParser.ValueCreationContext;
+import au.csiro.data61.aap.etl.parsing.EthqlParser.VariableContext;
+import au.csiro.data61.aap.etl.parsing.EthqlParser.VariableDefinitionContext;
+import au.csiro.data61.aap.etl.parsing.EthqlParser.VariableDefinitionRuleContext;
+import au.csiro.data61.aap.etl.parsing.EthqlParser.VariableNameContext;
+import au.csiro.data61.aap.etl.parsing.EthqlParser.VariableReferenceContext;
 
 /**
  * SemanticAnalysis
  */
-class SemanticAnalysis extends XbelBaseListener {
+class SemanticAnalysis extends EthqlBaseListener {
     private final ErrorCollector errorCollector;    
     private final List<SemanticAnalyzer> analyzers;
 
