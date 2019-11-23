@@ -2,10 +2,10 @@ package au.csiro.data61.aap.etl.configuration;
 
 import java.util.Arrays;
 import java.util.List;
+import java.util.stream.Collectors;
 
 import au.csiro.data61.aap.etl.core.Method;
 import au.csiro.data61.aap.etl.library.Library;
-import au.csiro.data61.aap.etl.library.MethodSignature;
 
 /**
  * MethodSpecification
@@ -26,10 +26,10 @@ public class MethodSpecification {
     }
 
     public static MethodSpecification of(String name, List<String> parameterTypes) throws BuildException {
-        final MethodSignature signature = new MethodSignature(name, parameterTypes);
-        final Method method = Library.INSTANCE.getMethod(signature);
+        final Method method = Library.INSTANCE.getMethod(name, parameterTypes);
         if (method == null) {
-            throw new BuildException("No such method: " + signature.getSignature());
+            final String message = String.format("%s(%s)", name, parameterTypes.stream().collect(Collectors.joining(",")));
+            throw new BuildException(message);
         }
         return new MethodSpecification(method);
     }

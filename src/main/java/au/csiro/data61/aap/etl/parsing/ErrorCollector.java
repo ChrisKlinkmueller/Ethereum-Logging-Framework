@@ -1,4 +1,4 @@
-package au.csiro.data61.aap.parser;
+package au.csiro.data61.aap.etl.parsing;
 
 import java.util.ArrayList;
 import java.util.List;

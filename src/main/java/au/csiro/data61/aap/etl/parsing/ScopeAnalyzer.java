@@ -1,4 +1,4 @@
-package au.csiro.data61.aap.parser;
+package au.csiro.data61.aap.etl.parsing;
 
 import java.math.BigInteger;
 import java.util.Objects;
@@ -9,6 +9,7 @@ import java.util.stream.Stream;
 
 import org.antlr.v4.runtime.ParserRuleContext;
 
+import au.csiro.data61.aap.etl.TypeUtils;
 import au.csiro.data61.aap.parser.XbelParser.AddressListContext;
 import au.csiro.data61.aap.parser.XbelParser.BlockFilterContext;
 import au.csiro.data61.aap.parser.XbelParser.BlockNumberContext;
@@ -18,10 +19,6 @@ import au.csiro.data61.aap.parser.XbelParser.ScopeContext;
 import au.csiro.data61.aap.parser.XbelParser.SmartContractVariableContext;
 import au.csiro.data61.aap.parser.XbelParser.SmartContractsFilterContext;
 import au.csiro.data61.aap.parser.XbelParser.TransactionFilterContext;
-import au.csiro.data61.aap.program.types.SolidityAddress;
-import au.csiro.data61.aap.program.types.SolidityArray;
-import au.csiro.data61.aap.program.types.SolidityInteger;
-import au.csiro.data61.aap.program.types.SolidityType;
 
 /**
  * FilterVerifier
@@ -66,8 +63,8 @@ class ScopeAnalyzer extends SemanticAnalyzer {
         }
 
         if (ctx.from.INT_LITERAL() != null && ctx.to.INT_LITERAL() != null) {
-            final BigInteger from = AnalyzerUtils.verifyIntegerLiteral(ctx.from.INT_LITERAL(), this.errorCollector);
-            final BigInteger to = AnalyzerUtils.verifyIntegerLiteral(ctx.to.INT_LITERAL(), this.errorCollector);
+            final BigInteger from = new BigInteger(ctx.from.INT_LITERAL().getText());
+            final BigInteger to =  new BigInteger(ctx.to.INT_LITERAL().getText());
             if (from.compareTo(BigInteger.ZERO) < 0) {
                 this.addError(ctx.from.start, String.format("The 'from' parameter must be positive, but wasn't: %s.", from));
             }
@@ -81,8 +78,8 @@ class ScopeAnalyzer extends SemanticAnalyzer {
             }
         }
 
-        this.verifyVariableReference(ctx.from);
-        this.verifyVariableReference(ctx.to);
+        this.verifyBlockVariableReference(ctx.from);
+        this.verifyBlockVariableReference(ctx.to);
 
         this.addScopeToStack(BLOCK_SCOPE);
     }
@@ -95,13 +92,13 @@ class ScopeAnalyzer extends SemanticAnalyzer {
                || ctx.variableReference() != null;
     }
 
-    private void verifyVariableReference(BlockNumberContext ctx) {
+    private void verifyBlockVariableReference(BlockNumberContext ctx) {
         if (ctx.variableReference() == null) {
             return;
         }
 
-        final SolidityType varType = this.variableAnalyzer.getVariableType(ctx.variableReference().variableName().getText());
-        if (varType != null && !this.isArrayOrBaseType(varType, SolidityInteger.DEFAULT_INSTANCE)) {
+        final String varType = this.variableAnalyzer.getVariableType(ctx.variableReference().variableName().getText());
+        if (varType != null && TypeUtils.hasBaseType(varType, TypeUtils.INT_TYPE_KEYWORD)) {
             this.addError(
                 ctx.variableReference().start,
                 String.format(
@@ -240,10 +237,7 @@ class ScopeAnalyzer extends SemanticAnalyzer {
 
     private void verifyAddressList(AddressListContext ctx) {
         if (ctx.KEY_ANY() == null) {
-            if (!ctx.BYTE_AND_ADDRESS_LITERAL().isEmpty()) {
-                AnalyzerUtils.verifyAddressLiterals(ctx.BYTE_AND_ADDRESS_LITERAL(), this.errorCollector);
-            }
-            else {
+            if (ctx.BYTE_AND_ADDRESS_LITERAL().isEmpty()) {
                 final String message = "The use of this address list option is not supported!";
                 this.addError(ctx.start, message);
                 LOGGER.severe(message);
@@ -252,8 +246,8 @@ class ScopeAnalyzer extends SemanticAnalyzer {
         }
 
         if (ctx.variableReference() != null) {
-            final SolidityType varType = this.variableAnalyzer.getVariableType(ctx.variableReference().variableName().getText());
-            if (varType != null && !this.isArrayOrBaseType(varType, SolidityAddress.DEFAULT_INSTANCE)) {
+            final String varType = this.variableAnalyzer.getVariableType(ctx.variableReference().variableName().getText());
+            if (varType != null && !TypeUtils.areCompatible(varType, TypeUtils.ADDRESS_TYPE_KEYWORD)) {
                 this.addError(
                     ctx.variableReference().start,
                     String.format(
@@ -264,10 +258,6 @@ class ScopeAnalyzer extends SemanticAnalyzer {
                 );
             }
         }
-    }
-
-    private boolean isArrayOrBaseType(SolidityType varType, SolidityType baseType) {
-        return varType.conceptuallyEquals(baseType) || varType.conceptuallyEquals(new SolidityArray(baseType));
     }
 
     private void verifyFilterContexts(ParserRuleContext ctx, 

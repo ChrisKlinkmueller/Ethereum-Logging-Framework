@@ -1,4 +1,4 @@
-package au.csiro.data61.aap.util;
+package au.csiro.data61.aap.etl;
 
 /**
  * MethodResult

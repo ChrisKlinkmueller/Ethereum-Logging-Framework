@@ -1,9 +1,10 @@
 package au.csiro.data61.aap.etl.core.values;
 
+import java.util.Map;
+import java.util.Set;
 import java.util.function.Function;
+import java.util.stream.Collectors;
 import java.util.stream.Stream;
-
-import org.web3j.abi.TypeReference;
 
 import au.csiro.data61.aap.etl.core.exceptions.ProgramException;
 
@@ -23,16 +24,25 @@ public class EthereumVariables {
     }
 
     public static boolean isEthereumVariable(String name) {
-        return existsVariable(
-            name, 
-            Stream.concat(
-                BlockVariables.BLOCK_VARIABLES.stream(), 
-                Stream.concat(
-                    TransactionVariables.TRANSACTION_VARIABLES.stream(), 
-                    LogEntryVariables.LOG_ENTRY_VARIABLES.stream()
-                )
-            )
-        );
+        return existsVariable(name, Stream.concat(BlockVariables.BLOCK_VARIABLES.stream(), Stream.concat(
+                TransactionVariables.TRANSACTION_VARIABLES.stream(), LogEntryVariables.LOG_ENTRY_VARIABLES.stream())));
+    }
+
+    public static Map<String, String> getBlockVariableNamesAndTypes() {
+        return getVariableNamesAndType(BlockVariables.BLOCK_VARIABLES);
+    }
+
+    public static Map<String, String> getTransactionVariableNamesAndTypes() {
+        return getVariableNamesAndType(TransactionVariables.TRANSACTION_VARIABLES);
+    }
+
+    public static Map<String, String> getLogEntryVariableNamesAndTypes() {
+        return getVariableNamesAndType(LogEntryVariables.LOG_ENTRY_VARIABLES);
+    }
+
+    private static Map<String, String> getVariableNamesAndType(Set<EthereumVariable> variables) {
+        return variables.stream()
+            .collect(Collectors.toMap(v -> v.getName(), v -> v.getType()));
     }
 
     public static boolean isBlockVariable(String name) {
@@ -61,9 +71,7 @@ public class EthereumVariables {
         return findVariable(name, EthereumVariable::getAccessor);
     }
 
-    public static TypeReference<?> getType(final String name) {
-        return findVariable(name, EthereumVariable::getType);
-    }
+    
 
     private static <T> T findVariable(final String name, final Function<EthereumVariable, T> mapper) {
         return variableStream()

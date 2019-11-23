@@ -1,4 +1,4 @@
-package au.csiro.data61.aap.generation;
+/*package au.csiro.data61.aap.generation;
 
 import java.math.BigDecimal;
 import java.math.BigInteger;
@@ -9,20 +9,10 @@ import java.util.Random;
 import java.util.function.Function;
 import java.util.stream.Collectors;
 import java.util.stream.IntStream;
-
-import au.csiro.data61.aap.program.suppliers.Literal;
-import au.csiro.data61.aap.program.types.SolidityAddress;
-import au.csiro.data61.aap.program.types.SolidityArray;
-import au.csiro.data61.aap.program.types.SolidityBool;
-import au.csiro.data61.aap.program.types.SolidityBytes;
-import au.csiro.data61.aap.program.types.SolidityFixed;
-import au.csiro.data61.aap.program.types.SolidityInteger;
-import au.csiro.data61.aap.program.types.SolidityString;
-import au.csiro.data61.aap.program.types.SolidityType;
-
+*/
 /**
  * LiteralGenerator
- */
+ *//*
 public class LiteralGenerator {
     private static final String DIGITS_WITHOUT_ZERO = "123456789";
     private static final String DIGITS_WITH_ZERO = "0" + DIGITS_WITHOUT_ZERO;
@@ -38,7 +28,7 @@ public class LiteralGenerator {
     private static final int MAX_LIST_LENGTH = 10;
 
     private final Random random;
-    private final Map<Class<? extends SolidityType>, Function<SolidityType, Object>> literalCreators; 
+    /*private final Map<Class<? extends SolidityType>, Function<SolidityType, Object>> literalCreators; 
     
     public LiteralGenerator(Random random) {
         assert random != null;
@@ -142,4 +132,4 @@ public class LiteralGenerator {
             )
         ; 
     }
-}
+}*/

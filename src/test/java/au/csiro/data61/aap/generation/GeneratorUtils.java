@@ -1,15 +1,15 @@
-package au.csiro.data61.aap.generation;
+/*package au.csiro.data61.aap.generation;
 
 import java.util.List;
 import java.util.Random;
 import java.util.stream.Collectors;
 import java.util.stream.IntStream;
 import java.util.stream.Stream;
-
+ */
 /**
  * ScriptGeneratorUtils
  */
-public class GeneratorUtils {
+/*public class GeneratorUtils {
     private static final int MAX_STRING_MUTATIONS = 5;
 
     private static final Random RANDOM = new Random(22061953);
@@ -64,4 +64,4 @@ public class GeneratorUtils {
         assert list != null;
         return list.isEmpty() ? null : list.get(RANDOM.nextInt(list.size()));
     }
-}
+}*/

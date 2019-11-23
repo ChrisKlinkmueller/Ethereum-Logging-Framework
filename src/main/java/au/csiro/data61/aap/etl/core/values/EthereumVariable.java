@@ -2,17 +2,15 @@ package au.csiro.data61.aap.etl.core.values;
 
 import java.util.Set;
 
-import org.web3j.abi.TypeReference;
-
 /**
  * DataSourceVariable
  */
 class EthereumVariable {
     private final String name;
-    private final TypeReference<?> type;     
+    private final String type;     
     private final ValueAccessor valueAccessor;
 
-    public EthereumVariable(final String name, final TypeReference<?> type, final ValueAccessor valueAccessor) {
+    public EthereumVariable(final String name, final String type, final ValueAccessor valueAccessor) {
         assert name != null;
         assert type != null;
         assert valueAccessor != null;
@@ -29,7 +27,7 @@ class EthereumVariable {
         return this.name;
     }
 
-    TypeReference<?> getType() {
+    String getType() {
         return this.type;
     }
 
@@ -39,7 +37,7 @@ class EthereumVariable {
 
     static <T> void addVariable(Set<EthereumVariable> variables, String name, String type, ValueAccessor valueAccessor) {
         try {
-            variables.add(new EthereumVariable(name, TypeReference.makeTypeReference(type), valueAccessor));
+            variables.add(new EthereumVariable(name, type, valueAccessor));
         }
         catch (Throwable error) {
             error.printStackTrace();

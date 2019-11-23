@@ -1,10 +1,10 @@
-package au.csiro.data61.aap.parser;
+package au.csiro.data61.aap.etl.parsing;
 
 import java.util.Arrays;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
-import au.csiro.data61.aap.util.MethodResult;
+import au.csiro.data61.aap.etl.MethodResult;
 
 /**
  * SpecificationParserResult

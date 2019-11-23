@@ -1,9 +1,7 @@
-package au.csiro.data61.aap.parser;
+package au.csiro.data61.aap.etl.parsing;
 
+import au.csiro.data61.aap.etl.TypeUtils;
 import au.csiro.data61.aap.parser.XbelParser.StatementContext;
-import au.csiro.data61.aap.program.Method;
-import au.csiro.data61.aap.program.suppliers.Variable;
-import au.csiro.data61.aap.program.types.SolidityType;
 
 /**
  * StatementAnalyzer
@@ -35,25 +33,27 @@ public class StatementAnalyzer extends SemanticAnalyzer {
             return;
         }
 
-        final Variable variable = this.getVariable(ctx);
-        if (variable == null) {
+        final String varName = this.getVariable(ctx);
+        if (!this.variableAnalyzer.isVariableDefined(varName)) {
             return;
         }
 
+        final String varType = this.variableAnalyzer.getVariableType(varName);
+
         if (ctx.valueCreation().methodCall() != null || ctx.valueCreation().variableReference() != null) {
-            final SolidityType sourceType = this.getValueType(ctx);
-            if (sourceType != null && !variable.getType().conceptuallyEquals(sourceType)) {
+            final String sourceType = this.getValueType(ctx);
+            if (sourceType != null && !TypeUtils.areCompatible(varType, sourceType)) {
                 this.addError(
                     ctx.valueCreation().start, 
-                    String.format("Cannot convert from '%s' to '%s'", sourceType, variable.getType())
+                    String.format("Cannot convert from '%s' to '%s'", sourceType, varType)
                 );
             }
         }
         else if (ctx.valueCreation().literal() != null) {
-            if (!AnalyzerUtils.isTypeCompatible(variable.getType(), ctx.valueCreation().literal())) {
+            if (!AnalyzerUtils.isTypeCompatible(varType, ctx.valueCreation().literal())) {
                 this.addError(
                     ctx.valueCreation().start, 
-                    String.format("Cannot convert literal '%s' to '%s'", ctx.valueCreation().literal().getText(), variable.getType())
+                    String.format("Cannot convert literal '%s' to '%s'", ctx.valueCreation().literal().getText(), varType)
                 );
             }
         }
@@ -67,24 +67,22 @@ public class StatementAnalyzer extends SemanticAnalyzer {
         }
     }
 
-    private SolidityType getValueType(StatementContext ctx) {
+    private String getValueType(StatementContext ctx) {
         if (ctx.valueCreation().variableReference() != null) {
             return this.variableAnalyzer.getVariableType(ctx.valueCreation().variableReference().variableName().getText());
         }        
         else if (ctx.valueCreation().methodCall() != null) {
-            final Method method = this.methodCallAnalyzer.getCalledMethod(ctx.valueCreation().methodCall());
-            return method == null ? null : method.getSignature().getReturnType();
+            return this.methodCallAnalyzer.getCalledMethodType(ctx.valueCreation().methodCall());
         }
         else {
             return null;
         }
     }
 
-    private Variable getVariable(StatementContext ctx) {
-        final String varName = ctx.variable().variableReference() != null 
+    private String getVariable(StatementContext ctx) {
+        return ctx.variable().variableReference() != null 
             ? ctx.variable().variableReference().getText()
             : ctx.variable().variableDefinition().variableName().getText();
-        return this.variableAnalyzer.getVariable(varName);
     }
             
 }

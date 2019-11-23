@@ -1,6 +1,8 @@
-package au.csiro.data61.aap.parser;
+package au.csiro.data61.aap.etl.parsing;
 
 import org.antlr.v4.runtime.Token;
+
+import au.csiro.data61.aap.parser.XbelBaseListener;
 
 /**
  * XbelAnalyzer

@@ -8,21 +8,26 @@ import java.util.stream.Stream;
 
 import org.web3j.abi.TypeReference;
 
+import au.csiro.data61.aap.etl.TypeUtils;
+
 /**
  * MethodSignature
  */
 public class MethodSignature {
     private final String methodName;
     private final List<String> parameterTypes;
+    private final String returnType;
     
-    public MethodSignature(String methodName, String... parameterTypes) {
-        this(methodName, Arrays.asList(parameterTypes));
+    public MethodSignature(String methodName, String returnType, String... parameterTypes) {
+        this(methodName, returnType, Arrays.asList(parameterTypes));
     }
 
-    public MethodSignature(String methodName, List<String> parameterTypes) {
+    public MethodSignature(String methodName, String returnType, List<String> parameterTypes) {
         assert methodName != null;
+        assert returnType != null;
         assert parameterTypes != null && parameterTypes.stream().allMatch(this::isValidType);
         this.methodName = methodName;
+        this.returnType = returnType;
         this.parameterTypes = new ArrayList<String>(parameterTypes);
     }
     
@@ -37,6 +42,10 @@ public class MethodSignature {
         catch (ClassNotFoundException ex) {
             return false;
         }
+    }
+
+    public String getReturnType() {
+        return this.returnType;
     }
 
     public String getMethodName() {
@@ -70,25 +79,12 @@ public class MethodSignature {
         }
 
         for (int i = 0; i < signature.parameterTypeCount(); i++) {
-            if (!areCompatible(signature.getParameterType(i), this.getParameterType(i))) {
+            if (!TypeUtils.areCompatible(signature.getParameterType(i), this.getParameterType(i))) {
                 return false;
             }
         }
         return true;
     }
 
-    private static final String ARRAY_PATTERN = "[a-zA-Z0-9\\[\\]]+\\[\\]";
-    private static boolean areCompatible(String type, String expectedType) {
-        if (type.equals(expectedType)) {
-            return true;
-        }
-
-        if (type.matches(ARRAY_PATTERN) && expectedType.matches(ARRAY_PATTERN)) {
-            return areCompatible(type.substring(0, type.length() - 2), expectedType.substring(0, expectedType.length() - 2));
-        }
-
-        return (type.contains("int") && expectedType.contains("int"))
-               || (type.contains("fixed") && expectedType.contains("fixed"))
-               || (type.contains("byte") && expectedType.contains("byte"));
-    }
+    
 }

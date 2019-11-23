@@ -1,4 +1,4 @@
-package au.csiro.data61.aap.parser;
+package au.csiro.data61.aap.etl.parsing;
 
 import java.io.ByteArrayInputStream;
 import java.io.InputStream;
@@ -11,7 +11,9 @@ import org.antlr.v4.runtime.CharStream;
 import org.antlr.v4.runtime.CharStreams;
 import org.antlr.v4.runtime.CommonTokenStream;
 
-import au.csiro.data61.aap.util.MethodResult;
+import au.csiro.data61.aap.parser.XbelLexer;
+import au.csiro.data61.aap.parser.XbelParser;
+import au.csiro.data61.aap.etl.MethodResult;
 
 /**
  * SpecificationParserUtil

@@ -1,4 +1,4 @@
-package au.csiro.data61.aap.parser;
+package au.csiro.data61.aap.etl.parsing;
 
 import java.io.InputStream;
 import java.util.function.Function;
@@ -8,8 +8,10 @@ import org.antlr.v4.runtime.CharStream;
 import org.antlr.v4.runtime.CommonTokenStream;
 import org.antlr.v4.runtime.tree.ParseTree;
 
-import au.csiro.data61.aap.program.GlobalScope;
-import au.csiro.data61.aap.util.MethodResult;
+import au.csiro.data61.aap.etl.MethodResult;
+import au.csiro.data61.aap.etl.core.filters.Program;
+import au.csiro.data61.aap.parser.XbelLexer;
+import au.csiro.data61.aap.parser.XbelParser;
 
 /**
  * Parser
@@ -17,7 +19,7 @@ import au.csiro.data61.aap.util.MethodResult;
 public class SpecificationParser {
     private static final Logger LOG = Logger.getLogger(SpecificationParser.class.getName());
 
-    public SpecificationParserResult<GlobalScope> parseDocument(InputStream is) {
+    public SpecificationParserResult<Program> parseDocument(InputStream is) {
         return this.parse(is, XbelParser::document);
     } 
 

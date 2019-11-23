@@ -1,20 +1,20 @@
-package au.csiro.data61.aap.parser;
+package au.csiro.data61.aap.etl.parsing;
 
 import java.util.HashMap;
-import java.util.stream.IntStream;
+import java.util.List;
+import java.util.stream.Collectors;
 
-import au.csiro.data61.aap.library.Library;
+import au.csiro.data61.aap.etl.library.Library;
+import au.csiro.data61.aap.etl.library.MethodSignature;
 import au.csiro.data61.aap.parser.XbelParser.MethodCallContext;
 import au.csiro.data61.aap.parser.XbelParser.MethodParameterContext;
-import au.csiro.data61.aap.program.Method;
-import au.csiro.data61.aap.program.types.SolidityType;
 
 /**
  * MethodCallAnalyzer
  */
 class MethodCallAnalyzer extends SemanticAnalyzer {
     private final VariableAnalyzer variableAnalyzer;
-    private final HashMap<String, Method> calledMethods;
+    private final HashMap<String, MethodSignature> calledMethods;
 
     public MethodCallAnalyzer(ErrorCollector errorCollector, VariableAnalyzer variableAnalyzer) {
         super(errorCollector);
@@ -28,9 +28,10 @@ class MethodCallAnalyzer extends SemanticAnalyzer {
         this.calledMethods.clear();
     }
 
-    public Method getCalledMethod(MethodCallContext ctx) {
+    public String getCalledMethod(MethodCallContext ctx) {
         assert ctx != null;
-        return this.calledMethods.get(AnalyzerUtils.tokenPositionString(ctx.start));
+        final MethodSignature signature = this.calledMethods.get(AnalyzerUtils.tokenPositionString(ctx.start));
+        return signature == null ? null : signature.getReturnType();
     }
 
     @Override
@@ -48,40 +49,37 @@ class MethodCallAnalyzer extends SemanticAnalyzer {
     }
 
     private boolean existsMethodWithSignature(MethodCallContext ctx) {
-        final Method method = 
-            Library.INSTANCE.methodStream(ctx.methodName.getText())
-                .filter(m -> this.areParametersMatching(m, ctx))
-                .findFirst().orElse(null);
+        final MethodSignature signature = this.getSignature(ctx);
         
-        if (method != null) {
-            this.calledMethods.put(AnalyzerUtils.tokenPositionString(ctx.start), method);
+        if (signature != null) {
+            this.calledMethods.put(AnalyzerUtils.tokenPositionString(ctx.start), signature);
         }    
 
-        return method != null;   
+        return signature != null;   
     }
 
-    private boolean areParametersMatching(Method method, MethodCallContext ctx) {
-        if (method.getSignature().parameterTypeCount() != ctx.methodParameter().size()) {
-            return false;
-        }
-
-        return IntStream.range(0, ctx.methodParameter().size())
-            .allMatch(i -> this.areTypesMatching(method.getSignature().getParameterType(i), ctx.methodParameter(i)));
+    private MethodSignature getSignature(MethodCallContext ctx) {
+        final List<String> parameterTypes = ctx.methodParameter().stream()
+            .map(param -> this.getParameterType(param))
+            .collect(Collectors.toList());
+        return Library.INSTANCE.getRegisteredSignatures(ctx.methodName.getText(), parameterTypes);
     }
-
     
-    private boolean areTypesMatching(SolidityType varType, MethodParameterContext ctx) {
+    private String getParameterType(MethodParameterContext ctx) {
         if (ctx.variableReference() != null) {
-            final SolidityType type = this.variableAnalyzer.getVariableType(ctx.variableReference().variableName().getText());
-            return type != null && varType.conceptuallyEquals(type);
+            return this.variableAnalyzer.getVariableType(ctx.variableReference().variableName().getText());
         }
         else if (ctx.literal() != null) {
-            return AnalyzerUtils.isTypeCompatible(varType, ctx.literal());
+            return AnalyzerUtils.getType(ctx.literal());
         }
         else {
             throw new UnsupportedOperationException(String.format("This way of defining a parameter for a method call is not supported: '%s'.", ctx.getText()));
         }
-    } 
+    }
+
+	public String getCalledMethodType(MethodCallContext methodCall) {
+		return null;
+	} 
 
     // TODO: this will be the place for emit and if conditions, as they will be mapped to 
 }

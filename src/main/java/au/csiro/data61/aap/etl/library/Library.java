@@ -5,6 +5,8 @@ import java.util.HashMap;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
+import java.util.Objects;
+import java.util.function.Function;
 
 import au.csiro.data61.aap.etl.core.Method;
 import au.csiro.data61.aap.etl.core.ProgramState;
@@ -44,11 +46,28 @@ public class Library {
         entries.add(new LibraryEntry(method, signature));
     }
 
-    public Method getMethod(MethodSignature signature) {
-        return this.registeredMethods.getOrDefault(signature.getMethodName(), Collections.emptyList())
+    
+
+	public boolean isMethodNameKnown(String methodName) {
+		return this.registeredMethods.containsKey(methodName);
+    }
+
+    public Method getMethod(String methodName, List<String> parameterTypes) {
+        return findEntry(methodName, parameterTypes, LibraryEntry::getMethod);
+    }
+
+    public MethodSignature getRegisteredSignatures(String methodName, List<String> parameterTypes) {
+        return findEntry(methodName, parameterTypes, LibraryEntry::getSignature);
+    }
+
+    private <T> T findEntry(String methodName, List<String> parameterTypes, Function<LibraryEntry, T> mapper) {
+        assert methodName != null;
+        assert parameterTypes != null && parameterTypes.stream().allMatch(Objects::nonNull);
+        final MethodSignature requestedSignature = new MethodSignature(methodName, "", parameterTypes);
+        return this.registeredMethods.getOrDefault(methodName, Collections.emptyList())
             .stream()
-            .filter(entry -> entry.isCompatibleWith(signature))
-            .map(LibraryEntry::getMethod)
+            .filter(re -> re.isCompatibleWith(requestedSignature))
+            .map(re -> mapper.apply(re))
             .findFirst().orElse(null);
     }
 
@@ -69,6 +88,10 @@ public class Library {
     
         private Method getMethod() {
             return this.method;
+        }
+
+        public MethodSignature getSignature() {
+            return this.signature;
         }
     
         private boolean isCompatibleWith(MethodSignature signature) {

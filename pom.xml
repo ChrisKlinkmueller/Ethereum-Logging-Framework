@@ -111,6 +111,39 @@
         <plugin>
           <artifactId>maven-install-plugin</artifactId>
           <version>2.5.2</version>
+          <inherited>false</inherited>
+        <executions>
+          <execution>
+            <id>install-xes</id>
+            <goals>
+                <goal>install-file</goal>
+            </goals>
+            <phase>process-resources</phase>
+            <configuration>
+              <groupId>org.deckfour</groupId>
+              <artifactId>xes</artifactId>
+              <version>1.0.0</version>
+              <packaging>jar</packaging>
+              <file>${basedir}/lib/OpenXES-20181205.jar</file>
+              <generatePom>true</generatePom>
+            </configuration>
+          </execution>          
+          <execution>
+            <id>install-spex</id>
+            <configuration>
+              <groupId>org.deckfour</groupId>
+              <artifactId>Spex</artifactId>
+              <version>1.0.0</version>
+              <packaging>jar</packaging>
+              <file>${basedir}/lib/Spex.jar</file>
+              <generatePom>true</generatePom>
+            </configuration>
+            <goals>
+                <goal>install-file</goal>
+            </goals>
+            <phase>process-resources</phase>
+          </execution>
+        </executions>
         </plugin>
         <plugin>
           <artifactId>maven-deploy-plugin</artifactId>
