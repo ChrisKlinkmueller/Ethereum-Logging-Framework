@@ -42,7 +42,7 @@ public abstract class DataWriter {
         }
     }
 
-    protected abstract void writeState(String namePrefix) throws Throwable;
+    protected abstract void writeState(String filenameSuffix) throws Throwable;
 
     @SuppressWarnings("unchecked")
     protected final String asString(Object object) {

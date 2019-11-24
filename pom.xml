@@ -74,6 +74,17 @@
 			<version>${logback-classic.version}</version>
 			<scope>runtime</scope>
 		</dependency>
+    <dependency>
+      <groupId>org.deckfour</groupId>
+      <artifactId>xes</artifactId>
+      <version>1.0.0</version>
+    </dependency>
+    <dependency>
+      <!-- spex is needed for open xes -->
+      <groupId>org.deckfour</groupId>
+      <artifactId>Spex</artifactId>
+      <version>1.0.0</version>
+    </dependency>
   </dependencies> 
 
   <build>

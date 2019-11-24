@@ -80,10 +80,10 @@ public class CsvWriter extends DataWriter {
         }
     }
 
-    protected void writeTable(String namePrefix, String tableName) throws Throwable {
+    protected void writeTable(String filenameSuffix, String tableName) throws Throwable {
         final Path path = Paths.get(
             this.getOutputFolder().toString(), 
-            String.format("%s_%s.csv", tableName, namePrefix)
+            String.format("%s_%s.csv", tableName, filenameSuffix)
         );
         
         final Map<String, ArrayList<Object>> table = this.tables.get(tableName);        

@@ -2,10 +2,6 @@
 # Created by https://www.gitignore.io/api/java,visualstudiocode
 # Edit at https://www.gitignore.io/?templates=java,visualstudiocode
 
-block_data.json
-/test_output
-OpenXES-20181205.jar
-
 ### Java ###
 # Compiled class file
 *.class
@@ -125,3 +121,7 @@ local.properties
 .sts4-cache/
 
 # End of https://www.gitignore.io/api/eclipse
+
+block_data.json
+/test_output
+!lib/*.jar

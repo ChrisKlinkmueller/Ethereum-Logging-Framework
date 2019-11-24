@@ -29,10 +29,10 @@ public class LogWriter extends DataWriter {
     }
 
     @Override
-    protected void writeState(String namePrefix) throws Throwable {
-        assert namePrefix != null;
+    protected void writeState(String filenameSuffix) throws Throwable {
+        assert filenameSuffix != null;
         if (!this.lines.isEmpty()) {
-            final Path outputPath = Paths.get(this.getOutputFolder().toString(), String.format("%s.log", namePrefix));
+            final Path outputPath = Paths.get(this.getOutputFolder().toString(), String.format("%s.log", filenameSuffix));
 
             try (BufferedWriter writer = new BufferedWriter(new FileWriter(outputPath.toFile()))) {
                 for (String line : lines) {
