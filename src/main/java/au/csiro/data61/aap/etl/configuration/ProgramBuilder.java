@@ -67,7 +67,7 @@ public class ProgramBuilder {
         this.instructions.add(new LinkedList<>());
     }
 
-    public Instruction buildProgram() throws BuildException {
+    public Program buildProgram() throws BuildException {
         if (this.states.peek() != FactoryState.PROGRAM) {
             throw new BuildException(String.format("Cannot build a program, when construction of %s has not been finished.", this.states.peek()));
         }

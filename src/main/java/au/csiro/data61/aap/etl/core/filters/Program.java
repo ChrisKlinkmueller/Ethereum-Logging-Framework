@@ -11,7 +11,7 @@ import au.csiro.data61.aap.etl.core.ProgramState;
  */
 public class Program extends Filter {
 
-    public Program(Instruction... instructions) {
+    public Program(Program... instructions) {
         this(Arrays.asList(instructions));
     }
 

@@ -9,11 +9,13 @@ import org.antlr.v4.runtime.RecognitionException;
 import org.antlr.v4.runtime.Recognizer;
 import org.antlr.v4.runtime.Token;
 
+import au.csiro.data61.aap.etl.EthqlProcessingError;
+
 /**
  * ErrorCollector
  */
 class ErrorCollector extends BaseErrorListener {
-    private final List<SpecificationParserError> errors;
+    private final List<EthqlProcessingError> errors;
 
     public ErrorCollector() {
         this.errors = new ArrayList<>();
@@ -27,13 +29,13 @@ class ErrorCollector extends BaseErrorListener {
         return !this.errors.isEmpty();
     }
     
-    public Stream<SpecificationParserError> errorStream() {
+    public Stream<EthqlProcessingError> errorStream() {
         return this.errors.stream();
     }
 
     public void addSemanticError(Token token, String errorMessage) {
         assert token != null && errorMessage != null;
-        this.errors.add(new SpecificationParserError(token, errorMessage));
+        this.errors.add(new EthqlProcessingError(token, errorMessage));
     }
 
     public void clear() {
@@ -42,7 +44,7 @@ class ErrorCollector extends BaseErrorListener {
 
     @Override
     public void syntaxError(Recognizer<?, ?> recognizer, Object offendingSymbol, int line, int charPositionInLine, String msg, RecognitionException e) {
-        final SpecificationParserError error = new SpecificationParserError(line, charPositionInLine, msg, e);
+        final EthqlProcessingError error = new EthqlProcessingError(line, charPositionInLine, msg, e);
         this.errors.add(error);
     }
 }

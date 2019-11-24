@@ -1,22 +1,21 @@
-package au.csiro.data61.aap.etl.parsing;
+package au.csiro.data61.aap.etl;
 
 import org.antlr.v4.runtime.Token;
 
 /**
  * SpecificationParserErrors
  */
-public class SpecificationParserError {
+public class EthqlProcessingError {
     private final int line;
     private final int column;
     private final String errorMessage;
     private final Throwable errorCause;
-
     
-    SpecificationParserError(Token token, String errorMessage) {
+    public EthqlProcessingError(Token token, String errorMessage) {
         this(token, errorMessage, null);
     }    
 
-    SpecificationParserError(Token token, String errorMessage, Throwable cause) {
+    public EthqlProcessingError(Token token, String errorMessage, Throwable cause) {
         assert token != null;
         assert errorMessage != null && !errorMessage.trim().isEmpty();
         this.line = token.getLine();
@@ -25,11 +24,11 @@ public class SpecificationParserError {
         this.errorCause = cause;
     }
 
-    SpecificationParserError(int line, int column, String errorMessage) {
+    public EthqlProcessingError(int line, int column, String errorMessage) {
         this(line, column, errorMessage, null);
     }
 
-    SpecificationParserError(int line, int column, String errorMessage, Throwable errorCause) {
+    public EthqlProcessingError(int line, int column, String errorMessage, Throwable errorCause) {
         assert 0 <= line;
         assert 0 <= column;
         assert errorMessage != null && !errorMessage.trim().isEmpty();
