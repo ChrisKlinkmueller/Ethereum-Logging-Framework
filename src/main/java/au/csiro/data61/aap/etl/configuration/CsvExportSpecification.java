@@ -4,21 +4,15 @@ import java.util.List;
 import java.util.Objects;
 import java.util.stream.Collectors;
 
-import au.csiro.data61.aap.etl.core.Instruction;
 import au.csiro.data61.aap.etl.core.writers.AddCsvRowInstruction;
 
 /**
  * CsvExportSpecification
  */
-public class CsvExportSpecification implements InstructionSpecification {
-    private final AddCsvRowInstruction instruction;
-
-    private CsvExportSpecification(AddCsvRowInstruction instruction) {
-        this.instruction = instruction;
-    }
+public class CsvExportSpecification extends InstructionSpecification {
     
-    public Instruction getInstruction() {
-        return this.instruction;
+    private CsvExportSpecification(AddCsvRowInstruction instruction) {
+        super(instruction);
     }
 
     public static CsvExportSpecification of(String tableName, List<String> columnNames, List<ValueAccessorSpecification> valueAccessors) {
