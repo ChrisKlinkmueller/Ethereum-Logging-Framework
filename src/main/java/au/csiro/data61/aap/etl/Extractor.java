@@ -3,13 +3,12 @@ package au.csiro.data61.aap.etl;
 import org.antlr.v4.runtime.tree.ParseTree;
 import org.antlr.v4.runtime.tree.ParseTreeWalker;
 
-import au.csiro.data61.aap.etl.configuration.BuildException;
-import au.csiro.data61.aap.etl.configuration.ProgramBuilder;
+import au.csiro.data61.aap.etl.configuration.EthqlProgramBuilder;
 import au.csiro.data61.aap.etl.core.ProgramState;
 import au.csiro.data61.aap.etl.core.filters.Program;
-import au.csiro.data61.aap.etl.parsing.EthqlBaseListener;
-import au.csiro.data61.aap.etl.parsing.EthqlParser.StatementContext;
-import au.csiro.data61.aap.etl.parsing.EthqlParser.ValueCreationContext;
+import au.csiro.data61.aap.etl.parsing.EthqlListener;
+import au.csiro.data61.aap.etl.parsing.VariableAnalyzer;
+import au.csiro.data61.aap.etl.util.CompositeEthqlListener;
 
 /**
  * Extractor
@@ -19,11 +18,20 @@ public class Extractor {
     public void extractData(final String ethqlFile) throws EthqlProcessingException {
         final ParseTree parseTree = this.createParseTree(ethqlFile);
 
-        final EthqlBuilderBridge builder = new EthqlBuilderBridge();
-        final ParseTreeWalker walker = new ParseTreeWalker();
-        walker.walk(builder, parseTree);
+        final CompositeEthqlListener<EthqlListener> rootListener = new CompositeEthqlListener<>();
+        final VariableAnalyzer analyzer = new VariableAnalyzer();
+        rootListener.addListener(analyzer);
+        final EthqlProgramBuilder builder = new EthqlProgramBuilder(analyzer);
+        rootListener.addListener(builder);
 
-        final Program program = builder.buildProgram();
+        final ParseTreeWalker walker = new ParseTreeWalker();
+        walker.walk(rootListener, parseTree);
+
+        if (builder.containsError()) {
+            throw new EthqlProcessingException("Error when configuring the data extraction.", builder.getError());
+        }
+
+        final Program program = builder.getProgram();
         this.executeProgram(program);
     }
 
@@ -37,32 +45,10 @@ public class Extractor {
         }
 
         return validatorResult.getResult();
-    }    
+    }
 
     private void executeProgram(Program program) {
         final ProgramState state = new ProgramState();
         program.execute(state);
-    }
-
-    private static class EthqlBuilderBridge extends EthqlBaseListener {
-        private ProgramBuilder builder;
-
-        @Override
-        public void exitStatement(StatementContext ctx) {
-            /*ValueCreationContext vcc = ctx.valueCreation();
-            vcc.variableReference()
-
-            vcc.methodCall()
-
-            vcc.literal();*/
-        }
-
-        Program buildProgram() throws EthqlProcessingException {
-            try {
-                return this.builder.buildProgram();
-            } catch (final BuildException ex) {
-                throw new EthqlProcessingException("Error when building the extraction program.", ex);
-            }
-        }
     }
 }

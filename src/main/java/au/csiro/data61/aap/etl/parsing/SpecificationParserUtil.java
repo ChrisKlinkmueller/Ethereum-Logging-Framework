@@ -11,7 +11,7 @@ import org.antlr.v4.runtime.CharStream;
 import org.antlr.v4.runtime.CharStreams;
 import org.antlr.v4.runtime.CommonTokenStream;
 
-import au.csiro.data61.aap.etl.MethodResult;
+import au.csiro.data61.aap.etl.util.MethodResult;
 
 /**
  * SpecificationParserUtil

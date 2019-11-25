@@ -8,7 +8,7 @@ import org.antlr.v4.runtime.CharStream;
 import org.antlr.v4.runtime.CommonTokenStream;
 import org.antlr.v4.runtime.tree.ParseTree;
 
-import au.csiro.data61.aap.etl.MethodResult;
+import au.csiro.data61.aap.etl.util.MethodResult;
 import au.csiro.data61.aap.etl.EthqlProcessingResult;
 
 /**

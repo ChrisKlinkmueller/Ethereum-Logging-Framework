@@ -3,22 +3,23 @@ package au.csiro.data61.aap.etl.configuration;
 import java.util.Arrays;
 import java.util.List;
 import java.util.Objects;
-import java.util.function.BiPredicate;
 import java.util.stream.Collectors;
 
-import au.csiro.data61.aap.etl.core.ProgramState;
+import au.csiro.data61.aap.etl.core.exceptions.ProgramException;
+import au.csiro.data61.aap.etl.core.filters.FilterPredicate;
+import au.csiro.data61.aap.etl.core.values.ValueAccessor;
 
 /**
  * AddressListSpecification
  */
 public class AddressListSpecification {
-    private BiPredicate<ProgramState, String> addressCheck;
+    private FilterPredicate<String> addressCheck;
 
-    private AddressListSpecification(BiPredicate<ProgramState, String> addressCheck) {
+    private AddressListSpecification(FilterPredicate<String> addressCheck) {
         this.addressCheck = addressCheck;
     }
 
-    BiPredicate<ProgramState, String> getAddressCheck() {
+    FilterPredicate<String> getAddressCheck() {
         return this.addressCheck;
     }
 
@@ -48,6 +49,34 @@ public class AddressListSpecification {
     
     public static AddressListSpecification ofEmpty() {
         return new AddressListSpecification((state, address) -> address == null);
+    }
+
+    @SuppressWarnings("unchecked")
+    public static AddressListSpecification ofVariableName(String name) {
+        assert name != null;
+        final ValueAccessor accessor = ValueAccessor.createVariableAccessor(name);
+        return new AddressListSpecification(
+            (state, address) -> {
+                final Object value = accessor.getValue(state);
+                if (value == null) {
+                    return address == null;
+                }
+                else if (value instanceof String) {
+                    return address.equals((String)value);
+                }
+                else if (List.class.isAssignableFrom(value.getClass())) {
+                    try {
+                        return ((List<String>)value).contains(address);
+                    }
+                    catch (Throwable cause) {
+                        throw new ProgramException("Address list is not a string list.", cause);
+                    } 
+                }
+                else {
+                    return false;
+                }
+            }
+        );
     }
 
 }

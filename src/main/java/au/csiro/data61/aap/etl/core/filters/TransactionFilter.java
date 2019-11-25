@@ -2,7 +2,6 @@ package au.csiro.data61.aap.etl.core.filters;
 
 import java.util.Arrays;
 import java.util.List;
-import java.util.function.BiPredicate;
 
 import au.csiro.data61.aap.etl.core.Instruction;
 import au.csiro.data61.aap.etl.core.ProgramState;
@@ -13,14 +12,14 @@ import au.csiro.data61.aap.etl.core.readers.EthereumTransaction;
  * TransactionScope
  */
 public class TransactionFilter extends Filter {
-    private BiPredicate<ProgramState, String> senderCriterion;
-    private BiPredicate<ProgramState, String> recipientCiterion;
+    private FilterPredicate<String> senderCriterion;
+    private FilterPredicate<String> recipientCiterion;
 
-    public TransactionFilter(BiPredicate<ProgramState, String> senderCriterion, BiPredicate<ProgramState, String> recipientCiterion, Instruction... instructions) {
+    public TransactionFilter(FilterPredicate<String> senderCriterion, FilterPredicate<String> recipientCiterion, Instruction... instructions) {
         this(senderCriterion, recipientCiterion, Arrays.asList(instructions));
     }
 
-    public TransactionFilter(BiPredicate<ProgramState, String> senderCriterion, BiPredicate<ProgramState, String> recipientCiterion, List<Instruction> instructions) {
+    public TransactionFilter(FilterPredicate<String> senderCriterion, FilterPredicate<String> recipientCiterion, List<Instruction> instructions) {
         super(instructions);
         assert senderCriterion != null;
         assert recipientCiterion != null;

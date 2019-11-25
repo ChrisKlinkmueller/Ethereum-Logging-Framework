@@ -2,7 +2,6 @@ package au.csiro.data61.aap.etl.core.filters;
 
 import java.util.Arrays;
 import java.util.List;
-import java.util.function.BiPredicate;
 import java.util.stream.Collectors;
 
 import au.csiro.data61.aap.etl.core.exceptions.ProgramException;
@@ -16,14 +15,14 @@ import au.csiro.data61.aap.etl.core.ProgramState;
  * To understand how to decode event data and topics, see: https://www.programcreek.com/java-api-examples/?class=org.web3j.abi.FunctionReturnDecoder&method=decode 
  */
 public class LogEntryFilter extends Filter {
-    private final BiPredicate<ProgramState, String> contractCriterion;
+    private final FilterPredicate<String> contractCriterion;
     private final LogEntrySignature signature;
 
-    public LogEntryFilter(BiPredicate<ProgramState, String> contractCriterion, LogEntrySignature signature, Instruction... instructions) {
+    public LogEntryFilter(FilterPredicate<String> contractCriterion, LogEntrySignature signature, Instruction... instructions) {
         this(contractCriterion, signature, Arrays.asList(instructions));
     }
 
-    public LogEntryFilter(BiPredicate<ProgramState, String> contractCriterion, LogEntrySignature signature, List<Instruction> instructions) {
+    public LogEntryFilter(FilterPredicate<String> contractCriterion, LogEntrySignature signature, List<Instruction> instructions) {
         super(instructions);
         assert signature != null;
         assert instructions != null;
@@ -64,7 +63,7 @@ public class LogEntryFilter extends Filter {
         }
     }
 
-    private boolean isValidLogEntry(ProgramState state, EthereumLogEntry logEntry) {
+    private boolean isValidLogEntry(ProgramState state, EthereumLogEntry logEntry) throws ProgramException {
         return    this.contractCriterion.test(state, logEntry.getAddress())
                && this.signature.hasSignature(logEntry);
     }

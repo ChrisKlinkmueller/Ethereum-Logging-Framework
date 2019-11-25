@@ -23,6 +23,10 @@ import au.csiro.data61.aap.etl.parsing.EthqlParser.VariableReferenceContext;
 public class VariableAnalyzer extends SemanticAnalyzer {
     private final Stack<Map<String, String>> visibleVariables;
     
+    public VariableAnalyzer() {
+        this(new ErrorCollector());
+    }
+
     public VariableAnalyzer(ErrorCollector errorCollector) {
         super(errorCollector);
 

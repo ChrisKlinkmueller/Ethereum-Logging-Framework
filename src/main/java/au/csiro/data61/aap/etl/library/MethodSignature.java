@@ -8,7 +8,7 @@ import java.util.stream.Stream;
 
 import org.web3j.abi.TypeReference;
 
-import au.csiro.data61.aap.etl.TypeUtils;
+import au.csiro.data61.aap.etl.util.TypeUtils;
 
 /**
  * MethodSignature

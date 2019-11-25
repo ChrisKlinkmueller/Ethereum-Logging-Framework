@@ -4,7 +4,7 @@ import java.util.Arrays;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
-import au.csiro.data61.aap.etl.MethodResult;
+import au.csiro.data61.aap.etl.util.MethodResult;
 
 /**
  * SpecificationParserResult

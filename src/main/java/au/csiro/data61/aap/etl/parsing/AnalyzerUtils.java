@@ -3,7 +3,7 @@ package au.csiro.data61.aap.etl.parsing;
 import org.antlr.v4.runtime.Token;
 import org.antlr.v4.runtime.tree.TerminalNode;
 
-import au.csiro.data61.aap.etl.TypeUtils;
+import au.csiro.data61.aap.etl.util.TypeUtils;
 import au.csiro.data61.aap.etl.parsing.EthqlParser.ArrayValueContext;
 import au.csiro.data61.aap.etl.parsing.EthqlParser.LiteralContext;
 

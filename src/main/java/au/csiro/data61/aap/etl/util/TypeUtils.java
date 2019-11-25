@@ -1,4 +1,4 @@
-package au.csiro.data61.aap.etl;
+package au.csiro.data61.aap.etl.util;
 
 /**
  * TypeUtils
@@ -32,13 +32,15 @@ public class TypeUtils {
 
     public static boolean hasBaseType(String testType, String expectedType) {
         assert testType != null && expectedType != null;
-        return expectedType.equals(ADDRESS_TYPE_KEYWORD) || expectedType.equals(BYTES_TYPE_KEYWORD)
-            ? testType.contains(ADDRESS_TYPE_KEYWORD) || expectedType.contains(BYTES_TYPE_KEYWORD)
-            : testType.contains(expectedType);
+        return testType.contains(expectedType);
     }
 
     public static String getArrayType(String baseType) {
         assert baseType != null;
         return String.format("%s[]", baseType);
+    }
+
+	public static boolean isArrayType(String type) {
+		return type != null && type.matches(ARRAY_PATTERN);
     }
 }

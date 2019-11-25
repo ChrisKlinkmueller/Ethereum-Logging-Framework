@@ -9,7 +9,7 @@ import java.util.stream.Stream;
 
 import org.antlr.v4.runtime.ParserRuleContext;
 
-import au.csiro.data61.aap.etl.TypeUtils;
+import au.csiro.data61.aap.etl.util.TypeUtils;
 import au.csiro.data61.aap.etl.parsing.EthqlParser.AddressListContext;
 import au.csiro.data61.aap.etl.parsing.EthqlParser.BlockFilterContext;
 import au.csiro.data61.aap.etl.parsing.EthqlParser.BlockNumberContext;
