@@ -5,15 +5,14 @@ import java.util.List;
 import java.util.Objects;
 import java.util.stream.Collectors;
 
-import au.csiro.data61.aap.etl.core.Instruction;
 import au.csiro.data61.aap.etl.core.writers.AddLogLineInstruction;
 
 /**
  * LogLineExportSpecification
  */
-public class LogLineExportSpecification extends InstructionSpecification {
+public class LogLineExportSpecification extends InstructionSpecification<AddLogLineInstruction> {
 
-    private LogLineExportSpecification(Instruction instruction) {
+    private LogLineExportSpecification(AddLogLineInstruction instruction) {
         super(instruction);
     }
     

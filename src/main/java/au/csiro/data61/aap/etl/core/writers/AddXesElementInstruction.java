@@ -12,7 +12,7 @@ import au.csiro.data61.aap.etl.core.values.ValueAccessor;
 /**
  * AddXesElementInstruction
  */
-abstract class AddXesElementInstruction implements Instruction {
+public abstract class AddXesElementInstruction implements Instruction {
     private final List<XesParameter> parameters;
     private final ValueAccessor pid;
     private final ValueAccessor piid;

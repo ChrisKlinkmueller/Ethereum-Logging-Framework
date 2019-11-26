@@ -11,6 +11,7 @@ import java.util.function.Function;
 import au.csiro.data61.aap.etl.core.Method;
 import au.csiro.data61.aap.etl.core.ProgramState;
 import au.csiro.data61.aap.etl.library.types.IntegerOperations;
+import au.csiro.data61.aap.etl.library.types.ListOperations;
 
 /**
  * Library
@@ -24,12 +25,17 @@ public class Library {
         this.registeredMethods = new HashMap<>();
 
         try {
-            this.addMethod(new MethodSignature("connect", "string"), ProgramState::connectClient);
-            this.addMethod(new MethodSignature("setOutputFolder", "string"), ProgramState::setOutputFolder);
-            this.addMethod(new MethodSignature("add", "int", "int"), IntegerOperations::add);
-            this.addMethod(new MethodSignature("multiply", "int", "int"), IntegerOperations::multiply);
-            this.addMethod(new MethodSignature("subtract", "int", "int"), IntegerOperations::subtract);
-            this.addMethod(new MethodSignature("divide", "int", "int"), IntegerOperations::divide);
+            this.addMethod(new MethodSignature("connect", null, "string"), ProgramState::connectClient);
+            this.addMethod(new MethodSignature("setOutputFolder", null, "string"), ProgramState::setOutputFolder);
+            this.addMethod(new MethodSignature("add", "int", "int", "int"), IntegerOperations::add);
+            this.addMethod(new MethodSignature("multiply", "int", "int", "int"), IntegerOperations::multiply);
+            this.addMethod(new MethodSignature("subtract", "int", "int", "int"), IntegerOperations::subtract);
+            this.addMethod(new MethodSignature("divide", "int", "int", "int"), IntegerOperations::divide);
+            this.addMethod(new MethodSignature("contains", "bool", "address[]", "address"), ListOperations::contains);
+            this.addMethod(new MethodSignature("add", null, "address[]", "address"), ListOperations::addElement);
+            this.addMethod(new MethodSignature("remove", null, "address[]", "address"), ListOperations::removeElement);
+            this.addMethod(new MethodSignature("clear", null, "address[]"), ListOperations::clear);
+
         } catch (LibraryException e) {
             e.printStackTrace();
         }

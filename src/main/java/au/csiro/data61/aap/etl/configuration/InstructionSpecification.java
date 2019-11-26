@@ -5,15 +5,15 @@ import au.csiro.data61.aap.etl.core.Instruction;
 /**
  * InstructionBuilder
  */
-public abstract class InstructionSpecification {
-    private final Instruction instruction;
+public abstract class InstructionSpecification<T extends Instruction> {
+    private final T instruction;
 
-    protected InstructionSpecification(Instruction instruction) {
+    protected InstructionSpecification(T instruction) {
         assert instruction != null;
         this.instruction = instruction;
     }
 
-    public Instruction getInstruction() {
+    public T getInstruction() {
         return this.instruction;
     }
 }

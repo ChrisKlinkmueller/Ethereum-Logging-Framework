@@ -1,0 +1,53 @@
+connect("ws://localhost:8546/");
+setOutputFolder("C:/Development/xes-blockchain/v0.2/test_output/kitties");
+int[] kitties = {0};
+
+BLOCK RANGE (6605100) (6615100) {
+    LOG ENTRY (Birth(address owner, uint256 kittyId, uint256 matronId, uint256 sireId, uint256 genes)) {
+        add(kitties, kittyId);
+        EXPORT TRACE ()(trace)();
+        EXPORT EVENT ()(kittyId)()("birth" as string concept:name);
+
+        IF (contains(kitties, matronId)) {
+            EXPORT EVENT ()(matronId)()("became mother" as string concept:name);
+        }
+
+        IF (contains(kitties, sireId)) {
+            EXPORT EVENT ()(sireId)()("became father" as string concept:name);
+        }
+    }
+
+    LOG ENTRY (Transfer(address from, address to, uint256 tokenId)) {
+        IF (contains(kitties, tokenId)) {
+            EXPORT EVENT ()(tokenId)()("transferred" as string concept:name);
+        }
+    }
+
+    LOG ENTRY (Pregnant(address owner, uint256 matronId, uint256 sireId, uint256 cooldownEndBlock)) {
+        IF (contains(kitties, matronId)) {
+            EXPORT EVENT ()(matronId)()("conceived as mother" as string concept:name);
+        }
+
+        IF (contains(kitties, sireId)) {
+            EXPORT EVENT ()(sireId)()("conceived as father" as string concept:name);
+        }
+    }
+
+    LOG ENTRY (AuctionCreated(uint256 tokenId, uint256 startingPrice, uint256 endingPrice, uint256 duration)) {
+        IF (contains(kitties, tokenId)) {
+            EXPORT EVENT ()(tokenId)()("put up for auction" as string concept:name);
+        }
+    }
+
+    LOG ENTRY (AuctionSuccessful(uint256 tokenId, uint256 totalPrice, address winner)) {
+        IF (contains(kitties, tokenId)) {
+            EXPORT EVENT ()(tokenId)()("auctioned" as string concept:name);
+        }
+    }
+
+    LOG ENTRY (AuctionCancelled(uint256 tokenId)) {
+        IF (contains(kitties, tokenId)) {
+            EXPORT EVENT ()(tokenId)()("not auctioned" as string concept:name);
+        }
+    }
+}

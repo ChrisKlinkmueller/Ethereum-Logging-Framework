@@ -11,6 +11,7 @@ import au.csiro.data61.aap.etl.configuration.BlockNumberSpecification.Type;
 import au.csiro.data61.aap.etl.core.Instruction;
 import au.csiro.data61.aap.etl.core.MethodCall;
 import au.csiro.data61.aap.etl.core.filters.BlockFilter;
+import au.csiro.data61.aap.etl.core.filters.GenericFilter;
 import au.csiro.data61.aap.etl.core.filters.LogEntryFilter;
 import au.csiro.data61.aap.etl.core.filters.Program;
 import au.csiro.data61.aap.etl.core.filters.TransactionFilter;
@@ -41,8 +42,18 @@ public class ProgramBuilder {
         this.prepareBuild(FactoryState.TRANSACTION_FILTER, FactoryState.BLOCK_RANGE_FILTER);
     }
 
-    public void prepareLogEntryFilterBuilder() throws BuildException {
+    public void prepareLogEntryFilterBuild() throws BuildException {
         this.prepareBuild(FactoryState.LOG_ENTRY_FILTER, FactoryState.BLOCK_RANGE_FILTER, FactoryState.TRANSACTION_FILTER);
+    }
+
+    public void prepareGenericFilterBuild() throws BuildException {
+        this.prepareBuild(
+            FactoryState.GENERIC_FILTER, 
+            FactoryState.BLOCK_RANGE_FILTER, 
+            FactoryState.TRANSACTION_FILTER, 
+            FactoryState.LOG_ENTRY_FILTER, 
+            FactoryState.SMART_CONTRACT_FILTER
+        );
     }
 
     private void prepareBuild(FactoryState newState, FactoryState... possibleCurrentStates) throws BuildException  {
@@ -126,6 +137,20 @@ public class ProgramBuilder {
         this.closeScope(filter);
     }
 
+    public void buildGenericFilter(GenericFilterPredicateSpecification predicate) throws BuildException {
+        assert predicate != null;
+
+        if (this.states.peek() != FactoryState.GENERIC_FILTER) {
+            throw new BuildException(String.format("Cannot build a generic filter, when construction of %s has not been finished.", this.states.peek()));
+        }
+
+        final GenericFilter filter = new GenericFilter(
+            predicate.getPredicate(), 
+            this.instructions.peek()
+        );
+        this.closeScope(filter);
+    }
+
     private void closeScope(Instruction instruction) {
         this.instructions.pop();
         if (!this.instructions.isEmpty()) {
@@ -134,7 +159,7 @@ public class ProgramBuilder {
         this.states.pop();
     }
 
-    public void addInstruction(InstructionSpecification instruction) throws BuildException {
+    public void addInstruction(InstructionSpecification<?> instruction) throws BuildException {
         if (instruction == null) {
             throw new BuildException(String.format("Parameter instruction is null."));
         }
@@ -199,7 +224,7 @@ public class ProgramBuilder {
         TRANSACTION_FILTER,
         LOG_ENTRY_FILTER,
         SMART_CONTRACT_FILTER,
-        INSTRUCTION;
+        GENERIC_FILTER;
 
         @Override
         public String toString() {
@@ -209,7 +234,7 @@ public class ProgramBuilder {
                 case TRANSACTION_FILTER : return "transaction filter";
                 case LOG_ENTRY_FILTER : return "log entry filter";
                 case SMART_CONTRACT_FILTER : return "smart contract filter";
-                case INSTRUCTION : return "instruction";
+                case GENERIC_FILTER : return "generic filter";
                 default : throw new IllegalArgumentException(String.format("FactoryState constant '%s' unknown.", this));
             }
         }

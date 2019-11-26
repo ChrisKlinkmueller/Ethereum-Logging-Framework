@@ -2,6 +2,9 @@ package au.csiro.data61.aap.etl.configuration;
 
 import java.lang.reflect.InvocationTargetException;
 import java.math.BigInteger;
+import java.util.Arrays;
+import java.util.List;
+import java.util.stream.Collectors;
 
 import org.web3j.abi.TypeDecoder;
 import org.web3j.abi.datatypes.Type;
@@ -29,7 +32,7 @@ public class ValueAccessorSpecification {
 	}
 
     public static ValueAccessorSpecification addressArrayLiteral(String literal) {
-		return new ValueAccessorSpecification(state -> instantiateType("address[]", literal).getValue());
+		return new ValueAccessorSpecification(state -> instantiateType("address[]", toList(literal)).getValue());
 	}
 
     public static ValueAccessorSpecification booleanLiteral(String literal) {
@@ -37,7 +40,7 @@ public class ValueAccessorSpecification {
 	}
 
     public static ValueAccessorSpecification booleanArrayLiteral(String literal) {
-		return new ValueAccessorSpecification(state -> instantiateType("bool[]", literal).getValue());
+		return new ValueAccessorSpecification(state -> instantiateType("bool[]", toList(literal)).getValue());
 	}
 
     public static ValueAccessorSpecification bytesLiteral(String literal) {
@@ -45,7 +48,7 @@ public class ValueAccessorSpecification {
 	}
 
     public static ValueAccessorSpecification bytesArrayLiteral(String literal) {
-		return new ValueAccessorSpecification(state -> instantiateType("bytes[]", literal).getValue());
+		return new ValueAccessorSpecification(state -> instantiateType("bytes[]", toList(literal)).getValue());
 	}
 
     public static ValueAccessorSpecification fixedLiteral(String literal) {
@@ -53,7 +56,7 @@ public class ValueAccessorSpecification {
     }
 
     public static ValueAccessorSpecification fixedArrayLiteral(String literal) {
-        return new ValueAccessorSpecification(state -> instantiateType("fixed[]", literal).getValue());
+        return new ValueAccessorSpecification(state -> instantiateType("fixed[]", toList(literal)).getValue());
     }
 
     public static ValueAccessorSpecification integerLiteral(String literal) {
@@ -61,7 +64,7 @@ public class ValueAccessorSpecification {
     }
 
     public static ValueAccessorSpecification integerArrayLiteral(String literal) {
-        return new ValueAccessorSpecification(state -> instantiateType("int[]", literal).getValue());
+        return new ValueAccessorSpecification(state -> instantiateType("int[]", toList(literal)).getValue());
     }
 
     public static ValueAccessorSpecification integerLiteral(long literal) {
@@ -82,6 +85,16 @@ public class ValueAccessorSpecification {
         assert literal != null;
         return new ValueAccessorSpecification(state -> instantiateType("string[]", literal).getValue());
     }
+
+    private static List<String> toList(String literal) {
+        String values = literal.trim();
+        values = values.substring(1, values.length() - 1);
+        return Arrays.asList(values.split("."))
+            .stream()
+            .map(v -> v.trim())
+            .collect(Collectors.toList());
+    }
+    
 
     private static Type<?> instantiateType(String type, Object value) throws ProgramException {
         try {

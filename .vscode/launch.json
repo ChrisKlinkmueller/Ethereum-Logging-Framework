@@ -2,6 +2,13 @@
     "configurations": [
         {
             "type": "java",
+            "name": "CodeLens (Launch) - CsvTransform",
+            "request": "launch",
+            "mainClass": "au.csiro.data61.CsvTransform",
+            "projectName": "xes-blockchain"
+        },
+        {
+            "type": "java",
             "name": "CodeLens (Launch) - WriterUtils",
             "request": "launch",
             "mainClass": "au.csiro.data61.aap.etl.core.writers.WriterUtils",

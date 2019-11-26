@@ -148,7 +148,7 @@ public class EthqlProgramBuilder extends EthqlBaseListener {
     }
 
     private void prepareLogEntryFilterBuild(LogEntryFilterContext ctx) throws BuildException {
-        this.builder.prepareLogEntryFilterBuilder();
+        this.builder.prepareLogEntryFilterBuild();
     }
 
     @Override

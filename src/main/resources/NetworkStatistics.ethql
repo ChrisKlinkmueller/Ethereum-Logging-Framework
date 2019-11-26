@@ -1,0 +1,12 @@
+connect("ws://localhost:8546/");
+setOutputFolder("C:/Development/xes-blockchain/v0.2/test_output/kitties");
+int[] kitties = {0};
+
+BLOCK RANGE (6000000) (6010000) {
+    int totalCost = 0;
+    TRANSACTION (ANY) (ANY) {
+        int cost = multiply(tx.gasPrice, tx.gasUsed);
+        totalCost = add(cost, totalCost);
+    }
+    EXPORT CSV (block.number, totalCost, block.transactions);
+}

@@ -5,7 +5,6 @@ import java.util.Arrays;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Objects;
-import java.util.function.BiPredicate;
 
 import au.csiro.data61.aap.etl.core.exceptions.ProgramException;
 import au.csiro.data61.aap.etl.core.Instruction;
@@ -19,13 +18,13 @@ import au.csiro.data61.aap.etl.core.readers.EthereumBlock;
 public class BlockFilter extends Filter {
     private static final int KNOWN_BLOCKS_LENGTH = 30;
     private final ValueAccessor fromBlock;
-    private final BiPredicate<ProgramState, BigInteger> stopCriteria;
+    private final FilterPredicate<BigInteger> stopCriteria;
 
-    public BlockFilter(final ValueAccessor fromBlock, BiPredicate<ProgramState, BigInteger> stopCriteria, final Instruction... instructions) {
+    public BlockFilter(final ValueAccessor fromBlock, FilterPredicate<BigInteger> stopCriteria, Instruction... instructions) {
         this(fromBlock, stopCriteria, Arrays.asList(instructions));
     }
 
-    public BlockFilter(final ValueAccessor fromBlock, final BiPredicate<ProgramState, BigInteger> stopCriteria, final List<Instruction> instructions) {
+    public BlockFilter(final ValueAccessor fromBlock, FilterPredicate<BigInteger> stopCriteria, List<Instruction> instructions) {
         super(instructions);
         assert fromBlock != null;
         assert stopCriteria != null;

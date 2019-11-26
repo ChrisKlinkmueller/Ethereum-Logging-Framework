@@ -1,23 +1,22 @@
 package au.csiro.data61.aap.etl.configuration;
 
 import java.math.BigInteger;
-import java.util.function.BiPredicate;
 
-import au.csiro.data61.aap.etl.core.ProgramState;
 import au.csiro.data61.aap.etl.core.exceptions.ProgramException;
+import au.csiro.data61.aap.etl.core.filters.FilterPredicate;
 import au.csiro.data61.aap.etl.core.values.EthereumVariables;
-import au.csiro.data61.aap.etl.core.values.Variables;
 import au.csiro.data61.aap.etl.core.values.ValueAccessor;
+import au.csiro.data61.aap.etl.core.values.Variables;
 
 /**
  * BlockNumberSpecification
  */
 public class BlockNumberSpecification {
     private final ValueAccessor accessor;
-    private final BiPredicate<ProgramState, BigInteger> stopCriterion;
+    private final FilterPredicate<BigInteger> stopCriterion;
     private final Type type;
 
-    private BlockNumberSpecification(ValueAccessor accessor, BiPredicate<ProgramState, BigInteger> stopCriterion, Type type) {
+    private BlockNumberSpecification(ValueAccessor accessor, FilterPredicate<BigInteger> stopCriterion, Type type) {
         this.accessor = accessor;
         this.stopCriterion = stopCriterion;
         this.type = type;
@@ -27,7 +26,7 @@ public class BlockNumberSpecification {
         return this.accessor;
     }
     
-    BiPredicate<ProgramState, BigInteger> getStopCriterion() {
+    FilterPredicate<BigInteger> getStopCriterion() {
         return this.stopCriterion;
     }
 
@@ -53,7 +52,7 @@ public class BlockNumberSpecification {
         return new BlockNumberSpecification(accessor, createStopCriterion(accessor), Type.CURRENT);
     }
 
-    private static final BiPredicate<ProgramState, BigInteger> createStopCriterion(ValueAccessor accessor) {
+    private static final FilterPredicate<BigInteger> createStopCriterion(ValueAccessor accessor) {
         final Value endValue = new Value();
         return (state, blockNumber) -> {
             if (endValue.blockNumber == null) {

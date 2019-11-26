@@ -9,7 +9,7 @@ import au.csiro.data61.aap.etl.core.writers.AddCsvRowInstruction;
 /**
  * CsvExportSpecification
  */
-public class CsvExportSpecification extends InstructionSpecification {
+public class CsvExportSpecification extends InstructionSpecification<AddCsvRowInstruction> {
     
     private CsvExportSpecification(AddCsvRowInstruction instruction) {
         super(instruction);
