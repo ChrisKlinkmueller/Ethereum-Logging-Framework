@@ -32,6 +32,7 @@ public class Library {
             this.addMethod(new MethodSignature("subtract", "int", "int", "int"), IntegerOperations::subtract);
             this.addMethod(new MethodSignature("divide", "int", "int", "int"), IntegerOperations::divide);
             this.addMethod(new MethodSignature("contains", "bool", "address[]", "address"), ListOperations::contains);
+            this.addMethod(new MethodSignature("add", null, "int[]", "int"), ListOperations::addElement);
             this.addMethod(new MethodSignature("add", null, "address[]", "address"), ListOperations::addElement);
             this.addMethod(new MethodSignature("remove", null, "address[]", "address"), ListOperations::removeElement);
             this.addMethod(new MethodSignature("clear", null, "address[]"), ListOperations::clear);

@@ -5,6 +5,7 @@ import java.util.Arrays;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Objects;
+import java.util.logging.Logger;
 
 import au.csiro.data61.aap.etl.core.exceptions.ProgramException;
 import au.csiro.data61.aap.etl.core.Instruction;
@@ -16,6 +17,7 @@ import au.csiro.data61.aap.etl.core.readers.EthereumBlock;
  * BlockRange
  */
 public class BlockFilter extends Filter {
+    private final Logger LOGGER = Logger.getLogger(BlockFilter.class.getName());
     private static final int KNOWN_BLOCKS_LENGTH = 30;
     private final ValueAccessor fromBlock;
     private final FilterPredicate<BigInteger> stopCriteria;
@@ -45,12 +47,15 @@ public class BlockFilter extends Filter {
                 if (!block.getNumber().equals(currentBlock)) {
                     currentBlock = block.getNumber();
                 }
+                LOGGER.info(String.format("Processing of block %s started.", currentBlock));
 
                 state.getWriters().startNewBlock(currentBlock);
                 state.getReader().setCurrentBlock(block);
 
                 this.executeInstructions(state);
                 state.getWriters().writeBlock();
+
+                LOGGER.info(String.format("Processing of block %s finished.", currentBlock));
 
             } catch (final Throwable throwable) {
                 final String message = String.format("Error when processing block number '%s'.", currentBlock.toString());

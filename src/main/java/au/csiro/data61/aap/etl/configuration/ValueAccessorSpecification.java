@@ -17,6 +17,8 @@ import au.csiro.data61.aap.etl.core.values.Variables;
  * ValueAccessorSpecification
  */
 public class ValueAccessorSpecification {
+    // TODO: replace use of TypeDecoder as it expects byte encoding, not string representations!
+
     private final ValueAccessor valueAccessor;
 
     public ValueAccessorSpecification(ValueAccessor valueAccessor) {
@@ -60,7 +62,8 @@ public class ValueAccessorSpecification {
     }
 
     public static ValueAccessorSpecification integerLiteral(String literal) {
-        return new ValueAccessorSpecification(state -> instantiateType("int", literal).getValue());
+        final BigInteger number = new BigInteger(literal);
+        return new ValueAccessorSpecification(state -> number);
     }
 
     public static ValueAccessorSpecification integerArrayLiteral(String literal) {

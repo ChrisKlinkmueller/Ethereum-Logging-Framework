@@ -35,7 +35,7 @@ public abstract class AddXesElementInstruction implements Instruction {
     }
 
     protected String getId(ProgramState state, ValueAccessor accessor) throws ProgramException {
-        return accessor == null ? null : (String)accessor.getValue(state);
+        return accessor == null ? null : accessor.getValue(state).toString();
     }
 
     protected abstract void startElement(XesWriter writer, ProgramState state, String pid, String piid) throws ProgramException;    

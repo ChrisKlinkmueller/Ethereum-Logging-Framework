@@ -19,8 +19,13 @@ public class TypeUtils {
             return true;
         }
 
-        if (type.matches(ARRAY_PATTERN) && expectedType.matches(ARRAY_PATTERN)) {
+        final boolean typeIsArray = type.matches(ARRAY_PATTERN);
+        final boolean expectedTypeIsArray = type.matches(ARRAY_PATTERN);
+        if (typeIsArray && expectedTypeIsArray) {
             return areCompatible(type.substring(0, type.length() - 2), expectedType.substring(0, expectedType.length() - 2));
+        }
+        else if (typeIsArray || expectedTypeIsArray) {
+            return false;
         }
 
         return (type.contains(INT_TYPE_KEYWORD) && expectedType.contains(INT_TYPE_KEYWORD))
