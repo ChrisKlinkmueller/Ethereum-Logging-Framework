@@ -12,12 +12,12 @@ import java.util.logging.Logger;
 import org.web3j.protocol.Web3j;
 import org.web3j.protocol.core.DefaultBlockParameterNumber;
 import org.web3j.protocol.core.methods.request.EthFilter;
+import org.web3j.protocol.core.methods.response.Transaction;
 import org.web3j.protocol.core.methods.response.EthBlock;
 import org.web3j.protocol.core.methods.response.EthBlockNumber;
 import org.web3j.protocol.core.methods.response.EthGetTransactionReceipt;
 import org.web3j.protocol.core.methods.response.EthLog;
 import org.web3j.protocol.core.methods.response.Log;
-import org.web3j.protocol.core.methods.response.Transaction;
 import org.web3j.protocol.core.methods.response.TransactionReceipt;
 import org.web3j.protocol.core.methods.response.EthBlock.Block;
 import org.web3j.protocol.websocket.WebSocketClient;
@@ -72,6 +72,10 @@ public class Web3jClient implements EthereumClient {
         }
     }
 
+    public Object ethCall(org.web3j.protocol.core.methods.request.Transaction tx, BigInteger blockNumber) throws IOException {
+        return this.web3j.ethCall(tx, new DefaultBlockParameterNumber(blockNumber)).send().getResult();
+    }
+
     public EthereumBlock queryBlockData(BigInteger blockNumber) throws IOException {
         final DefaultBlockParameterNumber number = new DefaultBlockParameterNumber(blockNumber);
         try {
@@ -92,6 +96,14 @@ public class Web3jClient implements EthereumClient {
             LOGGER.log(Level.SEVERE, message, ex);
             throw ex;
         }
+    }
+
+    public void queryFunction() {
+        //Type<?> type = 
+        //Function function = new Function(name, inputParameters, outputParameters)
+        //Transaction t = Transaction.createEthCallTransaction();
+        //t.set
+        //this.web3j.ethCall(transaction, defaultBlockParameter)
     }
 
     TransactionReceipt queryTransactionReceipt(String hash) throws IOException {

@@ -1,6 +1,7 @@
 {
     "recommendations": [
         "mike-lischke.vscode-antlr4",
-        "jaimeolivares.yuml"
+        "jaimeolivares.yuml",
+        "fabiospampinato.vscode-todo-plus"
     ]
 }

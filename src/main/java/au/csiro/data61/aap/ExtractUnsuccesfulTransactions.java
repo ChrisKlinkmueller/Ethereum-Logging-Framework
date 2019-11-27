@@ -19,13 +19,13 @@ import au.csiro.data61.aap.etl.core.values.BlockVariables;
 import au.csiro.data61.aap.etl.core.values.TransactionVariables;
 
 /**
- * ExtractBrokenTransactions
+ * ExtractUnsuccesfulTransactions
  */
-public class ExtractBrokenTransactions {
+public class ExtractUnsuccesfulTransactions {
     private static final String URL = "ws://localhost:8546/";
     private static final String FOLDER = "C:/Development/xes-blockchain/v0.2/test_output";
-    private static final long START = 8000000l;
-    private static final long END = 8010000l;
+    private static final long START = 8700000l;
+    private static final long END = 8701000l;
     private static final String BLOCK_FAILUERS = "blockFailures";
     
     public static void main(String[] args) {
@@ -58,10 +58,23 @@ public class ExtractBrokenTransactions {
                     );
                     addCsvExport(
                         builder, 
-                        "failed_transactions", 
+                        String.format("failed_transactions_%s-%s", START, END), 
                         TransactionVariables.TX_BLOCKNUMBER, 
                         TransactionVariables.TX_TRANSACTIONINDEX,
-                        TransactionVariables.TX_HASH
+                        TransactionVariables.TX_HASH,
+                        TransactionVariables.TX_FROM,
+                        TransactionVariables.TX_TO,
+                        TransactionVariables.TX_INPUT,
+                        TransactionVariables.TX_CONTRACT_ADRESS,
+                        TransactionVariables.TX_GAS_USED,
+                        TransactionVariables.TX_GAS,
+                        TransactionVariables.TX_GASPRICE,
+                        TransactionVariables.TX_VALUE,
+                        TransactionVariables.TX_LOGS_BLOOM,
+                        TransactionVariables.TX_NONCE,
+                        TransactionVariables.TX_V,
+                        TransactionVariables.TX_R,
+                        TransactionVariables.TX_S
                     );
                 builder.buildGenericFilter(
                     GenericFilterPredicateSpecification.not(  
@@ -71,7 +84,7 @@ public class ExtractBrokenTransactions {
                     )
                 );
             builder.buildTransactionFilter(AddressListSpecification.ofAny(), AddressListSpecification.ofAny());            
-            addCsvExport(builder, "blocks", BlockVariables.BLOCK_NUMBER, BlockVariables.BLOCK_HASH, BlockVariables.BLOCK_TRANSACTIONS, BLOCK_FAILUERS);
+            addCsvExport(builder, String.format("blocks_%s-%s", START, END), BlockVariables.BLOCK_NUMBER, BlockVariables.BLOCK_HASH, BlockVariables.BLOCK_TRANSACTIONS, BLOCK_FAILUERS);
         builder.buildBlockRange(
             BlockNumberSpecification.ofBlockNumber(ValueAccessorSpecification.integerLiteral(START)), 
             BlockNumberSpecification.ofBlockNumber(ValueAccessorSpecification.integerLiteral(END))
