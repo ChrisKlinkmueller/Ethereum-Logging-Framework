@@ -8,9 +8,9 @@ import com.fasterxml.jackson.databind.SerializerProvider;
 import com.fasterxml.jackson.databind.ser.std.StdSerializer;
 
 import au.csiro.data61.aap.data.JsonUtil.EthereumJsonDeserializer;
-import au.csiro.data61.aap.etl.core.readers.EthereumBlock;
-import au.csiro.data61.aap.etl.core.readers.RawBlock;
-import au.csiro.data61.aap.etl.core.readers.RawTransaction;
+import au.csiro.data61.aap.elf.core.readers.EthereumBlock;
+import au.csiro.data61.aap.elf.core.readers.RawBlock;
+import au.csiro.data61.aap.elf.core.readers.RawTransaction;
 
 /**
  * BlockJsonizer

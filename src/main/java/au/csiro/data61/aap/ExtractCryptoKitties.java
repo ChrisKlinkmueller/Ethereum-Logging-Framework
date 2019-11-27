@@ -1,18 +1,18 @@
 package au.csiro.data61.aap;
 
-import au.csiro.data61.aap.etl.configuration.AddressListSpecification;
-import au.csiro.data61.aap.etl.configuration.BlockNumberSpecification;
-import au.csiro.data61.aap.etl.configuration.BuildException;
-import au.csiro.data61.aap.etl.configuration.GenericFilterPredicateSpecification;
-import au.csiro.data61.aap.etl.configuration.LogEntrySignatureSpecification;
-import au.csiro.data61.aap.etl.configuration.MethodSpecification;
-import au.csiro.data61.aap.etl.configuration.ProgramBuilder;
-import au.csiro.data61.aap.etl.configuration.ValueAccessorSpecification;
-import au.csiro.data61.aap.etl.configuration.ValueMutatorSpecification;
-import au.csiro.data61.aap.etl.configuration.XesExportSpecification;
-import au.csiro.data61.aap.etl.configuration.XesParameterSpecification;
-import au.csiro.data61.aap.etl.core.Instruction;
-import au.csiro.data61.aap.etl.core.ProgramState;
+import au.csiro.data61.aap.elf.configuration.AddressListSpecification;
+import au.csiro.data61.aap.elf.configuration.BlockNumberSpecification;
+import au.csiro.data61.aap.elf.configuration.BuildException;
+import au.csiro.data61.aap.elf.configuration.GenericFilterPredicateSpecification;
+import au.csiro.data61.aap.elf.configuration.LogEntrySignatureSpecification;
+import au.csiro.data61.aap.elf.configuration.MethodSpecification;
+import au.csiro.data61.aap.elf.configuration.ProgramBuilder;
+import au.csiro.data61.aap.elf.configuration.ValueAccessorSpecification;
+import au.csiro.data61.aap.elf.configuration.ValueMutatorSpecification;
+import au.csiro.data61.aap.elf.configuration.XesExportSpecification;
+import au.csiro.data61.aap.elf.configuration.XesParameterSpecification;
+import au.csiro.data61.aap.elf.core.Instruction;
+import au.csiro.data61.aap.elf.core.ProgramState;
 
 /**
  * ExtractCryptoKitties

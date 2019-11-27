@@ -1,6 +1,35 @@
+Parsing:
+  Syntactic:
+    ☐ Refactor and trim down syntax 
+    ☐ Remove fixed
+    ☐ Add smart contract filter
+    ☐ Add generic filter
+  Semantic parsing:
+    ☐ Literal checking
+    ☐ Variable type compatibility
+    ☐ Literal type compatibility
+    ☐ Filter parameter compatibility
+    ☐ Variable name existence
+    ☐ Library lookup
+    ☐ Proper filter nesting
+    ☐ Bytes and int precision compatibility
 
-Value Casts:
-  ☐ Implement casting of values returned by Web3j / JSON RPC
-  ☐ Implement proper casting of literals in ethql scripts (@file:///./src/main/java/au/csiro/data61/aap/etl/configuration/ValueAccessorSpecification.java)
+Building:
+  ☐ Literal building
+  ☐ Generic filter specification
+  ☐ Smart contract filter specification
+  
+Extractor:
+  ☐ Value casting from Web3j / JSON RPC responses to values
+  ☐ Implement smart contract filter
 
+Library:
+  ☐ Add bit mapping
+  ☐ Add value dictionary
+  ☐ Add utility functionality for types
+  ☐ Add null / empty constructor
+
+Generator:
+  ☐ Transformation for value dictionary
+  ☐ Transformation for bit mapping
 

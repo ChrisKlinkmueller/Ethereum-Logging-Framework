@@ -18,7 +18,7 @@
             "type": "java",
             "name": "CodeLens (Launch) - ValueAccessorSpecification",
             "request": "launch",
-            "mainClass": "au.csiro.data61.aap.etl.configuration.ValueAccessorSpecification",
+            "mainClass": "au.csiro.data61.aap.elf.configuration.ValueAccessorSpecification",
             "projectName": "xes-blockchain"
         },
         {
@@ -32,14 +32,14 @@
             "type": "java",
             "name": "CodeLens (Launch) - WriterUtils",
             "request": "launch",
-            "mainClass": "au.csiro.data61.aap.etl.core.writers.WriterUtils",
+            "mainClass": "au.csiro.data61.aap.elf.core.writers.WriterUtils",
             "projectName": "xes-blockchain"
         },
         {
             "type": "java",
             "name": "CodeLens (Launch) - LibraryEntry",
             "request": "launch",
-            "mainClass": "au.csiro.data61.aap.etl.library.LibraryEntry",
+            "mainClass": "au.csiro.data61.aap.elf.library.LibraryEntry",
             "projectName": "xes-blockchain"
         },
         {
@@ -53,7 +53,7 @@
             "type": "java",
             "name": "CodeLens (Launch) - LogEntrySignature",
             "request": "launch",
-            "mainClass": "au.csiro.data61.aap.etl.core.filters.LogEntrySignature",
+            "mainClass": "au.csiro.data61.aap.elf.core.filters.LogEntrySignature",
             "projectName": "xes-blockchain"
         },
         {
@@ -74,7 +74,7 @@
             "type": "java",
             "name": "CodeLens (Launch) - DataSourceVariables",
             "request": "launch",
-            "mainClass": "au.csiro.data61.aap.etl.library.values.DataSourceVariables",
+            "mainClass": "au.csiro.data61.aap.elf.library.values.DataSourceVariables",
             "projectName": "xes-blockchain"
         },
         {

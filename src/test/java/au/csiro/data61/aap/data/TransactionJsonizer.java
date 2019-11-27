@@ -8,9 +8,9 @@ import com.fasterxml.jackson.databind.SerializerProvider;
 import com.fasterxml.jackson.databind.ser.std.StdSerializer;
 
 import au.csiro.data61.aap.data.JsonUtil.EthereumJsonDeserializer;
-import au.csiro.data61.aap.etl.core.readers.EthereumTransaction;
-import au.csiro.data61.aap.etl.core.readers.RawLogEntry;
-import au.csiro.data61.aap.etl.core.readers.RawTransaction;
+import au.csiro.data61.aap.elf.core.readers.EthereumTransaction;
+import au.csiro.data61.aap.elf.core.readers.RawLogEntry;
+import au.csiro.data61.aap.elf.core.readers.RawTransaction;
 
 /**
  * TransactionJsonizer

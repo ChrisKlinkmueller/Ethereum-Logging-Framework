@@ -7,8 +7,8 @@ import com.fasterxml.jackson.databind.SerializerProvider;
 import com.fasterxml.jackson.databind.ser.std.StdSerializer;
 
 import au.csiro.data61.aap.data.JsonUtil.EthereumJsonDeserializer;
-import au.csiro.data61.aap.etl.core.readers.EthereumLogEntry;
-import au.csiro.data61.aap.etl.core.readers.RawLogEntry;
+import au.csiro.data61.aap.elf.core.readers.EthereumLogEntry;
+import au.csiro.data61.aap.elf.core.readers.RawLogEntry;
 
 /**
  * LogEntryJsonizer

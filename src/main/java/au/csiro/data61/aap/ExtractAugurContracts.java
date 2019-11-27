@@ -11,7 +11,7 @@ import org.web3j.abi.datatypes.Function;
 import org.web3j.abi.datatypes.generated.Bytes32;
 import org.web3j.protocol.core.methods.request.Transaction;
 
-import au.csiro.data61.aap.etl.core.readers.Web3jClient;
+import au.csiro.data61.aap.elf.core.readers.Web3jClient;
 
 
 /**

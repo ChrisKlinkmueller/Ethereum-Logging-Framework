@@ -15,10 +15,10 @@ import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.ObjectMapper;
 
-import au.csiro.data61.aap.etl.core.readers.EthereumBlock;
-import au.csiro.data61.aap.etl.core.readers.EthereumClient;
-import au.csiro.data61.aap.etl.core.readers.RawBlock;
-import au.csiro.data61.aap.etl.core.readers.Web3jClient;
+import au.csiro.data61.aap.elf.core.readers.EthereumBlock;
+import au.csiro.data61.aap.elf.core.readers.EthereumClient;
+import au.csiro.data61.aap.elf.core.readers.RawBlock;
+import au.csiro.data61.aap.elf.core.readers.Web3jClient;
 
 /**
  * TestDataExtractor
