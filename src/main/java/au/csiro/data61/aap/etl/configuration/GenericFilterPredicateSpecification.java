@@ -56,6 +56,11 @@ public class GenericFilterPredicateSpecification {
         return null;
     }*/
 
+    public static GenericFilterPredicateSpecification ofBooleanVariable(ValueAccessorSpecification specification) {
+        final ValueAccessor accessor = specification.getValueAccessor();
+        return new GenericFilterPredicateSpecification(state -> (Boolean)accessor.getValue(state));
+    }
+
     public static GenericFilterPredicateSpecification in(ValueAccessorSpecification accessor1, ValueAccessorSpecification accessor2) {
         return new GenericFilterPredicateSpecification(createFilter(accessor1, accessor2, ListOperations::contains));
     }

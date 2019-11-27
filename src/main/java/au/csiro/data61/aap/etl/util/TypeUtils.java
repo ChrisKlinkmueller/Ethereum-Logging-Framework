@@ -1,5 +1,11 @@
 package au.csiro.data61.aap.etl.util;
 
+import java.lang.reflect.InvocationTargetException;
+
+import org.web3j.abi.TypeDecoder;
+
+import au.csiro.data61.aap.etl.core.exceptions.ProgramException;
+
 /**
  * TypeUtils
  */
@@ -14,7 +20,7 @@ public class TypeUtils {
 
     public static boolean areCompatible(String type, String expectedType) {
         assert type != null && expectedType != null;
-        
+
         if (type.equals(expectedType)) {
             return true;
         }
@@ -22,17 +28,17 @@ public class TypeUtils {
         final boolean typeIsArray = type.matches(ARRAY_PATTERN);
         final boolean expectedTypeIsArray = type.matches(ARRAY_PATTERN);
         if (typeIsArray && expectedTypeIsArray) {
-            return areCompatible(type.substring(0, type.length() - 2), expectedType.substring(0, expectedType.length() - 2));
-        }
-        else if (typeIsArray || expectedTypeIsArray) {
+            return areCompatible(type.substring(0, type.length() - 2),
+                    expectedType.substring(0, expectedType.length() - 2));
+        } else if (typeIsArray || expectedTypeIsArray) {
             return false;
         }
 
         return (type.contains(INT_TYPE_KEYWORD) && expectedType.contains(INT_TYPE_KEYWORD))
-               || (type.contains(FIXED_TYPE_KEYWORD) && expectedType.contains(FIXED_TYPE_KEYWORD))
-               || (type.contains(BYTES_TYPE_KEYWORD) && expectedType.contains(BYTES_TYPE_KEYWORD))
-               || (type.contains(ADDRESS_TYPE_KEYWORD) && expectedType.contains(BYTES_TYPE_KEYWORD))
-               || (type.contains(BYTES_TYPE_KEYWORD) && expectedType.contains(ADDRESS_TYPE_KEYWORD));
+                || (type.contains(FIXED_TYPE_KEYWORD) && expectedType.contains(FIXED_TYPE_KEYWORD))
+                || (type.contains(BYTES_TYPE_KEYWORD) && expectedType.contains(BYTES_TYPE_KEYWORD))
+                || (type.contains(ADDRESS_TYPE_KEYWORD) && expectedType.contains(BYTES_TYPE_KEYWORD))
+                || (type.contains(BYTES_TYPE_KEYWORD) && expectedType.contains(ADDRESS_TYPE_KEYWORD));
     }
 
     public static boolean hasBaseType(String testType, String expectedType) {
@@ -45,7 +51,16 @@ public class TypeUtils {
         return String.format("%s[]", baseType);
     }
 
-	public static boolean isArrayType(String type) {
-		return type != null && type.matches(ARRAY_PATTERN);
+    public static boolean isArrayType(String type) {
+        return type != null && type.matches(ARRAY_PATTERN);
+    }
+
+    public static Object convertValueTo(String solidityType, Object value) throws ProgramException {
+        assert solidityType != null && value != null;
+        try {
+            return TypeDecoder.instantiateType(solidityType, value).getValue();
+        } catch (InvocationTargetException | NoSuchMethodException | InstantiationException | IllegalAccessException | ClassNotFoundException e) {
+            throw new ProgramException(String.format("Error when decoding value '%s' as '%s'", value, solidityType), e);
+        }
     }
 }

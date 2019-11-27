@@ -6,6 +6,7 @@ import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
 import java.util.stream.Collectors;
@@ -75,7 +76,8 @@ public class CsvWriter extends DataWriter {
 
     @Override
     protected void writeState(String namePrefix) throws Throwable {
-        for (String tableName : this.tables.keySet()) {
+        List<String> tableNames = new LinkedList<>(this.tables.keySet());
+        for (String tableName : tableNames) {
             this.writeTable(namePrefix, tableName);
         }
     }

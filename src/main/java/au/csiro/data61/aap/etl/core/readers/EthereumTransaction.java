@@ -58,7 +58,7 @@ public abstract class EthereumTransaction {
             return null;
         }
         else {
-            return status.equals("1");
+            return status.equals("0x1");
         }
     }
 

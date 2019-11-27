@@ -56,7 +56,7 @@ public class TransactionVariables {
         addTransactionVariable(TX_LOGS_BLOOM, "string", EthereumTransaction::getLogsBloom);
         addTransactionVariable(TX_ROOT, "string", EthereumTransaction::getRoot);
         addTransactionVariable(TX_STATUS, "string", EthereumTransaction::getStatus);
-        addTransactionVariable(TX_STATUS, "bool", EthereumTransaction::isSuccessful);
+        addTransactionVariable(TX_SUCCESS, "bool", EthereumTransaction::isSuccessful);
     }
 
     private static void addTransactionVariable(String name, String type, ValueExtractor<EthereumTransaction> transactionValueExtractor) {
