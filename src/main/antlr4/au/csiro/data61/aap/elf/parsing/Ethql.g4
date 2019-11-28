@@ -122,14 +122,14 @@ expressionStatement
     ; 
 
 variableDeclarationStatement
-    : solType variableName '=' expression ';' 
+    : solType variableName '=' statementExpression ';' 
     ; 
 
 variableAssignmentStatement
-    : variableName '=' expression ';' 
+    : variableName '=' statementExpression ';' 
     ;
 
-expression
+statementExpression
     : variableName
     | methodInvocation
     | literal
@@ -157,10 +157,7 @@ andExpression
 
 comparisonExpression
     : valueExpression
-    | variableName comparators literal
-    | variableName comparators variableName
-    | literal comparators literal
-    | literal comparators variableName
+    | valueExpression comparators valueExpression
     ;
 
 valueExpression

@@ -11,11 +11,14 @@ import org.antlr.v4.runtime.Token;
 import au.csiro.data61.aap.elf.core.values.EthereumVariables;
 import au.csiro.data61.aap.elf.parsing.EthqlParser.BlockFilterContext;
 import au.csiro.data61.aap.elf.parsing.EthqlParser.LogEntryFilterContext;
+import au.csiro.data61.aap.elf.parsing.EthqlParser.LogEntryParameterContext;
+import au.csiro.data61.aap.elf.parsing.EthqlParser.NamedEmitVariableContext;
 import au.csiro.data61.aap.elf.parsing.EthqlParser.ScopeContext;
 import au.csiro.data61.aap.elf.parsing.EthqlParser.TransactionFilterContext;
 import au.csiro.data61.aap.elf.parsing.EthqlParser.VariableAssignmentStatementContext;
 import au.csiro.data61.aap.elf.parsing.EthqlParser.VariableDeclarationStatementContext;
 import au.csiro.data61.aap.elf.parsing.EthqlParser.VariableNameContext;
+import au.csiro.data61.aap.elf.parsing.EthqlParser.XesEmitVariableContext;
 
 /**
  * VariableCollector
@@ -74,21 +77,35 @@ public class VariableExistenceAnalyzer extends SemanticAnalyzer {
     public void enterVariableName(VariableNameContext ctx) {
         if (ctx.parent instanceof VariableDeclarationStatementContext) {
             this.verifyVariableDeclaration((VariableDeclarationStatementContext) ctx.parent);
-        } else if (ctx.parent instanceof VariableAssignmentStatementContext) {
+        } 
+        else if (ctx.parent instanceof VariableAssignmentStatementContext) {
             this.verifyVariableAssignment((VariableAssignmentStatementContext) ctx.parent);
-        } else {
+        } 
+        else if (ctx.parent instanceof LogEntryParameterContext) {
+            this.verifyLogEntryParameter((LogEntryParameterContext)ctx.parent);
+        } 
+        else if (ctx.parent instanceof NamedEmitVariableContext || ctx.parent instanceof XesEmitVariableContext) {
+            return;
+        }
+        else {
             this.verifyVariableReference(ctx);
         }
     }
 
     private void verifyVariableDeclaration(VariableDeclarationStatementContext ctx) {
-        final String variableName = ctx.variableName().getText();
+        this.verifyVariableDeclaration(ctx.variableName().start, ctx.solType().getText(), ctx.variableName().getText());
+    }
+
+    private void verifyLogEntryParameter(LogEntryParameterContext ctx) {
+        this.verifyVariableDeclaration(ctx.variableName().start, ctx.solType().getText(), ctx.variableName().getText());
+    }
+
+    private void verifyVariableDeclaration(Token token, String solType, String variableName) {
         if (this.isVariableDefined(variableName)) {
-            this.addError(ctx.start, String.format("Variable '%s' is already defined."));
+            this.addError(token, String.format("Variable '%s' is already defined."));
             return;
         }
 
-        final String solType = ctx.solType().getText();
         this.addVariable(solType, variableName);
     }
 

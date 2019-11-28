@@ -107,4 +107,12 @@ public class FilterDefinitionAnalyzer extends SemanticAnalyzer {
     }
 
     //#endregion log entry filter
+
+
+
+    //#region generic filter
+
+    
+
+    //#endregion generic filter
 }

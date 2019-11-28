@@ -26,7 +26,6 @@ import au.csiro.data61.aap.elf.parsing.EthqlParser.EmitStatementCsvContext;
 import au.csiro.data61.aap.elf.parsing.EthqlParser.EmitStatementEventContext;
 import au.csiro.data61.aap.elf.parsing.EthqlParser.EmitStatementLogContext;
 import au.csiro.data61.aap.elf.parsing.EthqlParser.EmitStatementTraceContext;
-import au.csiro.data61.aap.elf.parsing.EthqlParser.ExpressionContext;
 import au.csiro.data61.aap.elf.parsing.EthqlParser.ExpressionStatementContext;
 import au.csiro.data61.aap.elf.parsing.EthqlParser.FilterContext;
 import au.csiro.data61.aap.elf.parsing.EthqlParser.GenericFilterContext;
@@ -45,6 +44,7 @@ import au.csiro.data61.aap.elf.parsing.EthqlParser.SkippableLogEntryParameterCon
 import au.csiro.data61.aap.elf.parsing.EthqlParser.SolTypeContext;
 import au.csiro.data61.aap.elf.parsing.EthqlParser.SolTypeRuleContext;
 import au.csiro.data61.aap.elf.parsing.EthqlParser.StatementContext;
+import au.csiro.data61.aap.elf.parsing.EthqlParser.StatementExpressionContext;
 import au.csiro.data61.aap.elf.parsing.EthqlParser.StringArrayLiteralContext;
 import au.csiro.data61.aap.elf.parsing.EthqlParser.TransactionFilterContext;
 import au.csiro.data61.aap.elf.parsing.EthqlParser.ValueExpressionContext;
@@ -345,13 +345,13 @@ public class CompositeEthqlListener<T extends EthqlListener> implements EthqlLis
     }
 
     @Override
-    public void enterExpression(ExpressionContext ctx) {
-        this.notifyListener(EthqlListener::enterExpression, ctx);
+    public void enterStatementExpression(StatementExpressionContext ctx) {
+        this.notifyListener(EthqlListener::enterStatementExpression, ctx);
     }
 
     @Override
-    public void exitExpression(ExpressionContext ctx) {
-        this.notifyListener(EthqlListener::exitExpression, ctx);
+    public void exitStatementExpression(StatementExpressionContext ctx) {
+        this.notifyListener(EthqlListener::exitStatementExpression, ctx);
     }
 
     @Override
