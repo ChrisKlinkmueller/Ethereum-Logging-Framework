@@ -7,7 +7,7 @@ public class StatementAnalyzer extends SemanticAnalyzer {
     // private final VariableAnalyzer variableAnalyzer;
     // private final MethodCallAnalyzer methodCallAnalyzer;
 
-    public StatementAnalyzer(ErrorCollector errorCollector, VariableAnalyzer variableAnalyzer, MethodCallAnalyzer methodCallAnalyzer) {
+    public StatementAnalyzer(ErrorCollector errorCollector, VariableExistenceAnalyzer variableAnalyzer, MethodCallAnalyzer methodCallAnalyzer) {
         super(errorCollector);
         assert variableAnalyzer != null;
         assert methodCallAnalyzer != null;

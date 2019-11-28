@@ -11,7 +11,7 @@ import au.csiro.data61.aap.elf.parsing.EthqlParser.DocumentContext;
 import au.csiro.data61.aap.elf.parsing.EthqlParser.LogEntryFilterContext;
 import au.csiro.data61.aap.elf.parsing.EthqlParser.StatementContext;
 import au.csiro.data61.aap.elf.parsing.EthqlParser.TransactionFilterContext;
-import au.csiro.data61.aap.elf.parsing.VariableAnalyzer;
+import au.csiro.data61.aap.elf.parsing.VariableExistenceAnalyzer;
 
 /**
  * EthqlProgramBuilder
@@ -22,7 +22,7 @@ public class EthqlProgramBuilder extends EthqlBaseListener {
     private BuildException error;
     private Program program;
 
-    public EthqlProgramBuilder(VariableAnalyzer analyzer) {
+    public EthqlProgramBuilder(VariableExistenceAnalyzer analyzer) {
         this.builder = new ProgramBuilder();
         //this.analyzer = analyzer;
     }

@@ -11,7 +11,7 @@ class MethodCallAnalyzer extends SemanticAnalyzer {
     //private final VariableAnalyzer variableAnalyzer;
     private final HashMap<String, MethodSignature> calledMethods;
 
-    public MethodCallAnalyzer(ErrorCollector errorCollector, VariableAnalyzer variableAnalyzer) {
+    public MethodCallAnalyzer(ErrorCollector errorCollector, VariableExistenceAnalyzer variableAnalyzer) {
         super(errorCollector);
         assert variableAnalyzer != null;
         //this.variableAnalyzer = variableAnalyzer;

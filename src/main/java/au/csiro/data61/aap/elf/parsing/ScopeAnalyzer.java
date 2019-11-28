@@ -15,7 +15,7 @@ class ScopeAnalyzer extends SemanticAnalyzer {
     private final Stack<String> enclosingScopes;
     // private final VariableAnalyzer variableAnalyzer;
 
-    public ScopeAnalyzer(ErrorCollector errorCollector, VariableAnalyzer variableAnalyzer) {
+    public ScopeAnalyzer(ErrorCollector errorCollector, VariableExistenceAnalyzer variableAnalyzer) {
         super(errorCollector);
         assert variableAnalyzer != null;
         // this.variableAnalyzer = variableAnalyzer;

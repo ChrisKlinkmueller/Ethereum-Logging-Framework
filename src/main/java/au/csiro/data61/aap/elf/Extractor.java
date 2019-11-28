@@ -7,7 +7,7 @@ import au.csiro.data61.aap.elf.configuration.EthqlProgramBuilder;
 import au.csiro.data61.aap.elf.core.ProgramState;
 import au.csiro.data61.aap.elf.core.filters.Program;
 import au.csiro.data61.aap.elf.parsing.EthqlListener;
-import au.csiro.data61.aap.elf.parsing.VariableAnalyzer;
+import au.csiro.data61.aap.elf.parsing.VariableExistenceAnalyzer;
 import au.csiro.data61.aap.elf.util.CompositeEthqlListener;
 
 /**
@@ -19,7 +19,7 @@ public class Extractor {
         final ParseTree parseTree = this.createParseTree(ethqlFile);
 
         final CompositeEthqlListener<EthqlListener> rootListener = new CompositeEthqlListener<>();
-        final VariableAnalyzer analyzer = new VariableAnalyzer();
+        final VariableExistenceAnalyzer analyzer = new VariableExistenceAnalyzer();
         rootListener.addListener(analyzer);
         final EthqlProgramBuilder builder = new EthqlProgramBuilder(analyzer);
         rootListener.addListener(builder);
