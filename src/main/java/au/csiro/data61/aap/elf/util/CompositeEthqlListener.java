@@ -17,7 +17,6 @@ import au.csiro.data61.aap.elf.parsing.EthqlParser.BlockFilterContext;
 import au.csiro.data61.aap.elf.parsing.EthqlParser.BlockNumberContext;
 import au.csiro.data61.aap.elf.parsing.EthqlParser.BooleanArrayLiteralContext;
 import au.csiro.data61.aap.elf.parsing.EthqlParser.BooleanExpressionContext;
-import au.csiro.data61.aap.elf.parsing.EthqlParser.BooleanValueContext;
 import au.csiro.data61.aap.elf.parsing.EthqlParser.BytesArrayLiteralContext;
 import au.csiro.data61.aap.elf.parsing.EthqlParser.ComparatorsContext;
 import au.csiro.data61.aap.elf.parsing.EthqlParser.ComparisonExpressionContext;
@@ -36,7 +35,6 @@ import au.csiro.data61.aap.elf.parsing.EthqlParser.LiteralContext;
 import au.csiro.data61.aap.elf.parsing.EthqlParser.LogEntryFilterContext;
 import au.csiro.data61.aap.elf.parsing.EthqlParser.LogEntryParameterContext;
 import au.csiro.data61.aap.elf.parsing.EthqlParser.LogEntrySignatureContext;
-import au.csiro.data61.aap.elf.parsing.EthqlParser.LogVariableContext;
 import au.csiro.data61.aap.elf.parsing.EthqlParser.MethodInvocationContext;
 import au.csiro.data61.aap.elf.parsing.EthqlParser.MethodParameterContext;
 import au.csiro.data61.aap.elf.parsing.EthqlParser.NamedEmitVariableContext;
@@ -49,6 +47,7 @@ import au.csiro.data61.aap.elf.parsing.EthqlParser.SolTypeRuleContext;
 import au.csiro.data61.aap.elf.parsing.EthqlParser.StatementContext;
 import au.csiro.data61.aap.elf.parsing.EthqlParser.StringArrayLiteralContext;
 import au.csiro.data61.aap.elf.parsing.EthqlParser.TransactionFilterContext;
+import au.csiro.data61.aap.elf.parsing.EthqlParser.ValueExpressionContext;
 import au.csiro.data61.aap.elf.parsing.EthqlParser.VariableAssignmentStatementContext;
 import au.csiro.data61.aap.elf.parsing.EthqlParser.VariableDeclarationStatementContext;
 import au.csiro.data61.aap.elf.parsing.EthqlParser.VariableNameContext;
@@ -269,17 +268,6 @@ public class CompositeEthqlListener<T extends EthqlListener> implements EthqlLis
     }
 
     @Override
-    public void enterLogVariable(LogVariableContext ctx) {
-        this.notifyListener(EthqlListener::enterLogVariable, ctx);
-
-    }
-
-    @Override
-    public void exitLogVariable(LogVariableContext ctx) {
-        this.notifyListener(EthqlListener::exitLogVariable, ctx);
-    }
-
-    @Override
     public void enterEmitStatementEvent(EmitStatementEventContext ctx) {
         this.notifyListener(EthqlListener::enterEmitStatementEvent, ctx);
 
@@ -418,16 +406,6 @@ public class CompositeEthqlListener<T extends EthqlListener> implements EthqlLis
     }
 
     @Override
-    public void enterBooleanValue(BooleanValueContext ctx) {
-        this.notifyListener(EthqlListener::enterBooleanValue, ctx);
-    }
-
-    @Override
-    public void exitBooleanValue(BooleanValueContext ctx) {
-        this.notifyListener(EthqlListener::exitBooleanValue, ctx);
-    }
-
-    @Override
     public void enterComparators(ComparatorsContext ctx) {
         this.notifyListener(EthqlListener::enterComparators, ctx);
     }
@@ -484,7 +462,8 @@ public class CompositeEthqlListener<T extends EthqlListener> implements EthqlLis
 
     @Override
     public void exitArrayLiteral(ArrayLiteralContext ctx) {
-        this.notifyListener(EthqlListener::exitArrayLiteral, ctx);    }
+        this.notifyListener(EthqlListener::exitArrayLiteral, ctx);
+    }
 
     @Override
     public void enterStringArrayLiteral(StringArrayLiteralContext ctx) {
@@ -493,7 +472,8 @@ public class CompositeEthqlListener<T extends EthqlListener> implements EthqlLis
 
     @Override
     public void exitStringArrayLiteral(StringArrayLiteralContext ctx) {
-        this.notifyListener(EthqlListener::exitStringArrayLiteral, ctx);    }
+        this.notifyListener(EthqlListener::exitStringArrayLiteral, ctx);
+    }
 
     @Override
     public void enterIntArrayLiteral(IntArrayLiteralContext ctx) {
@@ -502,7 +482,8 @@ public class CompositeEthqlListener<T extends EthqlListener> implements EthqlLis
 
     @Override
     public void exitIntArrayLiteral(IntArrayLiteralContext ctx) {
-        this.notifyListener(EthqlListener::exitIntArrayLiteral, ctx);    }
+        this.notifyListener(EthqlListener::exitIntArrayLiteral, ctx);
+    }
 
     @Override
     public void enterBooleanArrayLiteral(BooleanArrayLiteralContext ctx) {
@@ -542,5 +523,15 @@ public class CompositeEthqlListener<T extends EthqlListener> implements EthqlLis
     @Override
     public void exitSolType(SolTypeContext ctx) {
         this.notifyListener(EthqlListener::exitSolType, ctx);
+    }
+
+    @Override
+    public void enterValueExpression(ValueExpressionContext ctx) {
+        this.notifyListener(EthqlListener::enterValueExpression, ctx);
+    }
+
+    @Override
+    public void exitValueExpression(ValueExpressionContext ctx) {
+        this.notifyListener(EthqlListener::exitValueExpression, ctx);
     }
 }

@@ -84,30 +84,23 @@ emitStatementCsv
     ;
 
 namedEmitVariable
-    : literal (KEY_AS variableName)?
-    | variableName (KEY_AS variableName)?
+    : valueExpression (KEY_AS variableName)?
     ;
 
 emitStatementLog
-    : KEY_EMIT ' ' KEY_LOG_LINE '(' logVariable+ ')'
-    ;
-
-logVariable
-    : variableName
-    | literal
+    : KEY_EMIT ' ' KEY_LOG_LINE '(' valueExpression+ ')'
     ;
 
 emitStatementEvent
-    : KEY_EMIT ' ' KEY_XES_EVENT '(' (pid=literal)? ')' '(' (piid=literal)?')' '(' (eid=literal)? ')' '(' xesEmitVariable+ ')'
+    : KEY_EMIT ' ' KEY_XES_EVENT '(' (pid=valueExpression)? ')' '(' (piid=valueExpression)?')' '(' (eid=valueExpression)? ')' '(' xesEmitVariable+ ')'
     ;
 
 emitStatementTrace
-    : KEY_EMIT ' ' KEY_XES_TRACE '(' (pid=literal)? ')' '(' (piid=literal)?')' '(' (eid=literal)? ')' '(' xesEmitVariable+ ')'
+    : KEY_EMIT ' ' KEY_XES_TRACE '(' (pid=valueExpression)? ')' '(' (piid=valueExpression)?')' '(' (eid=valueExpression)? ')' '(' xesEmitVariable+ ')'
     ;
 
 xesEmitVariable
-    : literal (KEY_AS (xesTypes)? variableName)?
-    | variableName (KEY_AS (xesTypes)? variableName)?
+    : valueExpression (KEY_AS (xesTypes)? variableName)?
     ;
 
 xesTypes
@@ -163,15 +156,15 @@ andExpression
     ;
 
 comparisonExpression
-    : booleanValue
+    : valueExpression
     | variableName comparators literal
     | variableName comparators variableName
     | literal comparators literal
     | literal comparators variableName
     ;
 
-booleanValue
-    : BOOLEAN_LITERAL
+valueExpression
+    : literal
     | variableName
     ;
 
