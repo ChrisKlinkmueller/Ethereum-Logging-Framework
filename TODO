@@ -1,9 +1,10 @@
 Parsing:
   Syntactic:
-    ☐ Refactor and trim down syntax 
-    ☐ Remove fixed
+    ✔ Refactor and trim down syntax @done(19-11-28 13:37)
+    ✔ Remove fixed @done(19-11-28 13:37)
     ☐ Add smart contract filter
-    ☐ Add generic filter
+    ✔ Add generic filter @done(19-11-28 13:37)
+    ✔ Add export statements @done(19-11-28 13:37)
   Semantic parsing:
     ☐ Literal checking
     ☐ Variable type compatibility

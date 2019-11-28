@@ -1,30 +1,27 @@
 // based on the grammars for 
 //    SQLite by Bart Kiers (https://github.com/antlr/grammars-v4/blob/master/sqlite/SQLite.g4), and
-//    Java8 by Terence Parr & Sam Harwell (https://github.com/antlr/grammars-v4/blob/master/java8/Java8.g4)
+//    Java9 by Terence Parr & Sam Harwell (https://github.com/antlr/grammars-v4/blob/master/java9/Java9.g4)
 
 grammar Ethql;
 
 document
-    : instruction* EOF
+    : statement* EOF
     ;
 
-instruction
+statement
     : scope
-    | statement
-    // | TODO: add emit statements 
+    | expressionStatement
     ;
-
-// filters
 
 scope 
-    : filter '{' instruction* '}'
+    : filter '{' statement* '}'
     ;
 
 filter
     : blockFilter
     | transactionFilter
-    | smartContractsFilter
     | logEntryFilter
+    | genericFilter
     ;
 
 blockFilter
@@ -36,43 +33,25 @@ blockNumber
     | KEY_CURRENT
     | KEY_EARLIEST
     | KEY_PENDING
-    | variableReference
+    | variableName
     ;
 
 transactionFilter
     : KEY_TRANSACTIONS '(' senders=addressList ')' '(' recipients=addressList ')'
     ;
 
-smartContractsFilter
-    : KEY_SMART_CONTRACT '(' contracts=addressList ')' '(' smartContractSignature ')'
-    ;
-
-smartContractSignature
-    : (smartContractVariable (',' smartContractVariable)* )? (',' KEY_VAR_ARGS)?
-    ;
-
-smartContractVariable
-    : solType variableName
-    | KEY_SKIP_DATA
-    ;
-
 addressList
-    : BYTE_AND_ADDRESS_LITERAL (',' BYTE_AND_ADDRESS_LITERAL)*
+    : BYTES_LITERAL (',' BYTES_LITERAL)*
     | KEY_ANY
-    | variableReference
+    | variableName
     ;
 
 logEntryFilter
     : KEY_LOG_ENTRIES '(' addressList ')' '(' logEntrySignature ')'
-    | KEY_LOG_ENTRIES '(' addressList ')' '(' skippableLogEntrySignature ')'
     ;
 
 logEntrySignature
     : methodName=Identifier '(' (logEntryParameter (',' logEntryParameter)* )? ')' KEY_ANONYMOUS?
-    ;
-
-skippableLogEntrySignature
-    : (skippableLogEntryParameter (',' skippableLogEntryParameter)* )? (',' KEY_VAR_ARGS)?
     ;
 
 logEntryParameter
@@ -85,9 +64,144 @@ skippableLogEntryParameter
     | KEY_SKIP_DATA
     ;
 
+genericFilter
+    : KEY_IF '(' booleanExpression ')'
+    ;
 
 
-// KEYWORDS
+
+// emitStatements
+
+emitStatement
+    : emitStatementCsv
+    | emitStatementLog
+    | emitStatementEvent
+    | emitStatementTrace
+    ;
+
+emitStatementCsv
+    : KEY_EMIT ' ' KEY_CSV_ROW '(' tableName=STRING_LITERAL ')' '(' namedEmitVariable+ ')'	
+    ;
+
+namedEmitVariable
+    : literal (KEY_AS variableName)?
+    | variableName (KEY_AS variableName)?
+    ;
+
+emitStatementLog
+    : KEY_EMIT ' ' KEY_LOG_LINE '(' logVariable+ ')'
+    ;
+
+logVariable
+    : variableName
+    | literal
+    ;
+
+emitStatementEvent
+    : KEY_EMIT ' ' KEY_XES_EVENT '(' (pid=literal)? ')' '(' (piid=literal)?')' '(' (eid=literal)? ')' '(' xesEmitVariable+ ')'
+    ;
+
+emitStatementTrace
+    : KEY_EMIT ' ' KEY_XES_TRACE '(' (pid=literal)? ')' '(' (piid=literal)?')' '(' (eid=literal)? ')' '(' xesEmitVariable+ ')'
+    ;
+
+xesEmitVariable
+    : literal (KEY_AS (xesTypes)? variableName)?
+    | variableName (KEY_AS (xesTypes)? variableName)?
+    ;
+
+xesTypes
+    : 'xs:string'
+    | 'xs:date'
+    | 'xs:int'
+    | 'xs:float'
+    | 'xs:boolean'
+    ;
+
+
+
+// expressionStatements
+
+expressionStatement 
+    : methodInvocation
+    | variableDeclarationStatement
+    | variableAssignmentStatement
+    ; 
+
+variableDeclarationStatement
+    : solType variableName '=' expression ';' 
+    ; 
+
+variableAssignmentStatement
+    : variableName '=' expression ';' 
+    ;
+
+expression
+    : variableName
+    | methodInvocation
+    | literal
+    ;
+
+booleanExpression
+    : notExpression
+    | KEY_NOT notExpression
+    ;
+
+notExpression
+    : orExpression
+    | '(' orExpression ')'
+    ;
+
+orExpression
+    : andExpression
+    | orExpression KEY_OR andExpression
+    ;
+
+andExpression
+    : comparisonExpression
+    | andExpression KEY_AND comparisonExpression
+    ;
+
+comparisonExpression
+    : booleanValue
+    | variableName comparators literal
+    | variableName comparators variableName
+    | literal comparators literal
+    | literal comparators variableName
+    ;
+
+booleanValue
+    : BOOLEAN_LITERAL
+    | variableName
+    ;
+
+comparators
+    : '=='
+    | '>='
+    | '>'
+    | '<'
+    | '<='
+    | KEY_IN
+    ;
+
+methodInvocation
+    : methodName=Identifier '(' (methodParameter (',' methodParameter)* )? ')'
+    ;
+
+methodParameter
+    : variableName
+    | literal
+    ;
+
+variableName
+    : Identifier
+    | Identifier ':' Identifier
+    | Identifier '.' Identifier
+    ;
+
+
+
+// Keywords
 
 KEY_BLOCK_RANGE : B L O C K S;
 KEY_EARLIEST : E A R L I E S T;
@@ -98,103 +212,58 @@ KEY_TRANSACTIONS : T R A N S A C T I O N S;
 KEY_SMART_CONTRACT : S M A R T ' ' C O N T R A C T;
 KEY_LOG_ENTRIES : L O G ' ' E N T R Y ;
 KEY_ANONYMOUS : 'anonymous';
-KEY_VAR_ARGS : '...';
 KEY_INDEXED : 'indexed';
 KEY_SKIP_INDEXED : '_indexed_';
 KEY_SKIP_DATA : '_';
+KEY_IF : I F;
+KEY_NOT: '!';
+KEY_AND: '||';
+KEY_OR: '&&';
+KEY_IN: I N;
+KEY_AS: A S;
+KEY_EMIT: E M I T;
+KEY_CSV_ROW: C S V ' ' R O W;
+KEY_LOG_LINE: L O G ' ' L I N E;
+KEY_XES_EVENT: X E S ' ' E V E N T;
+KEY_XES_TRACE: X E S ' ' T R A C E;
 
 
-// statements
-
-statement 
-    : (variable '=')? valueCreation ';'
-    ; 
-
-variable
-    : variableDefinition
-    | variableReference
-    ;
-
-variableDefinitionRule : variableDefinition EOF;
-
-variableDefinition
-    : solType variableName
-    ;
-
-variableName
-    : Identifier
-    | Identifier ':' Identifier
-    | Identifier '.' Identifier
-    ;
-
-valueCreation
-    : variableReference
-    | methodCall
-    | literal
-    ;
-
-methodCall
-    : methodName=Identifier '(' (methodParameter (',' methodParameter)* )? ')'
-    ;
-
-methodParameter
-    : variableReference
-    | literal
-    ;
-
-variableReference
-    : variableName
-    ;
 
 // Literals
 
-literalRule : literal EOF;
-
 literal 
     : STRING_LITERAL
-    | arrayValue
     | BOOLEAN_LITERAL
-    | BYTE_AND_ADDRESS_LITERAL
+    | BYTES_LITERAL
     | INT_LITERAL
-    | FIXED_LITERAL
+    | NULL_LITERAL
+    | arrayLiteral
     ;
 
-arrayValue
-    : stringArrayValue
-    | intArrayValue
-    | booleanArrayValue
-    | fixedArrayValue
-    | byteAndAddressArrayValue
+arrayLiteral
+    : stringArrayLiteral
+    | intArrayLiteral
+    | booleanArrayLiteral
+    | bytesArrayLiteral
     ;
 
-stringArrayValue
+stringArrayLiteral
     : '{' (STRING_LITERAL (',' STRING_LITERAL)*)? '}'
     ;
 
-intArrayValue
+intArrayLiteral
     : '{' ((INT_LITERAL) (',' INT_LITERAL)*)? '}'
     ;
 
-fixedArrayValue
-    : '{' fixedArrayElement (',' fixedArrayElement)* '}'
-    ;
-
-fixedArrayElement
-    : FIXED_LITERAL
-    | INT_LITERAL
-    ;
-
-booleanArrayValue
+booleanArrayLiteral
     : '{' (BOOLEAN_LITERAL (',' BOOLEAN_LITERAL)*)? '}'
     ;
 
-byteAndAddressArrayValue
-    : '{' (BYTE_AND_ADDRESS_LITERAL (',' BYTE_AND_ADDRESS_LITERAL)*)? '}'
+bytesArrayLiteral
+    : '{' (BYTES_LITERAL (',' BYTES_LITERAL)*)? '}'
     ;
 
 STRING_LITERAL : '"' ('\\"' | ~["\r\n])* '"';
-
-FIXED_LITERAL : '-'? [0-9]* '.' [0-9]+ ;
 
 INT_LITERAL : '-'? [0-9]+;
 
@@ -203,7 +272,11 @@ BOOLEAN_LITERAL
   | F A L S E
   ;
 
-BYTE_AND_ADDRESS_LITERAL : '0x' [0-9a-fA-F]+;
+BYTES_LITERAL : '0x' [0-9a-fA-F]+;
+
+NULL_LITERAL : N U L L;
+
+
 
 // TYPES
 
@@ -214,14 +287,9 @@ solType
     | SOL_ADDRESS_TYPE
     | SOL_BOOL_TYPE
     | SOL_BYTE_TYPE
-    | SOL_FIXED_TYPE
     | SOL_INT_TYPE
     | SOL_STRING_TYPE
     | solType '[' ']'
-    ;
-
-SOL_FIXED_TYPE
-    : (SOL_UNSIGNED)? 'fixed'(SOL_NUMBER_LENGTH'x'SOL_FIXED_N)?
     ;
 
 SOL_BYTE_TYPE 
@@ -261,6 +329,7 @@ SOL_STRING_TYPE
     ;
 
 
+
 // FRAGMENTS
 
 fragment A : [aA];
@@ -289,6 +358,7 @@ fragment W : [wW];
 fragment X : [xX];
 fragment Y : [yY];
 fragment Z : [zZ];
+
 
 
 // Identifier
