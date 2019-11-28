@@ -18,7 +18,8 @@ class SemanticAnalysis extends CompositeEthqlListener<SemanticAnalyzer> {
 
         final VariableExistenceAnalyzer varAnalyzer = new VariableExistenceAnalyzer(errorCollector);
         this.addListener(varAnalyzer);
-        this.addListener(new ScopeAnalyzer(this.errorCollector, varAnalyzer));    
+        this.addListener(new FilterNestingAnalyzer(errorCollector));
+        this.addListener(new FilterDefinitionAnalyzer(errorCollector, varAnalyzer));
         this.addListener(new MethodCallAnalyzer(this.errorCollector, varAnalyzer));
     }
 

@@ -2,6 +2,13 @@
     "configurations": [
         {
             "type": "java",
+            "name": "CodeLens (Launch) - TypeUtils",
+            "request": "launch",
+            "mainClass": "au.csiro.data61.aap.elf.util.TypeUtils",
+            "projectName": "xes-blockchain"
+        },
+        {
+            "type": "java",
             "name": "CodeLens (Launch) - ExtractAugurContracts",
             "request": "launch",
             "mainClass": "au.csiro.data61.aap.ExtractAugurContracts",

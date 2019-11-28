@@ -32,12 +32,12 @@ blockNumber
     : INT_LITERAL
     | KEY_CURRENT
     | KEY_EARLIEST
-    | KEY_PENDING
+    | KEY_CONTINUOUS
     | variableName
     ;
 
 transactionFilter
-    : KEY_TRANSACTIONS '(' senders=addressList ')' '(' recipients=addressList ')'
+    : KEY_TRANSACTIONS '(' (senders=addressList)? ')' '(' recipients=addressList ')'
     ;
 
 addressList
@@ -51,7 +51,7 @@ logEntryFilter
     ;
 
 logEntrySignature
-    : methodName=Identifier '(' (logEntryParameter (',' logEntryParameter)* )? ')' KEY_ANONYMOUS?
+    : methodName=Identifier '(' (logEntryParameter (',' logEntryParameter)* )? ')'
     ;
 
 logEntryParameter
@@ -199,12 +199,11 @@ variableName
 KEY_BLOCK_RANGE : B L O C K S;
 KEY_EARLIEST : E A R L I E S T;
 KEY_CURRENT : C U R R E N T;
-KEY_PENDING : P E N D I N G;
+KEY_CONTINUOUS : C O N T I N U O U S;
 KEY_ANY : A N Y;
 KEY_TRANSACTIONS : T R A N S A C T I O N S;
 KEY_SMART_CONTRACT : S M A R T ' ' C O N T R A C T;
 KEY_LOG_ENTRIES : L O G ' ' E N T R Y ;
-KEY_ANONYMOUS : 'anonymous';
 KEY_INDEXED : 'indexed';
 KEY_SKIP_INDEXED : '_indexed_';
 KEY_SKIP_DATA : '_';
@@ -258,7 +257,7 @@ bytesArrayLiteral
 
 STRING_LITERAL : '"' ('\\"' | ~["\r\n])* '"';
 
-INT_LITERAL : '-'? [0-9]+;
+INT_LITERAL : '-'? ([0]|[1-9][0-9]+);
 
 BOOLEAN_LITERAL 
   : T R U E
