@@ -104,6 +104,8 @@ public class FilterDefinitionAnalyzer extends SemanticAnalyzer {
 
     // #endregion transaction filter
 
+
+    
     // #region log entry filter
 
     @Override
@@ -112,6 +114,8 @@ public class FilterDefinitionAnalyzer extends SemanticAnalyzer {
     }
 
     // #endregion log entry filter
+
+
 
     // #region generic filter
 

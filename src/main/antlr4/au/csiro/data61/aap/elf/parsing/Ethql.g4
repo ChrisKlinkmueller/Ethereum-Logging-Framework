@@ -75,8 +75,7 @@ genericFilter
 emitStatement
     : emitStatementCsv
     | emitStatementLog
-    | emitStatementEvent
-    | emitStatementTrace
+    | emitStatementXes
     ;
 
 emitStatementCsv
@@ -91,12 +90,8 @@ emitStatementLog
     : KEY_EMIT ' ' KEY_LOG_LINE '(' valueExpression+ ')'
     ;
 
-emitStatementEvent
-    : KEY_EMIT ' ' KEY_XES_EVENT '(' (pid=valueExpression)? ')' '(' (piid=valueExpression)?')' '(' (eid=valueExpression)? ')' '(' xesEmitVariable+ ')'
-    ;
-
-emitStatementTrace
-    : KEY_EMIT ' ' KEY_XES_TRACE '(' (pid=valueExpression)? ')' '(' (piid=valueExpression)?')' '(' (eid=valueExpression)? ')' '(' xesEmitVariable+ ')'
+emitStatementXes
+    : KEY_EMIT ' ' (KEY_XES_EVENT|KEY_XES_TRACE) '(' (pid=valueExpression)? ')' '(' (piid=valueExpression)?')' '(' (eid=valueExpression)? ')' '(' xesEmitVariable+ ')'
     ;
 
 xesEmitVariable

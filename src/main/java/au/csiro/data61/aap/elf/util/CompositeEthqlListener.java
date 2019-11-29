@@ -23,9 +23,8 @@ import au.csiro.data61.aap.elf.parsing.EthqlParser.ComparisonExpressionContext;
 import au.csiro.data61.aap.elf.parsing.EthqlParser.DocumentContext;
 import au.csiro.data61.aap.elf.parsing.EthqlParser.EmitStatementContext;
 import au.csiro.data61.aap.elf.parsing.EthqlParser.EmitStatementCsvContext;
-import au.csiro.data61.aap.elf.parsing.EthqlParser.EmitStatementEventContext;
 import au.csiro.data61.aap.elf.parsing.EthqlParser.EmitStatementLogContext;
-import au.csiro.data61.aap.elf.parsing.EthqlParser.EmitStatementTraceContext;
+import au.csiro.data61.aap.elf.parsing.EthqlParser.EmitStatementXesContext;
 import au.csiro.data61.aap.elf.parsing.EthqlParser.ExpressionStatementContext;
 import au.csiro.data61.aap.elf.parsing.EthqlParser.FilterContext;
 import au.csiro.data61.aap.elf.parsing.EthqlParser.GenericFilterContext;
@@ -268,25 +267,14 @@ public class CompositeEthqlListener<T extends EthqlListener> implements EthqlLis
     }
 
     @Override
-    public void enterEmitStatementEvent(EmitStatementEventContext ctx) {
-        this.notifyListener(EthqlListener::enterEmitStatementEvent, ctx);
+    public void enterEmitStatementXes(EmitStatementXesContext ctx) {
+        this.notifyListener(EthqlListener::enterEmitStatementXes, ctx);
 
     }
 
     @Override
-    public void exitEmitStatementEvent(EmitStatementEventContext ctx) {
-        this.notifyListener(EthqlListener::exitEmitStatementEvent, ctx);
-    }
-
-    @Override
-    public void enterEmitStatementTrace(EmitStatementTraceContext ctx) {
-        this.notifyListener(EthqlListener::enterEmitStatementTrace, ctx);
-
-    }
-
-    @Override
-    public void exitEmitStatementTrace(EmitStatementTraceContext ctx) {
-        this.notifyListener(EthqlListener::exitEmitStatementTrace, ctx);
+    public void exitEmitStatementXes(EmitStatementXesContext ctx) {
+        this.notifyListener(EthqlListener::exitEmitStatementXes, ctx);
     }
 
     @Override

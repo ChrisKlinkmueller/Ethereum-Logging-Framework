@@ -3,12 +3,13 @@ package au.csiro.data61.aap.elf.core.writers;
 import java.io.File;
 import java.io.FileOutputStream;
 import java.math.BigInteger;
-import java.nio.file.Paths;
+import java.util.Collections;
 import java.util.Date;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Objects;
+import java.util.Set;
 import java.util.Map.Entry;
 import java.util.function.BiFunction;
 import java.util.logging.Logger;
@@ -33,6 +34,7 @@ import org.deckfour.xes.model.impl.XTraceImpl;
 import org.deckfour.xes.out.XesXmlSerializer;
 
 import au.csiro.data61.aap.elf.core.exceptions.ProgramException;
+import au.csiro.data61.aap.elf.util.TypeUtils;
 
 /**
  * XesExporter
@@ -237,7 +239,6 @@ public class XesWriter extends DataWriter {
             });
     }
 
-
     private void addEventsToLog(XTrace trace, String pid, String piid) {
         this.events.getOrDefault(pid, new LinkedHashMap<>())
             .getOrDefault(piid, new LinkedHashMap<>())
@@ -246,13 +247,20 @@ public class XesWriter extends DataWriter {
         ;
     }
 
-    public static void main(String[] args) {
-        XesWriter writer = new XesWriter();
-        writer.setOutputFolder(Paths.get("C:/Development/xes-blockchain/v0.2/test_outputs"));
+    public static final String BOOLEAN_TYPE = "xs:boolean";
+    public static final String DATE_TYPE = "xs:date";
+    public static final String FLOAT_TYPE = "xs:float";
+    public static final String INT_TYPE = "xs:int";
+    public static final String STRING_TYPE = "xs:string";
+    private static Map<String, Set<String>> SUPPORTED_SOL_TO_XES_CASTS = Map.of(
+        TypeUtils.ADDRESS_TYPE_KEYWORD, Set.of(STRING_TYPE),
+        TypeUtils.BYTES_TYPE_KEYWORD, Set.of(STRING_TYPE),
+        TypeUtils.BOOL_TYPE_KEYWORD, Set.of(BOOLEAN_TYPE, STRING_TYPE),
+        TypeUtils.INT_TYPE_KEYWORD, Set.of(STRING_TYPE, FLOAT_TYPE, INT_TYPE),
+        TypeUtils.STRING_TYPE_KEYWORD, Set.of(STRING_TYPE)
+    );
 
-        writer.startTrace("1", "1");
-        
-        writer.startEvent("1", "1", "1");
-        writer.addStringValue("concept:name", "");
-    }
+	public static boolean areTypesCompatible(String solType, String xesType) {
+		return SUPPORTED_SOL_TO_XES_CASTS.getOrDefault(solType, Collections.emptySet()).contains(xesType);
+	}
 }

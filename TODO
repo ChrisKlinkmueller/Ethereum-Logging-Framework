@@ -17,38 +17,44 @@ Parsing:
     ✔ Verify generic filter definition @done(19-11-29 15:00)
     ☐ Add smart contract filter
     Emit:
-    ☐ Verify csv row emit
-    ☐ Verify log line emit
-    ☐ Verify xes emit
+    ✔ Verify csv row emit (column names must be unique) @done(19-11-29 16:29)
+    ✔ Verify xes emit (attribute names must be unique) @done(19-11-29 16:52)
     Statements:
     ☐ Library lookup for method invocation
     ☐ Literal checking
     ☐ Variable type compatibility
     ☐ Literal type compatibility
     ☐ Bytes and int precision compatibility
+    Tests:
+    ☐ Implement generator
+    
 
 Building:
-☐ Literal building
-☐ Generic filter specification
-☐ Smart contract filter specification
+  ☐ Literal building
+  ☐ Generic filter specification
+  ☐ Smart contract filter specification
   
 Extractor:
-☐ Value casting from Web3j / JSON RPC responses to values
-☐ Implement smart contract filter
+  ☐ Value casting from Web3j / JSON RPC responses to values
+  ☐ Implement smart contract filter
 
 Library:
-☐ Add bit mapping
-☐ Add value dictionary
-☐ Add utility functionality for types
-☐ Add null / empty constructor
+  ☐ Add bit mapping
+  ☐ Add value dictionary
+  ☐ Add utility functionality for types
+  ☐ Add null / empty constructor
 
 Writers:
-☐ Check that if a new block is started and the block number is already known, data for this blocknumber will be overwritten
+  ☐ Check that if a new block is started and the block number is already known, data for this blocknumber will be overwritten
 
 Generator:
-☐ Transformation for value dictionary
-☐ Transformation for bit mapping
+  ☐ Transformation for value dictionary
+  ☐ Transformation for bit mapping
 
 Configuration:
-☐ Output folder config
-☐ Client connections config
+  ☐ Output folder config
+  ☐ Client connections config
+
+
+Open issues:
+  ☐ currently array types are badly supported, e.g., for defining how to convert them into xes attributes
