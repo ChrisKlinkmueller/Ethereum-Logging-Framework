@@ -8,7 +8,7 @@ import au.csiro.data61.aap.elf.util.CompositeEthqlListener;
 /**
  * SemanticAnalysis
  */
-class SemanticAnalysis extends CompositeEthqlListener<SemanticAnalyzer> {
+public class SemanticAnalysis extends CompositeEthqlListener<SemanticAnalyzer> {
     
     public SemanticAnalysis(ErrorCollector errorCollector) {
         assert errorCollector != null;

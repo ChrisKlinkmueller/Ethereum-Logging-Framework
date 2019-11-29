@@ -27,7 +27,7 @@ public class SpecificationParser {
             return EthqlProcessingResult.ofError("The 'is' parameter was null.");
         }
 
-        final MethodResult<CharStream> charStreamResult = SpecificationParserUtil.charStreamfromInputStream(is);
+        final MethodResult<CharStream> charStreamResult = ParserUtils.charStreamfromInputStream(is);
         if (!charStreamResult.isSuccessful()) {
             LOG.severe("Creation of CharStream failed.");
             return EthqlProcessingResult.ofUnsuccessfulMethodResult(charStreamResult);

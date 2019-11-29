@@ -43,7 +43,8 @@ Library:
   ☐ Add null / empty constructor
 
 Writers:
-  ☐ Check that if a new block is started and the block number is already known, data for this blocknumber will be overwritten
+  ☐ Check that if a new block is started and the block number is already known, data for this blocknumber will be overwritten.
+  ☐ Set default folder and url
 
 Generator:
   ☐ Transformation for value dictionary

@@ -69,7 +69,7 @@ public class EmitAnalyzer extends SemanticAnalyzer {
 
     private void verifyXesTypeCompatibility(XesEmitVariableContext ctx) {
         if (ctx.xesTypes() != null) {
-            final String solType = TypeConverters.determineType(ctx.valueExpression(), varAnalyzer);
+            final String solType = ParserUtils.determineType(ctx.valueExpression(), varAnalyzer);
             if (solType == null) {
                 this.addError(ctx.valueExpression().start, "Cannot infer type.");
             }

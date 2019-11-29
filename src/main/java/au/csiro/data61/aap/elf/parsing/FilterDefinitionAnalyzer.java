@@ -129,7 +129,7 @@ public class FilterDefinitionAnalyzer extends SemanticAnalyzer {
     }
 
     private void verifyBooleanValue(ValueExpressionContext ctx) {
-        final String type = TypeConverters.determineType(ctx, this.variableAnalyzer);
+        final String type = ParserUtils.determineType(ctx, this.variableAnalyzer);
 
         if (type == null) {
             this.addTypeInferenceError(ctx.start);
@@ -140,8 +140,8 @@ public class FilterDefinitionAnalyzer extends SemanticAnalyzer {
     }
 
     private void verifyComparison(ValueExpressionContext leftHandSide, ComparatorsContext comparators, ValueExpressionContext rightHandSide) {
-        String leftType = TypeConverters.determineType(leftHandSide, this.variableAnalyzer);
-        String rightType = TypeConverters.determineType(rightHandSide, this.variableAnalyzer);
+        String leftType = ParserUtils.determineType(leftHandSide, this.variableAnalyzer);
+        String rightType = ParserUtils.determineType(rightHandSide, this.variableAnalyzer);
         if (rightType == null || leftType == null) {
             if (leftType == null) {
                 this.addTypeInferenceError(leftHandSide.start);
