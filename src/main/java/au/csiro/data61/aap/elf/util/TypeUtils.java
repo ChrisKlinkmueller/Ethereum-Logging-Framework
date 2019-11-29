@@ -16,7 +16,7 @@ public class TypeUtils {
     public static String BYTES_TYPE_KEYWORD = "byte";
     public static String INT_TYPE_KEYWORD = "int";
     public static String STRING_TYPE_KEYWORD = "string";
-    private static final String ARRAY_PATTERN = "[a-zA-Z0-9\\[\\]]+\\[\\]";
+    private static final String ARRAY_PATTERN = "[a-z0-9\\[\\]]+\\[\\]";
 
     public static boolean areCompatible(String type, String expectedType) {
         assert type != null && expectedType != null;
@@ -41,9 +41,32 @@ public class TypeUtils {
                 || (type.contains(ADDRESS_TYPE_KEYWORD) && expectedType.contains(ADDRESS_TYPE_KEYWORD));
     }
 
-    public static boolean hasBaseType(String testType, String expectedType) {
-        assert testType != null && expectedType != null;
-        return testType.contains(expectedType);
+    public static boolean isArrayType(String arrayType, String baseType) {
+        assert arrayType != null && baseType != null;
+        return isArrayType(arrayType) && arrayType.contains(getRootType(baseType));
+    }
+
+    public static String getRootType(String type) {
+        assert type != null;
+        if (type.equals(ADDRESS_TYPE_KEYWORD)) {
+            return ADDRESS_TYPE_KEYWORD;
+        }
+        else if (type.equals(BOOL_TYPE_KEYWORD)) {
+            return BOOL_TYPE_KEYWORD;
+        }
+        else if (type.contains(BYTES_TYPE_KEYWORD)) {
+            return BYTES_TYPE_KEYWORD;
+        }
+        else if (type.contains(INT_TYPE_KEYWORD)) {
+            return INT_TYPE_KEYWORD;
+        }
+        else if (type.contains(STRING_TYPE_KEYWORD)) {
+            return STRING_TYPE_KEYWORD;
+        }
+        else {
+            throw new IllegalArgumentException(String.format("''%s' not recognized as a valid type.", type));
+        }
+
     }
 
     public static String getArrayType(String baseType) {
@@ -58,6 +81,10 @@ public class TypeUtils {
     public static boolean isAddressType(String type) {
         return type != null && type.equals(ADDRESS_TYPE_KEYWORD); 
     }
+
+	public static boolean isBooleanType(String type) {
+		return type != null && type.equals(BOOL_TYPE_KEYWORD);
+	}
 
 	public static boolean isIntegerType(String solType) {
 		return solType != null && solType.contains(INT_TYPE_KEYWORD);

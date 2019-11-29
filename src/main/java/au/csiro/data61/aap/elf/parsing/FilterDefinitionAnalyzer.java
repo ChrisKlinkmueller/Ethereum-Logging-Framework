@@ -2,13 +2,17 @@ package au.csiro.data61.aap.elf.parsing;
 
 import java.math.BigInteger;
 
+import org.antlr.v4.runtime.Token;
 import org.antlr.v4.runtime.tree.TerminalNode;
 
 import au.csiro.data61.aap.elf.parsing.EthqlParser.AddressListContext;
 import au.csiro.data61.aap.elf.parsing.EthqlParser.BlockFilterContext;
 import au.csiro.data61.aap.elf.parsing.EthqlParser.BlockNumberContext;
+import au.csiro.data61.aap.elf.parsing.EthqlParser.ComparatorsContext;
+import au.csiro.data61.aap.elf.parsing.EthqlParser.ComparisonExpressionContext;
 import au.csiro.data61.aap.elf.parsing.EthqlParser.LogEntryFilterContext;
 import au.csiro.data61.aap.elf.parsing.EthqlParser.TransactionFilterContext;
+import au.csiro.data61.aap.elf.parsing.EthqlParser.ValueExpressionContext;
 import au.csiro.data61.aap.elf.util.TypeUtils;
 
 /**
@@ -17,7 +21,8 @@ import au.csiro.data61.aap.elf.util.TypeUtils;
 public class FilterDefinitionAnalyzer extends SemanticAnalyzer {
     private final VariableExistenceAnalyzer variableAnalyzer;
 
-    public FilterDefinitionAnalyzer(ErrorCollector errorCollector, VariableExistenceAnalyzer variableAnalyzer) {
+    public FilterDefinitionAnalyzer(final ErrorCollector errorCollector,
+            final VariableExistenceAnalyzer variableAnalyzer) {
         super(errorCollector);
         assert variableAnalyzer != null;
         this.variableAnalyzer = variableAnalyzer;
@@ -30,7 +35,7 @@ public class FilterDefinitionAnalyzer extends SemanticAnalyzer {
     // #region block filter
 
     @Override
-    public void exitBlockFilter(BlockFilterContext ctx) {
+    public void exitBlockFilter(final BlockFilterContext ctx) {
         if (ctx.from.INT_LITERAL() != null && ctx.to.INT_LITERAL() != null) {
             final BigInteger from = TypeUtils.integerFromLiteral(ctx.from.getText());
             final BigInteger to = TypeUtils.integerFromLiteral(ctx.to.getText());
@@ -58,8 +63,8 @@ public class FilterDefinitionAnalyzer extends SemanticAnalyzer {
         }
     }
 
-    private void verifyBlockNumberVariable(BlockNumberContext ctx) {
-        String solType = this.variableAnalyzer.getVariableType(ctx.variableName().getText());
+    private void verifyBlockNumberVariable(final BlockNumberContext ctx) {
+        final String solType = this.variableAnalyzer.getVariableType(ctx.variableName().getText());
         if (solType != null && !TypeUtils.isIntegerType(solType)) {
             this.addError(ctx.start, String.format("'%s' must be an integer variable.", ctx.variableName().getText()));
         }
@@ -70,7 +75,7 @@ public class FilterDefinitionAnalyzer extends SemanticAnalyzer {
     // #region transaction filter
 
     @Override
-    public void exitTransactionFilter(TransactionFilterContext ctx) {
+    public void exitTransactionFilter(final TransactionFilterContext ctx) {
         if (ctx.senders != null) {
             this.verifyAddressList(ctx.senders);
         }
@@ -78,9 +83,9 @@ public class FilterDefinitionAnalyzer extends SemanticAnalyzer {
         this.verifyAddressList(ctx.recipients);
     }
 
-    private void verifyAddressList(AddressListContext ctx) {
+    private void verifyAddressList(final AddressListContext ctx) {
         if (ctx.variableName() != null) {
-            String solType = this.variableAnalyzer.getVariableType(ctx.variableName().getText());
+            final String solType = this.variableAnalyzer.getVariableType(ctx.variableName().getText());
             if (solType != null && !TypeUtils.isAddressType(solType)) {
                 this.addError(ctx.start, String.format("'%s' must be a string variable", ctx.variableName().getText()));
             }
@@ -88,31 +93,77 @@ public class FilterDefinitionAnalyzer extends SemanticAnalyzer {
         }
 
         if (ctx.BYTES_LITERAL() != null) {
-            for (TerminalNode node : ctx.BYTES_LITERAL()) {
+            for (final TerminalNode node : ctx.BYTES_LITERAL()) {
                 if (!TypeUtils.isAddressLiteral(node.getText())) {
-                    this.addError(node.getSymbol(), String.format("'%s' is not a valid address literal.", node.getText()));
+                    this.addError(node.getSymbol(),
+                            String.format("'%s' is not a valid address literal.", node.getText()));
                 }
             }
         }
     }
 
-    //#endregion transaction filter
+    // #endregion transaction filter
 
-
-    //#region log entry filter
+    // #region log entry filter
 
     @Override
-    public void exitLogEntryFilter(LogEntryFilterContext ctx) {
+    public void exitLogEntryFilter(final LogEntryFilterContext ctx) {
         this.verifyAddressList(ctx.addressList());
     }
 
-    //#endregion log entry filter
+    // #endregion log entry filter
 
+    // #region generic filter
 
+    @Override
+    public void exitComparisonExpression(final ComparisonExpressionContext ctx) {
+        if (ctx.value != null) {
+            this.verifyBooleanValue(ctx.value);
+        } else {
+            this.verifyComparison(ctx.leftHandSide, ctx.comparators(), ctx.rightHandSide);
+        }
+    }
 
-    //#region generic filter
+    private void verifyBooleanValue(ValueExpressionContext ctx) {
+        final String type = TypeConverters.determineType(ctx, this.variableAnalyzer);
 
-    
+        if (type == null) {
+            this.addTypeInferenceError(ctx.start);
+        }
+        if (type != null && !TypeUtils.isBooleanType(type)) {
+            this.addError(ctx.start, String.format("Expression must be a boolean value or variable.", ctx.literal().start));
+        }    
+    }
+
+    private void verifyComparison(ValueExpressionContext leftHandSide, ComparatorsContext comparators, ValueExpressionContext rightHandSide) {
+        String leftType = TypeConverters.determineType(leftHandSide, this.variableAnalyzer);
+        String rightType = TypeConverters.determineType(rightHandSide, this.variableAnalyzer);
+        if (rightType == null || leftType == null) {
+            if (leftType == null) {
+                this.addTypeInferenceError(leftHandSide.start);
+            }
+            if (rightType == null) {
+                this.addTypeInferenceError(rightHandSide.start);
+            }
+            return;
+        }
+        
+        if (comparators.KEY_IN() == null) {
+            if (!TypeUtils.areCompatible(leftType, rightType)) {
+                this.addError(leftHandSide.start, "Types are not compatible.");
+            }
+        } 
+        else {
+            if (!TypeUtils.isArrayType(rightType, leftType)) {
+                this.addError(leftHandSide.start, String.format("Right hand side cannot be cast to array of type %s.", leftType));
+            }
+        }
+    }
+
+    private void addTypeInferenceError(Token token) {
+        this.addError(token, "Expression type cannot be inferred.");
+    }
 
     //#endregion generic filter
+
 }

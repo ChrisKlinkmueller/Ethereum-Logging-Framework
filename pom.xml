@@ -78,12 +78,16 @@
       <groupId>org.deckfour</groupId>
       <artifactId>xes</artifactId>
       <version>1.0.0</version>
+      <scope>system</scope>
+		  <systemPath>${project.basedir}/lib/OpenXES-20181205.jar</systemPath>
     </dependency>
     <dependency>
       <!-- spex is needed for open xes -->
       <groupId>org.deckfour</groupId>
       <artifactId>Spex</artifactId>
       <version>1.0.0</version>
+      <scope>system</scope>
+		<systemPath>${project.basedir}/lib/Spex.jar</systemPath>
     </dependency>
   </dependencies> 
 

@@ -156,8 +156,8 @@ andExpression
     ;
 
 comparisonExpression
-    : valueExpression
-    | valueExpression comparators valueExpression
+    : value=valueExpression
+    | leftHandSide=valueExpression comparators rightHandSide=valueExpression
     ;
 
 valueExpression
@@ -225,7 +225,6 @@ literal
     | BOOLEAN_LITERAL
     | BYTES_LITERAL
     | INT_LITERAL
-    | NULL_LITERAL
     | arrayLiteral
     ;
 
@@ -262,8 +261,6 @@ BOOLEAN_LITERAL
   ;
 
 BYTES_LITERAL : '0x' [0-9a-fA-F]+;
-
-NULL_LITERAL : N U L L;
 
 
 
