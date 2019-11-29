@@ -29,8 +29,7 @@ public class ExpressionStatementAnalyzer extends SemanticAnalyzer {
     }
 
     @Override
-    public void clear() {
-    }
+    public void clear() {}
 
     @Override
     public void exitMethodStatement(MethodStatementContext ctx) {

@@ -9,16 +9,16 @@ import java.util.stream.Collectors;
 
 import org.antlr.v4.runtime.tree.ParseTree;
 
-import au.csiro.data61.aap.elf.parsing.SpecificationParser;
+import au.csiro.data61.aap.elf.parsing.EthqlInterpreter;;
 
 /**
  * Validator
  */
 public class Validator {
-    private final SpecificationParser parser;
+    private final EthqlInterpreter interpreter;
 
     public Validator() {
-        this.parser = new SpecificationParser();
+        this.interpreter = new EthqlInterpreter();
     }
     
     public List<EthqlProcessingError> analyzeScript(String ethqlFile) throws EthqlProcessingException {
@@ -29,7 +29,7 @@ public class Validator {
     
     EthqlProcessingResult<ParseTree> parseScript(String ethqlFile) throws EthqlProcessingException {
         final InputStream fileStream = this.createFileStream(ethqlFile);
-        return this.parser.parseDocument(fileStream);        
+        return this.interpreter.parseDocument(fileStream);        
     }
 
     private InputStream createFileStream(String ethqlFile) throws EthqlProcessingException {

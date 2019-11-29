@@ -2,7 +2,6 @@ package au.csiro.data61.aap.elf.parsing;
 
 import java.io.InputStream;
 import java.util.function.Function;
-import java.util.logging.Logger;
 
 import org.antlr.v4.runtime.CharStream;
 import org.antlr.v4.runtime.CommonTokenStream;
@@ -14,8 +13,21 @@ import au.csiro.data61.aap.elf.EthqlProcessingResult;
 /**
  * Parser
  */
-public class SpecificationParser {
-    private static final Logger LOG = Logger.getLogger(SpecificationParser.class.getName());
+public class EthqlInterpreter {
+    private final ErrorCollector errorCollector;
+    private final SemanticAnalysis semanticAnalysis;
+
+    public EthqlInterpreter(ErrorCollector errorCollector, SemanticAnalysis analysis) {
+        assert errorCollector != null;
+        assert analysis != null;
+        this.errorCollector = errorCollector;
+        this.semanticAnalysis = analysis;
+    }
+
+    public EthqlInterpreter() {
+        errorCollector = new ErrorCollector();
+        semanticAnalysis = new SemanticAnalysis(this.errorCollector);        
+    }
 
     public EthqlProcessingResult<ParseTree> parseDocument(InputStream is) {
         return this.parse(is, EthqlParser::document);
@@ -23,42 +35,40 @@ public class SpecificationParser {
 
     protected EthqlProcessingResult<ParseTree> parse(InputStream is, Function<EthqlParser, ParseTree> rule) {
         if (is == null) {
-            LOG.severe("The 'is' parameter was null.");
             return EthqlProcessingResult.ofError("The 'is' parameter was null.");
         }
 
         final MethodResult<CharStream> charStreamResult = ParserUtils.charStreamfromInputStream(is);
         if (!charStreamResult.isSuccessful()) {
-            LOG.severe("Creation of CharStream failed.");
             return EthqlProcessingResult.ofUnsuccessfulMethodResult(charStreamResult);
         }
 
-        final ErrorCollector errorCollector = new ErrorCollector();
         final EthqlLexer lexer = new EthqlLexer(charStreamResult.getResult());
         lexer.removeErrorListeners();
-        lexer.addErrorListener(errorCollector);
+        lexer.addErrorListener(this.errorCollector);
 
         final CommonTokenStream tokens = new CommonTokenStream(lexer);        
         final EthqlParser syntacticParser = new EthqlParser(tokens);
         syntacticParser.removeErrorListeners();
-        syntacticParser.addErrorListener(errorCollector);
+        syntacticParser.addErrorListener(this.errorCollector);
 
         final ParseTree tree = rule.apply(syntacticParser);      
         if (errorCollector.hasErrors()) {
-            LOG.info("Errors during syntactic parsing.");
-            return EthqlProcessingResult.ofErrors(errorCollector.errorStream());
+            return this.createErrorResultAndCleanUp();
         }
 
-        final SemanticAnalysis semanticAnalysis = new SemanticAnalysis(errorCollector);
         semanticAnalysis.analyze(tree);
 
         if (errorCollector.hasErrors()) {
-            LOG.info("Errors during semantic analysis.");
-            return EthqlProcessingResult.ofErrors(errorCollector.errorStream());
+            return this.createErrorResultAndCleanUp();
         }
 
         return EthqlProcessingResult.ofResult(tree);
     }
 
-
+    private EthqlProcessingResult<ParseTree> createErrorResultAndCleanUp() {
+        final EthqlProcessingResult<ParseTree> result = EthqlProcessingResult.ofErrors(this.errorCollector.errorStream());
+        this.errorCollector.clear();
+        return result;
+    }
 }

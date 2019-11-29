@@ -1,5 +1,8 @@
 package au.csiro.data61.aap.elf.parsing;
 
+import java.util.List;
+import java.util.Objects;
+
 import org.antlr.v4.runtime.tree.ParseTree;
 import org.antlr.v4.runtime.tree.ParseTreeWalker;
 
@@ -18,6 +21,11 @@ public class SemanticAnalysis extends CompositeEthqlListener<SemanticAnalyzer> {
         this.addListener(new FilterDefinitionAnalyzer(errorCollector, varAnalyzer));
         this.addListener(new EmitAnalyzer(errorCollector, varAnalyzer));
         this.addListener(new ExpressionStatementAnalyzer(errorCollector, varAnalyzer));
+    }
+
+    public SemanticAnalysis(List<SemanticAnalyzer> analyzers) {
+        assert analyzers != null && analyzers.stream().allMatch(Objects::nonNull);
+        analyzers.forEach(analyzer -> this.addListener(analyzer));
     }
 
     public void analyze(ParseTree parseTree) {
