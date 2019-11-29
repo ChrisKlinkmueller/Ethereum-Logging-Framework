@@ -20,11 +20,9 @@ Parsing:
     ✔ Verify csv row emit (column names must be unique) @done(19-11-29 16:29)
     ✔ Verify xes emit (attribute names must be unique) @done(19-11-29 16:52)
     Statements:
-    ☐ Library lookup for method invocation
-    ☐ Literal checking
-    ☐ Variable type compatibility
-    ☐ Literal type compatibility
-    ☐ Bytes and int precision compatibility
+    ✔ Variable type compatibility @done(19-11-30 07:54)
+    ✔ Literal type compatibility @done(19-11-30 07:54)
+    ✔ Library lookup for method invocation @done(19-11-30 07:54)
     Tests:
     ☐ Implement generator
     

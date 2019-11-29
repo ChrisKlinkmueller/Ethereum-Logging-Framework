@@ -26,7 +26,7 @@ public class MethodSpecification {
     }
 
     public static MethodSpecification of(String name, List<String> parameterTypes) throws BuildException {
-        final Method method = Library.INSTANCE.getMethod(name, parameterTypes);
+        final Method method = Library.INSTANCE.findMethod(name, parameterTypes);
         if (method == null) {
             final String message = String.format("%s(%s)", name, parameterTypes.stream().collect(Collectors.joining(",")));
             throw new BuildException(message);

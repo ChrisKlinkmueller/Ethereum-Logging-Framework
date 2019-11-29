@@ -59,12 +59,12 @@ public class Library {
 		return this.registeredMethods.containsKey(methodName);
     }
 
-    public Method getMethod(String methodName, List<String> parameterTypes) {
-        return findEntry(methodName, parameterTypes, LibraryEntry::getMethod);
+    public Method findMethod(String methodName, List<String> parameterTypes) {
+        return this.findEntry(methodName, parameterTypes, LibraryEntry::getMethod);
     }
 
-    public MethodSignature getRegisteredSignatures(String methodName, List<String> parameterTypes) {
-        return findEntry(methodName, parameterTypes, LibraryEntry::getSignature);
+    public MethodSignature retrieveSignature(String methodName, List<String> parameterTypes) {
+        return this.findEntry(methodName, parameterTypes, LibraryEntry::getSignature);
     }
 
     private <T> T findEntry(String methodName, List<String> parameterTypes, Function<LibraryEntry, T> mapper) {

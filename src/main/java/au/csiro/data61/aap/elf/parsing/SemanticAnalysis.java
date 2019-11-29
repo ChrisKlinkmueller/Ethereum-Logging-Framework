@@ -9,18 +9,15 @@ import au.csiro.data61.aap.elf.util.CompositeEthqlListener;
  * SemanticAnalysis
  */
 class SemanticAnalysis extends CompositeEthqlListener<SemanticAnalyzer> {
-    private final ErrorCollector errorCollector;    
-
+    
     public SemanticAnalysis(ErrorCollector errorCollector) {
         assert errorCollector != null;
-        this.errorCollector = errorCollector;
-        
-
         final VariableExistenceAnalyzer varAnalyzer = new VariableExistenceAnalyzer(errorCollector);
         this.addListener(varAnalyzer);
         this.addListener(new FilterNestingAnalyzer(errorCollector));
         this.addListener(new FilterDefinitionAnalyzer(errorCollector, varAnalyzer));
-        this.addListener(new MethodCallAnalyzer(this.errorCollector, varAnalyzer));
+        this.addListener(new EmitAnalyzer(errorCollector, varAnalyzer));
+        this.addListener(new ExpressionStatementAnalyzer(errorCollector, varAnalyzer));
     }
 
     public void analyze(ParseTree parseTree) {

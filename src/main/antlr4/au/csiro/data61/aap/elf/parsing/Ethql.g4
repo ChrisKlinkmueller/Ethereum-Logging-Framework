@@ -11,6 +11,7 @@ document
 statement
     : scope
     | expressionStatement
+    | emitStatement
     ;
 
 scope 
@@ -111,7 +112,7 @@ xesTypes
 // expressionStatements
 
 expressionStatement 
-    : methodInvocation
+    : methodStatement
     | variableDeclarationStatement
     | variableAssignmentStatement
     ; 
@@ -125,9 +126,8 @@ variableAssignmentStatement
     ;
 
 statementExpression
-    : variableName
+    : valueExpression
     | methodInvocation
-    | literal
     ;
 
 booleanExpression
@@ -169,13 +169,12 @@ comparators
     | KEY_IN
     ;
 
-methodInvocation
-    : methodName=Identifier '(' (methodParameter (',' methodParameter)* )? ')'
+methodStatement
+    : methodInvocation ';'
     ;
 
-methodParameter
-    : variableName
-    | literal
+methodInvocation
+    : methodName=Identifier '(' (valueExpression (',' valueExpression)* )? ')'
     ;
 
 variableName

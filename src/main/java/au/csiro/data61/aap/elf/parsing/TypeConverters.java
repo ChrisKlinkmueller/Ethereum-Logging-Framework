@@ -11,8 +11,8 @@ class TypeConverters {
 
     public static String determineType(ValueExpressionContext ctx, VariableExistenceAnalyzer varAnalyzer) {
         return ctx.literal() != null
-        ? TypeConverters.literalType(ctx.literal())
-        : varAnalyzer.getVariableType(ctx.variableName().getText());
+            ? TypeConverters.literalType(ctx.literal())
+            : varAnalyzer.getVariableType(ctx.variableName().getText());
     }
 
     public static String literalType(LiteralContext ctx) {        

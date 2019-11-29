@@ -34,7 +34,7 @@ import au.csiro.data61.aap.elf.parsing.EthqlParser.LogEntryFilterContext;
 import au.csiro.data61.aap.elf.parsing.EthqlParser.LogEntryParameterContext;
 import au.csiro.data61.aap.elf.parsing.EthqlParser.LogEntrySignatureContext;
 import au.csiro.data61.aap.elf.parsing.EthqlParser.MethodInvocationContext;
-import au.csiro.data61.aap.elf.parsing.EthqlParser.MethodParameterContext;
+import au.csiro.data61.aap.elf.parsing.EthqlParser.MethodStatementContext;
 import au.csiro.data61.aap.elf.parsing.EthqlParser.NamedEmitVariableContext;
 import au.csiro.data61.aap.elf.parsing.EthqlParser.NotExpressionContext;
 import au.csiro.data61.aap.elf.parsing.EthqlParser.OrExpressionContext;
@@ -414,16 +414,6 @@ public class CompositeEthqlListener<T extends EthqlListener> implements EthqlLis
     }
 
     @Override
-    public void enterMethodParameter(MethodParameterContext ctx) {
-        this.notifyListener(EthqlListener::enterMethodParameter, ctx);
-    }
-
-    @Override
-    public void exitMethodParameter(MethodParameterContext ctx) {
-        this.notifyListener(EthqlListener::exitMethodParameter, ctx);
-    }
-
-    @Override
     public void enterVariableName(VariableNameContext ctx) {
         this.notifyListener(EthqlListener::enterVariableName, ctx);
     }
@@ -521,5 +511,15 @@ public class CompositeEthqlListener<T extends EthqlListener> implements EthqlLis
     @Override
     public void exitValueExpression(ValueExpressionContext ctx) {
         this.notifyListener(EthqlListener::exitValueExpression, ctx);
+    }
+
+    @Override
+    public void enterMethodStatement(MethodStatementContext ctx) {
+        this.notifyListener(EthqlListener::enterMethodStatement, ctx);
+    }
+
+    @Override
+    public void exitMethodStatement(MethodStatementContext ctx) {
+        this.notifyListener(EthqlListener::exitMethodStatement, ctx);
     }
 }
