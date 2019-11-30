@@ -10,6 +10,7 @@ import org.antlr.v4.runtime.Token;
 
 import au.csiro.data61.aap.elf.core.values.EthereumVariables;
 import au.csiro.data61.aap.elf.parsing.EthqlParser.BlockFilterContext;
+import au.csiro.data61.aap.elf.parsing.EthqlParser.DocumentContext;
 import au.csiro.data61.aap.elf.parsing.EthqlParser.LogEntryFilterContext;
 import au.csiro.data61.aap.elf.parsing.EthqlParser.LogEntryParameterContext;
 import au.csiro.data61.aap.elf.parsing.EthqlParser.NamedEmitVariableContext;
@@ -102,7 +103,7 @@ public class VariableExistenceAnalyzer extends SemanticAnalyzer {
 
     private void verifyVariableDeclaration(Token token, String solType, String variableName) {
         if (this.isVariableDefined(variableName)) {
-            this.addError(token, String.format("Variable '%s' is already defined."));
+            this.addError(token, String.format("Variable '%s' is already defined.", variableName));
             return;
         }
 
@@ -128,7 +129,7 @@ public class VariableExistenceAnalyzer extends SemanticAnalyzer {
 
     private boolean verifyVariableReference(Token token, String variableName) {
         if (!this.isVariableDefined(variableName)) {
-            this.addError(token, String.format("Variable '%s' not defined."));
+            this.addError(token, String.format("Variable '%s' not defined.", variableName));
             return false;
         }
         return true;
@@ -141,12 +142,30 @@ public class VariableExistenceAnalyzer extends SemanticAnalyzer {
     // #region scope variables
 
     @Override
+    public void enterDocument(DocumentContext ctx) {
+        this.addEmptyVariableList();
+    }
+
+    @Override
+    public void exitDocument(DocumentContext ctx) {
+        this.removeVariableList();
+    }
+
+    @Override
     public void enterScope(ScopeContext ctx) {
-        this.visibleVariables.push(new LinkedList<>());
+        this.addEmptyVariableList();
     }
 
     @Override
     public void exitScope(ScopeContext ctx) {
+        this.removeVariableList();
+    }
+
+    private void addEmptyVariableList() {
+        this.visibleVariables.push(new LinkedList<>());
+    }
+
+    private void removeVariableList() {
         this.visibleVariables.pop();
     }
 
@@ -167,7 +186,7 @@ public class VariableExistenceAnalyzer extends SemanticAnalyzer {
 
     private void addFilterConstants(Map<String, String> nameTypeMap) {
         nameTypeMap.entrySet().stream()
-            .forEach(entry -> this.addConstant(entry.getKey(), entry.getValue()));
+            .forEach(entry -> this.addConstant(entry.getValue(), entry.getKey()));
     }
 
     // #endregion scope variables

@@ -26,7 +26,7 @@ filter
     ;
 
 blockFilter
-    : KEY_BLOCK_RANGE '(' from=blockNumber ',' to=blockNumber ')'
+    : KEY_BLOCK_RANGE '(' from=blockNumber ')' '(' to=blockNumber ')'
     ;
 
 blockNumber
@@ -80,7 +80,7 @@ emitStatement
     ;
 
 emitStatementCsv
-    : KEY_EMIT ' ' KEY_CSV_ROW '(' tableName=STRING_LITERAL ')' '(' namedEmitVariable+ ')'	
+    : KEY_EMIT KEY_CSV_ROW '(' tableName=valueExpression ')' '(' namedEmitVariable (',' namedEmitVariable)* ')'	';'
     ;
 
 namedEmitVariable
@@ -88,11 +88,11 @@ namedEmitVariable
     ;
 
 emitStatementLog
-    : KEY_EMIT ' ' KEY_LOG_LINE '(' valueExpression+ ')'
+    : KEY_EMIT KEY_LOG_LINE '(' valueExpression+ ')' ';'
     ;
 
 emitStatementXes
-    : KEY_EMIT ' ' (KEY_XES_EVENT|KEY_XES_TRACE) '(' (pid=valueExpression)? ')' '(' (piid=valueExpression)?')' '(' (eid=valueExpression)? ')' '(' xesEmitVariable+ ')'
+    : KEY_EMIT (KEY_XES_EVENT|KEY_XES_TRACE) '(' (pid=valueExpression)? ')' '(' (piid=valueExpression)?')' '(' (eid=valueExpression)? ')' '(' xesEmitVariable+ ')' ';'
     ;
 
 xesEmitVariable
@@ -230,19 +230,19 @@ arrayLiteral
     ;
 
 stringArrayLiteral
-    : '{' (STRING_LITERAL (',' STRING_LITERAL)*)? '}'
+    : '[' (STRING_LITERAL (',' STRING_LITERAL)*)? ']'
     ;
 
 intArrayLiteral
-    : '{' ((INT_LITERAL) (',' INT_LITERAL)*)? '}'
+    : '[' ((INT_LITERAL) (',' INT_LITERAL)*)? ']'
     ;
 
 booleanArrayLiteral
-    : '{' (BOOLEAN_LITERAL (',' BOOLEAN_LITERAL)*)? '}'
+    : '[' (BOOLEAN_LITERAL (',' BOOLEAN_LITERAL)*)? ']'
     ;
 
 bytesArrayLiteral
-    : '{' (BYTES_LITERAL (',' BYTES_LITERAL)*)? '}'
+    : '[' (BYTES_LITERAL (',' BYTES_LITERAL)*)? ']'
     ;
 
 STRING_LITERAL : '"' ('\\"' | ~["\r\n])* '"';
@@ -263,8 +263,7 @@ BYTES_LITERAL : '0x' [0-9a-fA-F]+;
 solTypeRule : solType EOF;
 
 solType 
-    :
-    | SOL_ADDRESS_TYPE
+    : SOL_ADDRESS_TYPE
     | SOL_BOOL_TYPE
     | SOL_BYTE_TYPE
     | SOL_INT_TYPE
@@ -369,12 +368,14 @@ fragment LetterOrDigit
 		{Character.isJavaIdentifierPart(Character.toCodePoint((char)_input.LA(-2), (char)_input.LA(-1)))}?
 	;
 
-WS : [ \u000B\t\r\n]+ -> skip;
+WS 
+    : [ \u000B\t\r\n]+ -> skip
+    ;
 
 COMMENT
-    :   '/*' .*? '*/' -> skip
+    : '/*' .*? '*/' -> skip
     ;
 
 LINE_COMMENT
-    :   '//' ~[\r\n]* -> skip
+    : '//' ~[\r\n]* -> skip
     ;

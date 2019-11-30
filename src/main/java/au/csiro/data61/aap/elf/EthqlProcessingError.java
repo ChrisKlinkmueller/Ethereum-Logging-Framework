@@ -19,7 +19,7 @@ public class EthqlProcessingError {
         assert token != null;
         assert errorMessage != null && !errorMessage.trim().isEmpty();
         this.line = token.getLine();
-        this.column = token.getStartIndex();
+        this.column = token.getCharPositionInLine();
         this.errorMessage = errorMessage;
         this.errorCause = cause;
     }

@@ -5,7 +5,6 @@ import java.io.FileInputStream;
 import java.io.FileNotFoundException;
 import java.io.InputStream;
 import java.util.List;
-import java.util.stream.Collectors;
 
 import org.antlr.v4.runtime.tree.ParseTree;
 
@@ -22,14 +21,25 @@ public class Validator {
     }
     
     public List<EthqlProcessingError> analyzeScript(String ethqlFile) throws EthqlProcessingException {
-        final EthqlProcessingResult<ParseTree> result = parseScript(ethqlFile);
+        final EthqlProcessingResult<ParseTree> result = this.parseScript(ethqlFile);
         assert result != null;
-        return result.errorStream().collect(Collectors.toList());
+        return result.getErrors();
+    }
+
+    public List<EthqlProcessingError> analyzeScript(InputStream stream) throws EthqlProcessingException {
+        final EthqlProcessingResult<ParseTree> result = this.parseScript(stream);
+        return result.getErrors();
     }
     
     EthqlProcessingResult<ParseTree> parseScript(String ethqlFile) throws EthqlProcessingException {
+        assert ethqlFile != null;
         final InputStream fileStream = this.createFileStream(ethqlFile);
-        return this.interpreter.parseDocument(fileStream);        
+        return parseScript(fileStream);
+    }
+
+    EthqlProcessingResult<ParseTree> parseScript(InputStream stream) throws EthqlProcessingException {
+        assert stream != null;
+        return this.interpreter.parseDocument(stream);        
     }
 
     private InputStream createFileStream(String ethqlFile) throws EthqlProcessingException {

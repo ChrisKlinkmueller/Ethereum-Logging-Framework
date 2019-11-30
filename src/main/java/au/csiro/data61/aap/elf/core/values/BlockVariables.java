@@ -30,7 +30,7 @@ public class BlockVariables {
     public static final String BLOCK_GAS_LIMIT = "block.gasLimit";
     public static final String BLOCK_GAS_USED = "block.gasUsed";
     public static final String BLOCK_TIMESTAMP = "block.timestamp";
-    public static final String BLOCK_TRANSACTIONS = "block.transactions";
+    public static final String BLOCK_TRANSACTIONS = "block.transactionCount";
 
     static {
         BLOCK_VARIABLES = new HashSet<>();

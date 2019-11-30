@@ -61,7 +61,7 @@ public class ExpressionStatementAnalyzer extends SemanticAnalyzer {
 
     private String determineExpressionReturnType(StatementExpressionContext statementExpression) {
         if (statementExpression.valueExpression() != null) {
-            return ParserUtils.determineType(statementExpression.valueExpression(), this.varAnalyzer);
+            return InterpreterUtils.determineType(statementExpression.valueExpression(), this.varAnalyzer);
         }
         else if (statementExpression.methodInvocation() != null) {
             return this.verifyMethodInvocation(statementExpression.methodInvocation());
@@ -95,7 +95,7 @@ public class ExpressionStatementAnalyzer extends SemanticAnalyzer {
     private List<String> determineParameterTypes(MethodInvocationContext ctx) {
         final List<String> paramTypes = new ArrayList<>();
         for (ValueExpressionContext paramCtx : ctx.valueExpression()) {
-            final String type = ParserUtils.determineType(paramCtx, this.varAnalyzer);
+            final String type = InterpreterUtils.determineType(paramCtx, this.varAnalyzer);
             if (type == null) {
                 return null;
             }

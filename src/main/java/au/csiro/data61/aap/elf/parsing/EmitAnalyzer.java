@@ -10,8 +10,10 @@ import org.antlr.v4.runtime.ParserRuleContext;
 import au.csiro.data61.aap.elf.core.writers.XesWriter;
 import au.csiro.data61.aap.elf.parsing.EthqlParser.EmitStatementCsvContext;
 import au.csiro.data61.aap.elf.parsing.EthqlParser.EmitStatementXesContext;
+import au.csiro.data61.aap.elf.parsing.EthqlParser.ValueExpressionContext;
 import au.csiro.data61.aap.elf.parsing.EthqlParser.VariableNameContext;
 import au.csiro.data61.aap.elf.parsing.EthqlParser.XesEmitVariableContext;
+import au.csiro.data61.aap.elf.util.TypeUtils;
 
 /**
  * EmitAnalyzer
@@ -31,9 +33,18 @@ public class EmitAnalyzer extends SemanticAnalyzer {
 
     @Override
     public void exitEmitStatementCsv(final EmitStatementCsvContext ctx) {
+        this.verifyTableName(ctx.valueExpression());
+
         this.verifyUniquenessOfNames(ctx.namedEmitVariable(), varCtx -> varCtx.variableName() != null
                 ? varCtx.variableName()
                 : varCtx.valueExpression().variableName() != null ? varCtx.valueExpression().variableName() : null);
+    }
+
+    private void verifyTableName(ValueExpressionContext valueExpression) {
+        String type = InterpreterUtils.determineType(valueExpression, this.varAnalyzer);
+        if (type != null && !TypeUtils.isStringType(type)) {
+            this.addError(valueExpression.start, "CSV table name must be an integer.");
+        }
     }
 
     @Override
@@ -69,7 +80,7 @@ public class EmitAnalyzer extends SemanticAnalyzer {
 
     private void verifyXesTypeCompatibility(XesEmitVariableContext ctx) {
         if (ctx.xesTypes() != null) {
-            final String solType = ParserUtils.determineType(ctx.valueExpression(), varAnalyzer);
+            final String solType = InterpreterUtils.determineType(ctx.valueExpression(), varAnalyzer);
             if (solType == null) {
                 this.addError(ctx.valueExpression().start, "Cannot infer type.");
             }

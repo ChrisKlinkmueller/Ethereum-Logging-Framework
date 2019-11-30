@@ -11,6 +11,7 @@ import au.csiro.data61.aap.elf.core.exceptions.ProgramException;
  * TypeUtils
  */
 public class TypeUtils {
+    public static String ARRAY_SUFFIX = "[]";
     public static String ADDRESS_TYPE_KEYWORD = "address";
     public static String BOOL_TYPE_KEYWORD = "bool";
     public static String BYTES_TYPE_KEYWORD = "byte";
@@ -69,25 +70,29 @@ public class TypeUtils {
 
     }
 
-    public static String getArrayType(String baseType) {
-        assert baseType != null;
+    public static String toArrayType(String baseType) {
+        assert baseType != null; // TODO: check that baseType is valid type
         return String.format("%s[]", baseType);
     }
 
-    public static boolean isArrayType(String type) {
-        return type != null && type.matches(ARRAY_PATTERN);
+    public static boolean isArrayType(String solType) {
+        return solType != null && solType.matches(ARRAY_PATTERN);
     }
 
-    public static boolean isAddressType(String type) {
-        return type != null && type.equals(ADDRESS_TYPE_KEYWORD); 
+    public static boolean isAddressType(String solType) {
+        return solType != null && solType.equals(ADDRESS_TYPE_KEYWORD); 
     }
 
-	public static boolean isBooleanType(String type) {
-		return type != null && type.equals(BOOL_TYPE_KEYWORD);
+	public static boolean isBooleanType(String solType) {
+		return solType != null && solType.equals(BOOL_TYPE_KEYWORD);
 	}
 
 	public static boolean isIntegerType(String solType) {
 		return solType != null && solType.contains(INT_TYPE_KEYWORD);
+	}
+
+	public static boolean isStringType(String solType) {
+		return solType != null && solType.contains(STRING_TYPE_KEYWORD);
 	}
 
     public static Object convertValueTo(String solidityType, Object value) throws ProgramException {

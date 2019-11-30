@@ -38,7 +38,7 @@ public class EthqlInterpreter {
             return EthqlProcessingResult.ofError("The 'is' parameter was null.");
         }
 
-        final MethodResult<CharStream> charStreamResult = ParserUtils.charStreamfromInputStream(is);
+        final MethodResult<CharStream> charStreamResult = InterpreterUtils.charStreamfromInputStream(is);
         if (!charStreamResult.isSuccessful()) {
             return EthqlProcessingResult.ofUnsuccessfulMethodResult(charStreamResult);
         }

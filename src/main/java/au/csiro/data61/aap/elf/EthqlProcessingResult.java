@@ -1,6 +1,7 @@
 package au.csiro.data61.aap.elf;
 
 import java.util.Arrays;
+import java.util.List;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
@@ -42,6 +43,10 @@ public class EthqlProcessingResult<T> {
     public EthqlProcessingError getError(int index) {
         assert 0 <= index && index < this.errorCount();
         return this.errors[index];
+    }
+
+    public List<EthqlProcessingError> getErrors() {
+        return this.errorStream().collect(Collectors.toList());
     }
 
     public Stream<EthqlProcessingError> errorStream() {

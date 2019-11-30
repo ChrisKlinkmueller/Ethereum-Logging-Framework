@@ -17,10 +17,10 @@ import au.csiro.data61.aap.elf.util.MethodResult;
 import au.csiro.data61.aap.elf.util.TypeUtils;
 
 /**
- * SpecificationParserUtil
+ * InterpreterUtils
  */
-class ParserUtils {
-    private static final Logger LOG = Logger.getLogger(ParserUtils.class.getName());
+class InterpreterUtils {
+    private static final Logger LOG = Logger.getLogger(InterpreterUtils.class.getName());
 
     static MethodResult<CharStream> charStreamfromInputStream(InputStream is) {
         if (is == null) {
@@ -97,23 +97,23 @@ class ParserUtils {
             return TypeUtils.BYTES_TYPE_KEYWORD;
         }
         else if (ctx.INT_LITERAL() != null) {
-            return TypeUtils.BYTES_TYPE_KEYWORD;
+            return TypeUtils.INT_TYPE_KEYWORD;
         }
         else if (ctx.STRING_LITERAL() != null) {
             return TypeUtils.STRING_TYPE_KEYWORD;
         }
         else if (ctx.arrayLiteral() != null) {
             if (ctx.arrayLiteral().booleanArrayLiteral() != null) {
-                return TypeUtils.BOOL_TYPE_KEYWORD;
+                return TypeUtils.toArrayType(TypeUtils.BOOL_TYPE_KEYWORD);
             }
             if (ctx.arrayLiteral().bytesArrayLiteral() != null) {
-                return TypeUtils.BYTES_TYPE_KEYWORD;
+                return TypeUtils.toArrayType(TypeUtils.BYTES_TYPE_KEYWORD);
             }
             if (ctx.arrayLiteral().intArrayLiteral() != null) {
-                return TypeUtils.INT_TYPE_KEYWORD;
+                return TypeUtils.toArrayType(TypeUtils.INT_TYPE_KEYWORD);
             }
             if (ctx.arrayLiteral().stringArrayLiteral() != null) {
-                return TypeUtils.STRING_TYPE_KEYWORD;
+                return TypeUtils.toArrayType(TypeUtils.STRING_TYPE_KEYWORD);
             }
         } 
 
