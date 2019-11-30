@@ -21,8 +21,9 @@ public class ValidatorTest {
     }
 
     private static void test(Validator validator, String resource) {
+        System.out.println("Test case: " + resource);
         final URL url = ValidatorTest.class.getClassLoader().getResource(resource);
-        System.out.println(url);
+        
 
         try {
             List<EthqlProcessingError> errors = validator.analyzeScript(url.getFile());
@@ -39,5 +40,6 @@ public class ValidatorTest {
             e.printStackTrace();
         }
 
+        System.out.println();
     }
 }

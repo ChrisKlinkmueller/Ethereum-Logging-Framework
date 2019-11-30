@@ -261,6 +261,7 @@ public class XesWriter extends DataWriter {
     );
 
 	public static boolean areTypesCompatible(String solType, String xesType) {
-		return SUPPORTED_SOL_TO_XES_CASTS.getOrDefault(solType, Collections.emptySet()).contains(xesType);
+        final String rootType = TypeUtils.getRootType(solType);
+		return SUPPORTED_SOL_TO_XES_CASTS.getOrDefault(rootType, Collections.emptySet()).contains(xesType);
 	}
 }

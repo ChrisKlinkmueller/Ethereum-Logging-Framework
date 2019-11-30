@@ -17,7 +17,7 @@ public class TypeUtils {
     public static String BYTES_TYPE_KEYWORD = "byte";
     public static String INT_TYPE_KEYWORD = "int";
     public static String STRING_TYPE_KEYWORD = "string";
-    private static final String ARRAY_PATTERN = "[a-z0-9\\[\\]]+\\[\\]";
+    private static final String ARRAY_PATTERN = "[a-zA-Z0-9\\[\\]]+\\[\\]";
 
     public static boolean areCompatible(String type, String expectedType) {
         assert type != null && expectedType != null;
@@ -118,9 +118,14 @@ public class TypeUtils {
 		return isBytesLiteral(literal, ADDRESS_BYTES_LENGTH);
     }
     
-    private static final String BYTES_PATTERN = "0[xX][0-9a-fA-F]";
+    private static final String BYTES_PATTERN = "0[xX][0-9a-fA-F]+";
 	public static boolean isBytesLiteral(String literal, int bytesLength) {
         assert 0 < bytesLength && bytesLength <= 32;
-        return literal != null && literal.matches(BYTES_PATTERN) && literal.length() == 2 * (bytesLength + 1);
+        if (literal == null) {
+            return false;
+        }
+        final boolean matchesBytesPattern = literal.matches(BYTES_PATTERN);
+        final boolean hasLength = literal.length() == 2 * (bytesLength + 1);
+        return matchesBytesPattern && hasLength;
     }
 }

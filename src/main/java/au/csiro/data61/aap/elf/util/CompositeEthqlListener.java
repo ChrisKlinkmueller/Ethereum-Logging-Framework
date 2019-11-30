@@ -24,7 +24,8 @@ import au.csiro.data61.aap.elf.parsing.EthqlParser.DocumentContext;
 import au.csiro.data61.aap.elf.parsing.EthqlParser.EmitStatementContext;
 import au.csiro.data61.aap.elf.parsing.EthqlParser.EmitStatementCsvContext;
 import au.csiro.data61.aap.elf.parsing.EthqlParser.EmitStatementLogContext;
-import au.csiro.data61.aap.elf.parsing.EthqlParser.EmitStatementXesContext;
+import au.csiro.data61.aap.elf.parsing.EthqlParser.EmitStatementXesEventContext;
+import au.csiro.data61.aap.elf.parsing.EthqlParser.EmitStatementXesTraceContext;
 import au.csiro.data61.aap.elf.parsing.EthqlParser.ExpressionStatementContext;
 import au.csiro.data61.aap.elf.parsing.EthqlParser.FilterContext;
 import au.csiro.data61.aap.elf.parsing.EthqlParser.GenericFilterContext;
@@ -264,17 +265,6 @@ public class CompositeEthqlListener<T extends EthqlListener> implements EthqlLis
     @Override
     public void exitEmitStatementLog(EmitStatementLogContext ctx) {
         this.notifyListener(EthqlListener::exitEmitStatementLog, ctx);
-    }
-
-    @Override
-    public void enterEmitStatementXes(EmitStatementXesContext ctx) {
-        this.notifyListener(EthqlListener::enterEmitStatementXes, ctx);
-
-    }
-
-    @Override
-    public void exitEmitStatementXes(EmitStatementXesContext ctx) {
-        this.notifyListener(EthqlListener::exitEmitStatementXes, ctx);
     }
 
     @Override
@@ -521,5 +511,25 @@ public class CompositeEthqlListener<T extends EthqlListener> implements EthqlLis
     @Override
     public void exitMethodStatement(MethodStatementContext ctx) {
         this.notifyListener(EthqlListener::exitMethodStatement, ctx);
+    }
+
+    @Override
+    public void enterEmitStatementXesTrace(EmitStatementXesTraceContext ctx) {
+        this.notifyListener(EthqlListener::enterEmitStatementXesTrace, ctx);
+    }
+
+    @Override
+    public void exitEmitStatementXesTrace(EmitStatementXesTraceContext ctx) {
+        this.notifyListener(EthqlListener::exitEmitStatementXesTrace, ctx);
+    }
+
+    @Override
+    public void enterEmitStatementXesEvent(EmitStatementXesEventContext ctx) {
+        this.notifyListener(EthqlListener::enterEmitStatementXesEvent, ctx);
+    }
+
+    @Override
+    public void exitEmitStatementXesEvent(EmitStatementXesEventContext ctx) {
+        this.notifyListener(EthqlListener::exitEmitStatementXesEvent, ctx);
     }
 }

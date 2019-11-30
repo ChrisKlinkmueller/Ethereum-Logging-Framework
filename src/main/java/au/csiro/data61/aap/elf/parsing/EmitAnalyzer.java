@@ -9,7 +9,8 @@ import org.antlr.v4.runtime.ParserRuleContext;
 
 import au.csiro.data61.aap.elf.core.writers.XesWriter;
 import au.csiro.data61.aap.elf.parsing.EthqlParser.EmitStatementCsvContext;
-import au.csiro.data61.aap.elf.parsing.EthqlParser.EmitStatementXesContext;
+import au.csiro.data61.aap.elf.parsing.EthqlParser.EmitStatementXesEventContext;
+import au.csiro.data61.aap.elf.parsing.EthqlParser.EmitStatementXesTraceContext;
 import au.csiro.data61.aap.elf.parsing.EthqlParser.ValueExpressionContext;
 import au.csiro.data61.aap.elf.parsing.EthqlParser.VariableNameContext;
 import au.csiro.data61.aap.elf.parsing.EthqlParser.XesEmitVariableContext;
@@ -48,12 +49,33 @@ public class EmitAnalyzer extends SemanticAnalyzer {
     }
 
     @Override
-    public void exitEmitStatementXes(final EmitStatementXesContext ctx) {
+    public void exitEmitStatementXesEvent(EmitStatementXesEventContext ctx) {
         this.verifyUniquenessOfNames(ctx.xesEmitVariable(),
                 varCtx -> varCtx.variableName() != null ? varCtx.variableName()
                         : varCtx.valueExpression() != null ? varCtx.valueExpression().variableName() : null);
-
         this.verifyXesTypeCompatibility(ctx.xesEmitVariable());
+        this.verifyXesId(ctx.pid);
+        this.verifyXesId(ctx.piid);
+        this.verifyXesId(ctx.eid);
+    }
+
+    @Override
+    public void exitEmitStatementXesTrace(EmitStatementXesTraceContext ctx) {
+        this.verifyUniquenessOfNames(ctx.xesEmitVariable(),
+                varCtx -> varCtx.variableName() != null ? varCtx.variableName()
+                        : varCtx.valueExpression() != null ? varCtx.valueExpression().variableName() : null);
+        this.verifyXesTypeCompatibility(ctx.xesEmitVariable());
+        this.verifyXesId(ctx.pid);
+        this.verifyXesId(ctx.piid);
+    }
+
+    private void verifyXesId(ValueExpressionContext ctx) {
+        if (ctx != null) {
+            final String type = InterpreterUtils.determineType(ctx, this.varAnalyzer);
+            if (type != null && !XesWriter.areTypesCompatible(type, XesWriter.STRING_TYPE)) {
+                this.addError(ctx.start, "An XES id must be a string value.");
+            }
+        }
     }
 
     private <T extends ParserRuleContext> void verifyUniquenessOfNames(final List<T> variables,

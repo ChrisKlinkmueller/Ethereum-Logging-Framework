@@ -76,7 +76,8 @@ genericFilter
 emitStatement
     : emitStatementCsv
     | emitStatementLog
-    | emitStatementXes
+    | emitStatementXesEvent
+    | emitStatementXesTrace
     ;
 
 emitStatementCsv
@@ -91,8 +92,12 @@ emitStatementLog
     : KEY_EMIT KEY_LOG_LINE '(' valueExpression+ ')' ';'
     ;
 
-emitStatementXes
-    : KEY_EMIT (KEY_XES_EVENT|KEY_XES_TRACE) '(' (pid=valueExpression)? ')' '(' (piid=valueExpression)?')' '(' (eid=valueExpression)? ')' '(' xesEmitVariable+ ')' ';'
+emitStatementXesTrace
+    : KEY_EMIT KEY_XES_TRACE '(' (pid=valueExpression)? ')' '(' (piid=valueExpression)?')' '(' xesEmitVariable+ ')' ';'
+    ;
+
+emitStatementXesEvent
+    : KEY_EMIT KEY_XES_EVENT '(' (pid=valueExpression)? ')' '(' (piid=valueExpression)?')' '(' (eid=valueExpression)? ')' '(' xesEmitVariable+ ')' ';'
     ;
 
 xesEmitVariable
@@ -194,7 +199,7 @@ KEY_CONTINUOUS : C O N T I N U O U S;
 KEY_ANY : A N Y;
 KEY_TRANSACTIONS : T R A N S A C T I O N S;
 KEY_SMART_CONTRACT : S M A R T ' ' C O N T R A C T;
-KEY_LOG_ENTRIES : L O G ' ' E N T R Y ;
+KEY_LOG_ENTRIES : L O G ' ' E N T R I E S ;
 KEY_INDEXED : 'indexed';
 KEY_SKIP_INDEXED : '_indexed_';
 KEY_SKIP_DATA : '_';

@@ -79,7 +79,9 @@ public class MethodSignature {
         }
 
         for (int i = 0; i < signature.parameterTypeCount(); i++) {
-            if (!TypeUtils.areCompatible(signature.getParameterType(i), this.getParameterType(i))) {
+            final String signatureType = signature.getParameterType(i);
+            final String expectedType = this.getParameterType(i);
+            if (!TypeUtils.areCompatible(signatureType, expectedType)) {
                 return false;
             }
         }
