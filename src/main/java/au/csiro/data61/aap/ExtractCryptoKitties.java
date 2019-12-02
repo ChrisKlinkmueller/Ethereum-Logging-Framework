@@ -4,9 +4,10 @@ import au.csiro.data61.aap.elf.configuration.AddressListSpecification;
 import au.csiro.data61.aap.elf.configuration.BlockNumberSpecification;
 import au.csiro.data61.aap.elf.configuration.BuildException;
 import au.csiro.data61.aap.elf.configuration.GenericFilterPredicateSpecification;
+import au.csiro.data61.aap.elf.configuration.LogEntryParameterSpecification;
 import au.csiro.data61.aap.elf.configuration.LogEntrySignatureSpecification;
 import au.csiro.data61.aap.elf.configuration.MethodSpecification;
-import au.csiro.data61.aap.elf.configuration.ProgramBuilder;
+import au.csiro.data61.aap.elf.configuration.SpecificationComposer;
 import au.csiro.data61.aap.elf.configuration.ValueAccessorSpecification;
 import au.csiro.data61.aap.elf.configuration.ValueMutatorSpecification;
 import au.csiro.data61.aap.elf.configuration.XesExportSpecification;
@@ -34,7 +35,7 @@ public class ExtractCryptoKitties {
     }
 
     private static Instruction buildProgram() throws BuildException {
-        final ProgramBuilder builder = new ProgramBuilder();
+        final SpecificationComposer builder = new SpecificationComposer();
 
         builder.prepareProgramBuild();
             builder.addMethodCall(MethodSpecification.of("connect", "string"), ValueAccessorSpecification.stringLiteral(URL));
@@ -55,7 +56,7 @@ public class ExtractCryptoKitties {
         return builder.buildProgram();
     }       
 
-    private static void addBirthEventHandlers(ProgramBuilder builder) throws BuildException {
+    private static void addBirthEventHandlers(SpecificationComposer builder) throws BuildException {
         builder.prepareLogEntryFilterBuild();
         
             // add kitty to known kitties and create trace as well as birth event
@@ -77,15 +78,17 @@ public class ExtractCryptoKitties {
         builder.buildLogEntryFilter(
             AddressListSpecification.ofAddress("0x06012c8cf97BEaD5deAe237070F9587f8E7A266d"), 
             LogEntrySignatureSpecification.of(
-                "Birth", 
-                new String[]{"address", "uint256", "uint256", "uint256", "uint256"}, 
-                new String[]{"owner", "kittyId", "matronId", "sireId", "genes"},
-                new boolean[]{false, false, false, false, false}
+                "Birth",  
+                LogEntryParameterSpecification.of("owner", "address", false), 
+                LogEntryParameterSpecification.of("kittyId", "uint256", false), 
+                LogEntryParameterSpecification.of("matronId", "uint256", false), 
+                LogEntryParameterSpecification.of("sireId", "uint256", false), 
+                LogEntryParameterSpecification.of("genes", "uint256", false)
             )    
         );
     }
 
-    private static void addTransferEventHandlers(ProgramBuilder builder) throws BuildException {
+    private static void addTransferEventHandlers(SpecificationComposer builder) throws BuildException {
         builder.prepareLogEntryFilterBuild();
 
         logConditionalEvent(builder, "tokenId", "transferred");
@@ -95,14 +98,14 @@ public class ExtractCryptoKitties {
             AddressListSpecification.ofAddress("0x06012c8cf97BEaD5deAe237070F9587f8E7A266d"), 
             LogEntrySignatureSpecification.of(
                 "Transfer", 
-                new String[]{"address", "address", "uint256"}, 
-                new String[]{"from", "to", "tokenId"},
-                new boolean[]{false, false, false}
+                LogEntryParameterSpecification.of("from", "address", false), 
+                LogEntryParameterSpecification.of("to", "address", false), 
+                LogEntryParameterSpecification.of("tokenId", "uint256", false)
             )    
         );
     }
 
-    private static void addPregnantEventHandlers(ProgramBuilder builder) throws BuildException {
+    private static void addPregnantEventHandlers(SpecificationComposer builder) throws BuildException {
         builder.prepareLogEntryFilterBuild();
 
         logConditionalEvent(builder, "matronId", "conceived as mother");
@@ -113,31 +116,33 @@ public class ExtractCryptoKitties {
             AddressListSpecification.ofAddress("0x06012c8cf97BEaD5deAe237070F9587f8E7A266d"), 
             LogEntrySignatureSpecification.of(
                 "Pregnant", 
-                new String[]{"address", "uint256", "uint256", "uint256"}, 
-                new String[]{"owner", "matronId", "sireId", "cooldownEndBlock"},
-                new boolean[]{false, false, false, false}
+                LogEntryParameterSpecification.of("owner", "address", false), 
+                LogEntryParameterSpecification.of("matronId", "uint256", false), 
+                LogEntryParameterSpecification.of("sireId", "uint256", false), 
+                LogEntryParameterSpecification.of("cooldownEndBlock", "uint256", false)
             )    
         );
     }
 
-    private static void addAuctionCreatedEventHandlers(ProgramBuilder builder) throws BuildException {
+    private static void addAuctionCreatedEventHandlers(SpecificationComposer builder) throws BuildException {
         builder.prepareLogEntryFilterBuild();
 
         logConditionalEvent(builder, "tokenId", "put up for auction");
 
-        // event AuctionCreated(uint256 tokenId, uint256 startingPrice, uint256 endingPrice, uint256 );
+        // event AuctionCreated(uint256 tokenId, uint256 startingPrice, uint256 endingPrice, uint256 duration);
         builder.buildLogEntryFilter(
             AddressListSpecification.ofAddress("0xb1690c08e213a35ed9bab7b318de14420fb57d8c"), 
             LogEntrySignatureSpecification.of(
-                "AuctionCreated", 
-                new String[]{"uint256", "uint256", "uint256", "uint256"}, 
-                new String[]{"tokenId", "startingPrice", "endingPrice", "duration"},
-                new boolean[]{false, false, false, false}
+                "AuctionCreated",
+                LogEntryParameterSpecification.of("tokenId", "uint256", false), 
+                LogEntryParameterSpecification.of("startingPrice", "uint256", false), 
+                LogEntryParameterSpecification.of("endingPrice", "uint256", false), 
+                LogEntryParameterSpecification.of("duration", "uint256", false)
             )    
         );
     }
 
-    private static void addAuctionSuccessfulEventHandlers(ProgramBuilder builder) throws BuildException {
+    private static void addAuctionSuccessfulEventHandlers(SpecificationComposer builder) throws BuildException {
         builder.prepareLogEntryFilterBuild();
 
         logConditionalEvent(builder, "tokenId", "auctioned");
@@ -147,14 +152,14 @@ public class ExtractCryptoKitties {
             AddressListSpecification.ofAddress("0xb1690c08e213a35ed9bab7b318de14420fb57d8c"), 
             LogEntrySignatureSpecification.of(
                 "AuctionSuccessful", 
-                new String[]{"uint256", "uint256", "uint256"}, 
-                new String[]{"tokenId", "totalPrice", "winner"},
-                new boolean[]{false, false, false}
+                LogEntryParameterSpecification.of("tokenId", "uint256", false), 
+                LogEntryParameterSpecification.of("totalPrice", "uint256", false), 
+                LogEntryParameterSpecification.of("winner", "address", false)
             )    
         );
     }
 
-    private static void addAuctionCancelledEventHandlers(ProgramBuilder builder) throws BuildException {
+    private static void addAuctionCancelledEventHandlers(SpecificationComposer builder) throws BuildException {
         builder.prepareLogEntryFilterBuild();
 
         logConditionalEvent(builder, "tokenId", "not auctioned");
@@ -164,21 +169,19 @@ public class ExtractCryptoKitties {
             AddressListSpecification.ofAddress("0xb1690c08e213a35ed9bab7b318de14420fb57d8c"), 
             LogEntrySignatureSpecification.of(
                 "AuctionCancelled", 
-                new String[]{"uint256"}, 
-                new String[]{"tokenId"},
-                new boolean[]{false}
+                LogEntryParameterSpecification.of("tokenId", "uint256", false)
             )    
         );
     }
 
-    private static void logConditionalEvent(ProgramBuilder builder, String piid, String eventName) throws BuildException {
+    private static void logConditionalEvent(SpecificationComposer builder, String piid, String eventName) throws BuildException {
         builder.prepareGenericFilterBuild();
             logEvent(builder, piid, eventName);
         builder.buildGenericFilter(GenericFilterPredicateSpecification.in(ValueAccessorSpecification.ofVariable("kitties"), ValueAccessorSpecification.ofVariable(piid)));
 
     }
 
-    private static void logEvent(ProgramBuilder builder, String piid, String eventName) throws BuildException {
+    private static void logEvent(SpecificationComposer builder, String piid, String eventName) throws BuildException {
         builder.addInstruction(XesExportSpecification.ofEventExport(null, ValueAccessorSpecification.ofVariable(piid), null,
             XesParameterSpecification.ofStringParameter("concept:name", ValueAccessorSpecification.stringLiteral(eventName))
         ));

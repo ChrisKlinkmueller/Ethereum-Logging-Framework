@@ -9,7 +9,7 @@ import au.csiro.data61.aap.elf.configuration.BlockNumberSpecification;
 import au.csiro.data61.aap.elf.configuration.BuildException;
 import au.csiro.data61.aap.elf.configuration.CsvExportSpecification;
 import au.csiro.data61.aap.elf.configuration.MethodSpecification;
-import au.csiro.data61.aap.elf.configuration.ProgramBuilder;
+import au.csiro.data61.aap.elf.configuration.SpecificationComposer;
 import au.csiro.data61.aap.elf.configuration.ValueAccessorSpecification;
 import au.csiro.data61.aap.elf.configuration.ValueMutatorSpecification;
 import au.csiro.data61.aap.elf.core.Instruction;
@@ -39,7 +39,7 @@ public class ExtractTransactionStatistics {
     private static final String TOTAL_EARNINGS = "totalEarnings";
     private static final String TRANSACTION_EARNINGS = "transactionEarnings";
     private static Instruction buildProgram() throws BuildException {
-        final ProgramBuilder builder = new ProgramBuilder();
+        final SpecificationComposer builder = new SpecificationComposer();
         builder.prepareProgramBuild();
 
         builder.addMethodCall(MethodSpecification.of("connect", "string"), ValueAccessorSpecification.stringLiteral(URL));
@@ -72,7 +72,7 @@ public class ExtractTransactionStatistics {
         return builder.buildProgram();
     }
 
-    private static void addCsvExport(ProgramBuilder builder) throws BuildException {
+    private static void addCsvExport(SpecificationComposer builder) throws BuildException {
         final List<String> names = Arrays.asList(
             BlockVariables.BLOCK_HASH, 
             BlockVariables.BLOCK_NUMBER, 

@@ -1,7 +1,7 @@
 connect("ws://localhost:8546/");
 setOutputFolder("C:/Development/xes-blockchain/v0.2/test_output/kitties");
-int[] kitties = [0];
 
+int[] kitties = [0];
 BLOCKS (6605100) (6615100) {
     LOG ENTRIES (0x06012c8cf97BEaD5deAe237070F9587f8E7A266d) (Birth(address owner, uint256 kittyId, uint256 matronId, uint256 sireId, uint256 genes)) {
         add(kitties, kittyId);

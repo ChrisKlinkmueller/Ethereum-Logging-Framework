@@ -10,7 +10,7 @@ import au.csiro.data61.aap.elf.configuration.BuildException;
 import au.csiro.data61.aap.elf.configuration.CsvExportSpecification;
 import au.csiro.data61.aap.elf.configuration.GenericFilterPredicateSpecification;
 import au.csiro.data61.aap.elf.configuration.MethodSpecification;
-import au.csiro.data61.aap.elf.configuration.ProgramBuilder;
+import au.csiro.data61.aap.elf.configuration.SpecificationComposer;
 import au.csiro.data61.aap.elf.configuration.ValueAccessorSpecification;
 import au.csiro.data61.aap.elf.configuration.ValueMutatorSpecification;
 import au.csiro.data61.aap.elf.core.Instruction;
@@ -39,7 +39,7 @@ public class ExtractUnsuccesfulTransactions {
     }
 
     private static Instruction buildProgram() throws BuildException {
-        final ProgramBuilder builder = new ProgramBuilder();
+        final SpecificationComposer builder = new SpecificationComposer();
         builder.prepareProgramBuild();
 
         builder.addMethodCall(MethodSpecification.of("connect", "string"), ValueAccessorSpecification.stringLiteral(URL));
@@ -92,7 +92,7 @@ public class ExtractUnsuccesfulTransactions {
         return builder.buildProgram();
     }
 
-    private static void addCsvExport(ProgramBuilder builder, String tableName, String... variableNames) throws BuildException {
+    private static void addCsvExport(SpecificationComposer builder, String tableName, String... variableNames) throws BuildException {
         final List<String> names = Arrays.asList(variableNames);
         final List<ValueAccessorSpecification> valueAccessors = names.stream()
             .map(name -> ValueAccessorSpecification.ofVariable(name))

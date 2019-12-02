@@ -19,13 +19,13 @@ import au.csiro.data61.aap.elf.core.values.ValueAccessor;
 import au.csiro.data61.aap.elf.core.values.ValueMutator;
 
 /**
- * ProgramFactory
+ * SpecificationComposer
  */
-public class ProgramBuilder {
+public class SpecificationComposer {
     private final Stack<FactoryState> states;
     private final Stack<List<Instruction>> instructions;
 
-    public ProgramBuilder() {
+    public SpecificationComposer() {
         this.instructions = new Stack<>();
         this.states = new Stack<>();
     }

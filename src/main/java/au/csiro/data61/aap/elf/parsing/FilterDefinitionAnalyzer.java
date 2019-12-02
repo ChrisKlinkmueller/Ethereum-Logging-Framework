@@ -36,15 +36,9 @@ public class FilterDefinitionAnalyzer extends SemanticAnalyzer {
 
     @Override
     public void exitBlockFilter(final BlockFilterContext ctx) {
-        if (ctx.from.INT_LITERAL() != null && ctx.to.INT_LITERAL() != null) {
-            final BigInteger from = TypeUtils.integerFromLiteral(ctx.from.getText());
-            final BigInteger to = TypeUtils.integerFromLiteral(ctx.to.getText());
-            if (from.compareTo(to) > 0) {
-                this.errorCollector.addSemanticError(ctx.from.start,
-                        "The 'from' parameter must be smaller than or equal to the 'to' parameter.");
-            }
-            return;
-        }
+        this.verifyBlockNumberLiterals(ctx);
+        this.verifyBlockNumberVariable(ctx.to);
+        this.verifyBlockNumberVariable(ctx.from);
 
         if (ctx.from.KEY_CONTINUOUS() != null) {
             this.errorCollector.addSemanticError(ctx.from.start, "The 'from' parameter cannot be set to CONTINUOUS.");
@@ -53,20 +47,38 @@ public class FilterDefinitionAnalyzer extends SemanticAnalyzer {
         if (ctx.to.KEY_EARLIEST() != null) {
             this.errorCollector.addSemanticError(ctx.to.start, "The 'to' parameter cannot be set to EARLIEST.");
         }
+    }
 
-        if (ctx.from.variableName() != null) {
-            this.verifyBlockNumberVariable(ctx.from);
+    private void verifyBlockNumberLiterals(BlockFilterContext ctx) {
+        if (!this.checkBlockNumberLiteral(ctx.to) || !this.checkBlockNumberLiteral(ctx.from)) {
+            return;
         }
 
-        if (ctx.to.variableName() != null) {
-            this.verifyBlockNumberVariable(ctx.to);
+        final BigInteger from = TypeUtils.integerFromLiteral(ctx.from.getText());
+        final BigInteger to = TypeUtils.integerFromLiteral(ctx.to.getText());
+        if (from.compareTo(to) > 0) {
+            this.errorCollector.addSemanticError(ctx.from.start,
+                    "The 'from' parameter must be smaller than or equal to the 'to' parameter.");
         }
     }
 
+    private boolean checkBlockNumberLiteral(BlockNumberContext ctx) {
+        if (   ctx.valueExpression() != null 
+            && ctx.valueExpression().literal() != null 
+            && ctx.valueExpression().literal().INT_LITERAL() == null
+        ) {
+            this.addError(ctx.start, "BlockNumber must be an integer value or variable.");
+            return true;
+        }
+        return false;
+    }
+
     private void verifyBlockNumberVariable(final BlockNumberContext ctx) {
-        final String solType = this.variableAnalyzer.getVariableType(ctx.variableName().getText());
-        if (solType != null && !TypeUtils.isIntegerType(solType)) {
-            this.addError(ctx.start, String.format("'%s' must be an integer variable.", ctx.variableName().getText()));
+        if (ctx.valueExpression() != null && ctx.valueExpression().variableName() != null) {
+            final String solType = this.variableAnalyzer.getVariableType(ctx.getText());
+            if (solType != null && !TypeUtils.isIntegerType(solType)) {
+                this.addError(ctx.start, String.format("'%s' must be an integer variable.", ctx.getText()));
+            }
         }
     }
 

@@ -1,12 +1,10 @@
 package au.csiro.data61.aap.elf.configuration;
 
-import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.List;
 import java.util.Objects;
+import java.util.stream.Collectors;
 
-import org.web3j.abi.TypeReference;
-
-import au.csiro.data61.aap.elf.core.filters.LogEntryParameter;
 import au.csiro.data61.aap.elf.core.filters.LogEntrySignature;
 
 /**
@@ -23,28 +21,20 @@ public class LogEntrySignatureSpecification {
         return this.signature;
     }
 
-    public static LogEntrySignatureSpecification of(String eventName, String[] parameterTypes, String[] parameterNames, boolean[] indexed) throws BuildException {
-        assert eventName != null;
-        assert parameterTypes != null && Arrays.stream(parameterTypes).allMatch(Objects::nonNull);
-        assert parameterNames != null && Arrays.stream(parameterNames).allMatch(Objects::nonNull);
-        assert indexed != null;
-        assert parameterTypes.length == parameterNames.length && parameterTypes.length == indexed.length;
+    public static LogEntrySignatureSpecification of(String eventName, LogEntryParameterSpecification... parameters) throws BuildException {
+        return of(eventName, Arrays.asList(parameters));
+    }
 
-        try {
-            ArrayList<LogEntryParameter> parameters = new ArrayList<>();
-            for (int i = 0; i < parameterNames.length; i++) {
-                parameters.add(
-                    new LogEntryParameter(
-                        parameterNames[i], 
-                        TypeReference.makeTypeReference(parameterTypes[i], indexed[i], false)
-                    )
-                );
-            }
-            return new LogEntrySignatureSpecification(new LogEntrySignature(eventName, parameters));
-        }
-        catch (Throwable ex) {
-            throw new BuildException("Error when creating the log entry signature.", ex);
-        }
+    public static LogEntrySignatureSpecification of(String eventName, List<LogEntryParameterSpecification> parameters) throws BuildException {
+        assert eventName != null;
+        assert parameters != null && parameters.stream().allMatch(Objects::nonNull);
+
+        return new LogEntrySignatureSpecification(
+            new LogEntrySignature(
+                eventName, 
+                parameters.stream().map(p -> p.getParameter()).collect(Collectors.toList())
+            )
+        );
     }
     
 }

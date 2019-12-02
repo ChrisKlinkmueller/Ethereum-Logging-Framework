@@ -1,30 +1,37 @@
 package au.csiro.data61.aap.elf.configuration;
 
+import java.util.LinkedList;
+import java.util.stream.Collectors;
+
 import org.antlr.v4.runtime.ParserRuleContext;
 
 import au.csiro.data61.aap.elf.core.filters.Program;
 import au.csiro.data61.aap.elf.parsing.EthqlBaseListener;
+import au.csiro.data61.aap.elf.parsing.VariableExistenceAnalyzer;
 import au.csiro.data61.aap.elf.parsing.EthqlParser.AddressListContext;
 import au.csiro.data61.aap.elf.parsing.EthqlParser.BlockFilterContext;
 import au.csiro.data61.aap.elf.parsing.EthqlParser.BlockNumberContext;
 import au.csiro.data61.aap.elf.parsing.EthqlParser.DocumentContext;
+import au.csiro.data61.aap.elf.parsing.EthqlParser.LiteralContext;
 import au.csiro.data61.aap.elf.parsing.EthqlParser.LogEntryFilterContext;
-import au.csiro.data61.aap.elf.parsing.EthqlParser.StatementContext;
+import au.csiro.data61.aap.elf.parsing.EthqlParser.LogEntryParameterContext;
+import au.csiro.data61.aap.elf.parsing.EthqlParser.LogEntrySignatureContext;
 import au.csiro.data61.aap.elf.parsing.EthqlParser.TransactionFilterContext;
-import au.csiro.data61.aap.elf.parsing.VariableExistenceAnalyzer;
+import au.csiro.data61.aap.elf.parsing.EthqlParser.ValueExpressionContext;
+import au.csiro.data61.aap.elf.util.TypeUtils;
 
 /**
  * EthqlProgramBuilder
  */
 public class EthqlProgramBuilder extends EthqlBaseListener {
-    private final ProgramBuilder builder;
-    //private final VariableAnalyzer analyzer;
+    private final SpecificationComposer composer;
+    private final VariableExistenceAnalyzer analyzer;
     private BuildException error;
     private Program program;
 
     public EthqlProgramBuilder(VariableExistenceAnalyzer analyzer) {
-        this.builder = new ProgramBuilder();
-        //this.analyzer = analyzer;
+        this.composer = new SpecificationComposer();
+        this.analyzer = analyzer;
     }
 
     public boolean containsError() {
@@ -46,7 +53,7 @@ public class EthqlProgramBuilder extends EthqlBaseListener {
 
     private void prepareProgramBuild(DocumentContext ctx) throws BuildException {
         this.error = null;
-        this.builder.prepareProgramBuild();
+        this.composer.prepareProgramBuild();
     }
 
     @Override
@@ -55,7 +62,7 @@ public class EthqlProgramBuilder extends EthqlBaseListener {
     }
 
     private void buildProgram(DocumentContext ctx) throws BuildException {
-        this.program = this.builder.buildProgram();
+        this.program = this.composer.buildProgram();
     }
 
     @Override
@@ -64,7 +71,7 @@ public class EthqlProgramBuilder extends EthqlBaseListener {
     }
 
     private void prepareBlockFilterBuild(BlockFilterContext ctx) throws BuildException {
-        this.builder.prepareBlockRangeBuild();
+        this.composer.prepareBlockRangeBuild();
     }
 
     @Override
@@ -75,25 +82,22 @@ public class EthqlProgramBuilder extends EthqlBaseListener {
     private void buildBlockFilter(BlockFilterContext ctx) throws BuildException {
         BlockNumberSpecification from = this.getBlockNumberSpecification(ctx.from);
         BlockNumberSpecification to = this.getBlockNumberSpecification(ctx.to);
-        this.builder.buildBlockRange(from, to);
+        this.composer.buildBlockRange(from, to);
     }
 
     private BlockNumberSpecification getBlockNumberSpecification(BlockNumberContext ctx) throws BuildException {
-        // if (ctx.INT_LITERAL() != null) {
-        //     ValueAccessorSpecification number = this.getLiteral(TypeUtils.INT_TYPE_KEYWORD,
-        //             ctx.INT_LITERAL().toString());
-        //     return BlockNumberSpecification.ofBlockNumber(number);
-        // } else if (ctx.KEY_CURRENT() != null) {
-        //     return BlockNumberSpecification.ofCurrent();
-        // } else if (ctx.KEY_EARLIEST() != null) {
-        //     return BlockNumberSpecification.ofEarliest();
-        // } else if (ctx.KEY_PENDING() != null) {
-        //     return BlockNumberSpecification.ofContinuous();
-        // } else if (ctx.variableReference() != null) {
-        //     return BlockNumberSpecification.ofVariableName(ctx.variableReference().getText());
-        // } else {
+        if (ctx.valueExpression() != null) {
+            ValueAccessorSpecification number = this.getValueAccessor(ctx.valueExpression());
+            return BlockNumberSpecification.ofBlockNumber(number);
+        } else if (ctx.KEY_CURRENT() != null) {
+            return BlockNumberSpecification.ofCurrent();
+        } else if (ctx.KEY_EARLIEST() != null) {
+            return BlockNumberSpecification.ofEarliest();
+        } else if (ctx.KEY_CONTINUOUS() != null) {
+            return BlockNumberSpecification.ofContinuous();
+        } else {
             throw new BuildException("Unsupported variable declaration.");
-        // }
+        }
     }
 
     @Override
@@ -102,7 +106,7 @@ public class EthqlProgramBuilder extends EthqlBaseListener {
     }
 
     private void prepareTransactionFilterBuild(TransactionFilterContext ctx) throws BuildException {
-        this.builder.prepareTransactionFilterBuild();
+        this.composer.prepareTransactionFilterBuild();
     }
 
     @Override
@@ -113,27 +117,7 @@ public class EthqlProgramBuilder extends EthqlBaseListener {
     private void buildTransactionFilter(TransactionFilterContext ctx) throws BuildException {
         final AddressListSpecification senders = this.getAddressListSpecification(ctx.senders);
         final AddressListSpecification recipients = this.getAddressListSpecification(ctx.recipients);
-        this.builder.buildTransactionFilter(senders, recipients);
-    }
-
-    private AddressListSpecification getAddressListSpecification(AddressListContext ctx) throws BuildException {
-        // if (ctx.BYTE_AND_ADDRESS_LITERAL() != null) {
-        //     return AddressListSpecification.ofAddresses(
-        //         ctx.BYTE_AND_ADDRESS_LITERAL().stream()
-        //             .map(literal -> literal.getText())
-        //             .collect(Collectors.toList())
-        //     );
-        // }
-        // else if (ctx.KEY_ANY() != null) {
-        //     return AddressListSpecification.ofAny();
-        // }
-        // else if (ctx.variableReference() != null) {
-        //     return AddressListSpecification.ofAddress(ctx.variableReference().getText());
-        // }
-        // else {
-        //     return AddressListSpecification.ofEmpty();
-        // }
-        throw new BuildException("Address list building not implemented");
+        this.composer.buildTransactionFilter(senders, recipients);
     }
 
     @Override
@@ -142,7 +126,7 @@ public class EthqlProgramBuilder extends EthqlBaseListener {
     }
 
     private void prepareLogEntryFilterBuild(LogEntryFilterContext ctx) throws BuildException {
-        this.builder.prepareLogEntryFilterBuild();
+        this.composer.prepareLogEntryFilterBuild();
     }
 
     @Override
@@ -150,16 +134,128 @@ public class EthqlProgramBuilder extends EthqlBaseListener {
         this.handleEthqlElement(ctx, this::buildLogEntryFilter);
     }
 
-    private void buildLogEntryFilter(LogEntryFilterContext ctx) {
-        // TODO: implement
+    private void buildLogEntryFilter(LogEntryFilterContext ctx) throws BuildException {
+        final AddressListSpecification contracts = this.getAddressListSpecification(ctx.addressList());
+        final LogEntrySignatureSpecification signature = this.getLogEntrySignature(ctx.logEntrySignature());
+        this.composer.buildLogEntryFilter(contracts, signature);
     }
 
-    @Override
-    public void exitStatement(StatementContext ctx) {
-        this.handleEthqlElement(ctx, this::buildStatement);
+    private LogEntrySignatureSpecification getLogEntrySignature(LogEntrySignatureContext ctx) throws BuildException {
+        final LinkedList<LogEntryParameterSpecification> parameters = new LinkedList<>();
+        for (LogEntryParameterContext paramCtx : ctx.logEntryParameter()) {
+            parameters.add(
+                LogEntryParameterSpecification.of(
+                    paramCtx.variableName().getText(), 
+                    paramCtx.solType().getText(), 
+                    paramCtx.KEY_INDEXED() != null
+                )
+            );
+        }
+        
+        return LogEntrySignatureSpecification.of(ctx.methodName.getText(), parameters);
     }
 
-    private void buildStatement(StatementContext ctx) throws BuildException {
+    private AddressListSpecification getAddressListSpecification(AddressListContext ctx) throws BuildException {
+        if (ctx.BYTES_LITERAL() != null) {
+            return AddressListSpecification.ofAddresses(
+                ctx.BYTES_LITERAL().stream()
+                    .map(literal -> literal.getText())
+                    .collect(Collectors.toList())
+            );
+        }
+        else if (ctx.KEY_ANY() != null) {
+            return AddressListSpecification.ofAny();
+        }
+        else if (ctx.variableName() != null) {
+            return AddressListSpecification.ofAddress(ctx.variableName().getText());
+        }
+        else {
+            return AddressListSpecification.ofEmpty();
+        }
+    }
+
+
+
+    //#region Utils
+
+    private <T extends ParserRuleContext> void handleEthqlElement(T ctx, BuilderMethod<T> builderMethod) {
+        if (this.containsError()) {
+            return;
+        }
+
+        try {
+            builderMethod.build(ctx);
+        } catch (BuildException e) {
+            this.error = e;
+        }
+    }
+
+    @FunctionalInterface
+    private static interface BuilderMethod<T>  {
+        public void build(T ctx) throws BuildException;
+    }
+
+    private ValueAccessorSpecification getValueAccessor(ValueExpressionContext ctx) throws BuildException {
+        if (ctx.variableName() != null) {
+            return ValueAccessorSpecification.ofVariable(ctx.getText());
+        }
+        else if (ctx.literal() != null) {
+            return this.getLiteral(TypeUtils.INT_TYPE_KEYWORD, ctx.literal());
+        }
+        else {
+            throw new UnsupportedOperationException("This value accessor specification is not supported.");
+        }
+    }
+
+    private ValueAccessorSpecification getLiteral(String type, LiteralContext ctx) throws BuildException {
+        return this.getLiteral(type, ctx.toString());
+    }
+
+    private ValueAccessorSpecification getLiteral(String type, String literal) throws BuildException {
+        final boolean isArray = TypeUtils.isArrayType(type);
+        if (TypeUtils.isArrayType(type, TypeUtils.ADDRESS_TYPE_KEYWORD)) {
+            return isArray 
+                ? ValueAccessorSpecification.addressArrayLiteral(literal)
+                : ValueAccessorSpecification.addressLiteral(literal);
+        }
+        else if (TypeUtils.isArrayType(type, TypeUtils.BOOL_TYPE_KEYWORD)) {
+            return isArray 
+                ? ValueAccessorSpecification.booleanArrayLiteral(literal)
+                : ValueAccessorSpecification.booleanLiteral(literal);
+        }
+        else if (TypeUtils.isArrayType(type, TypeUtils.BYTES_TYPE_KEYWORD)) {
+            return isArray 
+                ? ValueAccessorSpecification.bytesArrayLiteral(literal)
+                : ValueAccessorSpecification.bytesLiteral(literal);
+        }
+        else if (TypeUtils.isArrayType(type, TypeUtils.INT_TYPE_KEYWORD)) {
+            return isArray 
+                ? ValueAccessorSpecification.integerArrayLiteral(literal)
+                : ValueAccessorSpecification.integerLiteral(literal);
+        }
+        else if (TypeUtils.isArrayType(type, TypeUtils.STRING_TYPE_KEYWORD)) {
+            return isArray 
+                ? ValueAccessorSpecification.stringArrayLiteral(literal)
+                : ValueAccessorSpecification.stringLiteral(literal);
+        }
+        else {
+            throw new BuildException(String.format("Unsupported type: '%s'.", type));
+        }
+    }
+
+    //#endregion Utils
+}    
+
+    
+
+    
+
+    // @Override
+    // public void exitStatement(StatementContext ctx) {
+    //     this.handleEthqlElement(ctx, this::buildStatement);
+    // }
+
+    // private void buildStatement(StatementContext ctx) throws BuildException {
         // final String assignedVariable = this.getVariable(ctx.variable());
         // if (ctx.valueCreation().methodCall() != null) {
         //     this.buildMethodCallStatement(assignedVariable, ctx.valueCreation().methodCall());
@@ -171,9 +267,9 @@ public class EthqlProgramBuilder extends EthqlBaseListener {
         //     this.buildVariableAssignment(assignedVariable, ctx.valueCreation().literal());
         // }
         // else {
-            throw new BuildException("Unsupported statement declaration.");
+            // throw new BuildException("Unsupported statement declaration.");
         // }
-    }
+    // }
 
     // private String getVariable(VariableContext variable) throws BuildException {
     //     if (variable == null) {
@@ -211,63 +307,5 @@ public class EthqlProgramBuilder extends EthqlBaseListener {
     //     final ValueMutatorSpecification variable = ValueMutatorSpecification.ofVariableName(assignedVariable);
     //     final ValueAccessorSpecification value = this.getLiteral(type, literal);
     //     this.builder.addVariableAssignment(variable, value);
-    // }
-
-    // private ValueAccessorSpecification getLiteral(String type, LiteralContext ctx) throws BuildException {
-    //     return this.getLiteral(type, ctx.toString());
-    // }
-
-    // private ValueAccessorSpecification getLiteral(String type, String literal) throws BuildException {
-    //     final boolean isArray = TypeUtils.isArrayType(type);
-    //     if (TypeUtils.hasBaseType(type, TypeUtils.ADDRESS_TYPE_KEYWORD)) {
-    //         return isArray 
-    //             ? ValueAccessorSpecification.addressArrayLiteral(literal)
-    //             : ValueAccessorSpecification.addressLiteral(literal);
-    //     }
-    //     else if (TypeUtils.hasBaseType(type, TypeUtils.BOOL_TYPE_KEYWORD)) {
-    //         return isArray 
-    //             ? ValueAccessorSpecification.booleanArrayLiteral(literal)
-    //             : ValueAccessorSpecification.booleanLiteral(literal);
-    //     }
-    //     else if (TypeUtils.hasBaseType(type, TypeUtils.BYTES_TYPE_KEYWORD)) {
-    //         return isArray 
-    //             ? ValueAccessorSpecification.bytesArrayLiteral(literal)
-    //             : ValueAccessorSpecification.bytesLiteral(literal);
-    //     }
-    //     else if (TypeUtils.hasBaseType(type, TypeUtils.FIXED_TYPE_KEYWORD)) {
-    //         return isArray 
-    //             ? ValueAccessorSpecification.fixedArrayLiteral(literal)
-    //             : ValueAccessorSpecification.fixedLiteral(literal);
-    //     }
-    //     else if (TypeUtils.hasBaseType(type, TypeUtils.INT_TYPE_KEYWORD)) {
-    //         return isArray 
-    //             ? ValueAccessorSpecification.integerArrayLiteral(literal)
-    //             : ValueAccessorSpecification.integerLiteral(literal);
-    //     }
-    //     else if (TypeUtils.hasBaseType(type, TypeUtils.STRING_TYPE_KEYWORD)) {
-    //         return isArray 
-    //             ? ValueAccessorSpecification.stringArrayLiteral(literal)
-    //             : ValueAccessorSpecification.stringLiteral(literal);
-    //     }
-    //     else {
-    //         throw new BuildException(String.format("Unsupported type: '%s'.", type));
-    //     }
-    // }
-
-    private <T extends ParserRuleContext> void handleEthqlElement(T ctx, BuilderMethod<T> builderMethod) {
-        if (this.containsError()) {
-            return;
-        }
-
-        try {
-            builderMethod.build(ctx);
-        } catch (BuildException e) {
-            this.error = e;
-        }
-    }
-
-    @FunctionalInterface
-    private static interface BuilderMethod<T>  {
-        public void build(T ctx) throws BuildException;
-    }
-}
+    // }    
+// }

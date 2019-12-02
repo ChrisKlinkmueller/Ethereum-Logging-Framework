@@ -24,16 +24,23 @@ Parsing:
     ✔ Literal type compatibility @done(19-11-30 07:54)
     ✔ Library lookup for method invocation @done(19-11-30 07:54)
     Tests:
-    ☐ Implement generator
+    ☐ Test analyzers
     
 
 Building:
-  ☐ Literal building
-  ☐ Generic filter specification
+  ✔ Build program @done(19-12-03 08:58)
+  ✔ Build block filter @done(19-12-03 08:59)
+  ✔ Build transaction filter @done(19-12-03 08:59)
+  ✔ Build log entry filter @done(19-12-03 08:59)
+  ☐ Build generic filter
+  ☐ Build log line export
+  ☐ Build csv row export
+  ☐ Build xes event export
+  ☐ Build xes trace export
+  ☐ Build statements
   ☐ Smart contract filter specification
   
 Extractor:
-  ☐ Value casting from Web3j / JSON RPC responses to values
   ☐ Implement smart contract filter
 
 Library:
@@ -42,18 +49,18 @@ Library:
   ☐ Add utility functionality for types
   ☐ Add null / empty constructor
 
-Writers:
-  ☐ Check that if a new block is started and the block number is already known, data for this blocknumber will be overwritten.
-  ☐ Set default folder and url
-
 Generator:
   ☐ Transformation for value dictionary
   ☐ Transformation for bit mapping
+
+Writers:
+  ☐ Check that if a new block is started and the block number is already known, data for this blocknumber will be overwritten.
+  ☐ Set default folder and url
 
 Configuration:
   ☐ Output folder config
   ☐ Client connections config
 
-
 Open issues:
   ☐ currently array types are badly supported, e.g., for defining how to convert them into xes attributes
+  ☐ add for loop for arrays

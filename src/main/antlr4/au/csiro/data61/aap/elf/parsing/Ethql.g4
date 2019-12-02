@@ -30,11 +30,10 @@ blockFilter
     ;
 
 blockNumber
-    : INT_LITERAL
-    | KEY_CURRENT
+    : KEY_CURRENT
     | KEY_EARLIEST
     | KEY_CONTINUOUS
-    | variableName
+    | valueExpression
     ;
 
 transactionFilter
