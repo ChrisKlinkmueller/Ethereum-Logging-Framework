@@ -1,12 +1,12 @@
 package au.csiro.data61.aap;
 
-import java.util.Arrays;
+import java.util.LinkedList;
 import java.util.List;
-import java.util.stream.Collectors;
 
 import au.csiro.data61.aap.elf.configuration.AddressListSpecification;
 import au.csiro.data61.aap.elf.configuration.BlockNumberSpecification;
 import au.csiro.data61.aap.elf.configuration.BuildException;
+import au.csiro.data61.aap.elf.configuration.CsvColumnSpecification;
 import au.csiro.data61.aap.elf.configuration.CsvExportSpecification;
 import au.csiro.data61.aap.elf.configuration.GenericFilterPredicateSpecification;
 import au.csiro.data61.aap.elf.configuration.MethodSpecification;
@@ -93,11 +93,16 @@ public class ExtractUnsuccesfulTransactions {
     }
 
     private static void addCsvExport(SpecificationComposer builder, String tableName, String... variableNames) throws BuildException {
-        final List<String> names = Arrays.asList(variableNames);
-        final List<ValueAccessorSpecification> valueAccessors = names.stream()
-            .map(name -> ValueAccessorSpecification.ofVariable(name))
-            .collect(Collectors.toList());
-        builder.addInstruction(CsvExportSpecification.of(tableName, names, valueAccessors));
+        final List<CsvColumnSpecification> columns = new LinkedList<>();
+        for (String name : variableNames) {
+            columns.add(CsvColumnSpecification.of(name, ValueAccessorSpecification.ofVariable(name)));
+        }
+        builder.addInstruction(
+            CsvExportSpecification.of(
+                ValueAccessorSpecification.ofVariable(tableName), 
+                columns
+            )
+        );
     }
     
 }

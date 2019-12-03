@@ -1,12 +1,13 @@
 package au.csiro.data61.aap;
 
 import java.util.Arrays;
+import java.util.LinkedList;
 import java.util.List;
-import java.util.stream.Collectors;
 
 import au.csiro.data61.aap.elf.configuration.AddressListSpecification;
 import au.csiro.data61.aap.elf.configuration.BlockNumberSpecification;
 import au.csiro.data61.aap.elf.configuration.BuildException;
+import au.csiro.data61.aap.elf.configuration.CsvColumnSpecification;
 import au.csiro.data61.aap.elf.configuration.CsvExportSpecification;
 import au.csiro.data61.aap.elf.configuration.MethodSpecification;
 import au.csiro.data61.aap.elf.configuration.SpecificationComposer;
@@ -82,14 +83,12 @@ public class ExtractTransactionStatistics {
             BlockVariables.BLOCK_TOTAL_DIFFICULTY,
             TOTAL_EARNINGS
         );
-        final List<ValueAccessorSpecification> valueAccessors = names.stream()
-            .map(name -> ValueAccessorSpecification.ofVariable(name))
-            .collect(Collectors.toList());
-        final CsvExportSpecification export = CsvExportSpecification.of(
-            "block_statistics", 
-            names, 
-            valueAccessors
-        );
+        LinkedList<CsvColumnSpecification> columns = new LinkedList<>();
+        for (String name : names) {
+            columns.add(CsvColumnSpecification.of(name, ValueAccessorSpecification.ofVariable(name)));
+        }
+
+        final CsvExportSpecification export = CsvExportSpecification.of(ValueAccessorSpecification.stringLiteral("block_statistics"), columns);
         builder.addInstruction(export);
     }
 }
