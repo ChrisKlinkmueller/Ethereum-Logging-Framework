@@ -3,13 +3,11 @@ package au.csiro.data61.aap.elf.configuration;
 import java.util.Arrays;
 import java.util.LinkedList;
 import java.util.List;
-import java.util.Objects;
 import java.util.Stack;
 import java.util.stream.Collectors;
 
 import au.csiro.data61.aap.elf.configuration.BlockNumberSpecification.Type;
 import au.csiro.data61.aap.elf.core.Instruction;
-import au.csiro.data61.aap.elf.core.MethodCall;
 import au.csiro.data61.aap.elf.core.filters.BlockFilter;
 import au.csiro.data61.aap.elf.core.filters.GenericFilter;
 import au.csiro.data61.aap.elf.core.filters.LogEntryFilter;
@@ -177,46 +175,6 @@ public class SpecificationComposer {
             variable.setValue(value, state);
         };
     }
-
-    public void addMethodCall(MethodSpecification specification, ValueAccessorSpecification... accessors) throws BuildException {
-        addMethodCall(specification, Arrays.asList(accessors));
-    }
-
-    public void addMethodCall(MethodSpecification specification, ValueMutatorSpecification mutator, ValueAccessorSpecification... accessors) throws BuildException {
-        addMethodCall(specification, mutator, Arrays.asList(accessors));
-    }
-
-    public void addMethodCall(MethodSpecification specification, List<ValueAccessorSpecification> accessors) throws BuildException {
-        addMethodCall(specification, null, accessors);
-    }
-
-    public void addMethodCall(MethodSpecification specification, ValueMutatorSpecification mutator, List<ValueAccessorSpecification> accessors) throws BuildException {
-        assert specification != null;
-        assert accessors != null && accessors.stream().allMatch(Objects::nonNull);
-        final MethodCall call = new MethodCall(
-            specification.getMethod(), 
-            accessors.stream()
-                .map(a -> a.getValueAccessor())
-                .collect(Collectors.toList()),
-            mutator == null ? null : mutator.getMutator() 
-        );
-        this.instructions.peek().add(call);
-    }
-
-
-    /*private void addMethodCall(Method method, List<ValueAccessor> parameterAccessors, ValueMutator resultStorer) throws BuildException {
-        if (method == null || parameterAccessors == null || parameterAccessors.stream().anyMatch(Objects::isNull)) {
-            throw new BuildException(String.format("Null parameters detected: method = %s, parameterAccessors = %s.", method, parameterAccessors));
-        }
-
-        final Instruction methodCall = new MethodCall(method, parameterAccessors, resultStorer);
-        this.instructions.peek().add(methodCall);
-    }
-
-	private void addVariableAssignmentWithIntegerValue(String name, long value) {
-        final Instruction varAssignment = new VariableAssignment(Variables.createValueMutator(name), Literal.integerLiteral(value));
-        this.instructions.peek().add(varAssignment);
-	}*/
 
     private static enum FactoryState {
         PROGRAM,

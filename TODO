@@ -37,7 +37,7 @@ Building:
   ✔ Build csv row export @done(19-12-03 18:12)
   ✔ Build xes event export @done(19-12-03 18:12)
   ✔ Build xes trace export @done(19-12-03 18:12)
-  ☐ Build statements
+  ✔ Build statements @done(19-12-04 10:27)
   ☐ Smart contract filter specification
   
 Extractor:

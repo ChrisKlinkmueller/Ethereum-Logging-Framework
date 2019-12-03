@@ -1,5 +1,6 @@
 package au.csiro.data61.aap;
 
+import java.util.Arrays;
 import java.util.LinkedList;
 import java.util.List;
 
@@ -9,7 +10,6 @@ import au.csiro.data61.aap.elf.configuration.BuildException;
 import au.csiro.data61.aap.elf.configuration.CsvColumnSpecification;
 import au.csiro.data61.aap.elf.configuration.CsvExportSpecification;
 import au.csiro.data61.aap.elf.configuration.GenericFilterPredicateSpecification;
-import au.csiro.data61.aap.elf.configuration.MethodSpecification;
 import au.csiro.data61.aap.elf.configuration.SpecificationComposer;
 import au.csiro.data61.aap.elf.configuration.ValueAccessorSpecification;
 import au.csiro.data61.aap.elf.configuration.ValueMutatorSpecification;
@@ -22,8 +22,6 @@ import au.csiro.data61.aap.elf.core.values.TransactionVariables;
  * ExtractUnsuccesfulTransactions
  */
 public class ExtractUnsuccesfulTransactions {
-    private static final String URL = "ws://localhost:8546/";
-    private static final String FOLDER = "C:/Development/xes-blockchain/v0.2/test_output";
     private static final long START = 8700000l;
     private static final long END = 8701000l;
     private static final String BLOCK_FAILUERS = "blockFailures";
@@ -42,17 +40,19 @@ public class ExtractUnsuccesfulTransactions {
         final SpecificationComposer builder = new SpecificationComposer();
         builder.prepareProgramBuild();
 
-        builder.addMethodCall(MethodSpecification.of("connect", "string"), ValueAccessorSpecification.stringLiteral(URL));
-        builder.addMethodCall(MethodSpecification.of("setOutputFolder", "string"), ValueAccessorSpecification.stringLiteral(FOLDER));
+        ExtractComposerUtils.addOutputFolderConfig(builder);
+        ExtractComposerUtils.addConnectCall(builder);
         
         builder.prepareBlockRangeBuild();
             builder.addVariableAssignment(ValueMutatorSpecification.ofVariableName(BLOCK_FAILUERS), ValueAccessorSpecification.integerLiteral(0l));
             
             builder.prepareTransactionFilterBuild();
                 builder.prepareGenericFilterBuild();
-                    builder.addMethodCall(
-                        MethodSpecification.of("add", "int", "int"), 
-                        ValueMutatorSpecification.ofVariableName(BLOCK_FAILUERS),
+                    ExtractComposerUtils.addMethodCall(
+                        builder,
+                        BLOCK_FAILUERS,
+                        "add", 
+                        Arrays.asList("int", "int"), 
                         ValueAccessorSpecification.ofVariable(BLOCK_FAILUERS),
                         ValueAccessorSpecification.integerLiteral(1l)
                     );

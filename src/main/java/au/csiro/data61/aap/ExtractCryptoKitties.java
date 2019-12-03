@@ -1,12 +1,13 @@
 package au.csiro.data61.aap;
 
+import java.util.Arrays;
+
 import au.csiro.data61.aap.elf.configuration.AddressListSpecification;
 import au.csiro.data61.aap.elf.configuration.BlockNumberSpecification;
 import au.csiro.data61.aap.elf.configuration.BuildException;
 import au.csiro.data61.aap.elf.configuration.GenericFilterPredicateSpecification;
 import au.csiro.data61.aap.elf.configuration.LogEntryParameterSpecification;
 import au.csiro.data61.aap.elf.configuration.LogEntrySignatureSpecification;
-import au.csiro.data61.aap.elf.configuration.MethodSpecification;
 import au.csiro.data61.aap.elf.configuration.SpecificationComposer;
 import au.csiro.data61.aap.elf.configuration.ValueAccessorSpecification;
 import au.csiro.data61.aap.elf.configuration.ValueMutatorSpecification;
@@ -21,8 +22,7 @@ import au.csiro.data61.aap.elf.core.ProgramState;
 public class ExtractCryptoKitties {
     private static final String START_BLOCK = "6605100"; // GENESIS: "4605167";
     private static final String END_BLOCK = "6618100"; // GENESIS: "4608167";
-    private static final String URL = "ws://localhost:8546/";
-    private static final String FOLDER = "C:/Development/xes-blockchain/v0.2/test_output/kitties";
+   
 
     public static void main(String[] args) {
         try {
@@ -37,9 +37,9 @@ public class ExtractCryptoKitties {
     private static Instruction buildProgram() throws BuildException {
         final SpecificationComposer builder = new SpecificationComposer();
 
-        builder.prepareProgramBuild();
-            builder.addMethodCall(MethodSpecification.of("connect", "string"), ValueAccessorSpecification.stringLiteral(URL));
-            builder.addMethodCall(MethodSpecification.of("setOutputFolder", "string"), ValueAccessorSpecification.stringLiteral(FOLDER));
+        builder.prepareProgramBuild(); 
+            ExtractComposerUtils.addOutputFolderConfig(builder);
+            ExtractComposerUtils.addConnectCall(builder);       
             builder.addVariableAssignment(ValueMutatorSpecification.ofVariableName("kitties"), ValueAccessorSpecification.integerArrayLiteral("{0}"));
             builder.prepareBlockRangeBuild();
                 addBirthEventHandlers(builder);
@@ -60,8 +60,11 @@ public class ExtractCryptoKitties {
         builder.prepareLogEntryFilterBuild();
         
             // add kitty to known kitties and create trace as well as birth event
-            builder.addMethodCall(
-                MethodSpecification.of("add", "int[]", "int"), 
+            ExtractComposerUtils.addMethodCall(
+                builder, 
+                null, 
+                "add", 
+                Arrays.asList("int[]", "int"), 
                 ValueAccessorSpecification.ofVariable("kitties"),
                 ValueAccessorSpecification.ofVariable("kittyId") 
             );

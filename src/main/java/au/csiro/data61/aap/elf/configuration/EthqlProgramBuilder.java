@@ -1,5 +1,6 @@
 package au.csiro.data61.aap.elf.configuration;
 
+import java.util.ArrayList;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Stack;
@@ -10,6 +11,7 @@ import org.antlr.v4.runtime.ParserRuleContext;
 
 import au.csiro.data61.aap.elf.core.filters.Program;
 import au.csiro.data61.aap.elf.parsing.EthqlBaseListener;
+import au.csiro.data61.aap.elf.parsing.InterpreterUtils;
 import au.csiro.data61.aap.elf.parsing.VariableExistenceAnalyzer;
 import au.csiro.data61.aap.elf.parsing.EthqlParser.AddressListContext;
 import au.csiro.data61.aap.elf.parsing.EthqlParser.BlockFilterContext;
@@ -29,9 +31,15 @@ import au.csiro.data61.aap.elf.parsing.EthqlParser.LiteralContext;
 import au.csiro.data61.aap.elf.parsing.EthqlParser.LogEntryFilterContext;
 import au.csiro.data61.aap.elf.parsing.EthqlParser.LogEntryParameterContext;
 import au.csiro.data61.aap.elf.parsing.EthqlParser.LogEntrySignatureContext;
+import au.csiro.data61.aap.elf.parsing.EthqlParser.MethodInvocationContext;
+import au.csiro.data61.aap.elf.parsing.EthqlParser.MethodStatementContext;
 import au.csiro.data61.aap.elf.parsing.EthqlParser.NamedEmitVariableContext;
+import au.csiro.data61.aap.elf.parsing.EthqlParser.StatementExpressionContext;
 import au.csiro.data61.aap.elf.parsing.EthqlParser.TransactionFilterContext;
 import au.csiro.data61.aap.elf.parsing.EthqlParser.ValueExpressionContext;
+import au.csiro.data61.aap.elf.parsing.EthqlParser.VariableAssignmentStatementContext;
+import au.csiro.data61.aap.elf.parsing.EthqlParser.VariableDeclarationStatementContext;
+import au.csiro.data61.aap.elf.parsing.EthqlParser.VariableNameContext;
 import au.csiro.data61.aap.elf.parsing.EthqlParser.XesEmitVariableContext;
 import au.csiro.data61.aap.elf.util.TypeUtils;
 
@@ -40,14 +48,14 @@ import au.csiro.data61.aap.elf.util.TypeUtils;
  */
 public class EthqlProgramBuilder extends EthqlBaseListener {
     private final SpecificationComposer composer;
-    private final VariableExistenceAnalyzer analyzer;
+    private final VariableExistenceAnalyzer variableAnalyzer;
     private final Stack<Object> genericFilterPredicates;
     private BuildException error;
     private Program program;
 
     public EthqlProgramBuilder(VariableExistenceAnalyzer analyzer) {
         this.composer = new SpecificationComposer();
-        this.analyzer = analyzer;
+        this.variableAnalyzer = analyzer;
         this.genericFilterPredicates = new Stack<Object>();
     }
 
@@ -393,27 +401,97 @@ public class EthqlProgramBuilder extends EthqlBaseListener {
         return ctx == null ? null : this.getValueAccessor(ctx);
     }
 
-    private List<XesParameterSpecification> getXesParameters(List<XesEmitVariableContext> variables) throws BuildException {
+    private List<XesParameterSpecification> getXesParameters(List<XesEmitVariableContext> variables)
+            throws BuildException {
         final LinkedList<XesParameterSpecification> parameters = new LinkedList<>();
         for (XesEmitVariableContext varCtx : variables) {
-            final String name = varCtx.variableName() == null 
-                ? varCtx.valueExpression().variableName().toString()
-                : varCtx.variableName().toString();
+            final String name = varCtx.variableName() == null ? varCtx.valueExpression().variableName().toString()
+                    : varCtx.variableName().toString();
             final ValueAccessorSpecification accessor = this.getValueAccessor(varCtx.valueExpression());
 
             XesParameterSpecification parameter = null;
             switch (varCtx.xesTypes().getText()) {
-                case "xs:string" : parameter = XesParameterSpecification.ofStringLiteral(name, accessor); break;
-                case "xs:date" : parameter = XesParameterSpecification.ofDateParameter(name, accessor); break;
-                case "xs:int" : parameter = XesParameterSpecification.ofIntegerParameter(name, accessor); break;
-                case "xs:float" : parameter = XesParameterSpecification.ofFloatParameter(name, accessor); break;
-                case "xs:boolean"  : parameter = XesParameterSpecification.ofBooleanParameter(name, accessor); break;
-                default : throw new BuildException(String.format("Xes type '%s' not supported", varCtx.xesTypes().getText()));
+            case "xs:string":
+                parameter = XesParameterSpecification.ofStringLiteral(name, accessor);
+                break;
+            case "xs:date":
+                parameter = XesParameterSpecification.ofDateParameter(name, accessor);
+                break;
+            case "xs:int":
+                parameter = XesParameterSpecification.ofIntegerParameter(name, accessor);
+                break;
+            case "xs:float":
+                parameter = XesParameterSpecification.ofFloatParameter(name, accessor);
+                break;
+            case "xs:boolean":
+                parameter = XesParameterSpecification.ofBooleanParameter(name, accessor);
+                break;
+            default:
+                throw new BuildException(String.format("Xes type '%s' not supported", varCtx.xesTypes().getText()));
             }
             parameters.add(parameter);
         }
-        
+
         return parameters;
+    }
+
+    @Override
+    public void exitMethodStatement(MethodStatementContext ctx) {
+        this.handleEthqlElement(ctx, this::handleMethodStatement);
+    }
+
+    private void handleMethodStatement(MethodStatementContext ctx) throws BuildException {
+        this.addMethodCall(ctx.methodInvocation(), null);
+    }
+
+    @Override
+    public void exitVariableAssignmentStatement(VariableAssignmentStatementContext ctx) {
+        this.handleEthqlElement(ctx, this::handleVariableAssignmentStatement);
+    }
+
+    private void handleVariableAssignmentStatement(VariableAssignmentStatementContext ctx) throws BuildException  {
+        this.addVariableAssignment(ctx.variableName(), ctx.statementExpression());
+    }
+
+    @Override
+    public void exitVariableDeclarationStatement(VariableDeclarationStatementContext ctx) {
+        this.handleEthqlElement(ctx, this::handleVariableDeclarationStatement);
+    }
+
+    private void handleVariableDeclarationStatement(VariableDeclarationStatementContext ctx) throws BuildException {
+        this.addVariableAssignment(ctx.variableName(), ctx.statementExpression());
+    }
+
+    private void addVariableAssignment(VariableNameContext varCtx, StatementExpressionContext stmtCtx) throws BuildException {
+        final ValueMutatorSpecification mutator = ValueMutatorSpecification.ofVariableName(varCtx.getText());
+        if (stmtCtx.valueExpression() != null) {
+            this.addValueAssignment(mutator, stmtCtx.valueExpression());
+        }
+        else if (stmtCtx.methodInvocation() != null) {
+            this.addMethodCall(stmtCtx.methodInvocation(), mutator);
+        }
+        else {
+            throw new UnsupportedOperationException("This type of value definition is not supported.");
+        }
+    }
+
+    private void addValueAssignment(ValueMutatorSpecification mutator, ValueExpressionContext ctx) throws BuildException {
+        final ValueAccessorSpecification accessor = this.getValueAccessor(ctx);
+        final ValueAssignmentSpecification assignment = ValueAssignmentSpecification.of(mutator, accessor);
+        this.composer.addInstruction(assignment);
+    }
+
+    private void addMethodCall(MethodInvocationContext ctx, ValueMutatorSpecification mutator) throws BuildException {
+        final List<String> parameterTypes = new ArrayList<>();
+        final List<ValueAccessorSpecification> accessors = new ArrayList<>();
+        for (ValueExpressionContext valCtx : ctx.valueExpression()) {
+            parameterTypes.add(InterpreterUtils.determineType(valCtx, this.variableAnalyzer));
+            accessors.add(this.getValueAccessor(valCtx));
+        }
+
+        final MethodSpecification method = MethodSpecification.of(ctx.methodName.getText(), parameterTypes);
+        final MethodCallSpecification call = MethodCallSpecification.of(method, mutator, accessors);
+        this.composer.addInstruction(call);
     }
 
 
@@ -486,68 +564,4 @@ public class EthqlProgramBuilder extends EthqlBaseListener {
     }
 
     //#endregion Utils
-}    
-
-    
-
-    
-
-    // @Override
-    // public void exitStatement(StatementContext ctx) {
-    //     this.handleEthqlElement(ctx, this::buildStatement);
-    // }
-
-    // private void buildStatement(StatementContext ctx) throws BuildException {
-        // final String assignedVariable = this.getVariable(ctx.variable());
-        // if (ctx.valueCreation().methodCall() != null) {
-        //     this.buildMethodCallStatement(assignedVariable, ctx.valueCreation().methodCall());
-        // } 
-        // else if (ctx.valueCreation().variableReference() != null) {
-        //     this.buildVariableAssignment(assignedVariable, ctx.valueCreation().variableReference());
-        // } 
-        // else if (ctx.valueCreation().literal() != null) {
-        //     this.buildVariableAssignment(assignedVariable, ctx.valueCreation().literal());
-        // }
-        // else {
-            // throw new BuildException("Unsupported statement declaration.");
-        // }
-    // }
-
-    // private String getVariable(VariableContext variable) throws BuildException {
-    //     if (variable == null) {
-    //         return null;
-    //     }
-    //     else if (variable.variableDefinition() != null) {
-    //         return variable.variableDefinition().variableName().getText();
-    //     }
-    //     else if (variable.variableReference() != null) {
-    //         return variable.variableReference().variableName().getText();
-    //     }
-    //     else {
-    //         throw new BuildException("Unsupported variable declaration.");
-    //     }
-    // }
-
-    // private void buildMethodCallStatement(String assignedVariable, MethodCallContext ctx) throws BuildException {
-    //     // TODO: implement
-    // }
-
-    // private void buildVariableAssignment(String assignedVariable, VariableReferenceContext variableReference) throws BuildException {
-    //     if (assignedVariable == null) {
-    //         throw new BuildException("No variable for assignement specified.");
-    //     }
-    //     final ValueMutatorSpecification variable = ValueMutatorSpecification.ofVariableName(assignedVariable);
-    //     final ValueAccessorSpecification value = ValueAccessorSpecification.ofVariable(variableReference.variableName().getText());
-    //     this.builder.addVariableAssignment(variable, value);
-    // }
-
-    // private void buildVariableAssignment(String assignedVariable, LiteralContext literal) throws BuildException {
-    //     if (assignedVariable == null) {
-    //         throw new BuildException("No variable for assignement specified.");
-    //     }
-    //     final String type = this.analyzer.getVariableType(assignedVariable);
-    //     final ValueMutatorSpecification variable = ValueMutatorSpecification.ofVariableName(assignedVariable);
-    //     final ValueAccessorSpecification value = this.getLiteral(type, literal);
-    //     this.builder.addVariableAssignment(variable, value);
-    // }    
-// }
+}  

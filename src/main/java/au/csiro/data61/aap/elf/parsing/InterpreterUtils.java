@@ -19,7 +19,7 @@ import au.csiro.data61.aap.elf.util.TypeUtils;
 /**
  * InterpreterUtils
  */
-class InterpreterUtils {
+public class InterpreterUtils {
     private static final Logger LOG = Logger.getLogger(InterpreterUtils.class.getName());
 
     static MethodResult<CharStream> charStreamfromInputStream(InputStream is) {
@@ -83,7 +83,7 @@ class InterpreterUtils {
         return MethodResult.ofResult(syntacticParser);
     }
 
-    static String determineType(ValueExpressionContext ctx, VariableExistenceAnalyzer varAnalyzer) {
+    public static String determineType(ValueExpressionContext ctx, VariableExistenceAnalyzer varAnalyzer) {
         return ctx.literal() != null
             ? literalType(ctx.literal())
             : varAnalyzer.getVariableType(ctx.variableName().getText());

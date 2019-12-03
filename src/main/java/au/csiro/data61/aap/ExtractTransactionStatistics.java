@@ -9,7 +9,6 @@ import au.csiro.data61.aap.elf.configuration.BlockNumberSpecification;
 import au.csiro.data61.aap.elf.configuration.BuildException;
 import au.csiro.data61.aap.elf.configuration.CsvColumnSpecification;
 import au.csiro.data61.aap.elf.configuration.CsvExportSpecification;
-import au.csiro.data61.aap.elf.configuration.MethodSpecification;
 import au.csiro.data61.aap.elf.configuration.SpecificationComposer;
 import au.csiro.data61.aap.elf.configuration.ValueAccessorSpecification;
 import au.csiro.data61.aap.elf.configuration.ValueMutatorSpecification;
@@ -22,8 +21,6 @@ import au.csiro.data61.aap.elf.core.values.TransactionVariables;
  * ExtractTransactionStatistics
  */
 public class ExtractTransactionStatistics {
-    private static final String URL = "ws://localhost:8546/";
-    private static final String FOLDER = "C:/Development/xes-blockchain/v0.2/test_output";
     private static final long START = 6000000l;
     private static final long END = 6001000l;
     
@@ -42,24 +39,27 @@ public class ExtractTransactionStatistics {
     private static Instruction buildProgram() throws BuildException {
         final SpecificationComposer builder = new SpecificationComposer();
         builder.prepareProgramBuild();
-
-        builder.addMethodCall(MethodSpecification.of("connect", "string"), ValueAccessorSpecification.stringLiteral(URL));
-        builder.addMethodCall(MethodSpecification.of("setOutputFolder", "string"), ValueAccessorSpecification.stringLiteral(FOLDER));
+            ExtractComposerUtils.addOutputFolderConfig(builder);
+            ExtractComposerUtils.addConnectCall(builder);  
             
             builder.prepareBlockRangeBuild();
                 builder.addVariableAssignment(ValueMutatorSpecification.ofVariableName(TOTAL_EARNINGS), ValueAccessorSpecification.integerLiteral(0l));
                 
                 builder.prepareTransactionFilterBuild();
-                    builder.addMethodCall(
-                        MethodSpecification.of("multiply", "int", "int"), 
-                        ValueMutatorSpecification.ofVariableName(TRANSACTION_EARNINGS),
+                    ExtractComposerUtils.addMethodCall(
+                        builder, 
+                        TRANSACTION_EARNINGS, 
+                        "multiply", 
+                        Arrays.asList("int", "int"),  
                         ValueAccessorSpecification.ofVariable(TransactionVariables.TX_GAS_USED),
                         ValueAccessorSpecification.ofVariable(TransactionVariables.TX_GASPRICE)
                     );
 
-                    builder.addMethodCall(
-                        MethodSpecification.of("add", "int", "int"), 
-                        ValueMutatorSpecification.ofVariableName(TOTAL_EARNINGS),
+                    ExtractComposerUtils.addMethodCall(
+                        builder, 
+                        TOTAL_EARNINGS,
+                        "add", 
+                        Arrays.asList("int", "int"), 
                         ValueAccessorSpecification.ofVariable(TOTAL_EARNINGS),
                         ValueAccessorSpecification.ofVariable(TRANSACTION_EARNINGS)
                     );
