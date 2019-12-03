@@ -1,6 +1,7 @@
 package au.csiro.data61.aap.elf.configuration;
 
 import java.util.LinkedList;
+import java.util.List;
 import java.util.Stack;
 import java.util.function.BiFunction;
 import java.util.stream.Collectors;
@@ -19,13 +20,19 @@ import au.csiro.data61.aap.elf.parsing.EthqlParser.ConditionalNotExpressionConte
 import au.csiro.data61.aap.elf.parsing.EthqlParser.ConditionalOrExpressionContext;
 import au.csiro.data61.aap.elf.parsing.EthqlParser.ConditionalPrimaryExpressionContext;
 import au.csiro.data61.aap.elf.parsing.EthqlParser.DocumentContext;
+import au.csiro.data61.aap.elf.parsing.EthqlParser.EmitStatementCsvContext;
+import au.csiro.data61.aap.elf.parsing.EthqlParser.EmitStatementLogContext;
+import au.csiro.data61.aap.elf.parsing.EthqlParser.EmitStatementXesEventContext;
+import au.csiro.data61.aap.elf.parsing.EthqlParser.EmitStatementXesTraceContext;
 import au.csiro.data61.aap.elf.parsing.EthqlParser.GenericFilterContext;
 import au.csiro.data61.aap.elf.parsing.EthqlParser.LiteralContext;
 import au.csiro.data61.aap.elf.parsing.EthqlParser.LogEntryFilterContext;
 import au.csiro.data61.aap.elf.parsing.EthqlParser.LogEntryParameterContext;
 import au.csiro.data61.aap.elf.parsing.EthqlParser.LogEntrySignatureContext;
+import au.csiro.data61.aap.elf.parsing.EthqlParser.NamedEmitVariableContext;
 import au.csiro.data61.aap.elf.parsing.EthqlParser.TransactionFilterContext;
 import au.csiro.data61.aap.elf.parsing.EthqlParser.ValueExpressionContext;
+import au.csiro.data61.aap.elf.parsing.EthqlParser.XesEmitVariableContext;
 import au.csiro.data61.aap.elf.util.TypeUtils;
 
 /**
@@ -153,18 +160,12 @@ public class EthqlProgramBuilder extends EthqlBaseListener {
     private AddressListSpecification getAddressListSpecification(AddressListContext ctx) throws BuildException {
         if (ctx.BYTES_LITERAL() != null) {
             return AddressListSpecification.ofAddresses(
-                ctx.BYTES_LITERAL().stream()
-                    .map(literal -> literal.getText())
-                    .collect(Collectors.toList())
-            );
-        }
-        else if (ctx.KEY_ANY() != null) {
+                    ctx.BYTES_LITERAL().stream().map(literal -> literal.getText()).collect(Collectors.toList()));
+        } else if (ctx.KEY_ANY() != null) {
             return AddressListSpecification.ofAny();
-        }
-        else if (ctx.variableName() != null) {
+        } else if (ctx.variableName() != null) {
             return AddressListSpecification.ofAddress(ctx.variableName().getText());
-        }
-        else {
+        } else {
             return AddressListSpecification.ofEmpty();
         }
     }
@@ -172,15 +173,10 @@ public class EthqlProgramBuilder extends EthqlBaseListener {
     private LogEntrySignatureSpecification getLogEntrySignature(LogEntrySignatureContext ctx) throws BuildException {
         final LinkedList<LogEntryParameterSpecification> parameters = new LinkedList<>();
         for (LogEntryParameterContext paramCtx : ctx.logEntryParameter()) {
-            parameters.add(
-                LogEntryParameterSpecification.of(
-                    paramCtx.variableName().getText(), 
-                    paramCtx.solType().getText(), 
-                    paramCtx.KEY_INDEXED() != null
-                )
-            );
+            parameters.add(LogEntryParameterSpecification.of(paramCtx.variableName().getText(),
+                    paramCtx.solType().getText(), paramCtx.KEY_INDEXED() != null));
         }
-        
+
         return LogEntrySignatureSpecification.of(ctx.methodName.getText(), parameters);
     }
 
@@ -199,13 +195,12 @@ public class EthqlProgramBuilder extends EthqlBaseListener {
     }
 
     private void buildGenericFilter(GenericFilterContext ctx) throws BuildException {
-        if (   this.genericFilterPredicates.size() != 1 
-            || !(this.genericFilterPredicates.peek() instanceof GenericFilterPredicateSpecification)
-        ) {
+        if (this.genericFilterPredicates.size() != 1
+                || !(this.genericFilterPredicates.peek() instanceof GenericFilterPredicateSpecification)) {
             throw new BuildException("Error in boolean expression tree.");
         }
 
-        this.composer.buildGenericFilter((GenericFilterPredicateSpecification)this.genericFilterPredicates.pop());
+        this.composer.buildGenericFilter((GenericFilterPredicateSpecification) this.genericFilterPredicates.pop());
     }
 
     @Override
@@ -227,29 +222,32 @@ public class EthqlProgramBuilder extends EthqlBaseListener {
     }
 
     private void createBinaryConditionalExpression(
-        BiFunction<GenericFilterPredicateSpecification,GenericFilterPredicateSpecification, GenericFilterPredicateSpecification> constructor
-    ) throws BuildException {
-        if (   this.genericFilterPredicates.isEmpty() 
-            || !(this.genericFilterPredicates.peek() instanceof GenericFilterPredicateSpecification)) {
+            BiFunction<GenericFilterPredicateSpecification, GenericFilterPredicateSpecification, GenericFilterPredicateSpecification> constructor)
+            throws BuildException {
+        if (this.genericFilterPredicates.isEmpty()
+                || !(this.genericFilterPredicates.peek() instanceof GenericFilterPredicateSpecification)) {
             throw new BuildException("Parse tree error: binary boolean expression requires boolean predicates.");
         }
-        final GenericFilterPredicateSpecification predicate1 = (GenericFilterPredicateSpecification)this.genericFilterPredicates.pop();
+        final GenericFilterPredicateSpecification predicate1 = (GenericFilterPredicateSpecification) this.genericFilterPredicates
+                .pop();
 
-        if (   this.genericFilterPredicates.isEmpty() 
-            || !(this.genericFilterPredicates.peek() instanceof GenericFilterPredicateSpecification)) {
+        if (this.genericFilterPredicates.isEmpty()
+                || !(this.genericFilterPredicates.peek() instanceof GenericFilterPredicateSpecification)) {
             throw new BuildException("Parse tree error: binary boolean expression requires boolean predicates.");
         }
-        final GenericFilterPredicateSpecification predicate2 = (GenericFilterPredicateSpecification)this.genericFilterPredicates.pop();
+        final GenericFilterPredicateSpecification predicate2 = (GenericFilterPredicateSpecification) this.genericFilterPredicates
+                .pop();
 
         this.genericFilterPredicates.push(constructor.apply(predicate1, predicate2));
     }
-    
+
     @Override
     public void exitConditionalComparisonExpression(ConditionalComparisonExpressionContext ctx) {
         this.handleEthqlElement(ctx, this::handleConditionalComparisonExpression);
     }
 
-    private void handleConditionalComparisonExpression(ConditionalComparisonExpressionContext ctx) throws BuildException {
+    private void handleConditionalComparisonExpression(ConditionalComparisonExpressionContext ctx)
+            throws BuildException {
         if (ctx.comparators() == null) {
             return;
         }
@@ -262,25 +260,40 @@ public class EthqlProgramBuilder extends EthqlBaseListener {
         if (!(value2 instanceof ValueAccessorSpecification)) {
             throw new BuildException("Can only compare values, but not boolean expressions.");
         }
-        
+
         final Object value1 = this.genericFilterPredicates.pop();
         if (!(value2 instanceof ValueAccessorSpecification)) {
             throw new BuildException("Can only compare values, but not boolean expressions.");
         }
 
-        final ValueAccessorSpecification spec1 = (ValueAccessorSpecification)value1;
-        final ValueAccessorSpecification spec2 = (ValueAccessorSpecification)value2;
+        final ValueAccessorSpecification spec1 = (ValueAccessorSpecification) value1;
+        final ValueAccessorSpecification spec2 = (ValueAccessorSpecification) value2;
 
         GenericFilterPredicateSpecification predicate = null;
         switch (ctx.comparators().getText().toLowerCase()) {
-            case "==" : predicate = GenericFilterPredicateSpecification.equals(spec1, spec2); break;
-            case "!=" : predicate = GenericFilterPredicateSpecification.notEquals(spec1, spec2); break;
-            case ">=" : predicate = GenericFilterPredicateSpecification.greaterThanAndEquals(spec1, spec2); break;
-            case ">" : predicate = GenericFilterPredicateSpecification.greaterThan(spec1, spec2); break;
-            case "<" : predicate = GenericFilterPredicateSpecification.smallerThan(spec1, spec2); break;
-            case "<=" : predicate = GenericFilterPredicateSpecification.smallerThanAndEquals(spec1, spec2); break;
-            case "in" : predicate = GenericFilterPredicateSpecification.in(spec1, spec2); break;
-            default : throw new BuildException(String.format("Comparator %s not supported.", ctx.comparators().getText()));
+        case "==":
+            predicate = GenericFilterPredicateSpecification.equals(spec1, spec2);
+            break;
+        case "!=":
+            predicate = GenericFilterPredicateSpecification.notEquals(spec1, spec2);
+            break;
+        case ">=":
+            predicate = GenericFilterPredicateSpecification.greaterThanAndEquals(spec1, spec2);
+            break;
+        case ">":
+            predicate = GenericFilterPredicateSpecification.greaterThan(spec1, spec2);
+            break;
+        case "<":
+            predicate = GenericFilterPredicateSpecification.smallerThan(spec1, spec2);
+            break;
+        case "<=":
+            predicate = GenericFilterPredicateSpecification.smallerThanAndEquals(spec1, spec2);
+            break;
+        case "in":
+            predicate = GenericFilterPredicateSpecification.in(spec1, spec2);
+            break;
+        default:
+            throw new BuildException(String.format("Comparator %s not supported.", ctx.comparators().getText()));
         }
 
         this.genericFilterPredicates.push(predicate);
@@ -298,17 +311,16 @@ public class EthqlProgramBuilder extends EthqlBaseListener {
 
         Object valueExpression = this.genericFilterPredicates.pop();
         if (valueExpression instanceof ValueAccessorSpecification) {
-            valueExpression = GenericFilterPredicateSpecification.ofBooleanValue((ValueAccessorSpecification)valueExpression);
+            valueExpression = GenericFilterPredicateSpecification
+                    .ofBooleanValue((ValueAccessorSpecification) valueExpression);
         }
 
         if (!(valueExpression instanceof GenericFilterPredicateSpecification)) {
-            throw new BuildException(String.format("GenericFilterPredicateSpecification required, but was %s.", valueExpression.getClass()));
+            throw new BuildException(String.format("GenericFilterPredicateSpecification required, but was %s.",
+                    valueExpression.getClass()));
         }
-        this.genericFilterPredicates.push(
-            GenericFilterPredicateSpecification.not(
-                (GenericFilterPredicateSpecification)valueExpression
-            )
-        );
+        this.genericFilterPredicates
+                .push(GenericFilterPredicateSpecification.not((GenericFilterPredicateSpecification) valueExpression));
     }
 
     @Override
@@ -320,6 +332,88 @@ public class EthqlProgramBuilder extends EthqlBaseListener {
         if (ctx.valueExpression() != null) {
             this.genericFilterPredicates.push(this.getValueAccessor(ctx.valueExpression()));
         }
+    }
+
+    @Override
+    public void exitEmitStatementLog(EmitStatementLogContext ctx) {
+        this.handleEthqlElement(ctx, this::handleEmitStatementLog);
+    }
+
+    private void handleEmitStatementLog(EmitStatementLogContext ctx) throws BuildException {
+        final List<ValueAccessorSpecification> accessors = new LinkedList<>();
+        for (ValueExpressionContext valEx : ctx.valueExpression()) {
+            accessors.add(this.getValueAccessor(valEx));
+        }
+        final LogLineExportSpecification spec = LogLineExportSpecification.ofValues(accessors);
+        this.composer.addInstruction(spec);
+    }
+
+    @Override
+    public void exitEmitStatementCsv(EmitStatementCsvContext ctx) {
+        this.handleEthqlElement(ctx, this::handleEmitStatementCsv);
+    }
+
+    private void handleEmitStatementCsv(EmitStatementCsvContext ctx) throws BuildException {
+        LinkedList<CsvColumnSpecification> columns = new LinkedList<>();
+        for (NamedEmitVariableContext varCtx : ctx.namedEmitVariable()) {
+            final String name = varCtx.valueExpression().variableName() == null ? varCtx.variableName().getText()
+                    : varCtx.valueExpression().variableName().getText();
+            final ValueAccessorSpecification accessor = this.getValueAccessor(varCtx.valueExpression());
+            columns.add(CsvColumnSpecification.of(name, accessor));
+        }
+        CsvExportSpecification.of(this.getValueAccessor(ctx.tableName), columns);
+    }
+
+    @Override
+    public void exitEmitStatementXesTrace(EmitStatementXesTraceContext ctx) {
+        this.handleEthqlElement(ctx, this::handleEmitStatementXesTrace);
+    }
+
+    private void handleEmitStatementXesTrace(EmitStatementXesTraceContext ctx) throws BuildException {
+        final ValueAccessorSpecification pid = this.getXesId(ctx.pid);
+        final ValueAccessorSpecification piid = this.getXesId(ctx.piid);
+        final List<XesParameterSpecification> parameters = this.getXesParameters(ctx.xesEmitVariable());
+        this.composer.addInstruction(XesExportSpecification.ofTraceExport(pid, piid, parameters));
+    }
+
+    @Override
+    public void exitEmitStatementXesEvent(EmitStatementXesEventContext ctx) {
+        this.handleEthqlElement(ctx, this::handleEmitStatementXesEvent);
+    }
+
+    private void handleEmitStatementXesEvent(EmitStatementXesEventContext ctx) throws BuildException {
+        final ValueAccessorSpecification pid = this.getXesId(ctx.pid);
+        final ValueAccessorSpecification piid = this.getXesId(ctx.piid);
+        final ValueAccessorSpecification eid = this.getXesId(ctx.eid);
+        final List<XesParameterSpecification> parameters = this.getXesParameters(ctx.xesEmitVariable());
+        this.composer.addInstruction(XesExportSpecification.ofEventExport(pid, piid, eid, parameters));
+    }
+
+    private ValueAccessorSpecification getXesId(ValueExpressionContext ctx) throws BuildException {
+        return ctx == null ? null : this.getValueAccessor(ctx);
+    }
+
+    private List<XesParameterSpecification> getXesParameters(List<XesEmitVariableContext> variables) throws BuildException {
+        final LinkedList<XesParameterSpecification> parameters = new LinkedList<>();
+        for (XesEmitVariableContext varCtx : variables) {
+            final String name = varCtx.variableName() == null 
+                ? varCtx.valueExpression().variableName().toString()
+                : varCtx.variableName().toString();
+            final ValueAccessorSpecification accessor = this.getValueAccessor(varCtx.valueExpression());
+
+            XesParameterSpecification parameter = null;
+            switch (varCtx.xesTypes().getText()) {
+                case "xs:string" : parameter = XesParameterSpecification.ofStringLiteral(name, accessor); break;
+                case "xs:date" : parameter = XesParameterSpecification.ofDateParameter(name, accessor); break;
+                case "xs:int" : parameter = XesParameterSpecification.ofIntegerParameter(name, accessor); break;
+                case "xs:float" : parameter = XesParameterSpecification.ofFloatParameter(name, accessor); break;
+                case "xs:boolean"  : parameter = XesParameterSpecification.ofBooleanParameter(name, accessor); break;
+                default : throw new BuildException(String.format("Xes type '%s' not supported", varCtx.xesTypes().getText()));
+            }
+            parameters.add(parameter);
+        }
+        
+        return parameters;
     }
 
 

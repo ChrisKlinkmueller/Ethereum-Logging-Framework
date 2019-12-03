@@ -36,23 +36,30 @@ public class EmitAnalyzer extends SemanticAnalyzer {
     public void exitEmitStatementCsv(final EmitStatementCsvContext ctx) {
         this.verifyTableName(ctx.valueExpression());
 
-        this.verifyUniquenessOfNames(ctx.namedEmitVariable(), varCtx -> varCtx.variableName() != null
-                ? varCtx.variableName()
-                : varCtx.valueExpression().variableName() != null ? varCtx.valueExpression().variableName() : null);
+        this.verifyUniquenessOfNames(
+            ctx.namedEmitVariable(), 
+            varCtx -> 
+                varCtx.variableName() != null 
+                    ? varCtx.variableName()
+                    : varCtx.valueExpression().variableName()
+        );
     }
 
     private void verifyTableName(ValueExpressionContext valueExpression) {
         String type = InterpreterUtils.determineType(valueExpression, this.varAnalyzer);
         if (type != null && !TypeUtils.isStringType(type)) {
-            this.addError(valueExpression.start, "CSV table name must be an integer.");
+            this.addError(valueExpression.start, "CSV table name must be a string.");
         }
     }
 
     @Override
     public void exitEmitStatementXesEvent(EmitStatementXesEventContext ctx) {
-        this.verifyUniquenessOfNames(ctx.xesEmitVariable(),
-                varCtx -> varCtx.variableName() != null ? varCtx.variableName()
-                        : varCtx.valueExpression() != null ? varCtx.valueExpression().variableName() : null);
+        this.verifyUniquenessOfNames(
+            ctx.xesEmitVariable(),
+            varCtx -> varCtx.variableName() != null
+                ? varCtx.variableName()
+                : varCtx.valueExpression().variableName()
+        );
         this.verifyXesTypeCompatibility(ctx.xesEmitVariable());
         this.verifyXesId(ctx.pid);
         this.verifyXesId(ctx.piid);
@@ -61,9 +68,12 @@ public class EmitAnalyzer extends SemanticAnalyzer {
 
     @Override
     public void exitEmitStatementXesTrace(EmitStatementXesTraceContext ctx) {
-        this.verifyUniquenessOfNames(ctx.xesEmitVariable(),
-                varCtx -> varCtx.variableName() != null ? varCtx.variableName()
-                        : varCtx.valueExpression() != null ? varCtx.valueExpression().variableName() : null);
+        this.verifyUniquenessOfNames(
+            ctx.xesEmitVariable(),
+            varCtx -> varCtx.variableName() != null
+                ? varCtx.variableName()
+                : varCtx.valueExpression().variableName()
+        );
         this.verifyXesTypeCompatibility(ctx.xesEmitVariable());
         this.verifyXesId(ctx.pid);
         this.verifyXesId(ctx.piid);
@@ -78,11 +88,14 @@ public class EmitAnalyzer extends SemanticAnalyzer {
         }
     }
 
-    private <T extends ParserRuleContext> void verifyUniquenessOfNames(final List<T> variables,
-            final Function<T, VariableNameContext> nameAccessor) {
+    private <T extends ParserRuleContext> void verifyUniquenessOfNames(final List<T> variables, final Function<T, VariableNameContext> nameAccessor) {
         final Set<String> names = new HashSet<>();
         for (final T varCtx : variables) {
             final VariableNameContext nameCtx = nameAccessor.apply(varCtx);
+            if (nameCtx == null) {
+                this.addError(varCtx.start, "Attribute name must be specified for literals");
+            }
+
             if (nameCtx != null) {
                 this.verifyUniquenessOfName(nameCtx, names);
                 names.add(nameCtx.getText());

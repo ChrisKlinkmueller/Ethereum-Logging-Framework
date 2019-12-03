@@ -15,18 +15,15 @@ public class CsvExportSpecification extends InstructionSpecification<AddCsvRowIn
         super(instruction);
     }
 
-    public static CsvExportSpecification of(String tableName, List<String> columnNames, List<ValueAccessorSpecification> valueAccessors) {
+    public static CsvExportSpecification of(ValueAccessorSpecification tableName, List<CsvColumnSpecification> columns) {
         assert tableName != null;
-        assert columnNames != null && columnNames.stream().allMatch(Objects::nonNull);
-        assert valueAccessors != null && valueAccessors.stream().allMatch(Objects::nonNull);
-        assert columnNames.size() == valueAccessors.size();
+        assert columns != null && columns.stream().allMatch(Objects::nonNull);
         
         return new CsvExportSpecification(
             new AddCsvRowInstruction(
-                tableName, 
-                columnNames, 
-                valueAccessors.stream()
-                    .map(acc -> acc.getValueAccessor())
+                tableName.getValueAccessor(), 
+                columns.stream()
+                    .map(c -> c.getColumn())
                     .collect(Collectors.toList())
             )
         );

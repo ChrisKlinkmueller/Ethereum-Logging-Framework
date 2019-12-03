@@ -89,7 +89,7 @@ namedEmitVariable
     ;
 
 emitStatementLog
-    : KEY_EMIT KEY_LOG_LINE '(' valueExpression+ ')' ';'
+    : KEY_EMIT KEY_LOG_LINE '(' valueExpression (',' valueExpression)* ')' ';'
     ;
 
 emitStatementXesTrace

@@ -33,10 +33,10 @@ Building:
   ✔ Build transaction filter @done(19-12-03 08:59)
   ✔ Build log entry filter @done(19-12-03 08:59)
   ✔ Build generic filter @done(19-12-03 17:12)
-  ☐ Build log line export
-  ☐ Build csv row export
-  ☐ Build xes event export
-  ☐ Build xes trace export
+  ✔ Build log line export @done(19-12-03 18:12)
+  ✔ Build csv row export @done(19-12-03 18:12)
+  ✔ Build xes event export @done(19-12-03 18:12)
+  ✔ Build xes trace export @done(19-12-03 18:12)
   ☐ Build statements
   ☐ Smart contract filter specification
   
