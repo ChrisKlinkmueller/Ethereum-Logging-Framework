@@ -1,6 +1,7 @@
-// based on the grammars for 
-//    SQLite by Bart Kiers (https://github.com/antlr/grammars-v4/blob/master/sqlite/SQLite.g4), and
-//    Java9 by Terence Parr & Sam Harwell (https://github.com/antlr/grammars-v4/blob/master/java9/Java9.g4)
+// based on
+//    ANTLR4 grammar for SQLite by Bart Kiers (https://github.com/antlr/grammars-v4/blob/master/sqlite/SQLite.g4), and
+//    ANTLR4 grammar for Java9 by Terence Parr & Sam Harwell (https://github.com/antlr/grammars-v4/blob/master/java9/Java9.g4)
+//    Tutorial for expression evaluation by Sebastien Ros (https://www.codeproject.com/articles/18880/state-of-the-art-expression-evaluation)
 
 grammar Ethql;
 
@@ -65,7 +66,7 @@ skippableLogEntryParameter
     ;
 
 genericFilter
-    : KEY_IF '(' booleanExpression ')'
+    : KEY_IF '(' conditionalExpression ')'
     ;
 
 
@@ -134,29 +135,31 @@ statementExpression
     | methodInvocation
     ;
 
-booleanExpression
-    : notExpression
-    | KEY_NOT notExpression
+conditionalExpression
+    : conditionalOrExpression
     ;
 
-notExpression
-    : orExpression
-    | '(' orExpression ')'
+conditionalOrExpression
+    : conditionalAndExpression
+    | conditionalOrExpression KEY_OR conditionalAndExpression
     ;
 
-orExpression
-    : andExpression
-    | orExpression KEY_OR andExpression
+conditionalAndExpression
+    : conditionalComparisonExpression
+    | conditionalAndExpression KEY_AND conditionalComparisonExpression
     ;
 
-andExpression
-    : comparisonExpression
-    | andExpression KEY_AND comparisonExpression
+conditionalComparisonExpression
+    : conditionalNotExpression (comparators conditionalNotExpression)?
     ;
 
-comparisonExpression
-    : value=valueExpression
-    | leftHandSide=valueExpression comparators rightHandSide=valueExpression
+conditionalNotExpression
+    : KEY_NOT? conditionalPrimaryExpression
+    ;
+
+conditionalPrimaryExpression 
+    : valueExpression 
+    | '(' conditionalOrExpression ')'
     ;
 
 valueExpression
@@ -166,6 +169,7 @@ valueExpression
 
 comparators
     : '=='
+    | '!='
     | '>='
     | '>'
     | '<'

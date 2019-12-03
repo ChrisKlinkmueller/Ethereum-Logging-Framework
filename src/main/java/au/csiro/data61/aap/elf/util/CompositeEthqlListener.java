@@ -11,15 +11,18 @@ import org.antlr.v4.runtime.tree.TerminalNode;
 
 import au.csiro.data61.aap.elf.parsing.EthqlListener;
 import au.csiro.data61.aap.elf.parsing.EthqlParser.AddressListContext;
-import au.csiro.data61.aap.elf.parsing.EthqlParser.AndExpressionContext;
 import au.csiro.data61.aap.elf.parsing.EthqlParser.ArrayLiteralContext;
 import au.csiro.data61.aap.elf.parsing.EthqlParser.BlockFilterContext;
 import au.csiro.data61.aap.elf.parsing.EthqlParser.BlockNumberContext;
 import au.csiro.data61.aap.elf.parsing.EthqlParser.BooleanArrayLiteralContext;
-import au.csiro.data61.aap.elf.parsing.EthqlParser.BooleanExpressionContext;
 import au.csiro.data61.aap.elf.parsing.EthqlParser.BytesArrayLiteralContext;
 import au.csiro.data61.aap.elf.parsing.EthqlParser.ComparatorsContext;
-import au.csiro.data61.aap.elf.parsing.EthqlParser.ComparisonExpressionContext;
+import au.csiro.data61.aap.elf.parsing.EthqlParser.ConditionalAndExpressionContext;
+import au.csiro.data61.aap.elf.parsing.EthqlParser.ConditionalComparisonExpressionContext;
+import au.csiro.data61.aap.elf.parsing.EthqlParser.ConditionalExpressionContext;
+import au.csiro.data61.aap.elf.parsing.EthqlParser.ConditionalNotExpressionContext;
+import au.csiro.data61.aap.elf.parsing.EthqlParser.ConditionalOrExpressionContext;
+import au.csiro.data61.aap.elf.parsing.EthqlParser.ConditionalPrimaryExpressionContext;
 import au.csiro.data61.aap.elf.parsing.EthqlParser.DocumentContext;
 import au.csiro.data61.aap.elf.parsing.EthqlParser.EmitStatementContext;
 import au.csiro.data61.aap.elf.parsing.EthqlParser.EmitStatementCsvContext;
@@ -37,8 +40,6 @@ import au.csiro.data61.aap.elf.parsing.EthqlParser.LogEntrySignatureContext;
 import au.csiro.data61.aap.elf.parsing.EthqlParser.MethodInvocationContext;
 import au.csiro.data61.aap.elf.parsing.EthqlParser.MethodStatementContext;
 import au.csiro.data61.aap.elf.parsing.EthqlParser.NamedEmitVariableContext;
-import au.csiro.data61.aap.elf.parsing.EthqlParser.NotExpressionContext;
-import au.csiro.data61.aap.elf.parsing.EthqlParser.OrExpressionContext;
 import au.csiro.data61.aap.elf.parsing.EthqlParser.ScopeContext;
 import au.csiro.data61.aap.elf.parsing.EthqlParser.SkippableLogEntryParameterContext;
 import au.csiro.data61.aap.elf.parsing.EthqlParser.SolTypeContext;
@@ -333,57 +334,6 @@ public class CompositeEthqlListener<T extends EthqlListener> implements EthqlLis
     }
 
     @Override
-    public void enterBooleanExpression(BooleanExpressionContext ctx) {
-        this.notifyListener(EthqlListener::enterBooleanExpression, ctx);
-    }
-
-    @Override
-    public void exitBooleanExpression(BooleanExpressionContext ctx) {
-        this.notifyListener(EthqlListener::exitBooleanExpression, ctx);
-    }
-
-    @Override
-    public void enterNotExpression(NotExpressionContext ctx) {
-        this.notifyListener(EthqlListener::enterNotExpression, ctx);
-
-    }
-
-    @Override
-    public void exitNotExpression(NotExpressionContext ctx) {
-        this.notifyListener(EthqlListener::exitNotExpression, ctx);
-    }
-
-    @Override
-    public void enterOrExpression(OrExpressionContext ctx) {
-        this.notifyListener(EthqlListener::enterOrExpression, ctx);
-    }
-
-    @Override
-    public void exitOrExpression(OrExpressionContext ctx) {
-        this.notifyListener(EthqlListener::exitOrExpression, ctx);
-    }
-
-    @Override
-    public void enterAndExpression(AndExpressionContext ctx) {
-        this.notifyListener(EthqlListener::enterAndExpression, ctx);
-    }
-
-    @Override
-    public void exitAndExpression(AndExpressionContext ctx) {
-        this.notifyListener(EthqlListener::exitAndExpression, ctx);
-    }
-
-    @Override
-    public void enterComparisonExpression(ComparisonExpressionContext ctx) {
-        this.notifyListener(EthqlListener::enterComparisonExpression, ctx);
-    }
-
-    @Override
-    public void exitComparisonExpression(ComparisonExpressionContext ctx) {
-        this.notifyListener(EthqlListener::exitComparisonExpression, ctx);
-    }
-
-    @Override
     public void enterComparators(ComparatorsContext ctx) {
         this.notifyListener(EthqlListener::enterComparators, ctx);
     }
@@ -531,5 +481,65 @@ public class CompositeEthqlListener<T extends EthqlListener> implements EthqlLis
     @Override
     public void exitEmitStatementXesEvent(EmitStatementXesEventContext ctx) {
         this.notifyListener(EthqlListener::exitEmitStatementXesEvent, ctx);
+    }
+
+    @Override
+    public void enterConditionalExpression(ConditionalExpressionContext ctx) {
+        this.notifyListener(EthqlListener::enterConditionalExpression, ctx);
+    }
+
+    @Override
+    public void exitConditionalExpression(ConditionalExpressionContext ctx) {
+        this.notifyListener(EthqlListener::exitConditionalExpression, ctx);
+    }
+
+    @Override
+    public void enterConditionalOrExpression(ConditionalOrExpressionContext ctx) {
+        this.notifyListener(EthqlListener::enterConditionalOrExpression, ctx);
+    }
+
+    @Override
+    public void exitConditionalOrExpression(ConditionalOrExpressionContext ctx) {
+        this.notifyListener(EthqlListener::exitConditionalOrExpression, ctx);
+    }
+
+    @Override
+    public void enterConditionalAndExpression(ConditionalAndExpressionContext ctx) {
+        this.notifyListener(EthqlListener::enterConditionalAndExpression, ctx);
+    }
+
+    @Override
+    public void exitConditionalAndExpression(ConditionalAndExpressionContext ctx) {
+        this.notifyListener(EthqlListener::exitConditionalAndExpression, ctx);
+    }
+
+    @Override
+    public void enterConditionalComparisonExpression(ConditionalComparisonExpressionContext ctx) {
+        this.notifyListener(EthqlListener::enterConditionalComparisonExpression, ctx);
+    }
+
+    @Override
+    public void exitConditionalComparisonExpression(ConditionalComparisonExpressionContext ctx) {
+        this.notifyListener(EthqlListener::exitConditionalComparisonExpression, ctx);
+    }
+
+    @Override
+    public void enterConditionalNotExpression(ConditionalNotExpressionContext ctx) {
+        this.notifyListener(EthqlListener::enterConditionalNotExpression, ctx);
+    }
+
+    @Override
+    public void exitConditionalNotExpression(ConditionalNotExpressionContext ctx) {
+        this.notifyListener(EthqlListener::exitConditionalNotExpression, ctx);
+    }
+
+    @Override
+    public void enterConditionalPrimaryExpression(ConditionalPrimaryExpressionContext ctx) {
+        this.notifyListener(EthqlListener::enterConditionalPrimaryExpression, ctx);
+    }
+
+    @Override
+    public void exitConditionalPrimaryExpression(ConditionalPrimaryExpressionContext ctx) {
+        this.notifyListener(EthqlListener::exitConditionalPrimaryExpression, ctx);
     }
 }

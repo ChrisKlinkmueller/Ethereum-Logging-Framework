@@ -1,6 +1,8 @@
 package au.csiro.data61.aap.elf.configuration;
 
 import java.util.LinkedList;
+import java.util.Stack;
+import java.util.function.BiFunction;
 import java.util.stream.Collectors;
 
 import org.antlr.v4.runtime.ParserRuleContext;
@@ -11,7 +13,13 @@ import au.csiro.data61.aap.elf.parsing.VariableExistenceAnalyzer;
 import au.csiro.data61.aap.elf.parsing.EthqlParser.AddressListContext;
 import au.csiro.data61.aap.elf.parsing.EthqlParser.BlockFilterContext;
 import au.csiro.data61.aap.elf.parsing.EthqlParser.BlockNumberContext;
+import au.csiro.data61.aap.elf.parsing.EthqlParser.ConditionalAndExpressionContext;
+import au.csiro.data61.aap.elf.parsing.EthqlParser.ConditionalComparisonExpressionContext;
+import au.csiro.data61.aap.elf.parsing.EthqlParser.ConditionalNotExpressionContext;
+import au.csiro.data61.aap.elf.parsing.EthqlParser.ConditionalOrExpressionContext;
+import au.csiro.data61.aap.elf.parsing.EthqlParser.ConditionalPrimaryExpressionContext;
 import au.csiro.data61.aap.elf.parsing.EthqlParser.DocumentContext;
+import au.csiro.data61.aap.elf.parsing.EthqlParser.GenericFilterContext;
 import au.csiro.data61.aap.elf.parsing.EthqlParser.LiteralContext;
 import au.csiro.data61.aap.elf.parsing.EthqlParser.LogEntryFilterContext;
 import au.csiro.data61.aap.elf.parsing.EthqlParser.LogEntryParameterContext;
@@ -26,12 +34,14 @@ import au.csiro.data61.aap.elf.util.TypeUtils;
 public class EthqlProgramBuilder extends EthqlBaseListener {
     private final SpecificationComposer composer;
     private final VariableExistenceAnalyzer analyzer;
+    private final Stack<Object> genericFilterPredicates;
     private BuildException error;
     private Program program;
 
     public EthqlProgramBuilder(VariableExistenceAnalyzer analyzer) {
         this.composer = new SpecificationComposer();
         this.analyzer = analyzer;
+        this.genericFilterPredicates = new Stack<Object>();
     }
 
     public boolean containsError() {
@@ -140,21 +150,6 @@ public class EthqlProgramBuilder extends EthqlBaseListener {
         this.composer.buildLogEntryFilter(contracts, signature);
     }
 
-    private LogEntrySignatureSpecification getLogEntrySignature(LogEntrySignatureContext ctx) throws BuildException {
-        final LinkedList<LogEntryParameterSpecification> parameters = new LinkedList<>();
-        for (LogEntryParameterContext paramCtx : ctx.logEntryParameter()) {
-            parameters.add(
-                LogEntryParameterSpecification.of(
-                    paramCtx.variableName().getText(), 
-                    paramCtx.solType().getText(), 
-                    paramCtx.KEY_INDEXED() != null
-                )
-            );
-        }
-        
-        return LogEntrySignatureSpecification.of(ctx.methodName.getText(), parameters);
-    }
-
     private AddressListSpecification getAddressListSpecification(AddressListContext ctx) throws BuildException {
         if (ctx.BYTES_LITERAL() != null) {
             return AddressListSpecification.ofAddresses(
@@ -171,6 +166,159 @@ public class EthqlProgramBuilder extends EthqlBaseListener {
         }
         else {
             return AddressListSpecification.ofEmpty();
+        }
+    }
+
+    private LogEntrySignatureSpecification getLogEntrySignature(LogEntrySignatureContext ctx) throws BuildException {
+        final LinkedList<LogEntryParameterSpecification> parameters = new LinkedList<>();
+        for (LogEntryParameterContext paramCtx : ctx.logEntryParameter()) {
+            parameters.add(
+                LogEntryParameterSpecification.of(
+                    paramCtx.variableName().getText(), 
+                    paramCtx.solType().getText(), 
+                    paramCtx.KEY_INDEXED() != null
+                )
+            );
+        }
+        
+        return LogEntrySignatureSpecification.of(ctx.methodName.getText(), parameters);
+    }
+
+    @Override
+    public void enterGenericFilter(GenericFilterContext ctx) {
+        this.handleEthqlElement(ctx, this::prepareGenericFilterBuild);
+    }
+
+    private void prepareGenericFilterBuild(GenericFilterContext ctx) throws BuildException {
+        this.composer.prepareGenericFilterBuild();
+    }
+
+    @Override
+    public void exitGenericFilter(GenericFilterContext ctx) {
+        this.handleEthqlElement(ctx, this::buildGenericFilter);
+    }
+
+    private void buildGenericFilter(GenericFilterContext ctx) throws BuildException {
+        if (   this.genericFilterPredicates.size() != 1 
+            || !(this.genericFilterPredicates.peek() instanceof GenericFilterPredicateSpecification)
+        ) {
+            throw new BuildException("Error in boolean expression tree.");
+        }
+
+        this.composer.buildGenericFilter((GenericFilterPredicateSpecification)this.genericFilterPredicates.pop());
+    }
+
+    @Override
+    public void exitConditionalOrExpression(ConditionalOrExpressionContext ctx) {
+        this.handleEthqlElement(ctx, this::handleConditionalOrExpression);
+    }
+
+    private void handleConditionalOrExpression(ConditionalOrExpressionContext ctx) throws BuildException {
+        this.createBinaryConditionalExpression(GenericFilterPredicateSpecification::or);
+    }
+
+    @Override
+    public void exitConditionalAndExpression(ConditionalAndExpressionContext ctx) {
+        this.handleEthqlElement(ctx, this::handleConditionalAndExpression);
+    }
+
+    private void handleConditionalAndExpression(ConditionalAndExpressionContext ctx) throws BuildException {
+        this.createBinaryConditionalExpression(GenericFilterPredicateSpecification::and);
+    }
+
+    private void createBinaryConditionalExpression(
+        BiFunction<GenericFilterPredicateSpecification,GenericFilterPredicateSpecification, GenericFilterPredicateSpecification> constructor
+    ) throws BuildException {
+        if (   this.genericFilterPredicates.isEmpty() 
+            || !(this.genericFilterPredicates.peek() instanceof GenericFilterPredicateSpecification)) {
+            throw new BuildException("Parse tree error: binary boolean expression requires boolean predicates.");
+        }
+        final GenericFilterPredicateSpecification predicate1 = (GenericFilterPredicateSpecification)this.genericFilterPredicates.pop();
+
+        if (   this.genericFilterPredicates.isEmpty() 
+            || !(this.genericFilterPredicates.peek() instanceof GenericFilterPredicateSpecification)) {
+            throw new BuildException("Parse tree error: binary boolean expression requires boolean predicates.");
+        }
+        final GenericFilterPredicateSpecification predicate2 = (GenericFilterPredicateSpecification)this.genericFilterPredicates.pop();
+
+        this.genericFilterPredicates.push(constructor.apply(predicate1, predicate2));
+    }
+    
+    @Override
+    public void exitConditionalComparisonExpression(ConditionalComparisonExpressionContext ctx) {
+        this.handleEthqlElement(ctx, this::handleConditionalComparisonExpression);
+    }
+
+    private void handleConditionalComparisonExpression(ConditionalComparisonExpressionContext ctx) throws BuildException {
+        if (ctx.comparators() == null) {
+            return;
+        }
+
+        if (this.genericFilterPredicates.size() < 2) {
+            throw new BuildException("Parse tree does not contain enough expressions.");
+        }
+
+        final Object value2 = this.genericFilterPredicates.pop();
+        if (!(value2 instanceof ValueAccessorSpecification)) {
+            throw new BuildException("Can only compare values, but not boolean expressions.");
+        }
+        
+        final Object value1 = this.genericFilterPredicates.pop();
+        if (!(value2 instanceof ValueAccessorSpecification)) {
+            throw new BuildException("Can only compare values, but not boolean expressions.");
+        }
+
+        final ValueAccessorSpecification spec1 = (ValueAccessorSpecification)value1;
+        final ValueAccessorSpecification spec2 = (ValueAccessorSpecification)value2;
+
+        GenericFilterPredicateSpecification predicate = null;
+        switch (ctx.comparators().getText().toLowerCase()) {
+            case "==" : predicate = GenericFilterPredicateSpecification.equals(spec1, spec2); break;
+            case "!=" : predicate = GenericFilterPredicateSpecification.notEquals(spec1, spec2); break;
+            case ">=" : predicate = GenericFilterPredicateSpecification.greaterThanAndEquals(spec1, spec2); break;
+            case ">" : predicate = GenericFilterPredicateSpecification.greaterThan(spec1, spec2); break;
+            case "<" : predicate = GenericFilterPredicateSpecification.smallerThan(spec1, spec2); break;
+            case "<=" : predicate = GenericFilterPredicateSpecification.smallerThanAndEquals(spec1, spec2); break;
+            case "in" : predicate = GenericFilterPredicateSpecification.in(spec1, spec2); break;
+            default : throw new BuildException(String.format("Comparator %s not supported.", ctx.comparators().getText()));
+        }
+
+        this.genericFilterPredicates.push(predicate);
+    }
+
+    @Override
+    public void exitConditionalNotExpression(ConditionalNotExpressionContext ctx) {
+        this.handleEthqlElement(ctx, this::handleConditionalNotExpression);
+    }
+
+    private void handleConditionalNotExpression(ConditionalNotExpressionContext ctx) throws BuildException {
+        if (ctx.KEY_NOT() == null) {
+            return;
+        }
+
+        Object valueExpression = this.genericFilterPredicates.pop();
+        if (valueExpression instanceof ValueAccessorSpecification) {
+            valueExpression = GenericFilterPredicateSpecification.ofBooleanValue((ValueAccessorSpecification)valueExpression);
+        }
+
+        if (!(valueExpression instanceof GenericFilterPredicateSpecification)) {
+            throw new BuildException(String.format("GenericFilterPredicateSpecification required, but was %s.", valueExpression.getClass()));
+        }
+        this.genericFilterPredicates.push(
+            GenericFilterPredicateSpecification.not(
+                (GenericFilterPredicateSpecification)valueExpression
+            )
+        );
+    }
+
+    @Override
+    public void exitConditionalPrimaryExpression(ConditionalPrimaryExpressionContext ctx) {
+        this.handleEthqlElement(ctx, this::handleConitionalPrimaryExpression);
+    }
+
+    private void handleConitionalPrimaryExpression(ConditionalPrimaryExpressionContext ctx) throws BuildException {
+        if (ctx.valueExpression() != null) {
+            this.genericFilterPredicates.push(this.getValueAccessor(ctx.valueExpression()));
         }
     }
 

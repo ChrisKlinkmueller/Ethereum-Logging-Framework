@@ -32,7 +32,7 @@ Building:
   ✔ Build block filter @done(19-12-03 08:59)
   ✔ Build transaction filter @done(19-12-03 08:59)
   ✔ Build log entry filter @done(19-12-03 08:59)
-  ☐ Build generic filter
+  ✔ Build generic filter @done(19-12-03 17:12)
   ☐ Build log line export
   ☐ Build csv row export
   ☐ Build xes event export
