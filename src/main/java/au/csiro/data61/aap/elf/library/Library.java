@@ -10,6 +10,7 @@ import java.util.function.Function;
 
 import au.csiro.data61.aap.elf.core.Method;
 import au.csiro.data61.aap.elf.core.ProgramState;
+import au.csiro.data61.aap.elf.library.compression.BitMapping;
 import au.csiro.data61.aap.elf.library.compression.ValueDictionary;
 import au.csiro.data61.aap.elf.library.types.IntegerOperations;
 import au.csiro.data61.aap.elf.library.types.ListOperations;
@@ -55,6 +56,11 @@ public class Library {
             this.addMethod(new MethodSignature("mapValue", "string", "string", "bool", "string[]", "bool[]"), ValueDictionary::stringToBool);
             this.addMethod(new MethodSignature("mapValue", "string", "string", "int", "string[]", "int[]"), ValueDictionary::stringToInt);
             this.addMethod(new MethodSignature("mapValue", "string", "string", "string", "string[]", "string[]"), ValueDictionary::stringToString);
+
+            this.addMethod(new MethodSignature("mapBits", "string", "int", "int", "int", "string[]"), BitMapping::mapBitsToString);
+            this.addMethod(new MethodSignature("mapBits", "byte", "int", "int", "int", "byte[]"), BitMapping::mapBitsToString);
+            this.addMethod(new MethodSignature("mapBits", "int", "int", "int", "int", "int[]"), BitMapping::mapBitsToString);
+            this.addMethod(new MethodSignature("mapBits", "bool", "int", "int", "int", "bool[]"), BitMapping::mapBitsToString);
 
         } catch (LibraryException e) {
             e.printStackTrace();

@@ -2,6 +2,13 @@
     "configurations": [
         {
             "type": "java",
+            "name": "CodeLens (Launch) - BitMapping",
+            "request": "launch",
+            "mainClass": "au.csiro.data61.aap.elf.library.compression.BitMapping",
+            "projectName": "xes-blockchain"
+        },
+        {
+            "type": "java",
             "name": "CodeLens (Launch) - ListOperations",
             "request": "launch",
             "mainClass": "au.csiro.data61.aap.elf.library.types.ListOperations",
