@@ -87,6 +87,7 @@ public class XesWriter extends DataWriter {
         final String eid = inputEid == null ? String.format("%s%s", DEFAULT_EID, Long.toString(EID++)) : inputEid;
         LOGGER.info(String.format("Event %s in trace %s in log %s started.", eid, piid, pid));
 
+        this.findOrCreateTrace(pid, piid);
         this.findOrCreateEvent(pid, piid, eid);       
     }    
 

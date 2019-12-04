@@ -45,7 +45,7 @@ Extractor:
 
 Library:
   ☐ Add bit mapping
-  ☐ Add value dictionary
+  ✔ Add value dictionary @done(19-12-04 15:16)
   ☐ Add utility functionality
   ☐ Add concat
   ☐ Add null / empty constructor

@@ -429,8 +429,7 @@ public class EthqlProgramBuilder extends EthqlBaseListener {
         return ctx == null ? null : this.getValueAccessor(ctx);
     }
 
-    private List<XesParameterSpecification> getXesParameters(List<XesEmitVariableContext> variables)
-            throws BuildException {
+    private List<XesParameterSpecification> getXesParameters(List<XesEmitVariableContext> variables) throws BuildException {
         final LinkedList<XesParameterSpecification> parameters = new LinkedList<>();
         for (XesEmitVariableContext varCtx : variables) {
             final String name = varCtx.variableName() == null 
