@@ -10,6 +10,7 @@ import java.util.function.Function;
 
 import au.csiro.data61.aap.elf.core.Method;
 import au.csiro.data61.aap.elf.core.ProgramState;
+import au.csiro.data61.aap.elf.library.compression.ValueDictionary;
 import au.csiro.data61.aap.elf.library.types.IntegerOperations;
 import au.csiro.data61.aap.elf.library.types.ListOperations;
 
@@ -37,6 +38,32 @@ public class Library {
             this.addMethod(new MethodSignature("add", null, "address[]", "address"), ListOperations::addElement);
             this.addMethod(new MethodSignature("remove", null, "address[]", "address"), ListOperations::removeElement);
             this.addMethod(new MethodSignature("clear", null, "address[]"), ListOperations::clear);
+
+            this.addMethod(new MethodSignature("mapValue", "address", "address", "address[]", "address[]"), ValueDictionary::stringToString);
+            this.addMethod(new MethodSignature("mapValue", "address", "bytes", "address[]", "bytes[]"), ValueDictionary::stringToString);
+            this.addMethod(new MethodSignature("mapValue", "address", "bool", "address[]", "bool[]"), ValueDictionary::stringToBool);
+            this.addMethod(new MethodSignature("mapValue", "address", "int", "address[]", "int[]"), ValueDictionary::stringToInt);
+            this.addMethod(new MethodSignature("mapValue", "address", "string", "address[]", "string[]"), ValueDictionary::stringToString);
+            this.addMethod(new MethodSignature("mapValue", "bool", "address", "bool[]", "address[]"), ValueDictionary::boolToString);
+            this.addMethod(new MethodSignature("mapValue", "bool", "bytes", "bool[]", "bytes[]"), ValueDictionary::boolToString);
+            this.addMethod(new MethodSignature("mapValue", "bool", "bool", "bool[]", "bool[]"), ValueDictionary::boolToBool);
+            this.addMethod(new MethodSignature("mapValue", "bool", "int", "bool[]", "int[]"), ValueDictionary::boolToInt);
+            this.addMethod(new MethodSignature("mapValue", "bool", "string", "bool[]", "string[]"), ValueDictionary::boolToString);
+            this.addMethod(new MethodSignature("mapValue", "byte", "address", "byte[]", "address[]"), ValueDictionary::stringToString);
+            this.addMethod(new MethodSignature("mapValue", "byte", "bytes", "byte[]", "bytes[]"), ValueDictionary::stringToString);
+            this.addMethod(new MethodSignature("mapValue", "byte", "bool", "byte[]", "bool[]"), ValueDictionary::stringToBool);
+            this.addMethod(new MethodSignature("mapValue", "byte", "int", "byte[]", "int[]"), ValueDictionary::stringToInt);
+            this.addMethod(new MethodSignature("mapValue", "byte", "string", "byte[]", "string[]"), ValueDictionary::stringToString);
+            this.addMethod(new MethodSignature("mapValue", "int", "address", "int[]", "address[]"), ValueDictionary::intToString);
+            this.addMethod(new MethodSignature("mapValue", "int", "bytes", "int[]", "bytes[]"), ValueDictionary::intToString);
+            this.addMethod(new MethodSignature("mapValue", "int", "bool", "int[]", "bool[]"), ValueDictionary::intToBool);
+            this.addMethod(new MethodSignature("mapValue", "int", "int", "int[]", "int[]"), ValueDictionary::intToInt);
+            this.addMethod(new MethodSignature("mapValue", "int", "string", "int[]", "string[]"), ValueDictionary::intToString);
+            this.addMethod(new MethodSignature("mapValue", "string", "address", "string[]", "address[]"), ValueDictionary::stringToString);
+            this.addMethod(new MethodSignature("mapValue", "string", "bytes", "string[]", "bytes[]"), ValueDictionary::stringToString);
+            this.addMethod(new MethodSignature("mapValue", "string", "bool", "string[]", "bool[]"), ValueDictionary::stringToBool);
+            this.addMethod(new MethodSignature("mapValue", "string", "int", "string[]", "int[]"), ValueDictionary::stringToInt);
+            this.addMethod(new MethodSignature("mapValue", "string", "string", "string[]", "string[]"), ValueDictionary::stringToString);
 
         } catch (LibraryException e) {
             e.printStackTrace();

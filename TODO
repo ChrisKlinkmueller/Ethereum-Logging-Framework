@@ -46,7 +46,8 @@ Extractor:
 Library:
   ☐ Add bit mapping
   ☐ Add value dictionary
-  ☐ Add utility functionality for types
+  ☐ Add utility functionality
+  ☐ Add concat
   ☐ Add null / empty constructor
 
 Generator:
