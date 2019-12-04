@@ -73,7 +73,7 @@ public class BlockNumberSpecification {
         private BigInteger blockNumber;
     }
 
-    public static BlockNumberSpecification ofEarliest() {
+    public static BlockNumberSpecification ofEarliest() throws BuildException {
         final ValueAccessor accessor = ValueAccessorSpecification.integerLiteral(BigInteger.ZERO).getValueAccessor();
         return new BlockNumberSpecification(accessor, null, Type.EARLIEST);
     }

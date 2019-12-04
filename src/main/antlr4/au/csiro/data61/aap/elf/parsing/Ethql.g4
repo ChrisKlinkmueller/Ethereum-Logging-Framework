@@ -253,9 +253,9 @@ bytesArrayLiteral
     : '[' (BYTES_LITERAL (',' BYTES_LITERAL)*)? ']'
     ;
 
-STRING_LITERAL : '"' ('\\"' | ~["\r\n])* '"';
+STRING_LITERAL : '"' StringCharacters? '"'; //'"' ('\\"' | ~["\r\n])* '"';
 
-INT_LITERAL : '-'? ([0]|[1-9][0-9]+);
+INT_LITERAL : '-'? ([0]|[1-9][0-9]*);
 
 BOOLEAN_LITERAL 
   : T R U E
@@ -346,7 +346,47 @@ fragment X : [xX];
 fragment Y : [yY];
 fragment Z : [zZ];
 
+fragment StringCharacters
+    : StringCharacter+
+    ;
+fragment StringCharacter
+    : ~["\\\r\n]
+	| EscapeSequence
+    ;
 
+fragment
+EscapeSequence
+	:	'\\' [btnfr"'\\]
+	|	OctalEscape
+    |   UnicodeEscape // This is not in the spec but prevents having to preprocess the input
+	;
+
+fragment
+OctalEscape
+	:	'\\' OctalDigit
+	|	'\\' OctalDigit OctalDigit
+	|	'\\' ZeroToThree OctalDigit OctalDigit
+	;
+
+fragment
+ZeroToThree
+	:	[0-3]
+	;
+
+fragment
+UnicodeEscape
+    :   '\\' 'u'+ HexDigit HexDigit HexDigit HexDigit
+    ;
+
+fragment
+HexDigit
+	:	[0-9a-fA-F]
+	;
+
+fragment
+OctalDigit
+	:	[0-7]
+	;
 
 // Identifier
 
@@ -381,9 +421,9 @@ WS
     ;
 
 COMMENT
-    : '/*' .*? '*/' -> skip
+    : '/*' .*? '*/' -> channel(HIDDEN)
     ;
 
 LINE_COMMENT
-    : '//' ~[\r\n]* -> skip
+    : '//' ~[\r\n]* -> channel(HIDDEN)
     ;

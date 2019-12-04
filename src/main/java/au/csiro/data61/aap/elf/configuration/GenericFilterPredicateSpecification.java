@@ -122,7 +122,7 @@ public class GenericFilterPredicateSpecification {
     }
 
     public static GenericFilterPredicateSpecification in(ValueAccessorSpecification accessor1, ValueAccessorSpecification accessor2) {
-        return new GenericFilterPredicateSpecification(createFilter(accessor1, accessor2, ListOperations::contains));
+        return new GenericFilterPredicateSpecification(createFilter(accessor2, accessor1, ListOperations::contains));
     }
 
     private static final GenericFilterPredicate createFilter(ValueAccessorSpecification specification1, ValueAccessorSpecification specification2, Method method) {

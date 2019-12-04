@@ -87,6 +87,10 @@ public class TypeUtils {
 		return solType != null && solType.equals(BOOL_TYPE_KEYWORD);
 	}
 
+    public static boolean isBytesType(String solType) {
+        return solType != null && solType.equals(BYTES_TYPE_KEYWORD); 
+    }
+
 	public static boolean isIntegerType(String solType) {
 		return solType != null && solType.contains(INT_TYPE_KEYWORD);
 	}
@@ -113,6 +117,13 @@ public class TypeUtils {
         return new BigInteger(literal);
     }
 
+    public static boolean isArrayLiteral(String literal) {
+        return    literal != null 
+               && 2 <= literal.length() 
+               && literal.charAt(0) == '[' 
+               && literal.charAt(literal.length() - 1) == ']';
+    }
+
     private static final int ADDRESS_BYTES_LENGTH = 20;
     public static boolean isAddressLiteral(String literal) {
 		return isBytesLiteral(literal, ADDRESS_BYTES_LENGTH);
@@ -128,4 +139,24 @@ public class TypeUtils {
         final boolean hasLength = literal.length() == 2 * (bytesLength + 1);
         return matchesBytesPattern && hasLength;
     }
+
+    public static boolean isBytesLiteral(String literal) {
+        return literal != null && literal.matches(BYTES_PATTERN);
+    }
+
+	public static boolean isBooleanLiteral(String literal) {
+		return literal != null && (literal.toLowerCase().equals("true") || literal.toLowerCase().equals("false"));
+	}
+
+	private static final String INT_PATTERN = "[0]|[1-9][0-9]*";
+	public static boolean isIntLiteral(String literal) {
+		return literal != null && literal.matches(INT_PATTERN);
+	}
+
+	public static boolean isStringLiteral(String literal) {
+        return    literal != null 
+               && 2 <= literal.length() 
+               && literal.charAt(0) == '\"' 
+               && literal.charAt(literal.length() - 1) == '\"';
+	}
 }

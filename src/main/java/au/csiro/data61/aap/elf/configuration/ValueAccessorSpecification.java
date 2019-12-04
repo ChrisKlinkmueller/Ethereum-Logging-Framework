@@ -1,17 +1,12 @@
 package au.csiro.data61.aap.elf.configuration;
 
-import java.lang.reflect.InvocationTargetException;
 import java.math.BigInteger;
-import java.util.Arrays;
+import java.util.ArrayList;
 import java.util.List;
-import java.util.stream.Collectors;
 
-import org.web3j.abi.TypeDecoder;
-import org.web3j.abi.datatypes.Type;
-
-import au.csiro.data61.aap.elf.core.exceptions.ProgramException;
 import au.csiro.data61.aap.elf.core.values.ValueAccessor;
 import au.csiro.data61.aap.elf.core.values.Variables;
+import au.csiro.data61.aap.elf.util.TypeUtils;
 
 /**
  * ValueAccessorSpecification
@@ -29,85 +24,122 @@ public class ValueAccessorSpecification {
         return this.valueAccessor;
     }
 
-    public static ValueAccessorSpecification addressLiteral(String literal) {
-		return new ValueAccessorSpecification(state -> instantiateType("address", literal).getValue());
+    public static ValueAccessorSpecification addressLiteral(String literal) throws BuildException {
+        assert literal != null;
+        final String value = parseBytesLiteral(literal);
+		return new ValueAccessorSpecification(state -> value);
 	}
 
-    public static ValueAccessorSpecification addressArrayLiteral(String literal) {
-		return new ValueAccessorSpecification(state -> instantiateType("address[]", toList(literal)).getValue());
+    public static ValueAccessorSpecification addressArrayLiteral(String literal) throws BuildException {
+        assert literal != null;
+        final List<String> values = ValueAccessorSpecification.parseArrayLiteral(literal, ValueAccessorSpecification::parseBytesLiteral);
+		return new ValueAccessorSpecification(state -> values);
 	}
 
-    public static ValueAccessorSpecification booleanLiteral(String literal) {
-		return new ValueAccessorSpecification(state -> instantiateType("bool", literal).getValue());
+    public static ValueAccessorSpecification booleanLiteral(String literal) throws BuildException  {
+        assert literal != null;
+		final boolean value = parseBoolLiteral(literal);
+		return new ValueAccessorSpecification(state -> value);
 	}
 
-    public static ValueAccessorSpecification booleanArrayLiteral(String literal) {
-		return new ValueAccessorSpecification(state -> instantiateType("bool[]", toList(literal)).getValue());
+    public static ValueAccessorSpecification booleanArrayLiteral(String literal) throws BuildException {
+        assert literal != null;
+        final List<Boolean> values = ValueAccessorSpecification.parseArrayLiteral(literal, ValueAccessorSpecification::parseBoolLiteral);
+		return new ValueAccessorSpecification(state -> values);
 	}
 
-    public static ValueAccessorSpecification bytesLiteral(String literal) {
-		return new ValueAccessorSpecification(state -> instantiateType("bytes", literal).getValue());
+    public static ValueAccessorSpecification bytesLiteral(String literal) throws BuildException  {
+        assert literal != null;
+		final String value = parseBytesLiteral(literal);
+		return new ValueAccessorSpecification(state -> value);
 	}
 
-    public static ValueAccessorSpecification bytesArrayLiteral(String literal) {
-		return new ValueAccessorSpecification(state -> instantiateType("bytes[]", toList(literal)).getValue());
+    public static ValueAccessorSpecification bytesArrayLiteral(String literal) throws BuildException {
+        assert literal != null;
+        final List<String> values = ValueAccessorSpecification.parseArrayLiteral(literal, ValueAccessorSpecification::parseBytesLiteral);
+		return new ValueAccessorSpecification(state -> values);
 	}
 
-    public static ValueAccessorSpecification fixedLiteral(String literal) {
-        return new ValueAccessorSpecification(state -> instantiateType("fixed", literal).getValue());
-    }
-
-    public static ValueAccessorSpecification fixedArrayLiteral(String literal) {
-        return new ValueAccessorSpecification(state -> instantiateType("fixed[]", toList(literal)).getValue());
-    }
-
-    public static ValueAccessorSpecification integerLiteral(String literal) {
-        final BigInteger number = new BigInteger(literal);
+    public static ValueAccessorSpecification integerLiteral(String literal) throws BuildException  {
+        assert literal != null;
+        final BigInteger number = parseIntLiteral(literal);
         return new ValueAccessorSpecification(state -> number);
     }
 
-    public static ValueAccessorSpecification integerArrayLiteral(String literal) {
-        return new ValueAccessorSpecification(state -> instantiateType("int[]", toList(literal)).getValue());
+    public static ValueAccessorSpecification integerArrayLiteral(String literal) throws BuildException  {
+        assert literal != null;
+        final List<BigInteger> values = ValueAccessorSpecification.parseArrayLiteral(literal, ValueAccessorSpecification::parseIntLiteral);
+        return new ValueAccessorSpecification(state -> values);
     }
 
-    public static ValueAccessorSpecification integerLiteral(long literal) {
+    public static ValueAccessorSpecification integerLiteral(long literal) throws BuildException  {
         return new ValueAccessorSpecification(state -> BigInteger.valueOf(literal));
     }
 
-    public static ValueAccessorSpecification integerLiteral(BigInteger literal) {
+    public static ValueAccessorSpecification integerLiteral(BigInteger literal) throws BuildException  {
         assert literal != null;
         return new ValueAccessorSpecification(state -> literal);
     }
 
-    public static ValueAccessorSpecification stringLiteral(String literal) {
+    public static ValueAccessorSpecification stringLiteral(String literal) throws BuildException {
         assert literal != null;
-        return new ValueAccessorSpecification(state -> instantiateType("string", literal).getValue());
+        final String value = parseStringLiteral(literal);
+        return new ValueAccessorSpecification(state -> value);
     }
 
-    public static ValueAccessorSpecification stringArrayLiteral(String literal) {
+    public static ValueAccessorSpecification stringArrayLiteral(String literal) throws BuildException {
         assert literal != null;
-        return new ValueAccessorSpecification(state -> instantiateType("string[]", literal).getValue());
-    }
-
-    private static List<String> toList(String literal) {
-        String values = literal.trim();
-        values = values.substring(1, values.length() - 1);
-        return Arrays.asList(values.split("."))
-            .stream()
-            .map(v -> v.trim())
-            .collect(Collectors.toList());
-    }
-    
-
-    private static Type<?> instantiateType(String type, Object value) throws ProgramException {
-        try {
-            return TypeDecoder.instantiateType(type, value);
-        } catch (InvocationTargetException | NoSuchMethodException | InstantiationException | IllegalAccessException | ClassNotFoundException e) {
-            throw new ProgramException(String.format("Error decoding value '%s' as %s.", value, type), e);
-        }
+        final List<String> values = ValueAccessorSpecification.parseArrayLiteral(literal, ValueAccessorSpecification::parseStringLiteral);
+        return new ValueAccessorSpecification(state -> values);
     }
 
     public static ValueAccessorSpecification ofVariable(String varName) {
+        assert varName != null;
         return new ValueAccessorSpecification(Variables.createValueAccessor(varName));
+    }
+
+    private static <T> List<T> parseArrayLiteral(String literal, Converter<T> converter) throws BuildException {
+        if (!TypeUtils.isArrayLiteral(literal)) {
+            throw new BuildException(String.format("Value '%s' is not an array literal.", literal));
+        }
+        List<T> list = new ArrayList<>();
+        final String[] elements = literal.substring(1, literal.length() - 1).split(",");
+        for (String element : elements) {
+            list.add(converter.convert(element));
+        }
+        return list;
+    }
+    
+    private static Boolean parseBoolLiteral(String literal) throws BuildException {
+        if (!TypeUtils.isBooleanLiteral(literal)) {
+            throw new BuildException(String.format("Value '%s' is not a string literal.", literal));
+        }
+        return Boolean.parseBoolean(literal);
+    } 
+    
+    private static String parseBytesLiteral(String literal) throws BuildException {
+        if (!TypeUtils.isBytesLiteral(literal)) {
+            throw new BuildException(String.format("Value '%s' is not a bytes or address literal.", literal));
+        }
+        return literal;
+    } 
+
+    private static BigInteger parseIntLiteral(String literal) throws BuildException {
+        if (!TypeUtils.isIntLiteral(literal)) {
+            throw new BuildException(String.format("Value '%s' is not an int literal.", literal));
+        }
+        return new BigInteger(literal);
+    }
+
+    private static String parseStringLiteral(String literal) throws BuildException {
+        if (!TypeUtils.isStringLiteral(literal)) {
+            throw new BuildException(String.format("Value '%s' is not a string literal.", literal));
+        }
+        return literal.substring(1, literal.length() - 1);
+    }
+
+    @FunctionalInterface
+    private static interface Converter<T> {
+        public T convert(String literal) throws BuildException;
     }
 }

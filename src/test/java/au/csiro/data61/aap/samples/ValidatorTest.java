@@ -1,4 +1,4 @@
-package au.csiro.data61.aap;
+package au.csiro.data61.aap.samples;
 
 import java.net.URL;
 import java.util.List;
@@ -11,20 +11,14 @@ import au.csiro.data61.aap.elf.Validator;
  * ValidatorTest
  */
 public class ValidatorTest {
-    private static final String CRYPTO_KITTIES = "CryptoKitties.ethql";
-    private static final String NETWORK_STATISTICS = "NetworkStatistics.ethql";
 
     public static void main(String[] args) {
         Validator validator = new Validator();
-        test(validator, CRYPTO_KITTIES);
-        test(validator, NETWORK_STATISTICS);
+        SampleUtils.getResources().forEach(url -> test(validator, url));
     }
 
-    private static void test(Validator validator, String resource) {
-        System.out.println("Test case: " + resource);
-        final URL url = ValidatorTest.class.getClassLoader().getResource(resource);
-        
-
+    private static void test(Validator validator, URL url) {
+        System.out.println(url.getFile());
         try {
             List<EthqlProcessingError> errors = validator.analyzeScript(url.getFile());
             System.out.println(errors.size());

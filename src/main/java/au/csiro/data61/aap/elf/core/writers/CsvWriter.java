@@ -9,6 +9,7 @@ import java.util.HashMap;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
+import java.util.logging.Logger;
 import java.util.stream.Collectors;
 import java.util.stream.IntStream;
 
@@ -16,6 +17,7 @@ import java.util.stream.IntStream;
  * CSVExporter
  */
 public class CsvWriter extends DataWriter {
+    private static final Logger LOGGER = Logger.getLogger(CsvWriter.class.getName());
     public static final String DEFAULT_DELIMITER = ",";
 
     private final Map<String, Map<String, ArrayList<Object>>> tables;
@@ -36,6 +38,7 @@ public class CsvWriter extends DataWriter {
     }
 
     public void beginRow(String tableName) {
+        LOGGER.info("Csv row added.");
         this.tables.putIfAbsent(tableName, new HashMap<>());
         this.rowCounts.putIfAbsent(tableName, 0);
         this.columnNames.putIfAbsent(tableName, new ArrayList<>());
@@ -83,6 +86,7 @@ public class CsvWriter extends DataWriter {
     }
 
     protected void writeTable(String filenameSuffix, String tableName) throws Throwable {
+        LOGGER.info(String.format("Export of CSV table %s started.", tableName));
         final Path path = Paths.get(
             this.getOutputFolder().toString(), 
             String.format("%s_%s.csv", tableName, filenameSuffix)
@@ -109,6 +113,7 @@ public class CsvWriter extends DataWriter {
             }
         }
         finally {
+            LOGGER.info(String.format("Export of CSV table %s finished.", tableName));
             this.tables.remove(tableName);
             this.rowCounts.remove(tableName);
             this.columnNames.remove(tableName);

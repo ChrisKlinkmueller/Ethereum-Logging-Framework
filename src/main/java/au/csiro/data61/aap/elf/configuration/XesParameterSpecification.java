@@ -65,9 +65,4 @@ public class XesParameterSpecification {
         assert name != null && accessor != null;
         return new XesParameterSpecification(XesParameter.stringListParameter(name, accessor.getValueAccessor()));
     }
-
-    public static XesParameterSpecification ofStringLiteral(String name, ValueAccessorSpecification spec) {
-        assert name != null && spec != null;
-        return new XesParameterSpecification(XesParameter.stringListParameter(name, spec.getValueAccessor()));
-    }
 }

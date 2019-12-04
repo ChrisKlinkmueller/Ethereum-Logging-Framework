@@ -1,5 +1,6 @@
 package au.csiro.data61.aap.elf.library.types;
 
+import java.util.ArrayList;
 import java.util.List;
 
 import au.csiro.data61.aap.elf.core.ProgramState;
@@ -60,6 +61,10 @@ public class ListOperations {
                && parameters[1] != null
                && List.class.isAssignableFrom(parameters[0].getClass());
                
+    }
+
+    public static void main(String[] args) {
+        System.out.println(List.class.isAssignableFrom(ArrayList.class));
     }
 
 }

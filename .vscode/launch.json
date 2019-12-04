@@ -2,6 +2,27 @@
     "configurations": [
         {
             "type": "java",
+            "name": "CodeLens (Launch) - ListOperations",
+            "request": "launch",
+            "mainClass": "au.csiro.data61.aap.elf.library.types.ListOperations",
+            "projectName": "xes-blockchain"
+        },
+        {
+            "type": "java",
+            "name": "CodeLens (Launch) - ExtractorTest",
+            "request": "launch",
+            "mainClass": "au.csiro.data61.aap.samples.ExtractorTest",
+            "projectName": "xes-blockchain"
+        },
+        {
+            "type": "java",
+            "name": "CodeLens (Launch) - ValidatorTest",
+            "request": "launch",
+            "mainClass": "au.csiro.data61.aap.samples.ValidatorTest",
+            "projectName": "xes-blockchain"
+        },
+        {
+            "type": "java",
             "name": "CodeLens (Launch) - ValidatorTest",
             "request": "launch",
             "mainClass": "au.csiro.data61.aap.ValidatorTest",
