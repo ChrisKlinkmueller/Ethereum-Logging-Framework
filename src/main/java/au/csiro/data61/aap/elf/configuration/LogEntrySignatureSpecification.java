@@ -21,11 +21,11 @@ public class LogEntrySignatureSpecification {
         return this.signature;
     }
 
-    public static LogEntrySignatureSpecification of(String eventName, LogEntryParameterSpecification... parameters) throws BuildException {
+    public static LogEntrySignatureSpecification of(String eventName, ParameterSpecification... parameters) throws BuildException {
         return of(eventName, Arrays.asList(parameters));
     }
 
-    public static LogEntrySignatureSpecification of(String eventName, List<LogEntryParameterSpecification> parameters) throws BuildException {
+    public static LogEntrySignatureSpecification of(String eventName, List<ParameterSpecification> parameters) throws BuildException {
         assert eventName != null;
         assert parameters != null && parameters.stream().allMatch(Objects::nonNull);
 

@@ -183,9 +183,9 @@ public class EthqlProgramBuilder extends EthqlBaseListener {
     }
 
     private LogEntrySignatureSpecification getLogEntrySignature(LogEntrySignatureContext ctx) throws BuildException {
-        final LinkedList<LogEntryParameterSpecification> parameters = new LinkedList<>();
+        final LinkedList<ParameterSpecification> parameters = new LinkedList<>();
         for (LogEntryParameterContext paramCtx : ctx.logEntryParameter()) {
-            parameters.add(LogEntryParameterSpecification.of(paramCtx.variableName().getText(),
+            parameters.add(ParameterSpecification.of(paramCtx.variableName().getText(),
                     paramCtx.solType().getText(), paramCtx.KEY_INDEXED() != null));
         }
 

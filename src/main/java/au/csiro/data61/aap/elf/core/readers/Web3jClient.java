@@ -6,15 +6,24 @@ import java.net.ConnectException;
 import java.net.URI;
 import java.net.URISyntaxException;
 import java.util.ArrayList;
+import java.util.List;
+import java.util.Objects;
 import java.util.logging.Level;
 import java.util.logging.Logger;
+import java.util.stream.Collectors;
 
+import org.web3j.abi.FunctionEncoder;
+import org.web3j.abi.FunctionReturnDecoder;
+import org.web3j.abi.TypeReference;
+import org.web3j.abi.datatypes.Function;
+import org.web3j.abi.datatypes.Type;
 import org.web3j.protocol.Web3j;
 import org.web3j.protocol.core.DefaultBlockParameterNumber;
 import org.web3j.protocol.core.methods.request.EthFilter;
 import org.web3j.protocol.core.methods.response.Transaction;
 import org.web3j.protocol.core.methods.response.EthBlock;
 import org.web3j.protocol.core.methods.response.EthBlockNumber;
+import org.web3j.protocol.core.methods.response.EthCall;
 import org.web3j.protocol.core.methods.response.EthGetTransactionReceipt;
 import org.web3j.protocol.core.methods.response.EthLog;
 import org.web3j.protocol.core.methods.response.Log;
@@ -72,8 +81,29 @@ public class Web3jClient implements EthereumClient {
         }
     }
 
-    public Object ethCall(org.web3j.protocol.core.methods.request.Transaction tx, BigInteger blockNumber) throws IOException {
-        return this.web3j.ethCall(tx, new DefaultBlockParameterNumber(blockNumber)).send().getResult();
+    @SuppressWarnings("all")
+    public List<Type> queryPublicMember(
+        String contract, 
+        BigInteger block, 
+        String memberName, 
+        List<Type> inputParameters, 
+        List<TypeReference<?>> returnTypes
+    ) throws IOException {
+        assert contract != null;
+        assert block != null;
+        assert memberName != null;
+        assert inputParameters != null && inputParameters.stream().allMatch(Objects::nonNull);
+        assert returnTypes != null && returnTypes.stream().allMatch(Objects::nonNull);
+        Function function = new Function(memberName, inputParameters, returnTypes);
+        String data = FunctionEncoder.encode(function);
+        org.web3j.protocol.core.methods.request.Transaction tx 
+            = org.web3j.protocol.core.methods.request.Transaction.createEthCallTransaction(contract, contract, data);
+        final DefaultBlockParameterNumber number = new DefaultBlockParameterNumber(block);
+        EthCall result = this.web3j.ethCall(tx, number).send();
+        return FunctionReturnDecoder.decode(
+                result.getResult(), 
+                returnTypes.stream().map(t -> (TypeReference<Type>)t).collect(Collectors.toList())
+        );
     }
 
     public EthereumBlock queryBlockData(BigInteger blockNumber) throws IOException {

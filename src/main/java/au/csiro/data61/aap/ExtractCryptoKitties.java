@@ -6,7 +6,7 @@ import au.csiro.data61.aap.elf.configuration.AddressListSpecification;
 import au.csiro.data61.aap.elf.configuration.BlockNumberSpecification;
 import au.csiro.data61.aap.elf.configuration.BuildException;
 import au.csiro.data61.aap.elf.configuration.GenericFilterPredicateSpecification;
-import au.csiro.data61.aap.elf.configuration.LogEntryParameterSpecification;
+import au.csiro.data61.aap.elf.configuration.ParameterSpecification;
 import au.csiro.data61.aap.elf.configuration.LogEntrySignatureSpecification;
 import au.csiro.data61.aap.elf.configuration.SpecificationComposer;
 import au.csiro.data61.aap.elf.configuration.ValueAccessorSpecification;
@@ -40,7 +40,7 @@ public class ExtractCryptoKitties {
         builder.prepareProgramBuild(); 
             ExtractComposerUtils.addOutputFolderConfig(builder);
             ExtractComposerUtils.addConnectCall(builder);       
-            builder.addVariableAssignment(ValueMutatorSpecification.ofVariableName("kitties"), ValueAccessorSpecification.integerArrayLiteral("{0}"));
+            builder.addVariableAssignment(ValueMutatorSpecification.ofVariableName("kitties"), ValueAccessorSpecification.integerArrayLiteral("[0]"));
             builder.prepareBlockRangeBuild();
                 addBirthEventHandlers(builder);
                 addTransferEventHandlers(builder);
@@ -82,11 +82,11 @@ public class ExtractCryptoKitties {
             AddressListSpecification.ofAddress("0x06012c8cf97BEaD5deAe237070F9587f8E7A266d"), 
             LogEntrySignatureSpecification.of(
                 "Birth",  
-                LogEntryParameterSpecification.of("owner", "address", false), 
-                LogEntryParameterSpecification.of("kittyId", "uint256", false), 
-                LogEntryParameterSpecification.of("matronId", "uint256", false), 
-                LogEntryParameterSpecification.of("sireId", "uint256", false), 
-                LogEntryParameterSpecification.of("genes", "uint256", false)
+                ParameterSpecification.of("owner", "address", false), 
+                ParameterSpecification.of("kittyId", "uint256", false), 
+                ParameterSpecification.of("matronId", "uint256", false), 
+                ParameterSpecification.of("sireId", "uint256", false), 
+                ParameterSpecification.of("genes", "uint256", false)
             )    
         );
     }
@@ -101,9 +101,9 @@ public class ExtractCryptoKitties {
             AddressListSpecification.ofAddress("0x06012c8cf97BEaD5deAe237070F9587f8E7A266d"), 
             LogEntrySignatureSpecification.of(
                 "Transfer", 
-                LogEntryParameterSpecification.of("from", "address", false), 
-                LogEntryParameterSpecification.of("to", "address", false), 
-                LogEntryParameterSpecification.of("tokenId", "uint256", false)
+                ParameterSpecification.of("from", "address", false), 
+                ParameterSpecification.of("to", "address", false), 
+                ParameterSpecification.of("tokenId", "uint256", false)
             )    
         );
     }
@@ -119,10 +119,10 @@ public class ExtractCryptoKitties {
             AddressListSpecification.ofAddress("0x06012c8cf97BEaD5deAe237070F9587f8E7A266d"), 
             LogEntrySignatureSpecification.of(
                 "Pregnant", 
-                LogEntryParameterSpecification.of("owner", "address", false), 
-                LogEntryParameterSpecification.of("matronId", "uint256", false), 
-                LogEntryParameterSpecification.of("sireId", "uint256", false), 
-                LogEntryParameterSpecification.of("cooldownEndBlock", "uint256", false)
+                ParameterSpecification.of("owner", "address", false), 
+                ParameterSpecification.of("matronId", "uint256", false), 
+                ParameterSpecification.of("sireId", "uint256", false), 
+                ParameterSpecification.of("cooldownEndBlock", "uint256", false)
             )    
         );
     }
@@ -137,10 +137,10 @@ public class ExtractCryptoKitties {
             AddressListSpecification.ofAddress("0xb1690c08e213a35ed9bab7b318de14420fb57d8c"), 
             LogEntrySignatureSpecification.of(
                 "AuctionCreated",
-                LogEntryParameterSpecification.of("tokenId", "uint256", false), 
-                LogEntryParameterSpecification.of("startingPrice", "uint256", false), 
-                LogEntryParameterSpecification.of("endingPrice", "uint256", false), 
-                LogEntryParameterSpecification.of("duration", "uint256", false)
+                ParameterSpecification.of("tokenId", "uint256", false), 
+                ParameterSpecification.of("startingPrice", "uint256", false), 
+                ParameterSpecification.of("endingPrice", "uint256", false), 
+                ParameterSpecification.of("duration", "uint256", false)
             )    
         );
     }
@@ -155,9 +155,9 @@ public class ExtractCryptoKitties {
             AddressListSpecification.ofAddress("0xb1690c08e213a35ed9bab7b318de14420fb57d8c"), 
             LogEntrySignatureSpecification.of(
                 "AuctionSuccessful", 
-                LogEntryParameterSpecification.of("tokenId", "uint256", false), 
-                LogEntryParameterSpecification.of("totalPrice", "uint256", false), 
-                LogEntryParameterSpecification.of("winner", "address", false)
+                ParameterSpecification.of("tokenId", "uint256", false), 
+                ParameterSpecification.of("totalPrice", "uint256", false), 
+                ParameterSpecification.of("winner", "address", false)
             )    
         );
     }
@@ -172,7 +172,7 @@ public class ExtractCryptoKitties {
             AddressListSpecification.ofAddress("0xb1690c08e213a35ed9bab7b318de14420fb57d8c"), 
             LogEntrySignatureSpecification.of(
                 "AuctionCancelled", 
-                LogEntryParameterSpecification.of("tokenId", "uint256", false)
+                ParameterSpecification.of("tokenId", "uint256", false)
             )    
         );
     }

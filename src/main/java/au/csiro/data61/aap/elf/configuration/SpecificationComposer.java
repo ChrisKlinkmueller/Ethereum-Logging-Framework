@@ -12,6 +12,7 @@ import au.csiro.data61.aap.elf.core.filters.BlockFilter;
 import au.csiro.data61.aap.elf.core.filters.GenericFilter;
 import au.csiro.data61.aap.elf.core.filters.LogEntryFilter;
 import au.csiro.data61.aap.elf.core.filters.Program;
+import au.csiro.data61.aap.elf.core.filters.SmartContractFilter;
 import au.csiro.data61.aap.elf.core.filters.TransactionFilter;
 import au.csiro.data61.aap.elf.core.values.ValueAccessor;
 import au.csiro.data61.aap.elf.core.values.ValueMutator;
@@ -42,6 +43,10 @@ public class SpecificationComposer {
 
     public void prepareLogEntryFilterBuild() throws BuildException {
         this.prepareBuild(FactoryState.LOG_ENTRY_FILTER, FactoryState.BLOCK_RANGE_FILTER, FactoryState.TRANSACTION_FILTER);
+    }
+
+    public void prepareSmartContractFilterBuild() throws BuildException {
+        this.prepareBuild(FactoryState.SMART_CONTRACT_FILTER, FactoryState.BLOCK_RANGE_FILTER);
     }
 
     public void prepareGenericFilterBuild() throws BuildException {
@@ -144,6 +149,21 @@ public class SpecificationComposer {
 
         final GenericFilter filter = new GenericFilter(
             predicate.getPredicate(), 
+            this.instructions.peek()
+        );
+        this.closeScope(filter);
+    }
+
+    public void buildSmartContractFilter(SmartContractQuerySpecification specification) throws BuildException {
+        assert specification != null;
+
+        if (this.states.peek() != FactoryState.SMART_CONTRACT_FILTER) {
+            throw new BuildException(String.format("Cannot build a smart contract filter, when construction of %s has not been finished.", this.states.peek()));
+        }
+
+        final SmartContractFilter filter = new SmartContractFilter(
+            specification.getContract(), 
+            specification.getQuery(), 
             this.instructions.peek()
         );
         this.closeScope(filter);

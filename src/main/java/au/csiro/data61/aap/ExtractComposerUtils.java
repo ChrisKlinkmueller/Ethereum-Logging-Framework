@@ -14,8 +14,8 @@ import au.csiro.data61.aap.elf.configuration.ValueMutatorSpecification;
  * ExtractComposerUtils
  */
 public class ExtractComposerUtils {
-    private static final String URL = "ws://localhost:8546/";
-    private static final String FOLDER = "C:/Development/xes-blockchain/v0.2/test_output";
+    private static final String URL = "\"ws://localhost:8546/\"";
+    private static final String FOLDER = "\"C:/Development/xes-blockchain/v0.2/test_output\"";
 
     public static void addMethodCall(
         SpecificationComposer composer, 

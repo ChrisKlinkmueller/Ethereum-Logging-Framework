@@ -65,3 +65,6 @@ Configuration:
 Open issues:
   ☐ currently array types are badly supported, e.g., for defining how to convert them into xes attributes
   ☐ add for loop for arrays
+
+Licenses:
+  ☐ check if logback is really needed
