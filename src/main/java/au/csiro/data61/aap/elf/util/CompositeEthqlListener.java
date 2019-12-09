@@ -40,8 +40,14 @@ import au.csiro.data61.aap.elf.parsing.EthqlParser.LogEntrySignatureContext;
 import au.csiro.data61.aap.elf.parsing.EthqlParser.MethodInvocationContext;
 import au.csiro.data61.aap.elf.parsing.EthqlParser.MethodStatementContext;
 import au.csiro.data61.aap.elf.parsing.EthqlParser.NamedEmitVariableContext;
+import au.csiro.data61.aap.elf.parsing.EthqlParser.PublicFunctionQueryContext;
+import au.csiro.data61.aap.elf.parsing.EthqlParser.PublicVariableQueryContext;
 import au.csiro.data61.aap.elf.parsing.EthqlParser.ScopeContext;
 import au.csiro.data61.aap.elf.parsing.EthqlParser.SkippableLogEntryParameterContext;
+import au.csiro.data61.aap.elf.parsing.EthqlParser.SmartContractFilterContext;
+import au.csiro.data61.aap.elf.parsing.EthqlParser.SmartContractParameterContext;
+import au.csiro.data61.aap.elf.parsing.EthqlParser.SmartContractQueryContext;
+import au.csiro.data61.aap.elf.parsing.EthqlParser.SmartContractQueryParameterContext;
 import au.csiro.data61.aap.elf.parsing.EthqlParser.SolTypeContext;
 import au.csiro.data61.aap.elf.parsing.EthqlParser.SolTypeRuleContext;
 import au.csiro.data61.aap.elf.parsing.EthqlParser.StatementContext;
@@ -541,5 +547,65 @@ public class CompositeEthqlListener<T extends EthqlListener> implements EthqlLis
     @Override
     public void exitConditionalPrimaryExpression(ConditionalPrimaryExpressionContext ctx) {
         this.notifyListener(EthqlListener::exitConditionalPrimaryExpression, ctx);
+    }
+
+    @Override
+    public void enterSmartContractFilter(SmartContractFilterContext ctx) {
+        this.notifyListener(EthqlListener::enterSmartContractFilter, ctx);
+    }
+
+    @Override
+    public void exitSmartContractFilter(SmartContractFilterContext ctx) {
+        this.notifyListener(EthqlListener::exitSmartContractFilter, ctx);
+    }
+
+    @Override
+    public void enterSmartContractQuery(SmartContractQueryContext ctx) {
+        this.notifyListener(EthqlListener::enterSmartContractQuery, ctx);
+    }
+
+    @Override
+    public void exitSmartContractQuery(SmartContractQueryContext ctx) {
+        this.notifyListener(EthqlListener::exitSmartContractQuery, ctx);
+    }
+
+    @Override
+    public void enterPublicVariableQuery(PublicVariableQueryContext ctx) {
+        this.notifyListener(EthqlListener::enterPublicVariableQuery, ctx);
+    }
+
+    @Override
+    public void exitPublicVariableQuery(PublicVariableQueryContext ctx) {
+        this.notifyListener(EthqlListener::exitPublicVariableQuery, ctx);
+    }
+
+    @Override
+    public void enterPublicFunctionQuery(PublicFunctionQueryContext ctx) {
+        this.notifyListener(EthqlListener::enterPublicFunctionQuery, ctx);
+    }
+
+    @Override
+    public void exitPublicFunctionQuery(PublicFunctionQueryContext ctx) {
+        this.notifyListener(EthqlListener::exitPublicFunctionQuery, ctx);
+    }
+
+    @Override
+    public void enterSmartContractQueryParameter(SmartContractQueryParameterContext ctx) {
+        this.notifyListener(EthqlListener::enterSmartContractQueryParameter, ctx);
+    }
+
+    @Override
+    public void exitSmartContractQueryParameter(SmartContractQueryParameterContext ctx) {
+        this.notifyListener(EthqlListener::exitSmartContractQueryParameter, ctx);
+    }
+
+    @Override
+    public void enterSmartContractParameter(SmartContractParameterContext ctx) {
+        this.notifyListener(EthqlListener::enterSmartContractParameter, ctx);
+    }
+
+    @Override
+    public void exitSmartContractParameter(SmartContractParameterContext ctx) {
+        this.notifyListener(EthqlListener::exitSmartContractParameter, ctx);
     }
 }

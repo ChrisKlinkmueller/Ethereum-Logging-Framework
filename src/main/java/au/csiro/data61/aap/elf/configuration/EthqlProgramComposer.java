@@ -47,10 +47,10 @@ import au.csiro.data61.aap.elf.parsing.EthqlParser.XesEmitVariableContext;
 import au.csiro.data61.aap.elf.util.TypeUtils;
 
 /**
- * EthqlProgramBuilder
+ * EthqlProgramComposer
  */
-public class EthqlProgramBuilder extends EthqlBaseListener {
-    private static final Logger LOGGER = Logger.getLogger(EthqlProgramBuilder.class.getName());
+public class EthqlProgramComposer extends EthqlBaseListener {
+    private static final Logger LOGGER = Logger.getLogger(EthqlProgramComposer.class.getName());
     
     private final SpecificationComposer composer;
     private final VariableExistenceAnalyzer variableAnalyzer;
@@ -59,7 +59,7 @@ public class EthqlProgramBuilder extends EthqlBaseListener {
     private BuildException error;
     private Program program;
 
-    public EthqlProgramBuilder(VariableExistenceAnalyzer analyzer) {
+    public EthqlProgramComposer(VariableExistenceAnalyzer analyzer) {
         this.composer = new SpecificationComposer();
         this.variableAnalyzer = analyzer;
         this.genericFilterPredicates = new Stack<Object>();

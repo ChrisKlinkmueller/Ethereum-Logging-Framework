@@ -15,6 +15,8 @@ import au.csiro.data61.aap.elf.parsing.EthqlParser.LogEntryFilterContext;
 import au.csiro.data61.aap.elf.parsing.EthqlParser.LogEntryParameterContext;
 import au.csiro.data61.aap.elf.parsing.EthqlParser.NamedEmitVariableContext;
 import au.csiro.data61.aap.elf.parsing.EthqlParser.ScopeContext;
+import au.csiro.data61.aap.elf.parsing.EthqlParser.SmartContractParameterContext;
+import au.csiro.data61.aap.elf.parsing.EthqlParser.SmartContractQueryParameterContext;
 import au.csiro.data61.aap.elf.parsing.EthqlParser.TransactionFilterContext;
 import au.csiro.data61.aap.elf.parsing.EthqlParser.VariableAssignmentStatementContext;
 import au.csiro.data61.aap.elf.parsing.EthqlParser.VariableDeclarationStatementContext;
@@ -88,6 +90,12 @@ public class VariableExistenceAnalyzer extends SemanticAnalyzer {
         else if (ctx.parent instanceof NamedEmitVariableContext || ctx.parent instanceof XesEmitVariableContext) {
             return;
         }
+        else if (ctx.parent instanceof SmartContractParameterContext) {
+            this.verifySmartContractParameter((SmartContractParameterContext)ctx.parent);
+        }
+        else if (ctx.parent instanceof SmartContractQueryParameterContext) {
+            this.verifySmartContractQueryParameter((SmartContractQueryParameterContext)ctx.parent);
+        }
         else {
             this.verifyVariableReference(ctx);
         }
@@ -98,6 +106,10 @@ public class VariableExistenceAnalyzer extends SemanticAnalyzer {
     }
 
     private void verifyLogEntryParameter(LogEntryParameterContext ctx) {
+        this.verifyVariableDeclaration(ctx.variableName().start, ctx.solType().getText(), ctx.variableName().getText());
+    }
+
+    private void verifySmartContractParameter(SmartContractParameterContext ctx) {
         this.verifyVariableDeclaration(ctx.variableName().start, ctx.solType().getText(), ctx.variableName().getText());
     }
 
@@ -125,6 +137,10 @@ public class VariableExistenceAnalyzer extends SemanticAnalyzer {
     private void verifyVariableReference(VariableNameContext ctx) {
         final String variableName = ctx.getText();
         this.verifyVariableReference(ctx.start, variableName);
+    }
+
+    private void verifySmartContractQueryParameter(SmartContractQueryParameterContext parent) {
+        this.verifyVariableReference(parent.variableName().start, parent.variableName().getText());
     }
 
     private boolean verifyVariableReference(Token token, String variableName) {

@@ -257,4 +257,11 @@ public class FilterDefinitionAnalyzer extends SemanticAnalyzer {
 
     //#endregion generic filter
 
+
+    
+    //#region Smart contract filter
+
+
+
+    //#endregion Smart contract filter
 }

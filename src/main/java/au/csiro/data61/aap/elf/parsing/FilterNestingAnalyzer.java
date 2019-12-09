@@ -75,6 +75,9 @@ public class FilterNestingAnalyzer extends SemanticAnalyzer {
         else if (ctx.genericFilter() != null) {
             return GENERIC_FILTER;
         }
+        else if (ctx.smartContractFilter() != null) {
+            return SMART_CONTRACT_FILTER;
+        }
         else {
             throw new UnsupportedOperationException("This filter type is not supported");
         }
@@ -85,6 +88,7 @@ public class FilterNestingAnalyzer extends SemanticAnalyzer {
     private static final String GENERIC_FILTER = "generic";
     private static final String TRANSACTION_FILTER = "transaction";
     private static final String LOG_ENRY_FILTER = "log entry";
+    private static final String SMART_CONTRACT_FILTER = "smart contract";
     private static final Map<String, Predicate<Stack<String>>> VALID_ENCLOSING_FILTERS;
 
     static {
@@ -93,6 +97,7 @@ public class FilterNestingAnalyzer extends SemanticAnalyzer {
         VALID_ENCLOSING_FILTERS.put(TRANSACTION_FILTER, FilterNestingAnalyzer::areTransactionFilterParentsValid);
         VALID_ENCLOSING_FILTERS.put(LOG_ENRY_FILTER, FilterNestingAnalyzer::areLogEntryFilterParentsValid);
         VALID_ENCLOSING_FILTERS.put(GENERIC_FILTER, FilterNestingAnalyzer::areGenericFilterParentsValid);
+        VALID_ENCLOSING_FILTERS.put(SMART_CONTRACT_FILTER, FilterNestingAnalyzer::areSmartContractFilterParentsValid);
     }
 
     private static boolean areBlockFilterParentsValid(Stack<String> stack) {
@@ -120,6 +125,11 @@ public class FilterNestingAnalyzer extends SemanticAnalyzer {
 
     private static boolean areGenericFilterParentsValid(Stack<String> stack) {
         return !stack.isEmpty() && stack.get(0).equals(PROGRAM);
+    }
+
+    private static boolean areSmartContractFilterParentsValid(Stack<String> stack) {
+        return !stack.isEmpty() && stack.peek().equals(BLOCK_FILTER)
+        ;
     }
 
 }

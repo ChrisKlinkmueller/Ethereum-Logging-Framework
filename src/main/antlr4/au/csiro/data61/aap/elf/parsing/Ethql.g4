@@ -24,6 +24,7 @@ filter
     | transactionFilter
     | logEntryFilter
     | genericFilter
+    | smartContractFilter
     ;
 
 blockFilter
@@ -69,7 +70,31 @@ genericFilter
     : KEY_IF '(' conditionalExpression ')'
     ;
 
+smartContractFilter
+    : KEY_SMART_CONTRACT '(' contractAddress=valueExpression ')' ('(' smartContractQuery ')')+
+    ;
 
+smartContractQuery
+    : publicVariableQuery
+    | publicFunctionQuery
+    ;
+
+publicVariableQuery
+    : smartContractParameter
+    ;
+
+publicFunctionQuery
+    : smartContractParameter (',' smartContractParameter)* '=' methodName=Identifier '(' (smartContractQueryParameter (',' smartContractQueryParameter)+ )? ')'
+    ;
+
+smartContractParameter
+    : solType variableName
+    ;
+
+smartContractQueryParameter
+    : variableName
+    | solType literal
+    ;
 
 // emitStatements
 
@@ -93,11 +118,11 @@ emitStatementLog
     ;
 
 emitStatementXesTrace
-    : KEY_EMIT KEY_XES_TRACE '(' (pid=valueExpression)? ')' '(' (piid=valueExpression)?')' '(' xesEmitVariable+ ')' ';'
+    : KEY_EMIT KEY_XES_TRACE '(' (pid=valueExpression)? ')' '(' (piid=valueExpression)? ')' '(' xesEmitVariable+ ')' ';'
     ;
 
 emitStatementXesEvent
-    : KEY_EMIT KEY_XES_EVENT '(' (pid=valueExpression)? ')' '(' (piid=valueExpression)?')' '(' (eid=valueExpression)? ')' '(' xesEmitVariable+ ')' ';'
+    : KEY_EMIT KEY_XES_EVENT '(' (pid=valueExpression)? ')' '(' (piid=valueExpression)? ')' '(' (eid=valueExpression)? ')' '(' xesEmitVariable+ ')' ';'
     ;
 
 xesEmitVariable
