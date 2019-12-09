@@ -1,7 +1,6 @@
 package au.csiro.data61.aap.elf.configuration;
 
 import java.math.BigInteger;
-import java.util.ArrayList;
 import java.util.List;
 
 import au.csiro.data61.aap.elf.core.values.ValueAccessor;
@@ -26,49 +25,49 @@ public class ValueAccessorSpecification {
 
     public static ValueAccessorSpecification addressLiteral(String literal) throws BuildException {
         assert literal != null;
-        final String value = parseBytesLiteral(literal);
+        final String value = TypeUtils.parseBytesLiteral(literal);
 		return new ValueAccessorSpecification(state -> value);
 	}
 
     public static ValueAccessorSpecification addressArrayLiteral(String literal) throws BuildException {
         assert literal != null;
-        final List<String> values = ValueAccessorSpecification.parseArrayLiteral(literal, ValueAccessorSpecification::parseBytesLiteral);
+        final List<String> values = TypeUtils.parseBytesArrayLiteral(literal);
 		return new ValueAccessorSpecification(state -> values);
 	}
 
     public static ValueAccessorSpecification booleanLiteral(String literal) throws BuildException  {
         assert literal != null;
-		final boolean value = parseBoolLiteral(literal);
+		final boolean value = TypeUtils.parseBoolLiteral(literal);
 		return new ValueAccessorSpecification(state -> value);
 	}
 
     public static ValueAccessorSpecification booleanArrayLiteral(String literal) throws BuildException {
         assert literal != null;
-        final List<Boolean> values = ValueAccessorSpecification.parseArrayLiteral(literal, ValueAccessorSpecification::parseBoolLiteral);
+        final List<Boolean> values = TypeUtils.parseBoolArrayLiteral(literal);
 		return new ValueAccessorSpecification(state -> values);
 	}
 
     public static ValueAccessorSpecification bytesLiteral(String literal) throws BuildException  {
         assert literal != null;
-		final String value = parseBytesLiteral(literal);
+		final String value = TypeUtils.parseBytesLiteral(literal);
 		return new ValueAccessorSpecification(state -> value);
 	}
 
     public static ValueAccessorSpecification bytesArrayLiteral(String literal) throws BuildException {
         assert literal != null;
-        final List<String> values = ValueAccessorSpecification.parseArrayLiteral(literal, ValueAccessorSpecification::parseBytesLiteral);
+        final List<String> values = TypeUtils.parseBytesArrayLiteral(literal);
 		return new ValueAccessorSpecification(state -> values);
 	}
 
     public static ValueAccessorSpecification integerLiteral(String literal) throws BuildException  {
         assert literal != null;
-        final BigInteger number = parseIntLiteral(literal);
+        final BigInteger number = TypeUtils.parseIntLiteral(literal);
         return new ValueAccessorSpecification(state -> number);
     }
 
     public static ValueAccessorSpecification integerArrayLiteral(String literal) throws BuildException  {
         assert literal != null;
-        final List<BigInteger> values = ValueAccessorSpecification.parseArrayLiteral(literal, ValueAccessorSpecification::parseIntLiteral);
+        final List<BigInteger> values = TypeUtils.parseIntArrayLiteral(literal);
         return new ValueAccessorSpecification(state -> values);
     }
 
@@ -83,63 +82,18 @@ public class ValueAccessorSpecification {
 
     public static ValueAccessorSpecification stringLiteral(String literal) throws BuildException {
         assert literal != null;
-        final String value = parseStringLiteral(literal);
+        final String value = TypeUtils.parseStringLiteral(literal);
         return new ValueAccessorSpecification(state -> value);
     }
 
     public static ValueAccessorSpecification stringArrayLiteral(String literal) throws BuildException {
         assert literal != null;
-        final List<String> values = ValueAccessorSpecification.parseArrayLiteral(literal, ValueAccessorSpecification::parseStringLiteral);
+        final List<String> values = TypeUtils.parseStringArrayLiteral(literal);
         return new ValueAccessorSpecification(state -> values);
     }
 
     public static ValueAccessorSpecification ofVariable(String varName) {
         assert varName != null;
         return new ValueAccessorSpecification(Variables.createValueAccessor(varName));
-    }
-
-    private static <T> List<T> parseArrayLiteral(String literal, Converter<T> converter) throws BuildException {
-        if (!TypeUtils.isArrayLiteral(literal)) {
-            throw new BuildException(String.format("Value '%s' is not an array literal.", literal));
-        }
-        List<T> list = new ArrayList<>();
-        final String[] elements = literal.substring(1, literal.length() - 1).split(",");
-        for (String element : elements) {
-            list.add(converter.convert(element));
-        }
-        return list;
-    }
-    
-    private static Boolean parseBoolLiteral(String literal) throws BuildException {
-        if (!TypeUtils.isBooleanLiteral(literal)) {
-            throw new BuildException(String.format("Value '%s' is not a string literal.", literal));
-        }
-        return Boolean.parseBoolean(literal);
-    } 
-    
-    private static String parseBytesLiteral(String literal) throws BuildException {
-        if (!TypeUtils.isBytesLiteral(literal)) {
-            throw new BuildException(String.format("Value '%s' is not a bytes or address literal.", literal));
-        }
-        return literal;
-    } 
-
-    private static BigInteger parseIntLiteral(String literal) throws BuildException {
-        if (!TypeUtils.isIntLiteral(literal)) {
-            throw new BuildException(String.format("Value '%s' is not an int literal.", literal));
-        }
-        return new BigInteger(literal);
-    }
-
-    private static String parseStringLiteral(String literal) throws BuildException {
-        if (!TypeUtils.isStringLiteral(literal)) {
-            throw new BuildException(String.format("Value '%s' is not a string literal.", literal));
-        }
-        return literal.substring(1, literal.length() - 1);
-    }
-
-    @FunctionalInterface
-    private static interface Converter<T> {
-        public T convert(String literal) throws BuildException;
     }
 }

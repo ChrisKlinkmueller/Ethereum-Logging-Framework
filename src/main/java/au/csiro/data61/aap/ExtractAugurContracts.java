@@ -12,6 +12,7 @@ import au.csiro.data61.aap.elf.configuration.MethodSpecification;
 import au.csiro.data61.aap.elf.configuration.ParameterSpecification;
 import au.csiro.data61.aap.elf.configuration.SmartContractQuerySpecification;
 import au.csiro.data61.aap.elf.configuration.SpecificationComposer;
+import au.csiro.data61.aap.elf.configuration.TypedValueAccessorSpecification;
 import au.csiro.data61.aap.elf.configuration.ValueAccessorSpecification;
 import au.csiro.data61.aap.elf.configuration.ValueAssignmentSpecification;
 import au.csiro.data61.aap.elf.configuration.ValueMutatorSpecification;
@@ -29,10 +30,8 @@ public class ExtractAugurContracts {
 
     public static void main(String[] args) throws Throwable {
         // for (String contract : contracts) {
-        //     byte[] bytes = contract.getBytes();
-        //     byte[] bytes32 = Arrays.copyOf(bytes, 32);
-        //     //Bytes32 type = new Bytes32(bytes32);
-        //     System.out.println(bytesToHex(bytes32));
+            //Bytes32 type = new Bytes32(bytes32);
+            // printCode(contract);
         // }
 
         try {
@@ -42,45 +41,20 @@ public class ExtractAugurContracts {
         } catch (Exception e) {
             e.printStackTrace();
         }
-        /*try {            
-            while (currentBlock.compareTo(lastBlock) <= 0) {
-                for (String contract : contracts) {
-                    byte[] bytes = contract.getBytes();
-                    byte[] bytes32 = Arrays.copyOf(bytes, 32);
-                    Bytes32 type = new Bytes32(bytes32);
-                    
-                    Function function = new Function("lookup", Arrays.asList(type), Arrays.asList(TypeReference.makeTypeReference("address")));
-                    String data = FunctionEncoder.encode(function);
-                    Transaction tx = Transaction.createEthCallTransaction("0xb3337164e91b9f05c87c7662c7ac684e8e0ff3e7", "0xb3337164e91b9f05c87c7662c7ac684e8e0ff3e7", data);
-                    String result = client.ethCall(tx, currentBlock).toString();
-                    
-                    if (!result.toString().equals("0x0000000000000000000000000000000000000000000000000000000000000000")) {
-                        if (!knownAddress.contains(result)) {
-                            knownAddress.add(result);
-                            System.out.println(String.format("Block %s: New %s contract deployed and registered with address '%s'.", currentBlock, contract, result));
-                        }
-                    }
-
-                }
-
-                currentBlock = currentBlock.add(BigInteger.ONE);
-            }
-        }
-        finally {
-            client.close();
-        }*/
     }
 
-    private static final char[] HEX_ARRAY = "0123456789ABCDEF".toCharArray();
-    public static String bytesToHex(byte[] bytes) {
-        char[] hexChars = new char[bytes.length * 2];
-        for (int j = 0; j < bytes.length; j++) {
-            int v = bytes[j] & 0xFF;
-            hexChars[j * 2] = HEX_ARRAY[v >>> 4];
-            hexChars[j * 2 + 1] = HEX_ARRAY[v & 0x0F];
-        }
-        return new String(hexChars);
-    }
+    // private static void printCode(String contract) {
+    //     String address = createBytes32(contract);
+    //     System.out.println(String.format("\tSMART CONTRACT (augurContract) (address contractAddress = lookup(%s)) {", address));
+    //     System.out.println(String.format("\t\tboolean addressKnown = contains(registeredAddresses, contractAddress);"));
+    //     System.out.println(String.format("\t\tIF (!contains) {"));
+    //     System.out.println(String.format("\t\t\tEMIT LOG LINE (\"Block \", block.number, \": New %s registered with address '\", contractAddress, \"'.\");",contract));
+    //     System.out.println(String.format("\t\t}"));
+    //     System.out.println(String.format("\t}"));
+    //     System.out.println();
+    // }
+
+    //     
 
     private static Instruction buildProgram() throws BuildException {
         final SpecificationComposer builder = new SpecificationComposer();
@@ -92,47 +66,9 @@ public class ExtractAugurContracts {
                 ValueMutatorSpecification.ofVariableName("knownAddresses"), 
                 ValueAccessorSpecification.addressArrayLiteral("[0x0000000000000000000000000000000000000000]"));
             builder.prepareBlockRangeBuild();
-                builder.addInstruction(ValueAssignmentSpecification.of(
-                    ValueMutatorSpecification.ofVariableName("contractName"), 
-                    ValueAccessorSpecification.bytesLiteral("0x4D61726B6574466163746F727900000000000000000000000000000000000000"))
-                );
-                builder.prepareSmartContractFilterBuild();
-                    builder.prepareGenericFilterBuild();
-                        builder.addInstruction(
-                            LogLineExportSpecification.ofValues(
-                                ValueAccessorSpecification.stringLiteral("\"Block \""),
-                                ValueAccessorSpecification.ofVariable(BlockVariables.BLOCK_NUMBER),
-                                ValueAccessorSpecification.stringLiteral("\": New \""),
-                                ValueAccessorSpecification.ofVariable("contractName"),
-                                ValueAccessorSpecification.stringLiteral("\": registered with address '\""),
-                                ValueAccessorSpecification.ofVariable("registeredContract"),
-                                ValueAccessorSpecification.stringLiteral("\"'.\"")
-                            )
-                        );
-                        builder.addInstruction(
-                            MethodCallSpecification.of(
-                                MethodSpecification.of("add", "address[]", "address"), 
-                                ValueAccessorSpecification.ofVariable("registeredContract")
-                            )
-                        );
-                    builder.buildGenericFilter(
-                        GenericFilterPredicateSpecification.not(
-                            GenericFilterPredicateSpecification.in(
-                                ValueAccessorSpecification.ofVariable("registeredContract"), 
-                                ValueAccessorSpecification.ofVariable("knownAddresses")
-                            )
-                        )
-                    );
-
-                builder.buildSmartContractFilter(
-                    SmartContractQuerySpecification.ofMemberFunction(
-                        "0xb3337164e91b9f05c87c7662c7ac684e8e0ff3e7", 
-                        "lookup", 
-                        Arrays.asList(ParameterSpecification.of("contractName", "bytes32")), 
-                        Arrays.asList(ParameterSpecification.of("registeredContract", "address"))
-                    )
-                );
-
+                for (String contract : CONTRACTS) {
+                    addSmartContractFilter(builder, contract);
+                }
             builder.buildBlockRange(
                 BlockNumberSpecification.ofBlockNumber(ValueAccessorSpecification.integerLiteral(FROM)),
                 BlockNumberSpecification.ofBlockNumber(ValueAccessorSpecification.integerLiteral(TO))
@@ -143,7 +79,70 @@ public class ExtractAugurContracts {
 
 
 
-    public static final List<String> contracts = Arrays.asList("Cash", "CompleteSets", "CreateOrder",
+    private static void addSmartContractFilter(SpecificationComposer builder, String contractName) throws BuildException {
+        builder.addInstruction(ValueAssignmentSpecification.of(
+                ValueMutatorSpecification.ofVariableName("contractName"), 
+                ValueAccessorSpecification.bytesLiteral("0x4D61726B6574466163746F727900000000000000000000000000000000000000"))
+            );
+        
+        builder.prepareSmartContractFilterBuild();
+            builder.prepareGenericFilterBuild();
+                builder.addInstruction(
+                    LogLineExportSpecification.ofValues(
+                        ValueAccessorSpecification.stringLiteral("\"Block \""),
+                        ValueAccessorSpecification.ofVariable(BlockVariables.BLOCK_NUMBER),
+                        ValueAccessorSpecification.stringLiteral("\": New \""),
+                        ValueAccessorSpecification.stringLiteral("\"" + contractName + "\""),
+                        ValueAccessorSpecification.stringLiteral("\" registered with address '\""),
+                        ValueAccessorSpecification.ofVariable("registeredAddress"),
+                        ValueAccessorSpecification.stringLiteral("\"'.\"")
+                    )
+                );
+                builder.addInstruction(
+                    MethodCallSpecification.of(
+                        MethodSpecification.of("add", "address[]", "address"), 
+                        ValueAccessorSpecification.ofVariable("knownAddresses"), 
+                        ValueAccessorSpecification.ofVariable("registeredAddress")
+                    )
+                );
+            builder.buildGenericFilter(
+                GenericFilterPredicateSpecification.not(
+                    GenericFilterPredicateSpecification.in(
+                        ValueAccessorSpecification.ofVariable("registeredAddress"), 
+                        ValueAccessorSpecification.ofVariable("knownAddresses")
+                    )
+                )
+            );
+
+            final String hexString = createBytes32(contractName);
+            builder.buildSmartContractFilter(
+            SmartContractQuerySpecification.ofMemberFunction(
+                "0xb3337164e91b9f05c87c7662c7ac684e8e0ff3e7", 
+                "lookup", 
+                Arrays.asList(TypedValueAccessorSpecification.of("bytes32", ValueAccessorSpecification.bytesLiteral(hexString))), 
+                Arrays.asList(ParameterSpecification.of("registeredAddress", "address"))
+            )
+        );
+    }
+
+    private static final char[] HEX_ARRAY = "0123456789ABCDEF".toCharArray();
+    public static String createBytes32(String contract) {
+        byte[] bytes = contract.getBytes();
+        char[] hexChars = new char[bytes.length * 2];
+        for (int j = 0; j < bytes.length; j++) {
+            int v = bytes[j] & 0xFF;
+            hexChars[j * 2] = HEX_ARRAY[v >>> 4];
+            hexChars[j * 2 + 1] = HEX_ARRAY[v & 0x0F];
+        }
+        final StringBuilder hexString = new StringBuilder(new String(hexChars));
+        while(hexString.length() < 64) {
+            hexString.append(0);
+        }
+
+        return String.format("0x%s", hexString.toString());
+    }
+
+    private static final List<String> CONTRACTS = Arrays.asList("Cash", "CompleteSets", "CreateOrder",
         "DisputeCrowdsourcerFactory", 
         "FeeWindow", "FeeWindowFactory", "FeeToken", "FeeTokenFactory", "FillOrder", "InitialReporter", "InitialReporterFactory", 
         "LegacyReputationToken", "Mailbox", "MailboxFactory", "Map", "MapFactory", "Market", "MarketFactory", "Orders", 

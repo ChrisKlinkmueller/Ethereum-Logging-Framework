@@ -7,6 +7,8 @@ import java.util.List;
 import java.util.Map;
 import java.util.Objects;
 import java.util.function.Function;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 
 import au.csiro.data61.aap.elf.core.Method;
 import au.csiro.data61.aap.elf.core.ProgramState;
@@ -19,6 +21,7 @@ import au.csiro.data61.aap.elf.library.types.ListOperations;
  * Library
  */
 public class Library {
+    private static final Logger LOGGER = Logger.getLogger(Library.class.getName());
     public static Library INSTANCE = new Library();
 
     private final Map<String, List<LibraryEntry>> registeredMethods;
@@ -40,30 +43,40 @@ public class Library {
             this.addMethod(new MethodSignature("remove", null, "address[]", "address"), ListOperations::removeElement);
             this.addMethod(new MethodSignature("clear", null, "address[]"), ListOperations::clear);
 
-            this.addMethod(new MethodSignature("mapValue", "bool", "bool", "bytes", "bool[]", "bytes[]"), ValueDictionary::boolToString);
-            this.addMethod(new MethodSignature("mapValue", "bool", "bool", "bool", "bool[]", "bool[]"), ValueDictionary::boolToBool);
-            this.addMethod(new MethodSignature("mapValue", "bool", "bool", "int", "bool[]", "int[]"), ValueDictionary::boolToInt);
-            this.addMethod(new MethodSignature("mapValue", "bool", "bool", "string", "bool[]", "string[]"), ValueDictionary::boolToString);
-            this.addMethod(new MethodSignature("mapValue", "byte", "byte", "bytes", "byte[]", "bytes[]"), ValueDictionary::stringToString);
-            this.addMethod(new MethodSignature("mapValue", "byte", "byte", "bool", "byte[]", "bool[]"), ValueDictionary::stringToBool);
-            this.addMethod(new MethodSignature("mapValue", "byte", "byte", "int", "byte[]", "int[]"), ValueDictionary::stringToInt);
-            this.addMethod(new MethodSignature("mapValue", "byte", "byte", "string", "byte[]", "string[]"), ValueDictionary::stringToString);
-            this.addMethod(new MethodSignature("mapValue", "int", "int", "bytes", "int[]", "bytes[]"), ValueDictionary::intToString);
-            this.addMethod(new MethodSignature("mapValue", "int", "int", "bool", "int[]", "bool[]"), ValueDictionary::intToBool);
-            this.addMethod(new MethodSignature("mapValue", "int", "int", "int", "int[]", "int[]"), ValueDictionary::intToInt);
-            this.addMethod(new MethodSignature("mapValue", "int", "int", "string", "int[]", "string[]"), ValueDictionary::intToString);
-            this.addMethod(new MethodSignature("mapValue", "string", "string", "bytes", "string[]", "bytes[]"), ValueDictionary::stringToString);
-            this.addMethod(new MethodSignature("mapValue", "string", "string", "bool", "string[]", "bool[]"), ValueDictionary::stringToBool);
-            this.addMethod(new MethodSignature("mapValue", "string", "string", "int", "string[]", "int[]"), ValueDictionary::stringToInt);
-            this.addMethod(new MethodSignature("mapValue", "string", "string", "string", "string[]", "string[]"), ValueDictionary::stringToString);
+            this.addMethod(ValueDictionary::boolToString, "bool", ValueDictionary.METHOD_NAME, "bool", "bytes", "bool[]", "bytes[]");
+            this.addMethod(new MethodSignature(ValueDictionary.METHOD_NAME, "bool", "bool", "bool", "bool[]", "bool[]"), ValueDictionary::boolToBool);
+            this.addMethod(new MethodSignature(ValueDictionary.METHOD_NAME, "bool", "bool", "int", "bool[]", "int[]"), ValueDictionary::boolToInt);
+            this.addMethod(new MethodSignature(ValueDictionary.METHOD_NAME, "bool", "bool", "string", "bool[]", "string[]"), ValueDictionary::boolToString);
+            this.addMethod(new MethodSignature(ValueDictionary.METHOD_NAME, "byte", "byte", "bytes", "byte[]", "bytes[]"), ValueDictionary::stringToString);
+            this.addMethod(new MethodSignature(ValueDictionary.METHOD_NAME, "byte", "byte", "bool", "byte[]", "bool[]"), ValueDictionary::stringToBool);
+            this.addMethod(new MethodSignature(ValueDictionary.METHOD_NAME, "byte", "byte", "int", "byte[]", "int[]"), ValueDictionary::stringToInt);
+            this.addMethod(new MethodSignature(ValueDictionary.METHOD_NAME, "byte", "byte", "string", "byte[]", "string[]"), ValueDictionary::stringToString);
+            this.addMethod(new MethodSignature(ValueDictionary.METHOD_NAME, "int", "int", "bytes", "int[]", "bytes[]"), ValueDictionary::intToString);
+            this.addMethod(new MethodSignature(ValueDictionary.METHOD_NAME, "int", "int", "bool", "int[]", "bool[]"), ValueDictionary::intToBool);
+            this.addMethod(new MethodSignature(ValueDictionary.METHOD_NAME, "int", "int", "int", "int[]", "int[]"), ValueDictionary::intToInt);
+            this.addMethod(new MethodSignature(ValueDictionary.METHOD_NAME, "int", "int", "string", "int[]", "string[]"), ValueDictionary::intToString);
+            this.addMethod(new MethodSignature(ValueDictionary.METHOD_NAME, "string", "string", "bytes", "string[]", "bytes[]"), ValueDictionary::stringToString);
+            this.addMethod(new MethodSignature(ValueDictionary.METHOD_NAME, "string", "string", "bool", "string[]", "bool[]"), ValueDictionary::stringToBool);
+            this.addMethod(new MethodSignature(ValueDictionary.METHOD_NAME, "string", "string", "int", "string[]", "int[]"), ValueDictionary::stringToInt);
+            this.addMethod(new MethodSignature(ValueDictionary.METHOD_NAME, "string", "string", "string", "string[]", "string[]"), ValueDictionary::stringToString);
 
-            this.addMethod(new MethodSignature("mapBits", "string", "int", "int", "int", "string[]"), BitMapping::mapBitsToString);
-            this.addMethod(new MethodSignature("mapBits", "byte", "int", "int", "int", "byte[]"), BitMapping::mapBitsToString);
-            this.addMethod(new MethodSignature("mapBits", "int", "int", "int", "int", "int[]"), BitMapping::mapBitsToString);
-            this.addMethod(new MethodSignature("mapBits", "bool", "int", "int", "int", "bool[]"), BitMapping::mapBitsToString);
+            this.addMethod(BitMapping::mapBitsToString, "string", BitMapping.METHOD_NAME, "int", "int", "int", "string[]");
+            this.addMethod(BitMapping::mapBitsToString, "byte", BitMapping.METHOD_NAME, "int", "int", "int", "byte[]");
+            this.addMethod(BitMapping::mapBitsToInt, "int", BitMapping.METHOD_NAME, "int", "int", "int", "int[]");
+            this.addMethod(BitMapping::mapBitsToBool, "bool", BitMapping.METHOD_NAME, "int", "int", "int", "bool[]");
 
         } catch (LibraryException e) {
             e.printStackTrace();
+        }
+    }
+
+    private void addMethod(Method method, String returnType, String methodName, String... parameterTypes) {
+        final MethodSignature signature = new MethodSignature(methodName, returnType, parameterTypes);
+        try {
+            this.addMethod(signature, method);
+        }
+        catch (LibraryException ex) {
+            LOGGER.log(Level.SEVERE, "Error during initialization of Library!", ex);
         }
     }
 

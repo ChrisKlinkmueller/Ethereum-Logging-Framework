@@ -9,7 +9,6 @@ import au.csiro.data61.aap.elf.core.filters.Parameter;
 import au.csiro.data61.aap.elf.core.filters.PublicMemberQuery;
 import au.csiro.data61.aap.elf.core.filters.SmartContractParameter;
 import au.csiro.data61.aap.elf.core.filters.SmartContractQuery;
-import au.csiro.data61.aap.elf.core.values.ValueAccessor;
 
 /**
  * SmartContractFilter
@@ -41,14 +40,14 @@ public class SmartContractQuerySpecification {
         return new SmartContractQuerySpecification(contract, query);
     }
 
-    public static SmartContractQuerySpecification ofMemberFunction(String contract, String functionName, List<ParameterSpecification> inputParameters, List<ParameterSpecification> outpuParameters) {
+    public static SmartContractQuerySpecification ofMemberFunction(String contract, String functionName, List<TypedValueAccessorSpecification> inputParameters, List<ParameterSpecification> outpuParameters) {
         assert contract != null;
         assert inputParameters != null;
         assert outpuParameters != null;
         assert functionName != null;
 
         final List<SmartContractParameter> inputs = inputParameters.stream()
-            .map(param -> new SmartContractParameter(param.getType(), param.getName(), ValueAccessor.createVariableAccessor(param.getName())))
+            .map(param -> createSmartContractParameter(param))
             .collect(Collectors.toList());
 
         final List<Parameter> outputs = outpuParameters.stream()
@@ -56,5 +55,19 @@ public class SmartContractQuerySpecification {
             .collect(Collectors.toList());
         
         return new SmartContractQuerySpecification(contract, new PublicMemberQuery(functionName, inputs, outputs));
+    }
+
+    private static SmartContractParameter createSmartContractParameter(TypedValueAccessorSpecification param) {
+        final String name = createParameterName();
+        return new SmartContractParameter(
+            param.getType(), 
+            name, 
+            param.getAccessor()
+        );
+    }
+
+    private static long COUNTER = 0;
+    private static String createParameterName() {
+        return String.format("param%s", COUNTER++);
     }
 }

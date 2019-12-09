@@ -2,6 +2,9 @@ package au.csiro.data61.aap.elf.util;
 
 import java.lang.reflect.InvocationTargetException;
 import java.math.BigInteger;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.function.Function;
 
 import org.web3j.abi.TypeDecoder;
 
@@ -158,5 +161,68 @@ public class TypeUtils {
                && 2 <= literal.length() 
                && literal.charAt(0) == '\"' 
                && literal.charAt(literal.length() - 1) == '\"';
-	}
+    }
+    
+    public static Boolean parseBoolLiteral(String literal) {
+        if (!TypeUtils.isBooleanLiteral(literal)) {
+            throw new IllegalArgumentException(String.format("Value '%s' is not a string literal.", literal));
+        }
+        return Boolean.parseBoolean(literal);
+    } 
+
+    public static List<Boolean> parseBoolArrayLiteral(String literal) {
+        return parseArrayLiteral(literal, TypeUtils::parseBoolLiteral);
+    }
+
+    
+    public static String parseBytesLiteral(String literal) {
+        if (!TypeUtils.isBytesLiteral(literal)) {
+            throw new IllegalArgumentException(String.format("Value '%s' is not a bytes or address literal.", literal));
+        }
+        return literal;
+    } 
+
+    public static List<String> parseBytesArrayLiteral(String literal) {
+        return parseArrayLiteral(literal, TypeUtils::parseBytesLiteral);
+    }
+
+
+    public static BigInteger parseIntLiteral(String literal) {
+        if (!TypeUtils.isIntLiteral(literal)) {
+            throw new IllegalArgumentException(String.format("Value '%s' is not an int literal.", literal));
+        }
+        return new BigInteger(literal);
+    }
+
+    public static List<BigInteger> parseIntArrayLiteral(String literal) {
+        return parseArrayLiteral(literal, TypeUtils::parseIntLiteral);
+    }
+
+    public static String parseStringLiteral(String literal) {
+        if (!TypeUtils.isStringLiteral(literal)) {
+            throw new IllegalArgumentException(String.format("Value '%s' is not a string literal.", literal));
+        }
+        return literal.substring(1, literal.length() - 1);
+    }
+
+    public static List<String> parseStringArrayLiteral(String literal) {
+        return parseArrayLiteral(literal, TypeUtils::parseStringLiteral);
+    }
+    
+    private static <T> List<T> parseArrayLiteral(String literal, Function<String, T> converter) {
+        if (!TypeUtils.isArrayLiteral(literal)) {
+            throw new IllegalArgumentException(String.format("Value '%s' is not an array literal.", literal));
+        }
+        List<T> list = new ArrayList<>();
+        final String[] elements = literal.substring(1, literal.length() - 1).split(",");
+        for (String element : elements) {
+            list.add(converter.apply(element));
+        }
+        return list;
+    }
+
+    @FunctionalInterface
+    private static interface Converter<T> {
+        public T convert(String literal);
+    }
 }

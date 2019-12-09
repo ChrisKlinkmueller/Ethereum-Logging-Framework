@@ -128,14 +128,6 @@ public class Web3jClient implements EthereumClient {
         }
     }
 
-    public void queryFunction() {
-        //Type<?> type = 
-        //Function function = new Function(name, inputParameters, outputParameters)
-        //Transaction t = Transaction.createEthCallTransaction();
-        //t.set
-        //this.web3j.ethCall(transaction, defaultBlockParameter)
-    }
-
     TransactionReceipt queryTransactionReceipt(String hash) throws IOException {
         final EthGetTransactionReceipt transactionReceipt = this.web3j.ethGetTransactionReceipt(hash).send();
         return transactionReceipt.getResult();

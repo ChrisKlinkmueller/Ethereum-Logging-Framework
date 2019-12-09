@@ -10,6 +10,7 @@ import au.csiro.data61.aap.elf.core.exceptions.ProgramException;
  * BitMapping
  */
 public class BitMapping {
+    public static final String METHOD_NAME = "mapBits";
 
     public static Object mapBitsToBool(Object[] parameters, ProgramState state) throws ProgramException {
         return mapBits(parameters, Boolean.class);

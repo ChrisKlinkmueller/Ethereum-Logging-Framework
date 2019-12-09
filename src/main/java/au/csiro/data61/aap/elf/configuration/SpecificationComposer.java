@@ -55,7 +55,8 @@ public class SpecificationComposer {
             FactoryState.BLOCK_RANGE_FILTER, 
             FactoryState.TRANSACTION_FILTER, 
             FactoryState.LOG_ENTRY_FILTER, 
-            FactoryState.SMART_CONTRACT_FILTER
+            FactoryState.SMART_CONTRACT_FILTER,
+            FactoryState.PROGRAM
         );
     }
 
@@ -163,7 +164,7 @@ public class SpecificationComposer {
 
         final SmartContractFilter filter = new SmartContractFilter(
             specification.getContract(), 
-            specification.getQuery(), 
+            Arrays.asList(specification.getQuery()), 
             this.instructions.peek()
         );
         this.closeScope(filter);

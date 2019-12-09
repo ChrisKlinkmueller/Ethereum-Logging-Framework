@@ -10,6 +10,7 @@ import au.csiro.data61.aap.elf.core.exceptions.ProgramException;
  * ValueDictionary
  */
 public class ValueDictionary {
+    public static final String METHOD_NAME = "mapValue";
 
     public static Object boolToBool(Object[] parameters, ProgramState state) throws ProgramException {
         return mapValue(parameters, Boolean.class, Boolean.class);
