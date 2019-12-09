@@ -84,7 +84,7 @@ publicVariableQuery
     ;
 
 publicFunctionQuery
-    : smartContractParameter (',' smartContractParameter)* '=' methodName=Identifier '(' (smartContractQueryParameter (',' smartContractQueryParameter)+ )? ')'
+    : smartContractParameter (',' smartContractParameter)* '=' methodName=Identifier '(' (smartContractQueryParameter (',' smartContractQueryParameter)* )? ')'
     ;
 
 smartContractParameter

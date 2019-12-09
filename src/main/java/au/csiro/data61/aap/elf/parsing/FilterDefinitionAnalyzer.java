@@ -18,6 +18,8 @@ import au.csiro.data61.aap.elf.parsing.EthqlParser.ConditionalNotExpressionConte
 import au.csiro.data61.aap.elf.parsing.EthqlParser.ConditionalOrExpressionContext;
 import au.csiro.data61.aap.elf.parsing.EthqlParser.ConditionalPrimaryExpressionContext;
 import au.csiro.data61.aap.elf.parsing.EthqlParser.LogEntryFilterContext;
+import au.csiro.data61.aap.elf.parsing.EthqlParser.SmartContractFilterContext;
+import au.csiro.data61.aap.elf.parsing.EthqlParser.SmartContractQueryParameterContext;
 import au.csiro.data61.aap.elf.parsing.EthqlParser.TransactionFilterContext;
 import au.csiro.data61.aap.elf.util.TypeUtils;
 
@@ -240,6 +242,10 @@ public class FilterDefinitionAnalyzer extends SemanticAnalyzer {
     @Override
     public void exitConditionalNotExpression(ConditionalNotExpressionContext ctx) {
         String type = this.conditionalTypes.pop();
+        if (type == null) {
+            return;
+        }
+
         if (ctx.KEY_NOT() != null && !type.equals(TYPE_ERROR_FLAG) && !TypeUtils.isBooleanType(type)) {
             this.addError(ctx.start, "The NOT operator can only be applied to boolean expressions.");
             type = TYPE_ERROR_FLAG;
@@ -261,7 +267,30 @@ public class FilterDefinitionAnalyzer extends SemanticAnalyzer {
     
     //#region Smart contract filter
 
+    @Override
+    public void enterSmartContractFilter(SmartContractFilterContext ctx) {
+        final String type = InterpreterUtils.determineType(ctx.valueExpression(), this.variableAnalyzer);
+        if (type == null) {
+            return;
+        }
 
+        if (!TypeUtils.isAddressType(type)) {
+            this.addError(ctx.valueExpression().start, "Smart contract address must be of address type.");
+        }
+    }
+
+    @Override
+    public void enterSmartContractQueryParameter(SmartContractQueryParameterContext ctx) {
+        if (ctx.solType() == null) {
+            return;
+        }
+
+        final String literalType = InterpreterUtils.literalType(ctx.literal());
+        final String solType = ctx.solType().getText();
+        if (!TypeUtils.areCompatible(literalType, solType)) {
+            this.addError(ctx.solType().start, String.format("Cannot cast %s literal to %s.", literalType, solType));
+        }
+    }
 
     //#endregion Smart contract filter
 }
