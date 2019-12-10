@@ -2,7 +2,7 @@
 connect("ws://localhost:8546/");
 
 // use setOutputFolder to specify Folder
-setOutputFolder("C:/Development/xes-blockchain/v0.2/test_output/kitties");
+setOutputFolder("./test_output");
 
 address[] registeredAddresses= [0x0000000000000000000000000000000000000000];
 address augurContract = 0xb3337164e91b9f05c87c7662c7ac684e8e0ff3e7;
@@ -11,6 +11,7 @@ BLOCKS (5926250) (5926350) {
 	SMART CONTRACT (augurContract) (address contractAddress = lookup(bytes32 0x4361736800000000000000000000000000000000000000000000000000000000)) {
 		bool addressKnown = contains(registeredAddresses, contractAddress);
 		IF (!addressKnown) {
+			add(registeredAddresses, contractAddress);
 			EMIT LOG LINE ("Block ", block.number, ": New Cash registered with address '", contractAddress, "'.");
 		}
 	}
@@ -18,6 +19,7 @@ BLOCKS (5926250) (5926350) {
 	SMART CONTRACT (augurContract) (address contractAddress = lookup(bytes32 0x436F6D706C657465536574730000000000000000000000000000000000000000)) {
 		bool addressKnown = contains(registeredAddresses, contractAddress);
 		IF (!addressKnown) {
+			add(registeredAddresses, contractAddress);
 			EMIT LOG LINE ("Block ", block.number, ": New CompleteSets registered with address '", contractAddress, "'.");
 		}
 	}
@@ -25,6 +27,7 @@ BLOCKS (5926250) (5926350) {
 	SMART CONTRACT (augurContract) (address contractAddress = lookup(bytes32 0x4372656174654F72646572000000000000000000000000000000000000000000)) {
 		bool addressKnown = contains(registeredAddresses, contractAddress);
 		IF (!addressKnown) {
+			add(registeredAddresses, contractAddress);
 			EMIT LOG LINE ("Block ", block.number, ": New CreateOrder registered with address '", contractAddress, "'.");
 		}
 	}
@@ -32,6 +35,7 @@ BLOCKS (5926250) (5926350) {
 	SMART CONTRACT (augurContract) (address contractAddress = lookup(bytes32 0x4469737075746543726F7764736F7572636572466163746F7279000000000000)) {
 		bool addressKnown = contains(registeredAddresses, contractAddress);
 		IF (!addressKnown) {
+			add(registeredAddresses, contractAddress);
 			EMIT LOG LINE ("Block ", block.number, ": New DisputeCrowdsourcerFactory registered with address '", contractAddress, "'.");
 		}
 	}
@@ -39,6 +43,7 @@ BLOCKS (5926250) (5926350) {
 	SMART CONTRACT (augurContract) (address contractAddress = lookup(bytes32 0x46656557696E646F770000000000000000000000000000000000000000000000)) {
 		bool addressKnown = contains(registeredAddresses, contractAddress);
 		IF (!addressKnown) {
+			add(registeredAddresses, contractAddress);
 			EMIT LOG LINE ("Block ", block.number, ": New FeeWindow registered with address '", contractAddress, "'.");
 		}
 	}
@@ -46,6 +51,7 @@ BLOCKS (5926250) (5926350) {
 	SMART CONTRACT (augurContract) (address contractAddress = lookup(bytes32 0x46656557696E646F77466163746F727900000000000000000000000000000000)) {
 		bool addressKnown = contains(registeredAddresses, contractAddress);
 		IF (!addressKnown) {
+			add(registeredAddresses, contractAddress);
 			EMIT LOG LINE ("Block ", block.number, ": New FeeWindowFactory registered with address '", contractAddress, "'.");
 		}
 	}
@@ -53,6 +59,7 @@ BLOCKS (5926250) (5926350) {
 	SMART CONTRACT (augurContract) (address contractAddress = lookup(bytes32 0x466565546F6B656E000000000000000000000000000000000000000000000000)) {
 		bool addressKnown = contains(registeredAddresses, contractAddress);
 		IF (!addressKnown) {
+			add(registeredAddresses, contractAddress);
 			EMIT LOG LINE ("Block ", block.number, ": New FeeToken registered with address '", contractAddress, "'.");
 		}
 	}
@@ -60,6 +67,7 @@ BLOCKS (5926250) (5926350) {
 	SMART CONTRACT (augurContract) (address contractAddress = lookup(bytes32 0x466565546F6B656E466163746F72790000000000000000000000000000000000)) {
 		bool addressKnown = contains(registeredAddresses, contractAddress);
 		IF (!addressKnown) {
+			add(registeredAddresses, contractAddress);
 			EMIT LOG LINE ("Block ", block.number, ": New FeeTokenFactory registered with address '", contractAddress, "'.");
 		}
 	}
@@ -67,6 +75,7 @@ BLOCKS (5926250) (5926350) {
 	SMART CONTRACT (augurContract) (address contractAddress = lookup(bytes32 0x46696C6C4F726465720000000000000000000000000000000000000000000000)) {
 		bool addressKnown = contains(registeredAddresses, contractAddress);
 		IF (!addressKnown) {
+			add(registeredAddresses, contractAddress);
 			EMIT LOG LINE ("Block ", block.number, ": New FillOrder registered with address '", contractAddress, "'.");
 		}
 	}
@@ -74,6 +83,7 @@ BLOCKS (5926250) (5926350) {
 	SMART CONTRACT (augurContract) (address contractAddress = lookup(bytes32 0x496E697469616C5265706F727465720000000000000000000000000000000000)) {
 		bool addressKnown = contains(registeredAddresses, contractAddress);
 		IF (!addressKnown) {
+			add(registeredAddresses, contractAddress);
 			EMIT LOG LINE ("Block ", block.number, ": New InitialReporter registered with address '", contractAddress, "'.");
 		}
 	}
@@ -81,6 +91,7 @@ BLOCKS (5926250) (5926350) {
 	SMART CONTRACT (augurContract) (address contractAddress = lookup(bytes32 0x496E697469616C5265706F72746572466163746F727900000000000000000000)) {
 		bool addressKnown = contains(registeredAddresses, contractAddress);
 		IF (!addressKnown) {
+			add(registeredAddresses, contractAddress);
 			EMIT LOG LINE ("Block ", block.number, ": New InitialReporterFactory registered with address '", contractAddress, "'.");
 		}
 	}
@@ -88,6 +99,7 @@ BLOCKS (5926250) (5926350) {
 	SMART CONTRACT (augurContract) (address contractAddress = lookup(bytes32 0x4C656761637952657075746174696F6E546F6B656E0000000000000000000000)) {
 		bool addressKnown = contains(registeredAddresses, contractAddress);
 		IF (!addressKnown) {
+			add(registeredAddresses, contractAddress);
 			EMIT LOG LINE ("Block ", block.number, ": New LegacyReputationToken registered with address '", contractAddress, "'.");
 		}
 	}
@@ -95,6 +107,7 @@ BLOCKS (5926250) (5926350) {
 	SMART CONTRACT (augurContract) (address contractAddress = lookup(bytes32 0x4D61696C626F7800000000000000000000000000000000000000000000000000)) {
 		bool addressKnown = contains(registeredAddresses, contractAddress);
 		IF (!addressKnown) {
+			add(registeredAddresses, contractAddress);
 			EMIT LOG LINE ("Block ", block.number, ": New Mailbox registered with address '", contractAddress, "'.");
 		}
 	}
@@ -102,6 +115,7 @@ BLOCKS (5926250) (5926350) {
 	SMART CONTRACT (augurContract) (address contractAddress = lookup(bytes32 0x4D61696C626F78466163746F7279000000000000000000000000000000000000)) {
 		bool addressKnown = contains(registeredAddresses, contractAddress);
 		IF (!addressKnown) {
+			add(registeredAddresses, contractAddress);
 			EMIT LOG LINE ("Block ", block.number, ": New MailboxFactory registered with address '", contractAddress, "'.");
 		}
 	}
@@ -109,6 +123,7 @@ BLOCKS (5926250) (5926350) {
 	SMART CONTRACT (augurContract) (address contractAddress = lookup(bytes32 0x4D61700000000000000000000000000000000000000000000000000000000000)) {
 		bool addressKnown = contains(registeredAddresses, contractAddress);
 		IF (!addressKnown) {
+			add(registeredAddresses, contractAddress);
 			EMIT LOG LINE ("Block ", block.number, ": New Map registered with address '", contractAddress, "'.");
 		}
 	}
@@ -116,6 +131,7 @@ BLOCKS (5926250) (5926350) {
 	SMART CONTRACT (augurContract) (address contractAddress = lookup(bytes32 0x4D6170466163746F727900000000000000000000000000000000000000000000)) {
 		bool addressKnown = contains(registeredAddresses, contractAddress);
 		IF (!addressKnown) {
+			add(registeredAddresses, contractAddress);
 			EMIT LOG LINE ("Block ", block.number, ": New MapFactory registered with address '", contractAddress, "'.");
 		}
 	}
@@ -123,6 +139,7 @@ BLOCKS (5926250) (5926350) {
 	SMART CONTRACT (augurContract) (address contractAddress = lookup(bytes32 0x4D61726B65740000000000000000000000000000000000000000000000000000)) {
 		bool addressKnown = contains(registeredAddresses, contractAddress);
 		IF (!addressKnown) {
+			add(registeredAddresses, contractAddress);
 			EMIT LOG LINE ("Block ", block.number, ": New Market registered with address '", contractAddress, "'.");
 		}
 	}
@@ -130,6 +147,7 @@ BLOCKS (5926250) (5926350) {
 	SMART CONTRACT (augurContract) (address contractAddress = lookup(bytes32 0x4D61726B6574466163746F727900000000000000000000000000000000000000)) {
 		bool addressKnown = contains(registeredAddresses, contractAddress);
 		IF (!addressKnown) {
+			add(registeredAddresses, contractAddress);
 			EMIT LOG LINE ("Block ", block.number, ": New MarketFactory registered with address '", contractAddress, "'.");
 		}
 	}
@@ -137,6 +155,7 @@ BLOCKS (5926250) (5926350) {
 	SMART CONTRACT (augurContract) (address contractAddress = lookup(bytes32 0x4F72646572730000000000000000000000000000000000000000000000000000)) {
 		bool addressKnown = contains(registeredAddresses, contractAddress);
 		IF (!addressKnown) {
+			add(registeredAddresses, contractAddress);
 			EMIT LOG LINE ("Block ", block.number, ": New Orders registered with address '", contractAddress, "'.");
 		}
 	}
@@ -144,6 +163,7 @@ BLOCKS (5926250) (5926350) {
 	SMART CONTRACT (augurContract) (address contractAddress = lookup(bytes32 0x4F72646572734665746368657200000000000000000000000000000000000000)) {
 		bool addressKnown = contains(registeredAddresses, contractAddress);
 		IF (!addressKnown) {
+			add(registeredAddresses, contractAddress);
 			EMIT LOG LINE ("Block ", block.number, ": New OrdersFetcher registered with address '", contractAddress, "'.");
 		}
 	}
@@ -151,6 +171,7 @@ BLOCKS (5926250) (5926350) {
 	SMART CONTRACT (augurContract) (address contractAddress = lookup(bytes32 0x52657050726963654F7261636C65000000000000000000000000000000000000)) {
 		bool addressKnown = contains(registeredAddresses, contractAddress);
 		IF (!addressKnown) {
+			add(registeredAddresses, contractAddress);
 			EMIT LOG LINE ("Block ", block.number, ": New RepPriceOracle registered with address '", contractAddress, "'.");
 		}
 	}
@@ -158,6 +179,7 @@ BLOCKS (5926250) (5926350) {
 	SMART CONTRACT (augurContract) (address contractAddress = lookup(bytes32 0x52657075746174696F6E546F6B656E0000000000000000000000000000000000)) {
 		bool addressKnown = contains(registeredAddresses, contractAddress);
 		IF (!addressKnown) {
+			add(registeredAddresses, contractAddress);
 			EMIT LOG LINE ("Block ", block.number, ": New ReputationToken registered with address '", contractAddress, "'.");
 		}
 	}
@@ -165,6 +187,7 @@ BLOCKS (5926250) (5926350) {
 	SMART CONTRACT (augurContract) (address contractAddress = lookup(bytes32 0x52657075746174696F6E546F6B656E466163746F727900000000000000000000)) {
 		bool addressKnown = contains(registeredAddresses, contractAddress);
 		IF (!addressKnown) {
+			add(registeredAddresses, contractAddress);
 			EMIT LOG LINE ("Block ", block.number, ": New ReputationTokenFactory registered with address '", contractAddress, "'.");
 		}
 	}
@@ -172,6 +195,7 @@ BLOCKS (5926250) (5926350) {
 	SMART CONTRACT (augurContract) (address contractAddress = lookup(bytes32 0x5368617265546F6B656E00000000000000000000000000000000000000000000)) {
 		bool addressKnown = contains(registeredAddresses, contractAddress);
 		IF (!addressKnown) {
+			add(registeredAddresses, contractAddress);
 			EMIT LOG LINE ("Block ", block.number, ": New ShareToken registered with address '", contractAddress, "'.");
 		}
 	}
@@ -179,6 +203,7 @@ BLOCKS (5926250) (5926350) {
 	SMART CONTRACT (augurContract) (address contractAddress = lookup(bytes32 0x5368617265546F6B656E466163746F7279000000000000000000000000000000)) {
 		bool addressKnown = contains(registeredAddresses, contractAddress);
 		IF (!addressKnown) {
+			add(registeredAddresses, contractAddress);
 			EMIT LOG LINE ("Block ", block.number, ": New ShareTokenFactory registered with address '", contractAddress, "'.");
 		}
 	}
@@ -186,6 +211,7 @@ BLOCKS (5926250) (5926350) {
 	SMART CONTRACT (augurContract) (address contractAddress = lookup(bytes32 0x54696D6500000000000000000000000000000000000000000000000000000000)) {
 		bool addressKnown = contains(registeredAddresses, contractAddress);
 		IF (!addressKnown) {
+			add(registeredAddresses, contractAddress);
 			EMIT LOG LINE ("Block ", block.number, ": New Time registered with address '", contractAddress, "'.");
 		}
 	}
@@ -193,6 +219,7 @@ BLOCKS (5926250) (5926350) {
 	SMART CONTRACT (augurContract) (address contractAddress = lookup(bytes32 0x556E697665727365000000000000000000000000000000000000000000000000)) {
 		bool addressKnown = contains(registeredAddresses, contractAddress);
 		IF (!addressKnown) {
+			add(registeredAddresses, contractAddress);
 			EMIT LOG LINE ("Block ", block.number, ": New Universe registered with address '", contractAddress, "'.");
 		}
 	}
@@ -200,6 +227,7 @@ BLOCKS (5926250) (5926350) {
 	SMART CONTRACT (augurContract) (address contractAddress = lookup(bytes32 0x556E697665727365466163746F72790000000000000000000000000000000000)) {
 		bool addressKnown = contains(registeredAddresses, contractAddress);
 		IF (!addressKnown) {
+			add(registeredAddresses, contractAddress);
 			EMIT LOG LINE ("Block ", block.number, ": New UniverseFactory registered with address '", contractAddress, "'.");
 		}
 	}

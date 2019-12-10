@@ -36,7 +36,13 @@ import au.csiro.data61.aap.elf.parsing.EthqlParser.LogEntrySignatureContext;
 import au.csiro.data61.aap.elf.parsing.EthqlParser.MethodInvocationContext;
 import au.csiro.data61.aap.elf.parsing.EthqlParser.MethodStatementContext;
 import au.csiro.data61.aap.elf.parsing.EthqlParser.NamedEmitVariableContext;
+import au.csiro.data61.aap.elf.parsing.EthqlParser.PublicFunctionQueryContext;
+import au.csiro.data61.aap.elf.parsing.EthqlParser.PublicVariableQueryContext;
 import au.csiro.data61.aap.elf.parsing.EthqlParser.ScopeContext;
+import au.csiro.data61.aap.elf.parsing.EthqlParser.SmartContractFilterContext;
+import au.csiro.data61.aap.elf.parsing.EthqlParser.SmartContractParameterContext;
+import au.csiro.data61.aap.elf.parsing.EthqlParser.SmartContractQueryContext;
+import au.csiro.data61.aap.elf.parsing.EthqlParser.SmartContractQueryParameterContext;
 import au.csiro.data61.aap.elf.parsing.EthqlParser.StatementExpressionContext;
 import au.csiro.data61.aap.elf.parsing.EthqlParser.TransactionFilterContext;
 import au.csiro.data61.aap.elf.parsing.EthqlParser.ValueExpressionContext;
@@ -51,7 +57,7 @@ import au.csiro.data61.aap.elf.util.TypeUtils;
  */
 public class EthqlProgramComposer extends EthqlBaseListener {
     private static final Logger LOGGER = Logger.getLogger(EthqlProgramComposer.class.getName());
-    
+
     private final SpecificationComposer composer;
     private final VariableExistenceAnalyzer variableAnalyzer;
 
@@ -97,8 +103,7 @@ public class EthqlProgramComposer extends EthqlBaseListener {
     private void buildProgram(DocumentContext ctx) throws BuildException {
         try {
             this.program = this.composer.buildProgram();
-        }
-        finally {
+        } finally {
             this.genericFilterPredicates.clear();
         }
     }
@@ -185,8 +190,8 @@ public class EthqlProgramComposer extends EthqlBaseListener {
     private LogEntrySignatureSpecification getLogEntrySignature(LogEntrySignatureContext ctx) throws BuildException {
         final LinkedList<ParameterSpecification> parameters = new LinkedList<>();
         for (LogEntryParameterContext paramCtx : ctx.logEntryParameter()) {
-            parameters.add(ParameterSpecification.of(paramCtx.variableName().getText(),
-                    paramCtx.solType().getText(), paramCtx.KEY_INDEXED() != null));
+            parameters.add(ParameterSpecification.of(paramCtx.variableName().getText(), paramCtx.solType().getText(),
+                    paramCtx.KEY_INDEXED() != null));
         }
 
         return LogEntrySignatureSpecification.of(ctx.methodName.getText(), parameters);
@@ -220,16 +225,16 @@ public class EthqlProgramComposer extends EthqlBaseListener {
     private void handleScopeBuild(FilterContext ctx) throws BuildException {
         if (ctx.logEntryFilter() != null) {
             this.buildLogEntryFilter(ctx.logEntryFilter());
-        }
-        else if (ctx.blockFilter() != null) {
+        } else if (ctx.blockFilter() != null) {
             this.buildBlockFilter(ctx.blockFilter());
-        }
-        else if (ctx.transactionFilter() != null) {
+        } else if (ctx.transactionFilter() != null) {
             this.buildTransactionFilter(ctx.transactionFilter());
-        }
-        else if (ctx.genericFilter() != null) {
+        } else if (ctx.genericFilter() != null) {
             this.buildGenericFilter(ctx.genericFilter());
-        }
+        } 
+        else if (ctx.smartContractFilter() != null) {
+            this.buildSmartContractFilter(ctx.smartContractFilter());
+        } 
         else {
             throw new BuildException(String.format("Filter type '%s' not supported.", ctx.getText()));
         }
@@ -258,17 +263,17 @@ public class EthqlProgramComposer extends EthqlBaseListener {
     }
 
     private void createBinaryConditionalExpression(
-        BiFunction<GenericFilterPredicateSpecification, GenericFilterPredicateSpecification, GenericFilterPredicateSpecification> constructor
-    ) throws BuildException {
-        if (     this.genericFilterPredicates.isEmpty()
-            || !(this.genericFilterPredicates.peek() instanceof GenericFilterPredicateSpecification)) {
+            BiFunction<GenericFilterPredicateSpecification, GenericFilterPredicateSpecification, GenericFilterPredicateSpecification> constructor)
+            throws BuildException {
+        if (this.genericFilterPredicates.isEmpty()
+                || !(this.genericFilterPredicates.peek() instanceof GenericFilterPredicateSpecification)) {
             throw new BuildException("Parse tree error: binary boolean expression requires boolean predicates.");
         }
-        final GenericFilterPredicateSpecification predicate1 = 
-            (GenericFilterPredicateSpecification) this.genericFilterPredicates.pop();
+        final GenericFilterPredicateSpecification predicate1 = (GenericFilterPredicateSpecification) this.genericFilterPredicates
+                .pop();
 
-        if (   this.genericFilterPredicates.isEmpty()
-            || !(this.genericFilterPredicates.peek() instanceof GenericFilterPredicateSpecification)) {
+        if (this.genericFilterPredicates.isEmpty()
+                || !(this.genericFilterPredicates.peek() instanceof GenericFilterPredicateSpecification)) {
             throw new BuildException("Parse tree error: binary boolean expression requires boolean predicates.");
         }
         final GenericFilterPredicateSpecification predicate2 = (GenericFilterPredicateSpecification) this.genericFilterPredicates
@@ -368,6 +373,79 @@ public class EthqlProgramComposer extends EthqlBaseListener {
         if (ctx.valueExpression() != null) {
             this.genericFilterPredicates.push(this.getValueAccessor(ctx.valueExpression()));
         }
+    }
+
+    @Override
+    public void enterSmartContractFilter(SmartContractFilterContext ctx) {
+        this.handleEthqlElement(ctx, this::prepareSmartContractFilterBuilder);
+    }
+
+    private void prepareSmartContractFilterBuilder(SmartContractFilterContext ctx) throws BuildException {
+        this.composer.prepareSmartContractFilterBuild();
+    }
+
+    private void buildSmartContractFilter(SmartContractFilterContext ctx) throws BuildException {
+        final ValueAccessorSpecification contractAddress = this.getValueAccessor(ctx.valueExpression());
+
+        final List<SmartContractQuerySpecification> queries = new ArrayList<>();
+        for (SmartContractQueryContext scQuery : ctx.smartContractQuery()) {
+            if (scQuery.publicFunctionQuery() != null) {
+                queries.add(this.handlePublicFunctionQuery(scQuery.publicFunctionQuery()));
+            } else if (scQuery.publicVariableQuery() != null) {
+                queries.add(this.handlePublicVariableQuery(scQuery.publicVariableQuery()));
+            } else {
+                throw new UnsupportedOperationException();
+            }
+        }
+
+        this.composer.buildSmartContractFilter(SmartContractFilterSpecification.of(contractAddress, queries));
+    }
+
+    private SmartContractQuerySpecification handlePublicFunctionQuery(PublicFunctionQueryContext ctx)
+            throws BuildException {
+        final List<ParameterSpecification> outputParams = ctx.smartContractParameter()
+            .stream()
+            .map(paramCtx -> this.createParameterSpecification(paramCtx))
+            .collect(Collectors.toList());
+
+        final List<TypedValueAccessorSpecification> inputParameters = new ArrayList<>();
+        for (SmartContractQueryParameterContext paramCtx : ctx.smartContractQueryParameter()) {
+            inputParameters.add(this.createTypedValueAccessor(paramCtx));
+        }
+
+        return SmartContractQuerySpecification.ofMemberFunction(ctx.methodName.getText(), inputParameters,
+                outputParams);
+    }
+
+    private TypedValueAccessorSpecification createTypedValueAccessor(SmartContractQueryParameterContext ctx) throws BuildException {
+        if (ctx.variableName() != null) {
+            final String varName = ctx.variableName().getText();
+            return TypedValueAccessorSpecification.of(
+                this.variableAnalyzer.getVariableType(varName), 
+                ValueAccessorSpecification.ofVariable(varName)
+            );
+        }
+        else if (ctx.solType() != null) {
+            return TypedValueAccessorSpecification.of(
+                ctx.solType().getText(), 
+                this.getLiteral(ctx.literal())
+            );
+        }
+        else {
+            throw new BuildException("Unsupported way of defining typed value accessors.");
+        }
+        
+    }
+
+    private SmartContractQuerySpecification handlePublicVariableQuery(PublicVariableQueryContext ctx)
+            throws BuildException {
+        return SmartContractQuerySpecification.ofMemberVariable(
+            createParameterSpecification(ctx.smartContractParameter())
+        );
+    }
+
+    private ParameterSpecification createParameterSpecification(SmartContractParameterContext ctx) {
+        return ParameterSpecification.of(ctx.variableName().getText(), ctx.solType().getText());
     }
 
     @Override

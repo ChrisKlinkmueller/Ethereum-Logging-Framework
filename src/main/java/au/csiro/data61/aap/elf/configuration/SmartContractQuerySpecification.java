@@ -14,34 +14,25 @@ import au.csiro.data61.aap.elf.core.filters.SmartContractQuery;
  * SmartContractFilter
  */
 public class SmartContractQuerySpecification {
-    private final String contract;
     private final SmartContractQuery query;
 
-    private SmartContractQuerySpecification(String contract, SmartContractQuery query) {
-        assert contract != null;
+    private SmartContractQuerySpecification(SmartContractQuery query) {
         assert query != null;
         this.query = query;
-        this.contract = contract;
-    }
-
-    public String getContract() {
-        return contract;
     }
 
     public SmartContractQuery getQuery() {
-        return query;
+        return this.query;
     }
 
-    public static SmartContractQuerySpecification ofMemberVariable(String contract, ParameterSpecification variable) {
-        assert contract != null;
+    public static SmartContractQuerySpecification ofMemberVariable(ParameterSpecification variable) {
         assert variable != null;
         final SmartContractQuery query =
             new PublicMemberQuery(variable.getParameter().getName(), Collections.emptyList(), Arrays.asList(variable.getParameter()));
-        return new SmartContractQuerySpecification(contract, query);
+        return new SmartContractQuerySpecification(query);
     }
 
-    public static SmartContractQuerySpecification ofMemberFunction(String contract, String functionName, List<TypedValueAccessorSpecification> inputParameters, List<ParameterSpecification> outpuParameters) {
-        assert contract != null;
+    public static SmartContractQuerySpecification ofMemberFunction(String functionName, List<TypedValueAccessorSpecification> inputParameters, List<ParameterSpecification> outpuParameters) {
         assert inputParameters != null;
         assert outpuParameters != null;
         assert functionName != null;
@@ -54,7 +45,7 @@ public class SmartContractQuerySpecification {
             .map(p -> p.getParameter())
             .collect(Collectors.toList());
         
-        return new SmartContractQuerySpecification(contract, new PublicMemberQuery(functionName, inputs, outputs));
+        return new SmartContractQuerySpecification(new PublicMemberQuery(functionName, inputs, outputs));
     }
 
     private static SmartContractParameter createSmartContractParameter(TypedValueAccessorSpecification param) {

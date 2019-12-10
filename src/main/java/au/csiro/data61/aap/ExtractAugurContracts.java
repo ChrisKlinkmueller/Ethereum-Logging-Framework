@@ -10,6 +10,7 @@ import au.csiro.data61.aap.elf.configuration.LogLineExportSpecification;
 import au.csiro.data61.aap.elf.configuration.MethodCallSpecification;
 import au.csiro.data61.aap.elf.configuration.MethodSpecification;
 import au.csiro.data61.aap.elf.configuration.ParameterSpecification;
+import au.csiro.data61.aap.elf.configuration.SmartContractFilterSpecification;
 import au.csiro.data61.aap.elf.configuration.SmartContractQuerySpecification;
 import au.csiro.data61.aap.elf.configuration.SpecificationComposer;
 import au.csiro.data61.aap.elf.configuration.TypedValueAccessorSpecification;
@@ -114,13 +115,15 @@ public class ExtractAugurContracts {
                 )
             );
 
-            final String hexString = createBytes32(contractName);
-            builder.buildSmartContractFilter(
-            SmartContractQuerySpecification.ofMemberFunction(
-                "0xb3337164e91b9f05c87c7662c7ac684e8e0ff3e7", 
-                "lookup", 
-                Arrays.asList(TypedValueAccessorSpecification.of("bytes32", ValueAccessorSpecification.bytesLiteral(hexString))), 
-                Arrays.asList(ParameterSpecification.of("registeredAddress", "address"))
+        final String hexString = createBytes32(contractName);
+        builder.buildSmartContractFilter(
+            SmartContractFilterSpecification.of(
+                ValueAccessorSpecification.addressLiteral("0xb3337164e91b9f05c87c7662c7ac684e8e0ff3e7"),
+                SmartContractQuerySpecification.ofMemberFunction(
+                    "lookup", 
+                    Arrays.asList(TypedValueAccessorSpecification.of("bytes32", ValueAccessorSpecification.bytesLiteral(hexString))), 
+                    Arrays.asList(ParameterSpecification.of("registeredAddress", "address"))
+                )
             )
         );
     }

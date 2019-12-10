@@ -96,6 +96,10 @@ smartContractQueryParameter
     | solType literal
     ;
 
+
+
+
+
 // emitStatements
 
 emitStatement

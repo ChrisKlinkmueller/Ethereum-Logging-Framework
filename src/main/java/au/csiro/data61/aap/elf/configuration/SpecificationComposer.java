@@ -155,7 +155,7 @@ public class SpecificationComposer {
         this.closeScope(filter);
     }
 
-    public void buildSmartContractFilter(SmartContractQuerySpecification specification) throws BuildException {
+    public void buildSmartContractFilter(SmartContractFilterSpecification specification) throws BuildException {
         assert specification != null;
 
         if (this.states.peek() != FactoryState.SMART_CONTRACT_FILTER) {
@@ -163,8 +163,8 @@ public class SpecificationComposer {
         }
 
         final SmartContractFilter filter = new SmartContractFilter(
-            specification.getContract(), 
-            Arrays.asList(specification.getQuery()), 
+            specification.getContractAddress(), 
+            specification.getQueries(), 
             this.instructions.peek()
         );
         this.closeScope(filter);

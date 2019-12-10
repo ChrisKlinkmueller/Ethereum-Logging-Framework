@@ -1,5 +1,5 @@
 connect("ws://localhost:8546/");
-setOutputFolder("C:/Development/xes-blockchain/v0.2/test_output/kitties");
+setOutputFolder("./test_output");
 
 int[] kitties = [0];
 BLOCKS (6605100) (6615100) {
