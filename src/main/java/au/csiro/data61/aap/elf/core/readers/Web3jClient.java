@@ -163,7 +163,6 @@ public class Web3jClient implements EthereumClient {
         final EthereumTransaction tx = ethBlock.transactionStream().filter(t -> t.getHash().equals(log.getTransactionHash())).findAny().orElse(null);
         if (tx == null) {
             LOGGER.log(Level.WARNING, String.format("Couldn't find transaction with hash '%s'.", log.getTransactionHash()));
-            // TODO: return error notification
             return;
         }
 

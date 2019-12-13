@@ -74,7 +74,7 @@ public class TypeUtils {
     }
 
     public static String toArrayType(String baseType) {
-        assert baseType != null; // TODO: check that baseType is valid type
+        assert baseType != null;
         return String.format("%s[]", baseType);
     }
 

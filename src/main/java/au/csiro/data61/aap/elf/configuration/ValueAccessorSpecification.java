@@ -11,8 +11,6 @@ import au.csiro.data61.aap.elf.util.TypeUtils;
  * ValueAccessorSpecification
  */
 public class ValueAccessorSpecification {
-    // TODO: replace use of TypeDecoder as it expects byte encoding, not string representations!
-
     private final ValueAccessor valueAccessor;
 
     public ValueAccessorSpecification(ValueAccessor valueAccessor) {

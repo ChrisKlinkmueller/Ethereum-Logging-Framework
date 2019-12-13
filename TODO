@@ -57,11 +57,12 @@ Generator:
 
 Writers:
   ☐ Check that if a new block is started and the block number is already known, data for this blocknumber will be overwritten.
+  ☐ Introduce filename specification for emitting log line
   ☐ Set default folder and url
 
 Configuration:
-  ☐ Output folder config
-  ☐ Client connections config
+  ☐ Automate output folder config
+  ☐ Automate client connections config
 
 Open issues:
   ☐ currently array types are badly supported, e.g., for defining how to convert them into xes attributes
