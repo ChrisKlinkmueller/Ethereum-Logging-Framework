@@ -1,6 +1,6 @@
 # Ethereum Logging Framework
 
-This framework provides advanced logging capabilities for Ethereum applications ón top of Web3J / Ethereum's JSON RPC. It consists of four components:
+This framework provides advanced logging capabilities for Ethereum applications on top of Web3J / Ethereum's JSON RPC. It consists of four components:
 
 - Ethql: a query language for data on Ethereum
 - Validator: a component to check ethql documents for specification erros
