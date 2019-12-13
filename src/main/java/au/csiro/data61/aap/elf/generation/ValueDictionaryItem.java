@@ -8,46 +8,74 @@ import org.antlr.v4.runtime.Token;
  * ValueDictionaryItem
  */
 class ValueDictionaryItem extends GeneratorItem {
-    private final String targetVariable;
-    private final String encodedAttribute;
-    private final Object defaultValue;
-    private final List<?> fromValues;
-    private final List<?> toValues;
+    private String targetVariable;
+    private String targetType;
+    private String encodedAttribute;
+    private String encodedType;
+    private Object defaultValue;
+    private List<?> fromValues;
+    private List<?> toValues;
 
     ValueDictionaryItem(
         Token token, 
-        String specification, 
-        String targetVariable,
-        String encodedAttribute,
-        Object defaultValue,
-        List<?> fromValues,
-        List<?> toValues    
+        String specification
     ) {
         super(token, specification);
-        this.fromValues = fromValues;
-        this.toValues = toValues;
-        this.targetVariable = targetVariable;
-        this.encodedAttribute = encodedAttribute;
-        this.defaultValue = defaultValue;
     }
 
     List<?> getFromValues() {
         return this.fromValues;
     }
 
+    void setFromValues(List<?> fromValues) {
+        this.fromValues = fromValues;
+    }
+
     String getTargetVariable() {
-        return this.targetVariable;
+        return this.targetVariable == null ? "unnamed_variable" : this.targetVariable;
+    }
+
+    void setTargetVariable(String targetVariable) {
+        this.targetVariable = targetVariable;
+    }
+
+    String getTargetType() {
+        return this.targetType;
+    }
+
+    void setTargetType(String targetType) {
+        this.targetType = targetType;
+    }
+
+    String getEncodedAttribute() {
+        return this.encodedAttribute;
+    }
+
+    void setEncodedAttribute(String encodedAttribute) {
+        this.encodedAttribute = encodedAttribute;
+    }
+
+    String getEncodedType() {
+        return this.encodedType;
+    }
+
+    void setEncodedType(String encodedType) {
+        this.encodedType = encodedType;
     }
 
     List<?> getToValues() {
         return this.toValues;
     }
 
+    void setToValues(List<?> toValues) {
+        this.toValues = toValues;
+    }
+
     Object getDefaultValue() {
         return this.defaultValue;
     }
 
-    String getEncodedAttribute() {
-        return this.encodedAttribute;
+    void setDefaultValue(Object defaultValue) {
+        this.defaultValue = defaultValue;
     }
 }

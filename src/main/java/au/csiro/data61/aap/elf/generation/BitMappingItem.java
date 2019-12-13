@@ -55,7 +55,7 @@ class BitMappingItem extends GeneratorItem {
     }
 
     public String getTargetVariable() {
-        return this.targetVariable;
+        return this.targetVariable == null ? "unnamed_variable" : this.targetVariable;
     }
 
     public void setTargetVariable(String targetVariable) {

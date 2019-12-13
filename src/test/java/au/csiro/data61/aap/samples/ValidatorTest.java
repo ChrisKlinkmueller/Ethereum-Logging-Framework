@@ -14,7 +14,7 @@ public class ValidatorTest {
 
     public static void main(String[] args) {
         Validator validator = new Validator();
-        SampleUtils.getGeneratorResources().forEach(url -> test(validator, url));
+        SampleUtils.getAllResources().forEach(url -> test(validator, url));
     }
 
     private static void test(Validator validator, URL url) {

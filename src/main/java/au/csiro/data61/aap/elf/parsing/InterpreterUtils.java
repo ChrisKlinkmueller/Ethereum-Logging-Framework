@@ -89,7 +89,7 @@ public class InterpreterUtils {
             : varAnalyzer.getVariableType(ctx.variableName().getText());
     }
 
-    static String literalType(LiteralContext ctx) {        
+    public static String literalType(LiteralContext ctx) {        
         if (ctx.BOOLEAN_LITERAL() != null) {
             return TypeUtils.BOOL_TYPE_KEYWORD;
         }

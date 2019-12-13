@@ -3,10 +3,12 @@ package au.csiro.data61.aap.elf.generation;
 import java.math.BigInteger;
 import java.util.List;
 import java.util.stream.Collectors;
+import java.util.stream.IntStream;
 import java.util.stream.Stream;
 
 import au.csiro.data61.aap.elf.library.compression.BitMapping;
 import au.csiro.data61.aap.elf.library.compression.ValueDictionary;
+import au.csiro.data61.aap.elf.parsing.InterpreterUtils;
 import au.csiro.data61.aap.elf.parsing.EthqlParser.ArrayLiteralContext;
 import au.csiro.data61.aap.elf.parsing.EthqlParser.ExpressionStatementContext;
 import au.csiro.data61.aap.elf.parsing.EthqlParser.LiteralContext;
@@ -106,9 +108,11 @@ public class ItemGenerator extends BaseGenerator {
         this.generateEnumsAndMaps();
         this.codeCollector.addEmptyLine();
 
+        this.generatorConstructor();
+
         this.openLoggingMethod();
         this.generateBitMaps();
-
+        this.generateValueMaps();
         this.createEmit();
         this.closeLoggingMethod();
     }
@@ -124,6 +128,53 @@ public class ItemGenerator extends BaseGenerator {
     private void generateEnumsAndMaps() {
         this.itemStream(BitMappingItem.class)
             .forEach(item -> this.generateBitMappingEnum(item));
+        
+        this.itemStream(ValueDictionaryItem.class)
+            .forEach(item -> this.generateMapping(item));
+    }
+
+    private void generateMapping(ValueDictionaryItem item) {
+        final String code = String.format(
+            "mapping (%s => %s) %ss;", 
+            item.getTargetType(), 
+            item.getEncodedType(),
+            item.getTargetVariable()
+        );
+        this.codeCollector.addCodeLine(code);
+    }
+
+    private void generatorConstructor() {
+        if (this.itemStream(ValueDictionaryItem.class).count() == 0) {
+            return;
+        }
+
+        this.codeCollector.addCodeLine("constructor() public {");
+        
+        this.itemStream(ValueDictionaryItem.class)
+            .forEach(item -> this.generateMappingInitialization(item));
+        
+        this.codeCollector.addCodeLine("}");
+        this.codeCollector.addEmptyLine();
+    }
+
+    private void generateMappingInitialization(ValueDictionaryItem item) {
+        IntStream.range(0, item.getToValues().size())
+            .forEach(i -> {
+                final String code = String.format(
+                    "\t%ss[%s] = %s;", 
+                    item.getTargetVariable(),
+                    this.generateLiteral(item.getToValues().get(i)),
+                    this.generateLiteral(item.getFromValues().get(i))
+                );
+                this.codeCollector.addCodeLine(code);
+            });
+    }
+
+    private String generateLiteral(Object value) {
+        if (value instanceof String && !TypeUtils.isBytesLiteral(value.toString())) {
+            return String.format("\"%s\"", value.toString());
+        }
+        return value.toString();
     }
 
     private void openLoggingMethod() {
@@ -146,16 +197,19 @@ public class ItemGenerator extends BaseGenerator {
                 .collect(Collectors.joining(", "));
         }
         else if (this.containsValueDictForAttribute(parameter.getName())) {
-            return "";
+            return this.valueDicItemStream(parameter.getName())
+                .map(item ->   
+                    String.format(
+                        "%s %s", 
+                        item.getTargetType() == "string" ? "string memory" : item.getTargetType(),
+                        item.getTargetVariable()
+                    )
+                )
+                .findFirst().orElse(null);
         }
         else {
             return String.format("%s %s", parameter.getType(), parameter.getName());
         }
-    }
-
-    private Stream<BitMappingItem> bitMappingItemStream(String name) {
-        return this.itemStream(BitMappingItem.class)
-            .filter(i -> i.getEncodedAttribute().equals(name));
     }
 
     private boolean containsBitMappingForAttribute(String name) {
@@ -163,10 +217,20 @@ public class ItemGenerator extends BaseGenerator {
             .count() != 0;
     }
 
+    private Stream<BitMappingItem> bitMappingItemStream(String name) {
+        return this.itemStream(BitMappingItem.class)
+            .filter(i -> i.getEncodedAttribute().equals(name));
+    }
+
     private boolean containsValueDictForAttribute(String name) {
         return this.itemStream(ValueDictionaryItem.class)
             .filter(i -> i.getEncodedAttribute().equals(name))
             .count() != 0;
+    }
+
+    private Stream<ValueDictionaryItem> valueDicItemStream(String name) {
+        return this.itemStream(ValueDictionaryItem.class)
+            .filter(i -> i.getEncodedAttribute().equals(name));
     }
 
     private void generateBitMaps() {
@@ -204,6 +268,21 @@ public class ItemGenerator extends BaseGenerator {
 
     private String createMaskVariable(BitMappingItem item) {
         return String.format("%sMask", item.getTargetVariable());
+    }
+
+    private void generateValueMaps() {
+        this.itemStream(ValueDictionaryItem.class)
+            .forEach(item -> {
+                final String code = String.format(
+                    "\t%s %s = %ss[%s];",
+                    item.getEncodedType(),
+                    item.getEncodedAttribute(),
+                    item.getTargetVariable(),
+                    item.getTargetVariable()
+                );
+                this.codeCollector.addCodeLine(code);
+            })
+        ;
     }
 
     private void createEmit() {
@@ -320,11 +399,21 @@ public class ItemGenerator extends BaseGenerator {
 
     private void createValueDictionary(final String targetVariable, final MethodInvocationContext ctx) {
         final String encodedAttribute = this.getValueMapDictVariable(ctx);
+        final String encodedType = this.getValueMapDictType(ctx);
+        final String targetType = this.getValueDictTargetType(ctx);
         final Object defaultValue = this.getValueDictDefaultValue(ctx);
         final List<?> fromValues = this.getLiteralValues(ctx, VALDICT_FROM_INDEX, true);
         final List<?> toValues = this.getLiteralValues(ctx, VALDICT_TO_INDEX, true);
-        if (this.areValidValueDictValues(encodedAttribute, defaultValue, fromValues, toValues)) {  
-            final ValueDictionaryItem item = new ValueDictionaryItem(ctx.start, ctx.getText(), targetVariable, encodedAttribute, defaultValue, fromValues, toValues);
+        if (this.areValidValueDictValues(encodedAttribute, targetType, defaultValue, fromValues, toValues)) {  
+            final ValueDictionaryItem item = new ValueDictionaryItem(ctx.start, ctx.getText());
+            item.setTargetVariable(targetVariable);
+            item.setTargetType(targetType);
+            item.setEncodedAttribute(encodedAttribute);
+            item.setEncodedType(encodedType);
+            item.setDefaultValue(defaultValue);
+            item.setFromValues(fromValues);
+            item.setToValues(toValues);
+            
             ValueDictionaryItem overlap = findOverlappingValueDict(item);
             if (overlap == null) {
                 this.logEntry.addItem(item);
@@ -366,13 +455,38 @@ public class ItemGenerator extends BaseGenerator {
         return val.variableName().getText();
     }
 
+    private String getValueMapDictType(MethodInvocationContext ctx) {
+        if (ctx.valueExpression().size() <= VALDICT_VAR_INDEX) {
+            return null;
+        }
+        
+        ValueExpressionContext val = ctx.valueExpression(VALDICT_VAR_INDEX);
+        if (val.variableName() == null) {
+            return null;
+        }
+
+        return this.logEntry.parameterStream()
+            .filter(par -> par.getName().equals(val.variableName().getText()))
+            .map(par -> par.getType())
+            .findFirst().orElse(null);
+    }
+
+    private String getValueDictTargetType(MethodInvocationContext ctx) {
+        if (ctx.valueExpression().size() <= VALDICT_DEFAULTVAL_INDEX) {
+            return null;
+        }
+        
+        final ValueExpressionContext valueCtx = ctx.valueExpression(VALDICT_DEFAULTVAL_INDEX);
+        return valueCtx.literal() == null ? null : InterpreterUtils.literalType(valueCtx.literal());
+    }
+
     private Object getValueDictDefaultValue(MethodInvocationContext ctx) {
         final List<?> values = this.getLiteralValues(ctx, VALDICT_DEFAULTVAL_INDEX, false);
         return values == null || values.size() != 1 ? null : values.get(0);
     }
 
-    private boolean areValidValueDictValues(String encodedVariable, Object defaultValue, List<?> fromValues, List<?> toValues) {
-        if (encodedVariable == null || defaultValue == null || fromValues == null || toValues == null) {
+    private boolean areValidValueDictValues(String encodedVariable, String targetType, Object defaultValue, List<?> fromValues, List<?> toValues) {
+        if (encodedVariable == null || targetType == null || defaultValue == null || fromValues == null || toValues == null) {
             return false;
         }
 

@@ -24,6 +24,10 @@ public class SampleUtils {
         return getResources(GIT_GENERATOR, SHIRT_GENERATOR);
     }
 
+    public static List<URL> getAllResources() {
+        return getResources(CRYPTO_KITTIES, NETWORK_STATISTICS, AUGUR_REGISTRY, GIT_GENERATOR, SHIRT_GENERATOR);
+    }
+
     public static List<URL> getResources(String... resources) {
         return Arrays.stream(resources)
             .map(resource -> SampleUtils.class.getClassLoader().getResource(resource))
