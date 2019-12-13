@@ -11,7 +11,7 @@ public class ExtractorTest {
 
     public static void main(String[] args) {
         Extractor extractor = new Extractor();
-        SampleUtils.getResources(SampleUtils.AUGUR_REGISTRY).forEach(url -> test(extractor, url));
+        SampleUtils.getExtractorResources().forEach(url -> test(extractor, url));
     }
 
     private static void test(Extractor extractor, URL url) {

@@ -2,6 +2,13 @@
     "configurations": [
         {
             "type": "java",
+            "name": "CodeLens (Launch) - GeneratorTest",
+            "request": "launch",
+            "mainClass": "au.csiro.data61.aap.samples.GeneratorTest",
+            "projectName": "xes-blockchain"
+        },
+        {
+            "type": "java",
             "name": "CodeLens (Launch) - ExtractRobinHoodCoin",
             "request": "launch",
             "mainClass": "au.csiro.data61.aap.ExtractRobinHoodCoin",

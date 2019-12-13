@@ -6,7 +6,7 @@ import java.util.List;
 import org.antlr.v4.runtime.Token;
 
 /**
- * BitMapping
+ * BitMappingItem
  */
 class BitMappingItem extends GeneratorItem {
     private BigInteger from;
