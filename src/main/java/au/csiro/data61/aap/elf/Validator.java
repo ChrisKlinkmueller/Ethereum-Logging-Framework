@@ -56,5 +56,15 @@ public class Validator {
         }
     }
 
-        
+    public static ParseTree createParseTree(final String ethqlFile) throws EthqlProcessingException {
+        final Validator validator = new Validator();
+        final EthqlProcessingResult<ParseTree> validatorResult = validator.parseScript(ethqlFile);
+
+        if (!validatorResult.isSuccessful()) {
+            throw new EthqlProcessingException(
+                    "The ethql script is not valid. For detailed analysis results, run validator.");
+        }
+
+        return validatorResult.getResult();
+    }    
 }

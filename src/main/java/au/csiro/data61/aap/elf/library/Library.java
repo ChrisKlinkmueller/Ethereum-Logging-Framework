@@ -43,22 +43,22 @@ public class Library {
             this.addMethod(new MethodSignature("remove", null, "address[]", "address"), ListOperations::removeElement);
             this.addMethod(new MethodSignature("clear", null, "address[]"), ListOperations::clear);
 
-            this.addMethod(ValueDictionary::boolToString, "bool", ValueDictionary.METHOD_NAME, "bool", "bytes", "bool[]", "bytes[]");
-            this.addMethod(new MethodSignature(ValueDictionary.METHOD_NAME, "bool", "bool", "bool", "bool[]", "bool[]"), ValueDictionary::boolToBool);
-            this.addMethod(new MethodSignature(ValueDictionary.METHOD_NAME, "bool", "bool", "int", "bool[]", "int[]"), ValueDictionary::boolToInt);
-            this.addMethod(new MethodSignature(ValueDictionary.METHOD_NAME, "bool", "bool", "string", "bool[]", "string[]"), ValueDictionary::boolToString);
-            this.addMethod(new MethodSignature(ValueDictionary.METHOD_NAME, "byte", "byte", "bytes", "byte[]", "bytes[]"), ValueDictionary::stringToString);
-            this.addMethod(new MethodSignature(ValueDictionary.METHOD_NAME, "byte", "byte", "bool", "byte[]", "bool[]"), ValueDictionary::stringToBool);
-            this.addMethod(new MethodSignature(ValueDictionary.METHOD_NAME, "byte", "byte", "int", "byte[]", "int[]"), ValueDictionary::stringToInt);
-            this.addMethod(new MethodSignature(ValueDictionary.METHOD_NAME, "byte", "byte", "string", "byte[]", "string[]"), ValueDictionary::stringToString);
-            this.addMethod(new MethodSignature(ValueDictionary.METHOD_NAME, "int", "int", "bytes", "int[]", "bytes[]"), ValueDictionary::intToString);
-            this.addMethod(new MethodSignature(ValueDictionary.METHOD_NAME, "int", "int", "bool", "int[]", "bool[]"), ValueDictionary::intToBool);
-            this.addMethod(new MethodSignature(ValueDictionary.METHOD_NAME, "int", "int", "int", "int[]", "int[]"), ValueDictionary::intToInt);
-            this.addMethod(new MethodSignature(ValueDictionary.METHOD_NAME, "int", "int", "string", "int[]", "string[]"), ValueDictionary::intToString);
-            this.addMethod(new MethodSignature(ValueDictionary.METHOD_NAME, "string", "string", "bytes", "string[]", "bytes[]"), ValueDictionary::stringToString);
-            this.addMethod(new MethodSignature(ValueDictionary.METHOD_NAME, "string", "string", "bool", "string[]", "bool[]"), ValueDictionary::stringToBool);
-            this.addMethod(new MethodSignature(ValueDictionary.METHOD_NAME, "string", "string", "int", "string[]", "int[]"), ValueDictionary::stringToInt);
-            this.addMethod(new MethodSignature(ValueDictionary.METHOD_NAME, "string", "string", "string", "string[]", "string[]"), ValueDictionary::stringToString);
+            this.addMethod(ValueDictionary::boolToBool, "bool", ValueDictionary.METHOD_NAME, "bool", "bool", "bool[]", "bool[]");
+            this.addMethod(ValueDictionary::stringToBool, "bool", ValueDictionary.METHOD_NAME, "byte", "bool", "byte[]", "bool[]");
+            this.addMethod(ValueDictionary::intToBool, "bool", ValueDictionary.METHOD_NAME, "int", "bool", "int[]", "bool[]");
+            this.addMethod(ValueDictionary::stringToBool, "bool", ValueDictionary.METHOD_NAME, "string", "bool", "string[]", "bool[]");
+            this.addMethod(ValueDictionary::boolToString, "byte", ValueDictionary.METHOD_NAME, "bool", "byte", "bool[]", "byte[]");
+            this.addMethod(ValueDictionary::stringToString, "byte", ValueDictionary.METHOD_NAME, "byte", "byte", "byte[]", "byte[]");
+            this.addMethod(ValueDictionary::intToString, "byte", ValueDictionary.METHOD_NAME, "int", "byte", "int[]", "byte[]");
+            this.addMethod(ValueDictionary::stringToString, "byte", ValueDictionary.METHOD_NAME, "string", "byte", "string[]", "byte[]");
+            this.addMethod(ValueDictionary::boolToInt, "int", ValueDictionary.METHOD_NAME, "bool", "int", "bool[]", "int[]");
+            this.addMethod(ValueDictionary::stringToInt, "int", ValueDictionary.METHOD_NAME, "byte", "int", "byte[]", "int[]");
+            this.addMethod(ValueDictionary::intToInt, "int", ValueDictionary.METHOD_NAME, "int", "int", "int[]", "int[]");
+            this.addMethod(ValueDictionary::stringToInt, "int", ValueDictionary.METHOD_NAME, "string", "int", "string[]", "int[]");
+            this.addMethod(ValueDictionary::boolToString, "string", ValueDictionary.METHOD_NAME, "bool", "string", "bool[]", "string[]");
+            this.addMethod(ValueDictionary::stringToString, "string", ValueDictionary.METHOD_NAME, "byte", "string", "byte[]", "string[]");
+            this.addMethod(ValueDictionary::intToString, "string", ValueDictionary.METHOD_NAME, "int", "string", "int[]", "string[]");
+            this.addMethod(ValueDictionary::stringToString, "string", ValueDictionary.METHOD_NAME, "string", "string", "string[]", "string[]");
 
             this.addMethod(BitMapping::mapBitsToString, "string", BitMapping.METHOD_NAME, "int", "int", "int", "string[]");
             this.addMethod(BitMapping::mapBitsToString, "byte", BitMapping.METHOD_NAME, "int", "int", "int", "byte[]");

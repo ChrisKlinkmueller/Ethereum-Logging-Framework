@@ -30,11 +30,6 @@ public class ExtractAugurContracts {
     private static final long TO = 5926310;
 
     public static void main(String[] args) throws Throwable {
-        // for (String contract : contracts) {
-            //Bytes32 type = new Bytes32(bytes32);
-            // printCode(contract);
-        // }
-
         try {
             Instruction program = buildProgram();
             ProgramState state = new ProgramState();
@@ -42,20 +37,7 @@ public class ExtractAugurContracts {
         } catch (Exception e) {
             e.printStackTrace();
         }
-    }
-
-    // private static void printCode(String contract) {
-    //     String address = createBytes32(contract);
-    //     System.out.println(String.format("\tSMART CONTRACT (augurContract) (address contractAddress = lookup(%s)) {", address));
-    //     System.out.println(String.format("\t\tboolean addressKnown = contains(registeredAddresses, contractAddress);"));
-    //     System.out.println(String.format("\t\tIF (!contains) {"));
-    //     System.out.println(String.format("\t\t\tEMIT LOG LINE (\"Block \", block.number, \": New %s registered with address '\", contractAddress, \"'.\");",contract));
-    //     System.out.println(String.format("\t\t}"));
-    //     System.out.println(String.format("\t}"));
-    //     System.out.println();
-    // }
-
-    //     
+    }  
 
     private static Instruction buildProgram() throws BuildException {
         final SpecificationComposer builder = new SpecificationComposer();
@@ -146,9 +128,8 @@ public class ExtractAugurContracts {
     }
 
     private static final List<String> CONTRACTS = Arrays.asList("Cash", "CompleteSets", "CreateOrder",
-        "DisputeCrowdsourcerFactory", 
-        "FeeWindow", "FeeWindowFactory", "FeeToken", "FeeTokenFactory", "FillOrder", "InitialReporter", "InitialReporterFactory", 
-        "LegacyReputationToken", "Mailbox", "MailboxFactory", "Map", "MapFactory", "Market", "MarketFactory", "Orders", 
-        "OrdersFetcher", "RepPriceOracle", "ReputationToken", "ReputationTokenFactory", "ShareToken", "ShareTokenFactory", 
-        "Time", "Universe", "UniverseFactory"); 
+        "DisputeCrowdsourcerFactory", "FeeWindow", "FeeWindowFactory", "FeeToken", "FeeTokenFactory", "FillOrder", 
+        "InitialReporter", "InitialReporterFactory", "LegacyReputationToken", "Mailbox", "MailboxFactory", 
+        "Map", "MapFactory", "Market", "MarketFactory", "Orders", "OrdersFetcher", "RepPriceOracle", "ReputationToken", 
+        "ReputationTokenFactory", "ShareToken", "ShareTokenFactory", "Time", "Universe", "UniverseFactory"); 
 }

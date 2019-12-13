@@ -15,8 +15,8 @@ import au.csiro.data61.aap.elf.util.CompositeEthqlListener;
  */
 public class Extractor {
 
-    public void extractData(final String ethqlFile) throws EthqlProcessingException {
-        final ParseTree parseTree = this.createParseTree(ethqlFile);
+    public void extractData(final String ethqlFilepath) throws EthqlProcessingException {
+        final ParseTree parseTree = Validator.createParseTree(ethqlFilepath);
 
         final CompositeEthqlListener<EthqlListener> rootListener = new CompositeEthqlListener<>();
         final VariableExistenceAnalyzer analyzer = new VariableExistenceAnalyzer();
@@ -33,18 +33,6 @@ public class Extractor {
 
         final Program program = builder.getProgram();
         this.executeProgram(program);
-    }
-
-    private ParseTree createParseTree(final String ethqlFile) throws EthqlProcessingException {
-        final Validator validator = new Validator();
-        final EthqlProcessingResult<ParseTree> validatorResult = validator.parseScript(ethqlFile);
-
-        if (!validatorResult.isSuccessful()) {
-            throw new EthqlProcessingException(
-                    "The ethql script is not valid. For detailed analysis results, run validator.");
-        }
-
-        return validatorResult.getResult();
     }
 
     private void executeProgram(Program program) {
