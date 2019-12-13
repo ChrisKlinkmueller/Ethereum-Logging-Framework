@@ -5,8 +5,9 @@
   <modelVersion>4.0.0</modelVersion> 
 
   <groupId>au.csiro.data61.aap</groupId>
-  <artifactId>xes-blockchain</artifactId>
-  <version>0.1</version>
+  <artifactId>elf</artifactId>
+  <version>0.2.1</version>
+  <name>Ethereum Logging Framework</name>
 
   <properties>
     <java.version>13</java.version>
