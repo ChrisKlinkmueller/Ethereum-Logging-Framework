@@ -41,7 +41,7 @@ Building:
   ✔ Smart contract filter specification @done(19-12-10 13:04)
   
 Extractor:
-  ☐ Implement smart contract filter
+  ✔ Implement smart contract filter @done(19-12-13 15:11)
 
 Library:
   ✔ Add bit mapping @done(19-12-04 23:20)
@@ -49,10 +49,11 @@ Library:
   ☐ Add concat
   ☐ Add utility functionality
   ☐ Add null / empty constructor
+  ☐ Add casts
 
 Generator:
-  ☐ Transformation for value dictionary
-  ☐ Transformation for bit mapping
+  ✔ Transformation for value dictionary @done(19-12-13 15:11)
+  ✔ Transformation for bit mapping @done(19-12-13 15:11)
 
 Writers:
   ☐ Check that if a new block is started and the block number is already known, data for this blocknumber will be overwritten.
