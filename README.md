@@ -1,6 +1,5 @@
 # Ethereum Logging Framework
 
-![](framework.png)
 
 This framework provides advanced logging capabilities for Ethereum applications on top of Web3J / Ethereum's JSON RPC. It consists of four components:
 
@@ -8,6 +7,8 @@ This framework provides advanced logging capabilities for Ethereum applications 
 - Validator: a component to check ethql documents for specification erros
 - Extractor: a component to extract, transform and format data based on ethql
 - Generator: a component to create efficient logging functionality that can be embedded into smart contracts
+
+![](framework.png)
 
 Example ethql documents include 
 - [AugurContractRegistry.ethql](./src/main/resources/AugurContractRegistry.ethql)
