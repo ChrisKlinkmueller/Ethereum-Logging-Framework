@@ -113,7 +113,7 @@
             <source>${java.version}</source>
             <target>${java.version}</target>
             <showWarnings>true</showWarnings>
-            <showDeprecation>true</showDeprecation>+
+            <showDeprecation>true</showDeprecation>
           </configuration>
         </plugin>
         <plugin>

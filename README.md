@@ -30,6 +30,23 @@ Details of the framework are described in more detail in the following publicati
 
 [C. Klinkmüller, I. Weber, A. Ponomarev, A.B. Tran, W. van der Aalst (2020)](https://arxiv.org/abs/2001.10281): Efficient Logging for Blockchain Applications. 	arXiv:2001.10281.
 
+## Build
+
+1. Ensure Java 13 is installed locally and the env var `JAVA_HOME` is properly set.
+
+To check whether Java has been set up correctly, run
+```bash
+mvn --version
+```
+
+2. To build the project, run
+```bash
+cd ethereum-logging-framework
+mvn verify
+```
+
+Now you're ready to develop!
+
 ## License
 
 This software is released under the CSIRO Open Source Software Licence Agreement. Details can be found [LICENSE.md](LICENSE.md). Moreover the third party components distributed with the software and their licenses are listed in [NOTICE.md](NOTICE.md).
