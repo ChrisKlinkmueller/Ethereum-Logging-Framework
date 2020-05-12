@@ -10,7 +10,7 @@ This framework provides advanced logging capabilities for Ethereum applications 
 
 ![](framework.png)
 
-Example ethql documents include 
+Example ethql documents include
 - [AugurContractRegistry.ethql](./src/main/resources/AugurContractRegistry.ethql)
 - [CryptoKitties.ethql](./src/main/resources/CryptoKitties.ethql)
 - [GeneratorShirtExample.ethql](./src/main/resources/GeneratorGitExample.ethql)
@@ -46,6 +46,13 @@ mvn verify
 ```
 
 Now you're ready to develop!
+
+## Test
+
+To run unit tests, run
+```bash
+mvn test
+```
 
 ## License
 
