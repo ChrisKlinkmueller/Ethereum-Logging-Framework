@@ -24,7 +24,9 @@ public class MethodSignature {
 
     public MethodSignature(String methodName, String returnType, List<String> parameterTypes) {
         assert methodName != null;
-        assert returnType != null;
+        // returnType will be null, instead of void, when the method doesn't return anything,
+        // because Solidity type system doesn't have void
+        // assert returnType != null;
         assert parameterTypes != null && parameterTypes.stream().allMatch(this::isValidType);
         this.methodName = methodName;
         this.returnType = returnType;

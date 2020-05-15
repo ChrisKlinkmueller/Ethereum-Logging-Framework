@@ -52,7 +52,7 @@ public class Validator {
             return new FileInputStream(file);
         }
         catch (FileNotFoundException ex) {
-            throw new EthqlProcessingException(String.format("Invalid file path: '%'.", ethqlFile), ex);
+            throw new EthqlProcessingException(String.format("Invalid file path: '%s'.", ethqlFile), ex);
         }
     }
 

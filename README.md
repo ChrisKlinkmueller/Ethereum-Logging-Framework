@@ -10,14 +10,14 @@ This framework provides advanced logging capabilities for Ethereum applications 
 
 ![](framework.png)
 
-Example ethql documents include 
+Example ethql documents include
 - [AugurContractRegistry.ethql](./src/main/resources/AugurContractRegistry.ethql)
 - [CryptoKitties.ethql](./src/main/resources/CryptoKitties.ethql)
 - [GeneratorShirtExample.ethql](./src/main/resources/GeneratorGitExample.ethql)
 - [GeneratorGitExample.ethql](./src/main/resources/GeneratorShirtExample.ethql)
 - [NetworkStatistics.ethql](./src/main/resources/NetworkStatistics.ethql)
 
-Code demonstrating the use of the componentscan be found here
+Code demonstrating the use of the component scan be found here
 - [Validator](src/main/java/au/csiro/data61/aap/samples/ValidatorTest.java)
 - [Extractor](src/main/java/au/csiro/data61/aap/samples/ExtractorTest.java)
 - [Generator](src/main/java/au/csiro/data61/aap/samples/GeneratorTest.java) (the generated code has been tested with Solidity 0.5.10)
@@ -46,6 +46,13 @@ mvn verify
 ```
 
 Now you're ready to develop!
+
+## Test
+
+To run unit tests, run
+```bash
+mvn test
+```
 
 ## License
 
