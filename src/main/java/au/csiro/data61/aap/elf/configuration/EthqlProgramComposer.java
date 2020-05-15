@@ -209,12 +209,24 @@ public class EthqlProgramComposer extends EthqlBaseListener {
 
     private void buildGenericFilter(GenericFilterContext ctx) throws BuildException {
         LOGGER.info("Build Generic Filter");
-        if (this.genericFilterPredicates.size() != 1
-                || !(this.genericFilterPredicates.peek() instanceof GenericFilterPredicateSpecification)) {
+        
+        if (this.genericFilterPredicates.size() != 1) {
             throw new BuildException("Error in boolean expression tree.");
         }
 
-        this.composer.buildGenericFilter((GenericFilterPredicateSpecification) this.genericFilterPredicates.pop());
+        final Object predicate = this.genericFilterPredicates.pop();
+        if (predicate instanceof GenericFilterPredicateSpecification) {
+            this.composer.buildGenericFilter((GenericFilterPredicateSpecification)predicate);
+        }
+        else if (predicate instanceof ValueAccessorSpecification) {
+            final GenericFilterPredicateSpecification filterSpec =
+                GenericFilterPredicateSpecification.ofBooleanVariable((ValueAccessorSpecification)predicate);
+            this.composer.buildGenericFilter(filterSpec);
+        }
+        else { 
+            final String message = String.format("Unsupported type for specification of generic filter predicates: %s", predicate.getClass());
+            throw new BuildException(message);
+        }
     }
 
     @Override
