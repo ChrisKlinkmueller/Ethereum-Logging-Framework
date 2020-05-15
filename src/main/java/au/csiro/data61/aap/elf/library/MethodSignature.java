@@ -24,7 +24,6 @@ public class MethodSignature {
 
     public MethodSignature(String methodName, String returnType, List<String> parameterTypes) {
         assert methodName != null;
-        assert returnType != null;
         assert parameterTypes != null && parameterTypes.stream().allMatch(this::isValidType);
         this.methodName = methodName;
         this.returnType = returnType;
