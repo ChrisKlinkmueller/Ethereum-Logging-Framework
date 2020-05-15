@@ -488,7 +488,7 @@ under the terms of the GNU Lesser General Public License version 2.1 (http://www
 
 https://github.com/spockframework/spock/blob/master/LICENSE
 
-Copyright [yyyy] [name of copyright owner]
+Copyright 2020 spockframework.org
 
 Licensed under the Apache License, Version 2.0 (the "License");
 you may not use this file except in compliance with the License.
