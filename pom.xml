@@ -129,6 +129,7 @@
             <includes>
               <include>**/*Spec.java</include>
             </includes>
+            <!-- TODO: fix assertion failures and enable assertions -->
             <enableAssertions>false</enableAssertions>
           </configuration>
         </plugin>
