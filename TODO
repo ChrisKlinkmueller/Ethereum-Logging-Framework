@@ -68,5 +68,9 @@ Open issues:
   ☐ currently array types are badly supported, e.g., for defining how to convert them into xes attributes
   ☐ add for loop for arrays
 
+Testing: 
+  ☐ Why does the build process for the CryptoKitties example work, when the kitties array is incorrectly initialized with {0}
+  ☐ The use of boolean expressions within the generic filters needs to be investigated.
+
 Licenses:
   ☐ check if logback is really needed
