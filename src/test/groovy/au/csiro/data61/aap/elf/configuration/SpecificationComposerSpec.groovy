@@ -38,17 +38,9 @@ class SpecificationComposerSpec extends Specification {
         notThrown(BuildException)
     }
 
-    def "buildGenericFilter should accept boolean value"() {
+    def "buildGenericFilter should add a working generic filter to program"() {
         given: 'a program with one generic filter which has one instruction inside'
         composer.prepareProgramBuild()
-        composer.addVariableAssignment(
-                ValueMutatorSpecification.ofVariableName('boolVar1'),
-                ValueAccessorSpecification.booleanLiteral("true")
-        )
-        composer.addVariableAssignment(
-                ValueMutatorSpecification.ofVariableName('boolVar2'),
-                ValueAccessorSpecification.booleanLiteral("false")
-        )
         composer.prepareGenericFilterBuild()
 
         Instruction instruction = Mock()
@@ -58,7 +50,7 @@ class SpecificationComposerSpec extends Specification {
         Program p = composer.buildProgram()
 
         when:
-        p.executeInstructions(new ProgramState())
+        p.executeInstructions(Mock(ProgramState))
 
         then:
         executeOrNot * instruction.execute(_)
@@ -66,31 +58,8 @@ class SpecificationComposerSpec extends Specification {
         where:
         predicate << [
                 GenericFilterPredicateSpecification.ofBooleanValue(ValueAccessorSpecification.booleanLiteral("true")),
-                GenericFilterPredicateSpecification.ofBooleanValue(ValueAccessorSpecification.booleanLiteral("false")),
-                GenericFilterPredicateSpecification.ofBooleanValue(ValueAccessorSpecification.ofVariable("boolVar1")),
-                GenericFilterPredicateSpecification.ofBooleanValue(ValueAccessorSpecification.ofVariable("boolVar2")),
+                GenericFilterPredicateSpecification.ofBooleanValue(ValueAccessorSpecification.booleanLiteral("false"))
         ]
-        executeOrNot << [1, 0, 1, 0]
-    }
-
-    def "GenericFilter should throw when condition is not boolean"() {
-        given: 'a program with one generic filter which has one instruction inside'
-        composer.prepareProgramBuild()
-        composer.prepareGenericFilterBuild()
-
-        composer.buildGenericFilter(GenericFilterPredicateSpecification.ofBooleanValue(notBoolean))
-        Program p = composer.buildProgram()
-
-        when:
-        p.executeInstructions(new ProgramState())
-
-        then:
-        thrown(ClassCastException)
-
-        where:
-        notBoolean << [
-                ValueAccessorSpecification.stringLiteral("\"string\""),
-                ValueAccessorSpecification.integerLiteral("123")
-        ]
+        executeOrNot << [1, 0]
     }
 }

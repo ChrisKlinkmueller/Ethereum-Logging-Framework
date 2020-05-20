@@ -61,14 +61,14 @@ public class EthqlProgramComposer extends EthqlBaseListener {
     private final SpecificationComposer composer;
     private final VariableExistenceAnalyzer variableAnalyzer;
 
-    private final Stack<Object> genericFilterPredicates;
+    private final Stack<GenericFilterPredicateSpecification> genericFilterPredicates;
     private BuildException error;
     private Program program;
 
     public EthqlProgramComposer(VariableExistenceAnalyzer analyzer) {
         this.composer = new SpecificationComposer();
         this.variableAnalyzer = analyzer;
-        this.genericFilterPredicates = new Stack<Object>();
+        this.genericFilterPredicates = new Stack<>();
     }
 
     public boolean containsError() {
@@ -214,19 +214,8 @@ public class EthqlProgramComposer extends EthqlBaseListener {
             throw new BuildException("Error in boolean expression tree.");
         }
 
-        final Object predicate = this.genericFilterPredicates.pop();
-        if (predicate instanceof GenericFilterPredicateSpecification) {
-            this.composer.buildGenericFilter((GenericFilterPredicateSpecification)predicate);
-        }
-        else if (predicate instanceof ValueAccessorSpecification) {
-            final GenericFilterPredicateSpecification filterSpec =
-                GenericFilterPredicateSpecification.ofBooleanValue((ValueAccessorSpecification)predicate);
-            this.composer.buildGenericFilter(filterSpec);
-        }
-        else { 
-            final String message = String.format("Unsupported type for specification of generic filter predicates: %s", predicate.getClass());
-            throw new BuildException(message);
-        }
+        final GenericFilterPredicateSpecification predicate = this.genericFilterPredicates.pop();
+        this.composer.buildGenericFilter(predicate);
     }
 
     @Override
@@ -383,7 +372,7 @@ public class EthqlProgramComposer extends EthqlBaseListener {
 
     private void handleConditionalPrimaryExpression(ConditionalPrimaryExpressionContext ctx) throws BuildException {
         if (ctx.valueExpression() != null) {
-            this.genericFilterPredicates.push(this.getValueAccessor(ctx.valueExpression()));
+            this.genericFilterPredicates.push(GenericFilterPredicateSpecification.ofBooleanValue(this.getValueAccessor(ctx.valueExpression())));
         }
     }
 
