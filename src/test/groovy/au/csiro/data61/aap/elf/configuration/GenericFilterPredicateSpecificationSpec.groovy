@@ -5,7 +5,7 @@ import spock.lang.Specification
 
 class GenericFilterPredicateSpecificationSpec extends Specification {
     def "ofBooleanValue should throw when condition is not boolean"() {
-        given: 'a program with one generic filter which has one instruction inside'
+        given:
         GenericFilterPredicateSpecification predicateSpec =
                 GenericFilterPredicateSpecification.ofBooleanValue(notBoolean)
 
