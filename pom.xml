@@ -96,6 +96,13 @@
       <version>2.0-M2-groovy-3.0</version>
       <scope>test</scope>
     </dependency>
+    <!-- bytebuddy is used to mock non-interface types in tests -->
+    <dependency>
+      <groupId>net.bytebuddy</groupId>
+      <artifactId>byte-buddy</artifactId>
+      <version>1.10.10</version>
+      <scope>test</scope>
+    </dependency>
   </dependencies>
 
   <build>

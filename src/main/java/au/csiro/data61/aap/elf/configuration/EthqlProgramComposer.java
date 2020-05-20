@@ -220,7 +220,7 @@ public class EthqlProgramComposer extends EthqlBaseListener {
         }
         else if (predicate instanceof ValueAccessorSpecification) {
             final GenericFilterPredicateSpecification filterSpec =
-                GenericFilterPredicateSpecification.ofBooleanVariable((ValueAccessorSpecification)predicate);
+                GenericFilterPredicateSpecification.ofBooleanValue((ValueAccessorSpecification)predicate);
             this.composer.buildGenericFilter(filterSpec);
         }
         else { 
