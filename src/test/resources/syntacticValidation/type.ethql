@@ -1,0 +1,6 @@
+string a = "";
+uint32 b = 5;
+bytes c = 0x0;
+int     [] e = [0];
+
+String d = "";

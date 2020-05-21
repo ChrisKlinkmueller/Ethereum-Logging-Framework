@@ -1,0 +1,7 @@
+address contract = 0x931D387731bBbC988B312206c74F77D004D6B84c;
+BLOCKS (6605100) (6615100) {
+    LOG ENTRIES (contract) (someMethod(uint indexed authorId, bytes32 sha)) {}
+}
+uint authorId = 15;
+
+LOG ENTRIES (contract) (GitCommit(uint authorId, bytes32 sha)) {}

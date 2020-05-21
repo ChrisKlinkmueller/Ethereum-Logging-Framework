@@ -1,0 +1,12 @@
+string a = "string";
+string a = "\\";
+string a = "";
+int a = -5;
+bool a = TrUe;
+bool a = fLaSe;
+bytes a = 0x2d8f6c;
+string[] a = [];
+int a = [5,-9,10];
+
+string a = 'string";
+int[] a = {-5,9,10};

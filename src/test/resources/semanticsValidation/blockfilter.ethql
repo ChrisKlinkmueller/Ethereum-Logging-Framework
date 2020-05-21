@@ -1,0 +1,14 @@
+BLOCKS (6605100) (6615100) {
+    TRANSACTIONS (ANY) (ANY) {}
+}
+BLOCKS ("Earliest") ("cuRRent") {
+    TRANSACTIONS (ANY) (ANY) {}
+}
+
+BLOCKS (var1) (8) {}
+BLOCKS (10) (8) {}
+BLOCKS (-10) (-8) {}
+BLOCKS ("123") (0x123) {}
+TRANSACTIONS (ANY) (ANY) {
+    BLOCKS ("123") (0x123) {}
+}

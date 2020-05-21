@@ -1,0 +1,5 @@
+int[] a = [];
+
+int b = 0x876;
+string c = 5;
+uint d = -15;
