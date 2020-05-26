@@ -41,7 +41,7 @@ public class GenericFilterPredicateSpecification {
         return new GenericFilterPredicateSpecification(state -> !predicate1.test(state));
     } 
 
-    public static GenericFilterPredicateSpecification ofBooleanValue(ValueAccessorSpecification valueSpecification) {
+    public static GenericFilterPredicateSpecification ofBooleanAccessor(ValueAccessorSpecification valueSpecification) {
         assert valueSpecification != null;
         final ValueAccessor accessor = valueSpecification.getValueAccessor();
         return new GenericFilterPredicateSpecification(state -> (Boolean)accessor.getValue(state));

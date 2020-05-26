@@ -57,8 +57,8 @@ class SpecificationComposerSpec extends Specification {
 
         where:
         predicate << [
-                GenericFilterPredicateSpecification.ofBooleanValue(ValueAccessorSpecification.booleanLiteral("true")),
-                GenericFilterPredicateSpecification.ofBooleanValue(ValueAccessorSpecification.booleanLiteral("false"))
+                GenericFilterPredicateSpecification.ofBooleanAccessor(ValueAccessorSpecification.booleanLiteral("true")),
+                GenericFilterPredicateSpecification.ofBooleanAccessor(ValueAccessorSpecification.booleanLiteral("false"))
         ]
         executeOrNot << [1, 0]
     }

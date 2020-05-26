@@ -61,14 +61,14 @@ public class EthqlProgramComposer extends EthqlBaseListener {
     private final SpecificationComposer composer;
     private final VariableExistenceAnalyzer variableAnalyzer;
 
-    private final Stack<GenericFilterPredicateSpecification> genericFilterPredicates;
+    private final Stack<Object> genericFilterPredicates;
     private BuildException error;
     private Program program;
 
     public EthqlProgramComposer(VariableExistenceAnalyzer analyzer) {
         this.composer = new SpecificationComposer();
         this.variableAnalyzer = analyzer;
-        this.genericFilterPredicates = new Stack<>();
+        this.genericFilterPredicates = new Stack<Object>();
     }
 
     public boolean containsError() {
@@ -214,8 +214,19 @@ public class EthqlProgramComposer extends EthqlBaseListener {
             throw new BuildException("Error in boolean expression tree.");
         }
 
-        final GenericFilterPredicateSpecification predicate = this.genericFilterPredicates.pop();
-        this.composer.buildGenericFilter(predicate);
+        final Object predicate = this.genericFilterPredicates.pop();
+        if (predicate instanceof GenericFilterPredicateSpecification) {
+            this.composer.buildGenericFilter((GenericFilterPredicateSpecification)predicate);
+        }
+        else if (predicate instanceof ValueAccessorSpecification) {
+            final GenericFilterPredicateSpecification filterSpec =
+                GenericFilterPredicateSpecification.ofBooleanAccessor((ValueAccessorSpecification)predicate);
+            this.composer.buildGenericFilter(filterSpec);
+        }
+        else { 
+            final String message = String.format("Unsupported type for specification of generic filter predicates: %s", predicate.getClass());
+            throw new BuildException(message);
+        }
     }
 
     @Override
@@ -354,7 +365,7 @@ public class EthqlProgramComposer extends EthqlBaseListener {
         Object valueExpression = this.genericFilterPredicates.pop();
         if (valueExpression instanceof ValueAccessorSpecification) {
             valueExpression = GenericFilterPredicateSpecification
-                    .ofBooleanValue((ValueAccessorSpecification) valueExpression);
+                    .ofBooleanAccessor((ValueAccessorSpecification) valueExpression);
         }
 
         if (!(valueExpression instanceof GenericFilterPredicateSpecification)) {
@@ -372,7 +383,7 @@ public class EthqlProgramComposer extends EthqlBaseListener {
 
     private void handleConditionalPrimaryExpression(ConditionalPrimaryExpressionContext ctx) throws BuildException {
         if (ctx.valueExpression() != null) {
-            this.genericFilterPredicates.push(GenericFilterPredicateSpecification.ofBooleanValue(this.getValueAccessor(ctx.valueExpression())));
+            this.genericFilterPredicates.push(this.getValueAccessor(ctx.valueExpression()));
         }
     }
 

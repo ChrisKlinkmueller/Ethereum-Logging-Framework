@@ -7,7 +7,7 @@ class GenericFilterPredicateSpecificationSpec extends Specification {
     def "ofBooleanValue should throw when condition is not boolean"() {
         given:
         GenericFilterPredicateSpecification predicateSpec =
-                GenericFilterPredicateSpecification.ofBooleanValue(notBoolean)
+                GenericFilterPredicateSpecification.ofBooleanAccessor(notBoolean)
 
         when:
         predicateSpec.getPredicate().test(Mock(ProgramState))
