@@ -1,8 +1,0 @@
-EMIT LOG LINE ("Block ", 5, ": New FeeToken registered with address '", 0x123, "'.");
-EMIT CSV ROW ("table") (5 AS blockNumber, 0x123 AS addr);
-int kittyId = 15;
-EMIT XES EVENT ()(kittyId)()("birth" as xs:string concept:name);
-
-EMIT LOG LINE ("Block ", block.number, ": New FeeToken registered with address '", 0x123, "'.");
-EMIT CSV ROW (tableName) (5, 0x123);
-EMIT XES EVENT ()(catId)()(birth as xs:string concept:name);

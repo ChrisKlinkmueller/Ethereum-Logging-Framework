@@ -1,6 +1,0 @@
-int i = 5;
-bool b = true;
-if (i == 5 && !b || (true && i in [5, 3])) {}
-
-if (5 && "true") {}
-if (i in "[5,3]") {}

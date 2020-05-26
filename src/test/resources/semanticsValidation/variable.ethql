@@ -1,5 +1,0 @@
-string a = "";
-a = "new string";
-
-string a = "";
-b = "";
