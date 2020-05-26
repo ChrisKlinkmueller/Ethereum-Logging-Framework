@@ -1,8 +1,5 @@
 package au.csiro.data61.aap.elf.configuration
 
-import au.csiro.data61.aap.elf.core.Instruction
-import au.csiro.data61.aap.elf.core.ProgramState
-import au.csiro.data61.aap.elf.core.filters.Program
 import spock.lang.Specification
 
 class SpecificationComposerSpec extends Specification {
@@ -36,30 +33,5 @@ class SpecificationComposerSpec extends Specification {
         composer.prepareTransactionFilterBuild()
         then:
         notThrown(BuildException)
-    }
-
-    def "buildGenericFilter should add a working generic filter to program"() {
-        given: 'a program with one generic filter which has one instruction inside'
-        composer.prepareProgramBuild()
-        composer.prepareGenericFilterBuild()
-
-        Instruction instruction = Mock()
-        composer.addInstruction(Spy(InstructionSpecification, constructorArgs: [instruction]))
-
-        composer.buildGenericFilter(predicate)
-        Program p = composer.buildProgram()
-
-        when:
-        p.executeInstructions(Mock(ProgramState))
-
-        then:
-        executeOrNot * instruction.execute(_)
-
-        where:
-        predicate << [
-                GenericFilterPredicateSpecification.ofBooleanAccessor(ValueAccessorSpecification.booleanLiteral("true")),
-                GenericFilterPredicateSpecification.ofBooleanAccessor(ValueAccessorSpecification.booleanLiteral("false"))
-        ]
-        executeOrNot << [1, 0]
     }
 }

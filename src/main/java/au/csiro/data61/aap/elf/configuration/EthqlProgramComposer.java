@@ -315,7 +315,7 @@ public class EthqlProgramComposer extends EthqlBaseListener {
         }
 
         final Object value1 = this.genericFilterPredicates.pop();
-        if (!(value2 instanceof ValueAccessorSpecification)) {
+        if (!(value1 instanceof ValueAccessorSpecification)) {
             throw new BuildException("Can only compare values, but not boolean expressions.");
         }
 
