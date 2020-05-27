@@ -220,7 +220,7 @@ public class EthqlProgramComposer extends EthqlBaseListener {
         }
         else if (predicate instanceof ValueAccessorSpecification) {
             final GenericFilterPredicateSpecification filterSpec =
-                GenericFilterPredicateSpecification.ofBooleanVariable((ValueAccessorSpecification)predicate);
+                GenericFilterPredicateSpecification.ofBooleanAccessor((ValueAccessorSpecification)predicate);
             this.composer.buildGenericFilter(filterSpec);
         }
         else { 
@@ -315,7 +315,7 @@ public class EthqlProgramComposer extends EthqlBaseListener {
         }
 
         final Object value1 = this.genericFilterPredicates.pop();
-        if (!(value2 instanceof ValueAccessorSpecification)) {
+        if (!(value1 instanceof ValueAccessorSpecification)) {
             throw new BuildException("Can only compare values, but not boolean expressions.");
         }
 
@@ -365,7 +365,7 @@ public class EthqlProgramComposer extends EthqlBaseListener {
         Object valueExpression = this.genericFilterPredicates.pop();
         if (valueExpression instanceof ValueAccessorSpecification) {
             valueExpression = GenericFilterPredicateSpecification
-                    .ofBooleanValue((ValueAccessorSpecification) valueExpression);
+                    .ofBooleanAccessor((ValueAccessorSpecification) valueExpression);
         }
 
         if (!(valueExpression instanceof GenericFilterPredicateSpecification)) {

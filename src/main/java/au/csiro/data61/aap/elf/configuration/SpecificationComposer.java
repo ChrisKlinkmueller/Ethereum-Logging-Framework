@@ -67,7 +67,7 @@ public class SpecificationComposer {
         
         if (!(areStatesEmpty || currentStatesMatches)) {
             throw new BuildException(
-                possibleCurrentStates == null 
+                possibleCurrentStates.length == 0
                 ? String.format("A %s can only be build when no other filter is being build.", newState)
                 : String.format(
                     "A %s cannot be added to %s, but only to: %s.", 
