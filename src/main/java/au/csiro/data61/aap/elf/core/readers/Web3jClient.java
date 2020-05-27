@@ -48,7 +48,7 @@ public class Web3jClient implements EthereumClient {
 
     public Web3jClient(String url) throws URISyntaxException, ConnectException {
         try {
-            final WebSocketClient wsClient = new WebSocketClient(new URI(URL));
+            final WebSocketClient wsClient = new WebSocketClient(new URI(url));
             final WebSocketService wsService = new WebSocketService(wsClient, false);
             wsService.connect();
 
