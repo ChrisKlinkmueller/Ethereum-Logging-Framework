@@ -26,7 +26,7 @@ public class AddCsvRowInstruction implements Instruction {
     @Override
     public void execute(ProgramState state) throws ProgramException {
         final CsvWriter writer = state.getWriters().getCsvWriter();
-        final String tableName = (String)this.tableName.getValue(state);
+        final String tableName = (String) this.tableName.getValue(state);
         writer.beginRow(tableName);
 
         for (int i = 0; i < columns.size(); i++) {
@@ -37,5 +37,5 @@ public class AddCsvRowInstruction implements Instruction {
 
         writer.endRow(tableName);
     }
-        
+
 }

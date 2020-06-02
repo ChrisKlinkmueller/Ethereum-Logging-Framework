@@ -7,7 +7,7 @@ import au.csiro.data61.aap.elf.core.values.ValueAccessor;
  */
 public class SmartContractParameter extends Parameter {
     private final ValueAccessor accessor;
-    
+
     public SmartContractParameter(String solType, String name, ValueAccessor accessor) {
         super(solType, name);
         assert accessor != null;

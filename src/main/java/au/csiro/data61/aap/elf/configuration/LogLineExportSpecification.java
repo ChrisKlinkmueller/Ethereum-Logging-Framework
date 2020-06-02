@@ -15,20 +15,15 @@ public class LogLineExportSpecification extends InstructionSpecification<AddLogL
     private LogLineExportSpecification(AddLogLineInstruction instruction) {
         super(instruction);
     }
-    
+
     public static LogLineExportSpecification ofValues(ValueAccessorSpecification... accessors) {
         return ofValues(Arrays.asList(accessors));
     }
 
     public static LogLineExportSpecification ofValues(List<ValueAccessorSpecification> accessors) {
         assert accessors != null && accessors.stream().allMatch(Objects::nonNull);
-        return new LogLineExportSpecification(
-            new AddLogLineInstruction(
-                accessors.stream()
-                    .map(ValueAccessorSpecification::getValueAccessor)
-                    .collect(Collectors.toList())
-            )
-        );
+        return new LogLineExportSpecification(new AddLogLineInstruction(accessors.stream()
+                .map(ValueAccessorSpecification::getValueAccessor).collect(Collectors.toList())));
     }
-    
+
 }

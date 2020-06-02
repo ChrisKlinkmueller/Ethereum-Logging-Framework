@@ -16,7 +16,8 @@ public class BlockNumberSpecification {
     private final FilterPredicate<BigInteger> stopCriterion;
     private final Type type;
 
-    private BlockNumberSpecification(ValueAccessor accessor, FilterPredicate<BigInteger> stopCriterion, Type type) {
+    private BlockNumberSpecification(ValueAccessor accessor,
+            FilterPredicate<BigInteger> stopCriterion, Type type) {
         this.accessor = accessor;
         this.stopCriterion = stopCriterion;
         this.type = type;
@@ -25,7 +26,7 @@ public class BlockNumberSpecification {
     ValueAccessor getValueAccessor() {
         return this.accessor;
     }
-    
+
     FilterPredicate<BigInteger> getStopCriterion() {
         return this.stopCriterion;
     }
@@ -37,7 +38,7 @@ public class BlockNumberSpecification {
 
     public static BlockNumberSpecification ofVariableName(String name) {
         assert name != null;
-        final ValueAccessor accessor = Variables.createValueAccessor(name);            
+        final ValueAccessor accessor = Variables.createValueAccessor(name);
         return new BlockNumberSpecification(accessor, createStopCriterion(accessor), Type.VARIABLE);
     }
 
@@ -57,9 +58,8 @@ public class BlockNumberSpecification {
         return (state, blockNumber) -> {
             if (endValue.blockNumber == null) {
                 try {
-                    endValue.blockNumber = (BigInteger)accessor.getValue(state);
-                }
-                catch (ProgramException ex) {
+                    endValue.blockNumber = (BigInteger) accessor.getValue(state);
+                } catch (ProgramException ex) {
                     final String message = "Error when retrieving the current block number.";
                     state.getExceptionHandler().handleExceptionAndDecideOnAbort(message, ex);
                     endValue.blockNumber = BigInteger.ZERO.subtract(BigInteger.ONE);
@@ -74,20 +74,17 @@ public class BlockNumberSpecification {
     }
 
     public static BlockNumberSpecification ofEarliest() throws BuildException {
-        final ValueAccessor accessor = ValueAccessorSpecification.integerLiteral(BigInteger.ZERO).getValueAccessor();
+        final ValueAccessor accessor =
+                ValueAccessorSpecification.integerLiteral(BigInteger.ZERO).getValueAccessor();
         return new BlockNumberSpecification(accessor, null, Type.EARLIEST);
     }
 
     public static BlockNumberSpecification ofContinuous() {
         return new BlockNumberSpecification(null, (state, blockNumber) -> false, Type.CONTINUOUS);
     }
-    
+
     static enum Type {
-        CONTINUOUS,
-        CURRENT,
-        EARLIEST,
-        NUMBER,
-        VARIABLE
+        CONTINUOUS, CURRENT, EARLIEST, NUMBER, VARIABLE
     }
 
 }

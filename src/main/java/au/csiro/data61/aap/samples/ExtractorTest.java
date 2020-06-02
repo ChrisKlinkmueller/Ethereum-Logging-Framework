@@ -19,12 +19,11 @@ public class ExtractorTest {
 
         try {
             extractor.extractData(url.getFile());
-        }
-        catch (Throwable ex) {
+        } catch (Throwable ex) {
             ex.printStackTrace();
         }
 
         System.out.println("\n");
     }
-    
+
 }

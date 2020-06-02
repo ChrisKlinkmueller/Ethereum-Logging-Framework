@@ -7,7 +7,7 @@ import org.web3j.abi.TypeReference;
  */
 public class Parameter {
     private final String name;
-    private final TypeReference<?> type;    
+    private final TypeReference<?> type;
 
     public Parameter(String solType, String name) {
         this(solType, name, false);
@@ -18,7 +18,7 @@ public class Parameter {
 
         TypeReference<?> type = this.createType(solType, isIndexed);
         assert type != null;
-        
+
         this.type = type;
         this.name = name;
     }
@@ -38,10 +38,9 @@ public class Parameter {
     private TypeReference<?> createType(String solType, boolean isIndexed) {
         try {
             return TypeReference.makeTypeReference(solType, isIndexed, false);
-        }
-        catch (ClassNotFoundException ex) {
+        } catch (ClassNotFoundException ex) {
             return null;
         }
-        
+
     }
 }

@@ -26,17 +26,16 @@ public class AddressListSpecification {
     public static AddressListSpecification ofAddress(String expectedAddress) {
         assert expectedAddress != null;
         final String lowerCaseAddress = expectedAddress.toLowerCase();
-        return new AddressListSpecification(
-            (state, address) -> address != null && lowerCaseAddress.equals(address.toLowerCase())
-        );
+        return new AddressListSpecification((state, address) -> address != null
+                && lowerCaseAddress.equals(address.toLowerCase()));
     }
 
     public static AddressListSpecification ofAddresses(List<String> expectedAddresses) {
         assert expectedAddresses != null && expectedAddresses.stream().allMatch(Objects::nonNull);
-        final List<String> lowerCaseAddresses = expectedAddresses.stream().map(ad -> ad.toLowerCase()).collect(Collectors.toList());
-        return new AddressListSpecification(
-            (state, address) -> address != null && lowerCaseAddresses.contains(address.toLowerCase())
-        );
+        final List<String> lowerCaseAddresses =
+                expectedAddresses.stream().map(ad -> ad.toLowerCase()).collect(Collectors.toList());
+        return new AddressListSpecification((state, address) -> address != null
+                && lowerCaseAddresses.contains(address.toLowerCase()));
     }
 
     public static AddressListSpecification ofAddresses(String... expectedAddresses) {
@@ -46,7 +45,7 @@ public class AddressListSpecification {
     public static AddressListSpecification ofAny() {
         return new AddressListSpecification((state, address) -> true);
     }
-    
+
     public static AddressListSpecification ofEmpty() {
         return new AddressListSpecification((state, address) -> address == null);
     }
@@ -55,28 +54,22 @@ public class AddressListSpecification {
     public static AddressListSpecification ofVariableName(String name) {
         assert name != null;
         final ValueAccessor accessor = ValueAccessor.createVariableAccessor(name);
-        return new AddressListSpecification(
-            (state, address) -> {
-                final Object value = accessor.getValue(state);
-                if (value == null) {
-                    return address == null;
+        return new AddressListSpecification((state, address) -> {
+            final Object value = accessor.getValue(state);
+            if (value == null) {
+                return address == null;
+            } else if (value instanceof String) {
+                return address.equals((String) value);
+            } else if (List.class.isAssignableFrom(value.getClass())) {
+                try {
+                    return ((List<String>) value).contains(address);
+                } catch (Throwable cause) {
+                    throw new ProgramException("Address list is not a string list.", cause);
                 }
-                else if (value instanceof String) {
-                    return address.equals((String)value);
-                }
-                else if (List.class.isAssignableFrom(value.getClass())) {
-                    try {
-                        return ((List<String>)value).contains(address);
-                    }
-                    catch (Throwable cause) {
-                        throw new ProgramException("Address list is not a string list.", cause);
-                    } 
-                }
-                else {
-                    return false;
-                }
+            } else {
+                return false;
             }
-        );
+        });
     }
 
 }

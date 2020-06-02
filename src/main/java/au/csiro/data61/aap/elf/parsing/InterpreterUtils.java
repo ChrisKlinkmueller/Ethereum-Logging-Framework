@@ -30,8 +30,7 @@ public class InterpreterUtils {
         try {
             final CharStream charStream = CharStreams.fromStream(is);
             return MethodResult.ofResult(charStream);
-        }
-        catch (Exception ex) {
+        } catch (Exception ex) {
             final String message = "Error processing the file content.";
             LOG.log(Level.SEVERE, message, ex);
             return MethodResult.ofError(message, ex);
@@ -43,11 +42,12 @@ public class InterpreterUtils {
             return MethodResult.ofError("Parameter 'string' cannot be null.");
         }
         try {
-            final InputStream is = new ByteArrayInputStream(string.getBytes(StandardCharsets.UTF_8.name()));
+            final InputStream is =
+                    new ByteArrayInputStream(string.getBytes(StandardCharsets.UTF_8.name()));
             return charStreamfromInputStream(is);
-        }
-        catch (UnsupportedEncodingException ex) {
-            final String errorMessage = "UTF-8 encoding not supported for string to inputstream conversion.";
+        } catch (UnsupportedEncodingException ex) {
+            final String errorMessage =
+                    "UTF-8 encoding not supported for string to inputstream conversion.";
             LOG.log(Level.SEVERE, errorMessage, ex);
             return MethodResult.ofError(errorMessage, ex);
         }
@@ -63,14 +63,15 @@ public class InterpreterUtils {
         return createParser(charstreamResult, errorCollector);
     }
 
-    private static MethodResult<EthqlParser> createParser(MethodResult<CharStream> charstreamResult, ErrorCollector errorCollector) {
+    private static MethodResult<EthqlParser> createParser(MethodResult<CharStream> charstreamResult,
+            ErrorCollector errorCollector) {
         if (!charstreamResult.isSuccessful()) {
             return MethodResult.ofError(charstreamResult);
         }
 
         final CharStream charStream = charstreamResult.getResult();
         final EthqlLexer lexer = new EthqlLexer(charStream);
-        final CommonTokenStream tokens = new CommonTokenStream(lexer);        
+        final CommonTokenStream tokens = new CommonTokenStream(lexer);
         final EthqlParser syntacticParser = new EthqlParser(tokens);
 
         if (charStream != null) {
@@ -83,26 +84,22 @@ public class InterpreterUtils {
         return MethodResult.ofResult(syntacticParser);
     }
 
-    public static String determineType(ValueExpressionContext ctx, VariableExistenceAnalyzer varAnalyzer) {
-        return ctx.literal() != null
-            ? literalType(ctx.literal())
-            : varAnalyzer.getVariableType(ctx.variableName().getText());
+    public static String determineType(ValueExpressionContext ctx,
+            VariableExistenceAnalyzer varAnalyzer) {
+        return ctx.literal() != null ? literalType(ctx.literal())
+                : varAnalyzer.getVariableType(ctx.variableName().getText());
     }
 
-    public static String literalType(LiteralContext ctx) {        
+    public static String literalType(LiteralContext ctx) {
         if (ctx.BOOLEAN_LITERAL() != null) {
             return TypeUtils.BOOL_TYPE_KEYWORD;
-        }
-        else if (ctx.BYTES_LITERAL() != null) {
+        } else if (ctx.BYTES_LITERAL() != null) {
             return TypeUtils.BYTES_TYPE_KEYWORD;
-        }
-        else if (ctx.INT_LITERAL() != null) {
+        } else if (ctx.INT_LITERAL() != null) {
             return TypeUtils.INT_TYPE_KEYWORD;
-        }
-        else if (ctx.STRING_LITERAL() != null) {
+        } else if (ctx.STRING_LITERAL() != null) {
             return TypeUtils.STRING_TYPE_KEYWORD;
-        }
-        else if (ctx.arrayLiteral() != null) {
+        } else if (ctx.arrayLiteral() != null) {
             if (ctx.arrayLiteral().booleanArrayLiteral() != null) {
                 return TypeUtils.toArrayType(TypeUtils.BOOL_TYPE_KEYWORD);
             }
@@ -115,8 +112,9 @@ public class InterpreterUtils {
             if (ctx.arrayLiteral().stringArrayLiteral() != null) {
                 return TypeUtils.toArrayType(TypeUtils.STRING_TYPE_KEYWORD);
             }
-        } 
+        }
 
-        throw new UnsupportedOperationException(String.format("Literal '%s' not supported", ctx.getText()));
-    }   
+        throw new UnsupportedOperationException(
+                String.format("Literal '%s' not supported", ctx.getText()));
+    }
 }

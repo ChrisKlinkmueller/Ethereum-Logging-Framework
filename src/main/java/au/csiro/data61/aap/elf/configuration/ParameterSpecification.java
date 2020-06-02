@@ -9,7 +9,7 @@ public class ParameterSpecification {
     private final String paramName;
     private final String paramType;
     private final boolean isIndexed;
-    
+
     private ParameterSpecification(String paramName, String paramType, boolean isIndexed) {
         this.paramName = paramName;
         this.paramType = paramType;
@@ -41,5 +41,5 @@ public class ParameterSpecification {
         assert paramType != null;
         return new ParameterSpecification(paramName, paramType, isIndexed);
     }
-    
+
 }

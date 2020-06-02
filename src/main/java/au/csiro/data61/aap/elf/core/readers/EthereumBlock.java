@@ -17,22 +17,39 @@ public abstract class EthereumBlock implements Iterable<EthereumTransaction> {
     }
 
     public abstract String getHash();
+
     public abstract BigInteger getDifficulty();
+
     public abstract String getExtraData();
+
     public abstract BigInteger getGasLimit();
+
     public abstract BigInteger getGasUsed();
+
     public abstract String getLogsBloom();
+
     public abstract String getMiner();
+
     public abstract BigInteger getNonce();
+
     public abstract BigInteger getNumber();
+
     public abstract String getParentHash();
+
     public abstract String getReceiptsRoot();
+
     public abstract String getSha3uncles();
+
     public abstract BigInteger getSize();
+
     public abstract String getStateRoot();
+
     public abstract BigInteger getTimestamp();
+
     public abstract BigInteger getTotalDifficulty();
+
     public abstract String getTransactionsRoot();
+
     public abstract List<String> getUncles();
 
     public void addTransaction(EthereumTransaction tx) {

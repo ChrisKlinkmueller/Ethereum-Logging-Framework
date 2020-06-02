@@ -71,10 +71,8 @@ public class CsvWriter extends DataWriter {
     public void endRow(String tableName) {
         assert tableName != null && this.tables.containsKey(tableName);
         final int rowCount = this.rowCounts.compute(tableName, (k, v) -> v + 1);
-        this.tables.get(tableName)
-            .values().stream()
-            .filter(column -> column.size() != rowCount)
-            .forEach(column -> column.add(null));
+        this.tables.get(tableName).values().stream().filter(column -> column.size() != rowCount)
+                .forEach(column -> column.add(null));
     }
 
     @Override
@@ -87,32 +85,26 @@ public class CsvWriter extends DataWriter {
 
     protected void writeTable(String filenameSuffix, String tableName) throws Throwable {
         LOGGER.info(String.format("Export of CSV table %s started.", tableName));
-        final Path path = Paths.get(
-            this.getOutputFolder().toString(), 
-            String.format("%s_%s.csv", tableName, filenameSuffix)
-        );
-        
-        final Map<String, ArrayList<Object>> table = this.tables.get(tableName);        
+        final Path path = Paths.get(this.getOutputFolder().toString(),
+                String.format("%s_%s.csv", tableName, filenameSuffix));
+
+        final Map<String, ArrayList<Object>> table = this.tables.get(tableName);
         try (BufferedWriter writer = new BufferedWriter(new FileWriter(path.toFile()))) {
             final List<String> columns = this.columnNames.get(tableName);
 
-            final String header = columns.stream()
-                .collect(Collectors.joining(this.delimiter));
+            final String header = columns.stream().collect(Collectors.joining(this.delimiter));
             writer.write(header);
             writer.newLine();
 
             for (int i = 0; i < this.rowCounts.get(tableName); i++) {
                 final int index = i;
-                final String row = columns.stream()
-                    .map(column -> table.get(column).get(index))
-                    .map(value -> this.asString(value))
-                    .collect(Collectors.joining(this.delimiter))
-                ;
+                final String row = columns.stream().map(column -> table.get(column).get(index))
+                        .map(value -> this.asString(value))
+                        .collect(Collectors.joining(this.delimiter));
                 writer.write(row);
                 writer.newLine();
             }
-        }
-        finally {
+        } finally {
             LOGGER.info(String.format("Export of CSV table %s finished.", tableName));
             this.tables.remove(tableName);
             this.rowCounts.remove(tableName);
@@ -120,5 +112,5 @@ public class CsvWriter extends DataWriter {
         }
     }
 
-    
+
 }

@@ -22,5 +22,5 @@ public class ValueMutatorSpecification {
         ValueMutator mutator = Variables.createValueMutator(name);
         return new ValueMutatorSpecification(mutator);
     }
-    
+
 }

@@ -12,19 +12,19 @@ import au.csiro.data61.aap.elf.core.readers.EthereumTransaction;
 public class TransactionVariables {
     static final Set<EthereumVariable> TRANSACTION_VARIABLES;
 
-	public static final String TX_BLOCKNUMBER = "tx.blockNumber";
-	public static final String TX_BLOCKHASH = "tx.blockHash";
-	public static final String TX_FROM = "tx.from";
-	public static final String TX_TRANSACTIONINDEX = "tx.transactionIndex";
-	public static final String TX_TO = "tx.to";
-	public static final String TX_INPUT = "tx.input";
-	public static final String TX_S = "tx.s";
-	public static final String TX_HASH = "tx.hash";
-	public static final String TX_R = "tx.r";
-	public static final String TX_GAS = "tx.gas";
-	public static final String TX_GASPRICE = "tx.gasPrice";
-	public static final String TX_V = "tx.v";
-	public static final String TX_NONCE = "tx.nonce";
+    public static final String TX_BLOCKNUMBER = "tx.blockNumber";
+    public static final String TX_BLOCKHASH = "tx.blockHash";
+    public static final String TX_FROM = "tx.from";
+    public static final String TX_TRANSACTIONINDEX = "tx.transactionIndex";
+    public static final String TX_TO = "tx.to";
+    public static final String TX_INPUT = "tx.input";
+    public static final String TX_S = "tx.s";
+    public static final String TX_HASH = "tx.hash";
+    public static final String TX_R = "tx.r";
+    public static final String TX_GAS = "tx.gas";
+    public static final String TX_GASPRICE = "tx.gasPrice";
+    public static final String TX_V = "tx.v";
+    public static final String TX_NONCE = "tx.nonce";
     public static final String TX_VALUE = "tx.value";
     public static final String TX_CUMULATIVE_GAS_USED = "tx.cumulativeGasUsed";
     public static final String TX_GAS_USED = "tx.gasUsed";
@@ -47,34 +47,33 @@ public class TransactionVariables {
         addTransactionVariable(TX_VALUE, "int", EthereumTransaction::getValue);
         addTransactionVariable(TX_BLOCKHASH, "bytes", EthereumTransaction::getBlockHash);
         addTransactionVariable(TX_INPUT, "string", EthereumTransaction::getInput);
-        addTransactionVariable(TX_TRANSACTIONINDEX, "int", EthereumTransaction::getTransactionIndex);
+        addTransactionVariable(TX_TRANSACTIONINDEX, "int",
+                EthereumTransaction::getTransactionIndex);
         addTransactionVariable(TX_NONCE, "int", EthereumTransaction::getNonce);
         addTransactionVariable(TX_S, "string", EthereumTransaction::getS);
-        addTransactionVariable(TX_CUMULATIVE_GAS_USED, "int", EthereumTransaction::getCumulativeGasUsed);
+        addTransactionVariable(TX_CUMULATIVE_GAS_USED, "int",
+                EthereumTransaction::getCumulativeGasUsed);
         addTransactionVariable(TX_GAS_USED, "int", EthereumTransaction::getGasUsed);
-        addTransactionVariable(TX_CONTRACT_ADRESS, "string", EthereumTransaction::getContractAddress);
+        addTransactionVariable(TX_CONTRACT_ADRESS, "string",
+                EthereumTransaction::getContractAddress);
         addTransactionVariable(TX_LOGS_BLOOM, "string", EthereumTransaction::getLogsBloom);
         addTransactionVariable(TX_ROOT, "string", EthereumTransaction::getRoot);
         addTransactionVariable(TX_STATUS, "string", EthereumTransaction::getStatus);
         addTransactionVariable(TX_SUCCESS, "bool", EthereumTransaction::isSuccessful);
     }
 
-    private static void addTransactionVariable(String name, String type, ValueExtractor<EthereumTransaction> transactionValueExtractor) {
-        EthereumVariable.addVariable(
-            TRANSACTION_VARIABLES, 
-            name, type, 
-            state -> { 
-                final EthereumTransaction tx = state.getReader().getCurrentTransaction() == null 
+    private static void addTransactionVariable(String name, String type,
+            ValueExtractor<EthereumTransaction> transactionValueExtractor) {
+        EthereumVariable.addVariable(TRANSACTION_VARIABLES, name, type, state -> {
+            final EthereumTransaction tx = state.getReader().getCurrentTransaction() == null
                     ? state.getReader().getCurrentLogEntry().getTransaction()
-                    : state.getReader().getCurrentTransaction()
-                ;
-                return transactionValueExtractor.extractValue(tx);
-            }
-        );
+                    : state.getReader().getCurrentTransaction();
+            return transactionValueExtractor.extractValue(tx);
+        });
     }
 
     @FunctionalInterface
     private static interface ValueExtractor<T> {
-        public Object extractValue(T entity) throws ProgramException; 
+        public Object extractValue(T entity) throws ProgramException;
     }
 }

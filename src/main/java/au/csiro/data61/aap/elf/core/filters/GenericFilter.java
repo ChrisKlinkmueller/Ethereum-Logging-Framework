@@ -25,5 +25,5 @@ public class GenericFilter extends Filter {
         }
     }
 
-    
+
 }

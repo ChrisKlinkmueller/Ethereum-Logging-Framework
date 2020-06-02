@@ -11,7 +11,7 @@ import au.csiro.data61.aap.elf.core.readers.EthereumLogEntry;
  */
 public class LogEntryVariables {
     static final Set<EthereumVariable> LOG_ENTRY_VARIABLES;
-    
+
     public static String LOG_REMOVED = "log.removed";
     public static String LOG_INDEX = "log.logIndex";
     public static String LOG_ADDRESS = "log.address";
@@ -23,7 +23,9 @@ public class LogEntryVariables {
         addLogEntryVariable(LOG_ADDRESS, "address", EthereumLogEntry::getAddress);
     }
 
-    private static void addLogEntryVariable(String name, String type, Function<EthereumLogEntry, Object> blockValueExtractor) {
-        EthereumVariable.addVariable(LOG_ENTRY_VARIABLES, name, type, state -> blockValueExtractor.apply(state.getReader().getCurrentLogEntry()));
+    private static void addLogEntryVariable(String name, String type,
+            Function<EthereumLogEntry, Object> blockValueExtractor) {
+        EthereumVariable.addVariable(LOG_ENTRY_VARIABLES, name, type,
+                state -> blockValueExtractor.apply(state.getReader().getCurrentLogEntry()));
     }
 }

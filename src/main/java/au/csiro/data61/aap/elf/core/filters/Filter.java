@@ -23,5 +23,5 @@ public abstract class Filter implements Instruction {
         for (Instruction instruction : this.instructions) {
             instruction.execute(state);
         }
-    }    
-} 
+    }
+}

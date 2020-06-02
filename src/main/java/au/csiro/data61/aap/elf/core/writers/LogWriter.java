@@ -22,25 +22,22 @@ public class LogWriter extends DataWriter {
         assert itemParts != null;
 
         this.lines.add(
-            itemParts.stream()
-                .map(obj -> this.asString(obj))
-                .collect(Collectors.joining())
-        );
+                itemParts.stream().map(obj -> this.asString(obj)).collect(Collectors.joining()));
     }
 
     @Override
     protected void writeState(String filenameSuffix) throws Throwable {
         assert filenameSuffix != null;
         if (!this.lines.isEmpty()) {
-            final Path outputPath = Paths.get(this.getOutputFolder().toString(), String.format("%s.log", filenameSuffix));
+            final Path outputPath = Paths.get(this.getOutputFolder().toString(),
+                    String.format("%s.log", filenameSuffix));
 
             try (BufferedWriter writer = new BufferedWriter(new FileWriter(outputPath.toFile()))) {
                 for (String line : lines) {
                     writer.write(line);
                     writer.newLine();
                 }
-            }
-            finally {            
+            } finally {
                 this.lines.clear();
             }
         }

@@ -23,5 +23,5 @@ public class CsvColumn {
     public ValueAccessor getAccessor() {
         return this.accessor;
     }
-    
+
 }

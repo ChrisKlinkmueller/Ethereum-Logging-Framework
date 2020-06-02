@@ -34,5 +34,5 @@ public class AddLogLineInstruction implements Instruction {
         state.getWriters().getLogWriter().addLogLine(values);
     }
 
-    
+
 }

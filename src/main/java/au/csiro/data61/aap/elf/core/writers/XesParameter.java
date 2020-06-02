@@ -69,18 +69,19 @@ public class XesParameter {
     }
 
     @SuppressWarnings("unchecked")
-    public static <T> XesParameterExporter exportValue(String name, ValueAccessor accessor, XesWriterMethod<T> writerMethod) {
+    public static <T> XesParameterExporter exportValue(String name, ValueAccessor accessor,
+            XesWriterMethod<T> writerMethod) {
         return (state, writer) -> {
             try {
-                final T value = (T)accessor.getValue(state);
+                final T value = (T) accessor.getValue(state);
                 writerMethod.export(writer, name, value);
-            } 
-            catch (Throwable cause) {
-                throw new ProgramException(String.format("Error exporting xes attribute '%s'.", name), cause);
+            } catch (Throwable cause) {
+                throw new ProgramException(
+                        String.format("Error exporting xes attribute '%s'.", name), cause);
             }
         };
     }
-    
+
     @FunctionalInterface
     static interface XesParameterExporter {
         public void exportValue(ProgramState state, XesWriter writer) throws ProgramException;
@@ -91,5 +92,5 @@ public class XesParameter {
         public void export(XesWriter writer, String name, T value);
     }
 
-    
+
 }

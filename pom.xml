@@ -1,6 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
 
-<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+<project xmlns="http://maven.apache.org/POM/4.0.0"
+  xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
   xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
   <modelVersion>4.0.0</modelVersion>
 
@@ -22,15 +23,15 @@
     <web3j.version>4.5.5</web3j.version>
     <logback-classic.version>1.2.3</logback-classic.version>
     <jackson.version>2.10.1</jackson.version>
-	</properties>
+  </properties>
 
   <dependencies>
-      <dependency>
-        <groupId>org.junit.platform</groupId>
-        <artifactId>junit-platform-runner</artifactId>
-        <version>${junit.platform.version}</version>
-        <scope>test</scope>
-      </dependency>
+    <dependency>
+      <groupId>org.junit.platform</groupId>
+      <artifactId>junit-platform-runner</artifactId>
+      <version>${junit.platform.version}</version>
+      <scope>test</scope>
+    </dependency>
     <dependency>
       <groupId>org.junit.jupiter</groupId>
       <artifactId>junit-jupiter-api</artifactId>
@@ -55,32 +56,32 @@
       <version>${jackson.version}</version>
     </dependency>
     <dependency>
-        <groupId>org.antlr</groupId>
-        <artifactId>antlr4-runtime</artifactId>
-        <version>${antlr4.version}</version>
+      <groupId>org.antlr</groupId>
+      <artifactId>antlr4-runtime</artifactId>
+      <version>${antlr4.version}</version>
     </dependency>
     <dependency>
-        <groupId>org.web3j</groupId>
-        <artifactId>core</artifactId>
-        <version>${web3j.version}</version>
+      <groupId>org.web3j</groupId>
+      <artifactId>core</artifactId>
+      <version>${web3j.version}</version>
     </dependency>
     <dependency>
-        <groupId>org.web3j</groupId>
-        <artifactId>abi</artifactId>
-        <version>${web3j.version}</version>
+      <groupId>org.web3j</groupId>
+      <artifactId>abi</artifactId>
+      <version>${web3j.version}</version>
     </dependency>
-		<dependency>
-			<groupId>ch.qos.logback</groupId>
-			<artifactId>logback-classic</artifactId>
-			<version>${logback-classic.version}</version>
-			<scope>runtime</scope>
-		</dependency>
+    <dependency>
+      <groupId>ch.qos.logback</groupId>
+      <artifactId>logback-classic</artifactId>
+      <version>${logback-classic.version}</version>
+      <scope>runtime</scope>
+    </dependency>
     <dependency>
       <groupId>org.deckfour</groupId>
       <artifactId>xes</artifactId>
       <version>1.0.0</version>
       <scope>system</scope>
-		  <systemPath>${project.basedir}/lib/OpenXES-20181205.jar</systemPath>
+      <systemPath>${project.basedir}/lib/OpenXES-20181205.jar</systemPath>
     </dependency>
     <dependency>
       <!-- spex is needed for open xes -->
@@ -88,7 +89,7 @@
       <artifactId>Spex</artifactId>
       <version>1.0.0</version>
       <scope>system</scope>
-		<systemPath>${project.basedir}/lib/Spex.jar</systemPath>
+      <systemPath>${project.basedir}/lib/Spex.jar</systemPath>
     </dependency>
     <dependency>
       <groupId>org.spockframework</groupId>
@@ -106,7 +107,8 @@
   </dependencies>
 
   <build>
-    <pluginManagement><!-- lock down plugins versions to avoid using Maven defaults (may be moved to parent pom) -->
+    <pluginManagement><!-- lock down plugins versions to avoid using Maven 
+        defaults (may be moved to parent pom) -->
       <plugins>
         <!-- clean lifecycle, see https://maven.apache.org/ref/current/maven-core/lifecycles.html#clean_Lifecycle -->
         <plugin>
@@ -146,38 +148,38 @@
           <artifactId>maven-install-plugin</artifactId>
           <version>2.5.2</version>
           <inherited>false</inherited>
-        <executions>
-          <execution>
-            <id>install-xes</id>
-            <goals>
+          <executions>
+            <execution>
+              <id>install-xes</id>
+              <goals>
                 <goal>install-file</goal>
-            </goals>
-            <phase>process-resources</phase>
-            <configuration>
-              <groupId>org.deckfour</groupId>
-              <artifactId>xes</artifactId>
-              <version>1.0.0</version>
-              <packaging>jar</packaging>
-              <file>${basedir}/lib/OpenXES-20181205.jar</file>
-              <generatePom>true</generatePom>
-            </configuration>
-          </execution>
-          <execution>
-            <id>install-spex</id>
-            <configuration>
-              <groupId>org.deckfour</groupId>
-              <artifactId>Spex</artifactId>
-              <version>1.0.0</version>
-              <packaging>jar</packaging>
-              <file>${basedir}/lib/Spex.jar</file>
-              <generatePom>true</generatePom>
-            </configuration>
-            <goals>
+              </goals>
+              <phase>process-resources</phase>
+              <configuration>
+                <groupId>org.deckfour</groupId>
+                <artifactId>xes</artifactId>
+                <version>1.0.0</version>
+                <packaging>jar</packaging>
+                <file>${basedir}/lib/OpenXES-20181205.jar</file>
+                <generatePom>true</generatePom>
+              </configuration>
+            </execution>
+            <execution>
+              <id>install-spex</id>
+              <configuration>
+                <groupId>org.deckfour</groupId>
+                <artifactId>Spex</artifactId>
+                <version>1.0.0</version>
+                <packaging>jar</packaging>
+                <file>${basedir}/lib/Spex.jar</file>
+                <generatePom>true</generatePom>
+              </configuration>
+              <goals>
                 <goal>install-file</goal>
-            </goals>
-            <phase>process-resources</phase>
-          </execution>
-        </executions>
+              </goals>
+              <phase>process-resources</phase>
+            </execution>
+          </executions>
         </plugin>
         <plugin>
           <artifactId>maven-deploy-plugin</artifactId>

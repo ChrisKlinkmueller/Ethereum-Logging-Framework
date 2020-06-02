@@ -28,7 +28,7 @@ class ErrorCollector extends BaseErrorListener {
     public boolean hasErrors() {
         return !this.errors.isEmpty();
     }
-    
+
     public Stream<EthqlProcessingError> errorStream() {
         return this.errors.stream();
     }
@@ -43,8 +43,10 @@ class ErrorCollector extends BaseErrorListener {
     }
 
     @Override
-    public void syntaxError(Recognizer<?, ?> recognizer, Object offendingSymbol, int line, int charPositionInLine, String msg, RecognitionException e) {
-        final EthqlProcessingError error = new EthqlProcessingError(line, charPositionInLine, msg, e);
+    public void syntaxError(Recognizer<?, ?> recognizer, Object offendingSymbol, int line,
+            int charPositionInLine, String msg, RecognitionException e) {
+        final EthqlProcessingError error =
+                new EthqlProcessingError(line, charPositionInLine, msg, e);
         this.errors.add(error);
     }
 }

@@ -19,27 +19,30 @@ public class Validator {
     public Validator() {
         this.interpreter = new EthqlInterpreter();
     }
-    
-    public List<EthqlProcessingError> analyzeScript(String ethqlFile) throws EthqlProcessingException {
+
+    public List<EthqlProcessingError> analyzeScript(String ethqlFile)
+            throws EthqlProcessingException {
         final EthqlProcessingResult<ParseTree> result = this.parseScript(ethqlFile);
         assert result != null;
         return result.getErrors();
     }
 
-    public List<EthqlProcessingError> analyzeScript(InputStream stream) throws EthqlProcessingException {
+    public List<EthqlProcessingError> analyzeScript(InputStream stream)
+            throws EthqlProcessingException {
         final EthqlProcessingResult<ParseTree> result = this.parseScript(stream);
         return result.getErrors();
     }
-    
+
     EthqlProcessingResult<ParseTree> parseScript(String ethqlFile) throws EthqlProcessingException {
         assert ethqlFile != null;
         final InputStream fileStream = this.createFileStream(ethqlFile);
         return parseScript(fileStream);
     }
 
-    EthqlProcessingResult<ParseTree> parseScript(InputStream stream) throws EthqlProcessingException {
+    EthqlProcessingResult<ParseTree> parseScript(InputStream stream)
+            throws EthqlProcessingException {
         assert stream != null;
-        return this.interpreter.parseDocument(stream);        
+        return this.interpreter.parseDocument(stream);
     }
 
     private InputStream createFileStream(String ethqlFile) throws EthqlProcessingException {
@@ -50,13 +53,14 @@ public class Validator {
         final File file = new File(ethqlFile);
         try {
             return new FileInputStream(file);
-        }
-        catch (FileNotFoundException ex) {
-            throw new EthqlProcessingException(String.format("Invalid file path: '%s'.", ethqlFile), ex);
+        } catch (FileNotFoundException ex) {
+            throw new EthqlProcessingException(String.format("Invalid file path: '%s'.", ethqlFile),
+                    ex);
         }
     }
 
-    public static ParseTree createParseTree(final String ethqlFile) throws EthqlProcessingException {
+    public static ParseTree createParseTree(final String ethqlFile)
+            throws EthqlProcessingException {
         final Validator validator = new Validator();
         final EthqlProcessingResult<ParseTree> validatorResult = validator.parseScript(ethqlFile);
 
@@ -66,5 +70,5 @@ public class Validator {
         }
 
         return validatorResult.getResult();
-    }    
+    }
 }

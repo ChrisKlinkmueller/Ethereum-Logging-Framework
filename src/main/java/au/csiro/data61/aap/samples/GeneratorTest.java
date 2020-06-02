@@ -20,8 +20,7 @@ public class GeneratorTest {
         try {
             String code = extractor.generateLoggingFunctionality(url.getFile());
             System.out.println(code);
-        }
-        catch (Throwable ex) {
+        } catch (Throwable ex) {
             ex.printStackTrace();
         }
 

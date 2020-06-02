@@ -31,5 +31,5 @@ public class LogEntryParameter {
     public boolean isIndexed() {
         return this.indexed;
     }
-    
+
 }

@@ -34,7 +34,7 @@ public abstract class DataWriter {
         if (this.streaming) {
             this.writeState(this.currentBlock.toString());
         }
-    } 
+    }
 
     public final void endProgram() throws Throwable {
         if (!this.streaming) {
@@ -49,12 +49,10 @@ public abstract class DataWriter {
         if (object == null) {
             return "";
         }
-        
+
         if (Collection.class.isAssignableFrom(object.getClass())) {
-            String value = ((Collection<Object>)object)
-                .stream()
-                .map(obj -> asString(obj))
-                .collect(Collectors.joining(", "));
+            String value = ((Collection<Object>) object).stream().map(obj -> asString(obj))
+                    .collect(Collectors.joining(", "));
             return String.format("{%s}", value);
         }
 

@@ -18,7 +18,8 @@ public class MethodCall implements Instruction {
     private final Method method;
     private final ValueMutator resultStorer;
 
-    public MethodCall(Method method, List<ValueAccessor> parameterAccessors, ValueMutator resultStorer) {
+    public MethodCall(Method method, List<ValueAccessor> parameterAccessors,
+            ValueMutator resultStorer) {
         assert parameterAccessors != null && parameterAccessors.stream().allMatch(Objects::nonNull);
         assert method != null;
         this.parameterAccessors = parameterAccessors;
@@ -38,5 +39,5 @@ public class MethodCall implements Instruction {
             resultStorer.setValue(result, state);
         }
     }
-    
+
 }
