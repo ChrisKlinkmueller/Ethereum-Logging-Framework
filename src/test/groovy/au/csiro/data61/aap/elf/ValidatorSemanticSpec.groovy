@@ -66,9 +66,24 @@ class ValidatorSemanticSpec extends ValidatorBaseSpec {
         where:
         script                              | expectedErr
         "connect(\"localhost:8465\");"      | []
+        "int result = add(10, -5);"         | []
         "connec(\"localhost:8465\");"       | ["Method 'connec' with parameters 'string' unknown."]
         "connect(\"localhost:8465\", 5);"   | ["Method 'connect' with parameters 'string, int' unknown."]
         "connect(5);"                       | ["Method 'connect' with parameters 'int' unknown."]
+        """
+        | string result = contains(
+        |   [0x931D387731bBbC988B312206c74F77D004D6B84c],
+        |   0x931D387731bBbC988B312206c74F77D004D6B84c
+        | );
+        """.stripMargin()                   | ["Cannot assign a bool value to a string variable."]
+        """
+        | int result = mapValue(
+        |   4,
+        |   "unknown",
+        |   [0,1,2,3],
+        |   ["first", "second", "third", "fourth"]
+        | );
+        """.stripMargin()                   | ["Cannot assign a string value to a int variable."]
     }
 
     @Unroll
@@ -154,8 +169,16 @@ class ValidatorSemanticSpec extends ValidatorBaseSpec {
         script                              | expectedErr
         """
         | BLOCKS (1) (5) {
-        |   bytes20 addr = 0x931D387731bBbC988B312206c74F77D004D6B84c;
-        |   TRANSACTIONS (ANY) (0x931D387731bBbC988B312206c74F77D004D6B84b, addr) {}
+        |   TRANSACTIONS (ANY) (
+        |     0x931D387731bBbC988B312206c74F77D004D6B84b,
+        |     0x931D387731bBbC988B312206c74F77D004D6B84c
+        |   ) {}
+        | }
+        """.stripMargin()                   | []
+        """
+        | bytes20 addr = 0x931D387731bBbC988B312206c74F77D004D6B84b;
+        | BLOCKS (1) (5) {
+        |   TRANSACTIONS (ANY) (addr) {}
         | }
         """.stripMargin()                   | []
         "TRANSACTIONS (ANY) (ANY) {}"       | ["Invalid nesting of filters."]
@@ -184,6 +207,12 @@ class ValidatorSemanticSpec extends ValidatorBaseSpec {
         |   (true && i in [5, 3])
         | ) {}
         """.stripMargin()                   | []
+        """
+        | int i = 5;
+        | if (i > 0) {}
+        """.stripMargin()                   | []
+        "if (true == (5 == 4)) {}"          | []
+        "if (true && i in [5, 3]) {}"       | ["variable i not defined."]
         "if (5 && \"true\") {}"             | ["Expression must return a boolean value.",
                                                "Expression must return a boolean value."]
         "if (i in \"[5,3]\") {}"            | ["type mismatch"]
@@ -203,7 +232,7 @@ class ValidatorSemanticSpec extends ValidatorBaseSpec {
         |   (address addr, int i, string s = someMethod(int[] [5, 6])) {}
         |   address addr = 0x931D387731bBbC988B312206c74F77D004D6B84c;
         |   SMART CONTRACT (addr)
-        |   (address addr, int i, string s = someMethod(int[] [5, 6])) {}
+        |   (int i, string s = someMethod(int[] [5, 6])) {}
         | }
         """.stripMargin()                   | []
         """

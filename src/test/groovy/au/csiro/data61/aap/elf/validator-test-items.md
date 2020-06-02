@@ -54,16 +54,17 @@ Feel free to edit this file when a test is added, modified, fixed or removed.
   - [ ] don't allow non-integer block number, such as bytes or string
   - [x] don't allow block filter to be nested in transaction filter
 - transaction filter
-  - [ ] allow keyword ANY, address literal or variable as sender/recipient address
+  - [x] allow keyword ANY, address literal as sender/recipient address
+  - [ ] allow variable as sender/recipient address
   - [x] don't allow non-nested transaction filter
   - [x] don't allow byte literal that is not an address
 - generic filter
   - [x] allow boolean literal, variable, comparison, AND, OR, keywork IN and parentheses
+  - [ ] don't allow undefined variable to appear in condition
   - [x] don't allow non-boolean value as operands of AND
   - [ ] don't allow non-list value after keywork IN
 - smart contract filter
   - [ ] allow address literal or variable as contract address
-  - [ ] smart contract parameters are in the scope of smart contract filter
   - [x] don't allow type mismatch in query parameters
 - log entry filter
   - [x] allow variable as address
