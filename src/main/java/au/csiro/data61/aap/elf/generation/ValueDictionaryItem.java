@@ -16,10 +16,7 @@ class ValueDictionaryItem extends GeneratorItem {
     private List<?> fromValues;
     private List<?> toValues;
 
-    ValueDictionaryItem(
-        Token token, 
-        String specification
-    ) {
+    ValueDictionaryItem(Token token, String specification) {
         super(token, specification);
     }
 

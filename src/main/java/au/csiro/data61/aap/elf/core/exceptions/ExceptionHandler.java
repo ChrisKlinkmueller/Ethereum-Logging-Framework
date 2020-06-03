@@ -27,9 +27,9 @@ public class ExceptionHandler {
         final Path filepath = Paths.get(outputFolder.toFile().getAbsolutePath(), FILENAME);
         final FileHandler fileHandler = new FileHandler(filepath.toString());
         this.logger.addHandler(fileHandler);
-        
+
         final SimpleFormatter formatter = new SimpleFormatter();
-        fileHandler.setFormatter(formatter);                
+        fileHandler.setFormatter(formatter);
     }
 
     public boolean handleExceptionAndDecideOnAbort(String message) {

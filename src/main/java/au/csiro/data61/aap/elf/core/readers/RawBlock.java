@@ -8,7 +8,7 @@ import java.util.List;
 /**
  * Block
  */
-public class RawBlock extends EthereumBlock {    
+public class RawBlock extends EthereumBlock {
     private BigInteger number;
     private String hash;
     private String parentHash;
@@ -27,11 +27,11 @@ public class RawBlock extends EthereumBlock {
     private BigInteger gasUsed;
     private BigInteger timestamp;
     private List<String> uncles;
-    
+
     public String getHash() {
         return this.hash;
     }
-    
+
     public void setHash(String hash) {
         this.hash = hash;
     }
@@ -43,7 +43,7 @@ public class RawBlock extends EthereumBlock {
     public void setDifficulty(BigInteger difficulty) {
         this.difficulty = difficulty;
     }
-    
+
     public String getExtraData() {
         return this.extraData;
     }
@@ -71,7 +71,7 @@ public class RawBlock extends EthereumBlock {
     public String getLogsBloom() {
         return this.logsBloom;
     }
-    
+
     public void setLogsBloom(String logsBloom) {
         this.logsBloom = logsBloom;
     }

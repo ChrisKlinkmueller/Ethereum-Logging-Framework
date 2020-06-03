@@ -44,5 +44,5 @@ class Web3jLogEntry extends EthereumLogEntry {
         return Collections.unmodifiableList(this.log.getTopics());
     }
 
-    
+
 }

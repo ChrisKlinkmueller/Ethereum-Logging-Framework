@@ -22,5 +22,5 @@ public class VariableAssignment implements Instruction {
     public void execute(ProgramState state) throws ProgramException {
         final Object value = this.valueAccessor.getValue(state);
         this.valueMutator.setValue(value, state);
-    }    
+    }
 }

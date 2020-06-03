@@ -53,7 +53,8 @@ public class VariableExistenceAnalyzer extends SemanticAnalyzer {
     }
 
     private boolean isFilterConstant(String name) {
-        return this.variableStream(name).map(variable -> variable.isConstant()).findFirst().orElse(false);
+        return this.variableStream(name).map(variable -> variable.isConstant()).findFirst()
+                .orElse(false);
     }
 
     public boolean isVariableDefined(String name) {
@@ -61,7 +62,8 @@ public class VariableExistenceAnalyzer extends SemanticAnalyzer {
     }
 
     public String getVariableType(String name) {
-        return this.variableStream(name).map(variable -> variable.getType()).findFirst().orElse(null);
+        return this.variableStream(name).map(variable -> variable.getType()).findFirst()
+                .orElse(null);
     }
 
     private Stream<Variable> variableStream(String name) {
@@ -80,37 +82,35 @@ public class VariableExistenceAnalyzer extends SemanticAnalyzer {
     public void enterVariableName(VariableNameContext ctx) {
         if (ctx.parent instanceof VariableDeclarationStatementContext) {
             this.verifyVariableDeclaration((VariableDeclarationStatementContext) ctx.parent);
-        } 
-        else if (ctx.parent instanceof VariableAssignmentStatementContext) {
+        } else if (ctx.parent instanceof VariableAssignmentStatementContext) {
             this.verifyVariableAssignment((VariableAssignmentStatementContext) ctx.parent);
-        } 
-        else if (ctx.parent instanceof LogEntryParameterContext) {
-            this.verifyLogEntryParameter((LogEntryParameterContext)ctx.parent);
-        } 
-        else if (ctx.parent instanceof NamedEmitVariableContext || ctx.parent instanceof XesEmitVariableContext) {
+        } else if (ctx.parent instanceof LogEntryParameterContext) {
+            this.verifyLogEntryParameter((LogEntryParameterContext) ctx.parent);
+        } else if (ctx.parent instanceof NamedEmitVariableContext
+                || ctx.parent instanceof XesEmitVariableContext) {
             return;
-        }
-        else if (ctx.parent instanceof SmartContractParameterContext) {
-            this.verifySmartContractParameter((SmartContractParameterContext)ctx.parent);
-        }
-        else if (ctx.parent instanceof SmartContractQueryParameterContext) {
-            this.verifySmartContractQueryParameter((SmartContractQueryParameterContext)ctx.parent);
-        }
-        else {
+        } else if (ctx.parent instanceof SmartContractParameterContext) {
+            this.verifySmartContractParameter((SmartContractParameterContext) ctx.parent);
+        } else if (ctx.parent instanceof SmartContractQueryParameterContext) {
+            this.verifySmartContractQueryParameter((SmartContractQueryParameterContext) ctx.parent);
+        } else {
             this.verifyVariableReference(ctx);
         }
     }
 
     private void verifyVariableDeclaration(VariableDeclarationStatementContext ctx) {
-        this.verifyVariableDeclaration(ctx.variableName().start, ctx.solType().getText(), ctx.variableName().getText());
+        this.verifyVariableDeclaration(ctx.variableName().start, ctx.solType().getText(),
+                ctx.variableName().getText());
     }
 
     private void verifyLogEntryParameter(LogEntryParameterContext ctx) {
-        this.verifyVariableDeclaration(ctx.variableName().start, ctx.solType().getText(), ctx.variableName().getText());
+        this.verifyVariableDeclaration(ctx.variableName().start, ctx.solType().getText(),
+                ctx.variableName().getText());
     }
 
     private void verifySmartContractParameter(SmartContractParameterContext ctx) {
-        this.verifyVariableDeclaration(ctx.variableName().start, ctx.solType().getText(), ctx.variableName().getText());
+        this.verifyVariableDeclaration(ctx.variableName().start, ctx.solType().getText(),
+                ctx.variableName().getText());
     }
 
     private void verifyVariableDeclaration(Token token, String solType, String variableName) {
@@ -202,7 +202,7 @@ public class VariableExistenceAnalyzer extends SemanticAnalyzer {
 
     private void addFilterConstants(Map<String, String> nameTypeMap) {
         nameTypeMap.entrySet().stream()
-            .forEach(entry -> this.addConstant(entry.getValue(), entry.getKey()));
+                .forEach(entry -> this.addConstant(entry.getValue(), entry.getKey()));
     }
 
     // #endregion scope variables

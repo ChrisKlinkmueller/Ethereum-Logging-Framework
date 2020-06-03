@@ -26,19 +26,21 @@ public class EthqlInterpreter {
 
     public EthqlInterpreter() {
         errorCollector = new ErrorCollector();
-        semanticAnalysis = new SemanticAnalysis(this.errorCollector);        
+        semanticAnalysis = new SemanticAnalysis(this.errorCollector);
     }
 
     public EthqlProcessingResult<ParseTree> parseDocument(InputStream is) {
         return this.parse(is, EthqlParser::document);
-    } 
+    }
 
-    protected EthqlProcessingResult<ParseTree> parse(InputStream is, Function<EthqlParser, ParseTree> rule) {
+    protected EthqlProcessingResult<ParseTree> parse(InputStream is,
+            Function<EthqlParser, ParseTree> rule) {
         if (is == null) {
             return EthqlProcessingResult.ofError("The 'is' parameter was null.");
         }
 
-        final MethodResult<CharStream> charStreamResult = InterpreterUtils.charStreamfromInputStream(is);
+        final MethodResult<CharStream> charStreamResult =
+                InterpreterUtils.charStreamfromInputStream(is);
         if (!charStreamResult.isSuccessful()) {
             return EthqlProcessingResult.ofUnsuccessfulMethodResult(charStreamResult);
         }
@@ -47,12 +49,12 @@ public class EthqlInterpreter {
         lexer.removeErrorListeners();
         lexer.addErrorListener(this.errorCollector);
 
-        final CommonTokenStream tokens = new CommonTokenStream(lexer);        
+        final CommonTokenStream tokens = new CommonTokenStream(lexer);
         final EthqlParser syntacticParser = new EthqlParser(tokens);
         syntacticParser.removeErrorListeners();
         syntacticParser.addErrorListener(this.errorCollector);
 
-        final ParseTree tree = rule.apply(syntacticParser);      
+        final ParseTree tree = rule.apply(syntacticParser);
         if (errorCollector.hasErrors()) {
             return this.createErrorResultAndCleanUp();
         }
@@ -67,7 +69,8 @@ public class EthqlInterpreter {
     }
 
     private EthqlProcessingResult<ParseTree> createErrorResultAndCleanUp() {
-        final EthqlProcessingResult<ParseTree> result = EthqlProcessingResult.ofErrors(this.errorCollector.errorStream());
+        final EthqlProcessingResult<ParseTree> result =
+                EthqlProcessingResult.ofErrors(this.errorCollector.errorStream());
         this.errorCollector.clear();
         return result;
     }

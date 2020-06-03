@@ -17,8 +17,7 @@ import au.csiro.data61.aap.elf.util.CompositeEthqlListener;
  */
 public class SolidityCodeGeneration {
     public static final String CODE_GAP = IntStream.range(0, 3)
-        .mapToObj(i -> System.lineSeparator())
-        .collect(Collectors.joining());
+            .mapToObj(i -> System.lineSeparator()).collect(Collectors.joining());
 
     private final CompositeEthqlListener<BaseGenerator> listener;
     private final CodeCollector codeCollector;
@@ -26,20 +25,16 @@ public class SolidityCodeGeneration {
     public SolidityCodeGeneration() {
         this.listener = new CompositeEthqlListener<>();
         this.codeCollector = new CodeCollector();
-        this.init(Arrays.asList(
-            new ItemGenerator(this.codeCollector)
-        ));
+        this.init(Arrays.asList(new ItemGenerator(this.codeCollector)));
     }
-    
-    public SolidityCodeGeneration(List<Function<CodeCollector, BaseGenerator>> generatorConstructors) {
+
+    public SolidityCodeGeneration(
+            List<Function<CodeCollector, BaseGenerator>> generatorConstructors) {
         assert generatorConstructors.stream().allMatch(Objects::nonNull);
         this.codeCollector = new CodeCollector();
         this.listener = new CompositeEthqlListener<>();
-        this.init(
-            generatorConstructors.stream()
-                .map(c -> c.apply(this.codeCollector))
-                .collect(Collectors.toList())
-        );
+        this.init(generatorConstructors.stream().map(c -> c.apply(this.codeCollector))
+                .collect(Collectors.toList()));
     }
 
     private void init(List<BaseGenerator> generators) {
@@ -54,6 +49,6 @@ public class SolidityCodeGeneration {
         this.codeCollector.clean();
 
         return code;
-    } 
+    }
 
 }

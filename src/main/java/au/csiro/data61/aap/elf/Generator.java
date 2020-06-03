@@ -9,7 +9,8 @@ import au.csiro.data61.aap.elf.generation.SolidityCodeGeneration;
  */
 public class Generator {
 
-    public String generateLoggingFunctionality(String ethqlFilepath) throws EthqlProcessingException {
+    public String generateLoggingFunctionality(String ethqlFilepath)
+            throws EthqlProcessingException {
         final ParseTree parseTree = Validator.createParseTree(ethqlFilepath);
         final SolidityCodeGeneration generation = new SolidityCodeGeneration();
         return generation.generateLoggingFunctionality(parseTree);

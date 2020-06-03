@@ -15,7 +15,8 @@ public class SmartContractFilter extends Filter {
     private final List<SmartContractQuery> queries;
     private final ValueAccessor contractAddress;
 
-    public SmartContractFilter(ValueAccessor contractAddress, List<SmartContractQuery> queries, List<Instruction> instructions) {
+    public SmartContractFilter(ValueAccessor contractAddress, List<SmartContractQuery> queries,
+            List<Instruction> instructions) {
         super(instructions);
         assert contractAddress != null;
         assert queries != null;
@@ -25,12 +26,12 @@ public class SmartContractFilter extends Filter {
 
     @Override
     public void execute(ProgramState state) throws ProgramException {
-        final String address = (String)this.contractAddress.getValue(state);
+        final String address = (String) this.contractAddress.getValue(state);
         for (SmartContractQuery query : this.queries) {
             query.query(address, state);
         }
         this.executeInstructions(state);
     }
 
-    
+
 }

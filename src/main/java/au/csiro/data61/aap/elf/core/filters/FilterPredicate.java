@@ -8,5 +8,5 @@ import au.csiro.data61.aap.elf.core.exceptions.ProgramException;
  */
 @FunctionalInterface
 public interface FilterPredicate<T> {
-    public boolean test(ProgramState state, T value) throws ProgramException;    
+    public boolean test(ProgramState state, T value) throws ProgramException;
 }

@@ -15,11 +15,13 @@ public class TransactionFilter extends Filter {
     private FilterPredicate<String> senderCriterion;
     private FilterPredicate<String> recipientCiterion;
 
-    public TransactionFilter(FilterPredicate<String> senderCriterion, FilterPredicate<String> recipientCiterion, Instruction... instructions) {
+    public TransactionFilter(FilterPredicate<String> senderCriterion,
+            FilterPredicate<String> recipientCiterion, Instruction... instructions) {
         this(senderCriterion, recipientCiterion, Arrays.asList(instructions));
     }
 
-    public TransactionFilter(FilterPredicate<String> senderCriterion, FilterPredicate<String> recipientCiterion, List<Instruction> instructions) {
+    public TransactionFilter(FilterPredicate<String> senderCriterion,
+            FilterPredicate<String> recipientCiterion, List<Instruction> instructions) {
         super(instructions);
         assert senderCriterion != null;
         assert recipientCiterion != null;
@@ -29,19 +31,21 @@ public class TransactionFilter extends Filter {
 
     public void execute(ProgramState state) throws ProgramException {
         for (EthereumTransaction tx : state.getReader().getCurrentBlock()) {
-            if (this.senderCriterion.test(state, tx.getFrom()) && this.recipientCiterion.test(state, tx.getTo())) {
+            if (this.senderCriterion.test(state, tx.getFrom())
+                    && this.recipientCiterion.test(state, tx.getTo())) {
                 try {
                     state.getReader().setCurrentTransaction(tx);
                     this.executeInstructions(state);
-                }
-                catch (Throwable cause) {
-                    final String message = String.format("Error mapping transaction '%s' in block '%s'.", tx.getTransactionIndex(), tx.getBlockNumber());
-                    final boolean abort = state.getExceptionHandler().handleExceptionAndDecideOnAbort(message, cause);
+                } catch (Throwable cause) {
+                    final String message =
+                            String.format("Error mapping transaction '%s' in block '%s'.",
+                                    tx.getTransactionIndex(), tx.getBlockNumber());
+                    final boolean abort = state.getExceptionHandler()
+                            .handleExceptionAndDecideOnAbort(message, cause);
                     if (abort) {
                         throw new ProgramException(message, cause);
                     }
-                }
-                finally {
+                } finally {
                     state.getReader().setCurrentTransaction(null);
                 }
             }

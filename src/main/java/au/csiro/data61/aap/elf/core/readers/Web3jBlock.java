@@ -15,7 +15,7 @@ class Web3jBlock extends EthereumBlock {
         assert block != null;
         this.block = block;
     }
-    
+
     @Override
     public String getHash() {
         return this.block.getHash();
@@ -106,5 +106,5 @@ class Web3jBlock extends EthereumBlock {
         return this.block.getUncles();
     }
 
-    
+
 }

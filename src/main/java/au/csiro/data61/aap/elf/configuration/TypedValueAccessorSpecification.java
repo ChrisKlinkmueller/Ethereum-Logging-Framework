@@ -8,7 +8,7 @@ import au.csiro.data61.aap.elf.core.values.ValueAccessor;
 public class TypedValueAccessorSpecification {
     private final String type;
     private final ValueAccessor accessor;
-    
+
     private TypedValueAccessorSpecification(String type, ValueAccessor accessor) {
         this.type = type;
         this.accessor = accessor;
@@ -22,7 +22,8 @@ public class TypedValueAccessorSpecification {
         return type;
     }
 
-    public static TypedValueAccessorSpecification of(String type, ValueAccessorSpecification accessor) throws BuildException {
+    public static TypedValueAccessorSpecification of(String type,
+            ValueAccessorSpecification accessor) throws BuildException {
         assert type != null;
         assert accessor != null;
         return new TypedValueAccessorSpecification(type, accessor.getValueAccessor());

@@ -22,11 +22,13 @@ public class BlockFilter extends Filter {
     private final ValueAccessor fromBlock;
     private final FilterPredicate<BigInteger> stopCriteria;
 
-    public BlockFilter(final ValueAccessor fromBlock, FilterPredicate<BigInteger> stopCriteria, Instruction... instructions) {
+    public BlockFilter(final ValueAccessor fromBlock, FilterPredicate<BigInteger> stopCriteria,
+            Instruction... instructions) {
         this(fromBlock, stopCriteria, Arrays.asList(instructions));
     }
 
-    public BlockFilter(final ValueAccessor fromBlock, FilterPredicate<BigInteger> stopCriteria, List<Instruction> instructions) {
+    public BlockFilter(final ValueAccessor fromBlock, FilterPredicate<BigInteger> stopCriteria,
+            List<Instruction> instructions) {
         super(instructions);
         assert fromBlock != null;
         assert stopCriteria != null;
@@ -37,7 +39,7 @@ public class BlockFilter extends Filter {
 
     public void execute(final ProgramState state) throws ProgramException {
         final LinkedList<EthereumBlock> knownBlocks = new LinkedList<>();
-        final BigInteger startBlock = (BigInteger)fromBlock.getValue(state);
+        final BigInteger startBlock = (BigInteger) fromBlock.getValue(state);
         BigInteger currentBlock = startBlock;
         while (!this.stopCriteria.test(state, currentBlock)) {
             try {
@@ -58,8 +60,10 @@ public class BlockFilter extends Filter {
                 LOGGER.info(String.format("Processing of block %s finished.", currentBlock));
 
             } catch (final Throwable throwable) {
-                final String message = String.format("Error when processing block number '%s'.", currentBlock.toString());
-                final boolean abort = state.getExceptionHandler().handleExceptionAndDecideOnAbort(message, throwable);
+                final String message = String.format("Error when processing block number '%s'.",
+                        currentBlock.toString());
+                final boolean abort = state.getExceptionHandler()
+                        .handleExceptionAndDecideOnAbort(message, throwable);
                 if (abort) {
                     return;
                 }
@@ -78,12 +82,15 @@ public class BlockFilter extends Filter {
         }
     }
 
-    private static EthereumBlock queryConfirmedBlock(final ProgramState state, final BigInteger currentBlock,
-            final LinkedList<EthereumBlock> knownBlocks) throws Throwable {
+    private static EthereumBlock queryConfirmedBlock(final ProgramState state,
+            final BigInteger currentBlock, final LinkedList<EthereumBlock> knownBlocks)
+            throws Throwable {
         BigInteger queryBlockNumber = currentBlock;
         do {
-            final EthereumBlock block = state.getReader().getClient().queryBlockData(queryBlockNumber);
-            if (knownBlocks.isEmpty() || knownBlocks.getLast().getHash().equals(block.getParentHash())) {
+            final EthereumBlock block =
+                    state.getReader().getClient().queryBlockData(queryBlockNumber);
+            if (knownBlocks.isEmpty()
+                    || knownBlocks.getLast().getHash().equals(block.getParentHash())) {
                 appendBlock(knownBlocks, block);
                 return block;
             }
@@ -93,7 +100,8 @@ public class BlockFilter extends Filter {
         } while (true);
     }
 
-    public static void appendBlock(final LinkedList<EthereumBlock> knownBlocks, final EthereumBlock block) {
+    public static void appendBlock(final LinkedList<EthereumBlock> knownBlocks,
+            final EthereumBlock block) {
         knownBlocks.addLast(block);
         if (KNOWN_BLOCKS_LENGTH < knownBlocks.size()) {
             knownBlocks.removeFirst();

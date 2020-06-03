@@ -14,7 +14,7 @@ import au.csiro.data61.aap.elf.core.writers.DataWriters;
 public class ProgramState {
     private final ValueStore valueStore;
     private final DataReader reader;
-    private final DataWriters writers;    
+    private final DataWriters writers;
     private final ExceptionHandler exceptionHandler;
 
     public ProgramState() {
@@ -39,14 +39,14 @@ public class ProgramState {
     private void setOutputFolder(String folderPath) throws ProgramException {
         final Path outputFolder = Path.of(folderPath);
         if (!outputFolder.toFile().exists()) {
-            throw new ProgramException(String.format("Folder '%s' does not exist.", outputFolder.toString()));
+            throw new ProgramException(
+                    String.format("Folder '%s' does not exist.", outputFolder.toString()));
         }
-            
-        try  {
+
+        try {
             this.exceptionHandler.setOutputFolder(outputFolder);
             this.writers.setOutputFolder(outputFolder);
-        }
-        catch (Throwable cause) {
+        } catch (Throwable cause) {
             throw new ProgramException("Error when setting the output folder.", cause);
         }
     }
@@ -59,7 +59,8 @@ public class ProgramState {
         this.getReader().close();
     }
 
-    public static Object connectClient(Object[] parameters, ProgramState state) throws ProgramException {
+    public static Object connectClient(Object[] parameters, ProgramState state)
+            throws ProgramException {
         assert parameters != null && parameters.length == 1;
         assert parameters[0] instanceof String;
         final String url = (String) parameters[0];
@@ -67,7 +68,8 @@ public class ProgramState {
         return null;
     }
 
-    public static Object setOutputFolder(Object[] parameters, ProgramState state) throws ProgramException {
+    public static Object setOutputFolder(Object[] parameters, ProgramState state)
+            throws ProgramException {
         assert parameters != null && parameters.length == 1;
         assert parameters[0] instanceof String;
         final String outputFolder = (String) parameters[0];

@@ -14,7 +14,8 @@ public class SmartContractFilterSpecification {
     private final List<SmartContractQuery> queries;
     private final ValueAccessor contractAddress;
 
-    private SmartContractFilterSpecification(ValueAccessor contractAddress, List<SmartContractQuery> queries) {
+    private SmartContractFilterSpecification(ValueAccessor contractAddress,
+            List<SmartContractQuery> queries) {
         this.contractAddress = contractAddress;
         this.queries = queries;
     }
@@ -27,22 +28,19 @@ public class SmartContractFilterSpecification {
         return this.queries;
     }
 
-    public static SmartContractFilterSpecification of(ValueAccessorSpecification contractAddress, SmartContractQuerySpecification queries) throws BuildException {
+    public static SmartContractFilterSpecification of(ValueAccessorSpecification contractAddress,
+            SmartContractQuerySpecification queries) throws BuildException {
         return of(contractAddress, Arrays.asList(queries));
     }
 
-    public static SmartContractFilterSpecification of(
-        ValueAccessorSpecification contractAddress, 
-        List<SmartContractQuerySpecification> querySpecs
-    ) throws BuildException {
+    public static SmartContractFilterSpecification of(ValueAccessorSpecification contractAddress,
+            List<SmartContractQuerySpecification> querySpecs) throws BuildException {
         final ArrayList<SmartContractQuery> queries = new ArrayList<>();
         for (SmartContractQuerySpecification querySpec : querySpecs) {
             queries.add(querySpec.getQuery());
         }
 
-        return new SmartContractFilterSpecification(
-            contractAddress.getValueAccessor(), queries
-        );
+        return new SmartContractFilterSpecification(contractAddress.getValueAccessor(), queries);
     }
-    
+
 }

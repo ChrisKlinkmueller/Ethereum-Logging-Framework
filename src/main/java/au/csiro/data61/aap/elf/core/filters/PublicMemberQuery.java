@@ -23,7 +23,8 @@ public class PublicMemberQuery implements SmartContractQuery {
     private final List<SmartContractParameter> inputParameters;
     private final List<Parameter> outputParameters;
 
-    public PublicMemberQuery(String memberName, List<SmartContractParameter> inputParameters, List<Parameter> outputParameters) {
+    public PublicMemberQuery(String memberName, List<SmartContractParameter> inputParameters,
+            List<Parameter> outputParameters) {
         assert memberName != null;
         assert inputParameters != null && inputParameters.stream().allMatch(Objects::nonNull);
         assert outputParameters != null && outputParameters.stream().allMatch(Objects::nonNull);
@@ -43,11 +44,12 @@ public class PublicMemberQuery implements SmartContractQuery {
             final BigInteger block = state.getReader().getCurrentBlock().getNumber();
             final List<Type> inputs = this.createInputTypes(state);
             final List<TypeReference<?>> outputs = this.createReturnTypes();
-            final List<Type> values = client.queryPublicMember(contract, block, this.memberName, inputs, outputs);
+            final List<Type> values =
+                    client.queryPublicMember(contract, block, this.memberName, inputs, outputs);
             this.setValues(values, state);
-        }
-        catch (Throwable cause) {
-            throw new ProgramException(String.format("Error querying members of smart contract %s", contract), cause);
+        } catch (Throwable cause) {
+            throw new ProgramException(
+                    String.format("Error querying members of smart contract %s", contract), cause);
         }
     }
 
@@ -56,32 +58,28 @@ public class PublicMemberQuery implements SmartContractQuery {
         final ArrayList<Type> types = new ArrayList<>();
         for (SmartContractParameter param : this.inputParameters) {
             final Object value = param.getAccessor().getValue(state);
-            types.add(TypeDecoder.instantiateType(param.getType(),value));
+            types.add(TypeDecoder.instantiateType(param.getType(), value));
         }
         return types;
     }
 
     private List<TypeReference<?>> createReturnTypes() {
-        return this.outputParameters.stream()
-            .map(param -> param.getType())
-            .collect(Collectors.toList());
-    }    
+        return this.outputParameters.stream().map(param -> param.getType())
+                .collect(Collectors.toList());
+    }
 
     @SuppressWarnings("all")
     private void setValues(List<Type> values, ProgramState state) {
         if (!this.matchOutputParameters(values)) {
-            throw new IllegalArgumentException("Output parameters not compatible with return values.");
+            throw new IllegalArgumentException(
+                    "Output parameters not compatible with return values.");
         }
 
-        IntStream.range(0, values.size())
-            .forEach(
-                i -> {
-                    final Object value = values.get(i).getValue();
-                    final String name = this.outputParameters.get(i).getName();
-                    state.getValueStore().setValue(name, value);
-                }
-            )
-        ;
+        IntStream.range(0, values.size()).forEach(i -> {
+            final Object value = values.get(i).getValue();
+            final String name = this.outputParameters.get(i).getName();
+            state.getValueStore().setValue(name, value);
+        });
     }
 
     @SuppressWarnings("all")
@@ -91,7 +89,7 @@ public class PublicMemberQuery implements SmartContractQuery {
         }
 
         return IntStream.range(0, values.size())
-            .allMatch(i -> typesMatch(values.get(i), this.outputParameters.get(i)));
+                .allMatch(i -> typesMatch(values.get(i), this.outputParameters.get(i)));
     }
 
     @SuppressWarnings("all")
@@ -102,8 +100,7 @@ public class PublicMemberQuery implements SmartContractQuery {
         }
         try {
             return parameter.getType().getClassType().equals(type.getClass());
-        }
-        catch (Throwable cause) {
+        } catch (Throwable cause) {
             return false;
         }
     }

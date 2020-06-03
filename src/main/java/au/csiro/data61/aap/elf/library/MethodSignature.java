@@ -17,7 +17,7 @@ public class MethodSignature {
     private final String methodName;
     private final List<String> parameterTypes;
     private final String returnType;
-    
+
     public MethodSignature(String methodName, String returnType, String... parameterTypes) {
         this(methodName, returnType, Arrays.asList(parameterTypes));
     }
@@ -32,7 +32,7 @@ public class MethodSignature {
         this.returnType = returnType;
         this.parameterTypes = new ArrayList<String>(parameterTypes);
     }
-    
+
     private boolean isValidType(String type) {
         if (type == null) {
             return false;
@@ -40,8 +40,7 @@ public class MethodSignature {
 
         try {
             return TypeReference.makeTypeReference(type) != null;
-        }
-        catch (ClassNotFoundException ex) {
+        } catch (ClassNotFoundException ex) {
             return false;
         }
     }
@@ -66,16 +65,17 @@ public class MethodSignature {
         assert 0 <= index && index <= this.parameterTypeCount();
         return this.parameterTypes.get(index);
     }
-    
+
     public String getSignature() {
-        return String.format("%s(%s)", this.methodName, this.parameterTypeStream().collect(Collectors.joining(",")));
+        return String.format("%s(%s)", this.methodName,
+                this.parameterTypeStream().collect(Collectors.joining(",")));
     }
 
     public boolean isCompatibleWith(MethodSignature signature) {
         if (signature == null || !signature.getMethodName().equals(this.getMethodName())) {
             return false;
         }
-        
+
         if (signature.parameterTypeCount() != this.parameterTypeCount()) {
             return false;
         }
@@ -90,5 +90,5 @@ public class MethodSignature {
         return true;
     }
 
-    
+
 }

@@ -13,7 +13,7 @@ public class ValueStore {
     public ValueStore() {
         this.values = new HashMap<>();
     }
-    
+
     public void setValue(String name, Object value) {
         assert name != null;
         this.values.put(name, value);
@@ -34,7 +34,7 @@ public class ValueStore {
         names.stream().forEach(name -> this.removeValue(name));
     }
 
-	public boolean containsName(String name) {
-		return this.values.containsKey(name);
-	}
+    public boolean containsName(String name) {
+        return this.values.containsKey(name);
+    }
 }

@@ -16,7 +16,8 @@ class Web3jTransaction extends EthereumTransaction {
     private TransactionReceipt receipt;
     private final Web3jClient client;
 
-    public Web3jTransaction(final Web3jClient client, final EthereumBlock block, final Transaction tx) {
+    public Web3jTransaction(final Web3jClient client, final EthereumBlock block,
+            final Transaction tx) {
         assert block != null;
         assert tx != null;
         assert client != null;
@@ -115,17 +116,18 @@ class Web3jTransaction extends EthereumTransaction {
         return this.loadReceipt(TransactionReceipt::getStatus);
     }
 
-    private <T> T loadReceipt(Function<TransactionReceipt, T> attributeAccessor) throws ProgramException {
+    private <T> T loadReceipt(Function<TransactionReceipt, T> attributeAccessor)
+            throws ProgramException {
         if (this.receipt == null) {
             try {
                 this.receipt = this.client.queryTransactionReceipt(this.getHash());
-            }
-            catch (Throwable cause) {
-                throw new ProgramException(String.format("Error loading attributes for transaction '%s'.", this.getHash()), cause);
+            } catch (Throwable cause) {
+                throw new ProgramException(String.format(
+                        "Error loading attributes for transaction '%s'.", this.getHash()), cause);
             }
         }
         return attributeAccessor.apply(this.receipt);
     }
 
-    
+
 }

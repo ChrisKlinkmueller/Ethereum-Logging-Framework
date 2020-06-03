@@ -10,10 +10,10 @@ public class EthqlProcessingError {
     private final int column;
     private final String errorMessage;
     private final Throwable errorCause;
-    
+
     public EthqlProcessingError(Token token, String errorMessage) {
         this(token, errorMessage, null);
-    }    
+    }
 
     public EthqlProcessingError(Token token, String errorMessage, Throwable cause) {
         assert token != null;

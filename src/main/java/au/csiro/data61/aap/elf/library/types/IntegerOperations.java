@@ -26,17 +26,16 @@ public class IntegerOperations {
         return operate(parameters, BigInteger::divide);
     }
 
-    private static Object operate(Object[] parameters, BiFunction<BigInteger, BigInteger, BigInteger> operation) {
-        assert areValidParameters(parameters);        
-        final BigInteger operand1 = (BigInteger)parameters[0];
-        final BigInteger operand2 = (BigInteger)parameters[1];
+    private static Object operate(Object[] parameters,
+            BiFunction<BigInteger, BigInteger, BigInteger> operation) {
+        assert areValidParameters(parameters);
+        final BigInteger operand1 = (BigInteger) parameters[0];
+        final BigInteger operand2 = (BigInteger) parameters[1];
         return operation.apply(operand1, operand2);
     }
 
     private static boolean areValidParameters(Object[] parameters) {
-        return    parameters != null 
-               && parameters.length == 2 
-               && parameters[0] instanceof BigInteger 
-               && parameters[1] instanceof BigInteger;
+        return parameters != null && parameters.length == 2 && parameters[0] instanceof BigInteger
+                && parameters[1] instanceof BigInteger;
     }
 }

@@ -40,9 +40,12 @@ public class TypeUtils {
 
         return (type.contains(INT_TYPE_KEYWORD) && expectedType.contains(INT_TYPE_KEYWORD))
                 || (type.contains(BYTES_TYPE_KEYWORD) && expectedType.contains(BYTES_TYPE_KEYWORD))
-                || (type.contains(ADDRESS_TYPE_KEYWORD) && expectedType.contains(BYTES_TYPE_KEYWORD))
-                || (type.contains(BYTES_TYPE_KEYWORD) && expectedType.contains(ADDRESS_TYPE_KEYWORD))
-                || (type.contains(ADDRESS_TYPE_KEYWORD) && expectedType.contains(ADDRESS_TYPE_KEYWORD));
+                || (type.contains(ADDRESS_TYPE_KEYWORD)
+                        && expectedType.contains(BYTES_TYPE_KEYWORD))
+                || (type.contains(BYTES_TYPE_KEYWORD)
+                        && expectedType.contains(ADDRESS_TYPE_KEYWORD))
+                || (type.contains(ADDRESS_TYPE_KEYWORD)
+                        && expectedType.contains(ADDRESS_TYPE_KEYWORD));
     }
 
     public static boolean isArrayType(String arrayType, String baseType) {
@@ -54,21 +57,17 @@ public class TypeUtils {
         assert type != null;
         if (type.equals(ADDRESS_TYPE_KEYWORD)) {
             return ADDRESS_TYPE_KEYWORD;
-        }
-        else if (type.equals(BOOL_TYPE_KEYWORD)) {
+        } else if (type.equals(BOOL_TYPE_KEYWORD)) {
             return BOOL_TYPE_KEYWORD;
-        }
-        else if (type.contains(BYTES_TYPE_KEYWORD)) {
+        } else if (type.contains(BYTES_TYPE_KEYWORD)) {
             return BYTES_TYPE_KEYWORD;
-        }
-        else if (type.contains(INT_TYPE_KEYWORD)) {
+        } else if (type.contains(INT_TYPE_KEYWORD)) {
             return INT_TYPE_KEYWORD;
-        }
-        else if (type.contains(STRING_TYPE_KEYWORD)) {
+        } else if (type.contains(STRING_TYPE_KEYWORD)) {
             return STRING_TYPE_KEYWORD;
-        }
-        else {
-            throw new IllegalArgumentException(String.format("''%s' not recognized as a valid type.", type));
+        } else {
+            throw new IllegalArgumentException(
+                    String.format("''%s' not recognized as a valid type.", type));
         }
 
     }
@@ -83,35 +82,39 @@ public class TypeUtils {
     }
 
     public static boolean isAddressType(String solType) {
-        return solType != null && solType.equals(ADDRESS_TYPE_KEYWORD); 
+        return solType != null && solType.equals(ADDRESS_TYPE_KEYWORD);
     }
 
-	public static boolean isBooleanType(String solType) {
-		return solType != null && solType.equals(BOOL_TYPE_KEYWORD);
-	}
+    public static boolean isBooleanType(String solType) {
+        return solType != null && solType.equals(BOOL_TYPE_KEYWORD);
+    }
 
     public static boolean isBytesType(String solType) {
-        return solType != null && solType.equals(BYTES_TYPE_KEYWORD); 
+        return solType != null && solType.equals(BYTES_TYPE_KEYWORD);
     }
 
-	public static boolean isIntegerType(String solType) {
-		return solType != null && solType.contains(INT_TYPE_KEYWORD);
-	}
+    public static boolean isIntegerType(String solType) {
+        return solType != null && solType.contains(INT_TYPE_KEYWORD);
+    }
 
-	public static boolean isStringType(String solType) {
-		return solType != null && solType.contains(STRING_TYPE_KEYWORD);
-	}
+    public static boolean isStringType(String solType) {
+        return solType != null && solType.contains(STRING_TYPE_KEYWORD);
+    }
 
     public static Object convertValueTo(String solidityType, Object value) throws ProgramException {
         assert solidityType != null && value != null;
         try {
             return TypeDecoder.instantiateType(solidityType, value).getValue();
-        } catch (InvocationTargetException | NoSuchMethodException | InstantiationException | IllegalAccessException | ClassNotFoundException e) {
-            throw new ProgramException(String.format("Error when decoding value '%s' as '%s'", value, solidityType), e);
+        } catch (InvocationTargetException | NoSuchMethodException | InstantiationException
+                | IllegalAccessException | ClassNotFoundException e) {
+            throw new ProgramException(
+                    String.format("Error when decoding value '%s' as '%s'", value, solidityType),
+                    e);
         }
     }
 
     private static final String INTEGER_PATTERN = "^-?\\d+";
+
     public static BigInteger integerFromLiteral(String literal) {
         if (!literal.matches(INTEGER_PATTERN)) {
             return null;
@@ -121,19 +124,19 @@ public class TypeUtils {
     }
 
     public static boolean isArrayLiteral(String literal) {
-        return    literal != null 
-               && 2 <= literal.length() 
-               && literal.charAt(0) == '[' 
-               && literal.charAt(literal.length() - 1) == ']';
+        return literal != null && 2 <= literal.length() && literal.charAt(0) == '['
+                && literal.charAt(literal.length() - 1) == ']';
     }
 
     private static final int ADDRESS_BYTES_LENGTH = 20;
+
     public static boolean isAddressLiteral(String literal) {
-		return isBytesLiteral(literal, ADDRESS_BYTES_LENGTH);
+        return isBytesLiteral(literal, ADDRESS_BYTES_LENGTH);
     }
-    
+
     private static final String BYTES_PATTERN = "0[xX][0-9a-fA-F]+";
-	public static boolean isBytesLiteral(String literal, int bytesLength) {
+
+    public static boolean isBytesLiteral(String literal, int bytesLength) {
         assert 0 < bytesLength && bytesLength <= 32;
         if (literal == null) {
             return false;
@@ -147,40 +150,42 @@ public class TypeUtils {
         return literal != null && literal.matches(BYTES_PATTERN);
     }
 
-	public static boolean isBooleanLiteral(String literal) {
-		return literal != null && (literal.toLowerCase().equals("true") || literal.toLowerCase().equals("false"));
-	}
-
-	private static final String INT_PATTERN = "[0]|[1-9][0-9]*";
-	public static boolean isIntLiteral(String literal) {
-		return literal != null && literal.matches(INT_PATTERN);
-	}
-
-	public static boolean isStringLiteral(String literal) {
-        return    literal != null 
-               && 2 <= literal.length() 
-               && literal.charAt(0) == '\"' 
-               && literal.charAt(literal.length() - 1) == '\"';
+    public static boolean isBooleanLiteral(String literal) {
+        return literal != null
+                && (literal.toLowerCase().equals("true") || literal.toLowerCase().equals("false"));
     }
-    
+
+    private static final String INT_PATTERN = "[0]|[1-9][0-9]*";
+
+    public static boolean isIntLiteral(String literal) {
+        return literal != null && literal.matches(INT_PATTERN);
+    }
+
+    public static boolean isStringLiteral(String literal) {
+        return literal != null && 2 <= literal.length() && literal.charAt(0) == '\"'
+                && literal.charAt(literal.length() - 1) == '\"';
+    }
+
     public static Boolean parseBoolLiteral(String literal) {
         if (!TypeUtils.isBooleanLiteral(literal)) {
-            throw new IllegalArgumentException(String.format("Value '%s' is not a string literal.", literal));
+            throw new IllegalArgumentException(
+                    String.format("Value '%s' is not a string literal.", literal));
         }
         return Boolean.parseBoolean(literal);
-    } 
+    }
 
     public static List<Boolean> parseBoolArrayLiteral(String literal) {
         return parseArrayLiteral(literal, TypeUtils::parseBoolLiteral);
     }
 
-    
+
     public static String parseBytesLiteral(String literal) {
         if (!TypeUtils.isBytesLiteral(literal)) {
-            throw new IllegalArgumentException(String.format("Value '%s' is not a bytes or address literal.", literal));
+            throw new IllegalArgumentException(
+                    String.format("Value '%s' is not a bytes or address literal.", literal));
         }
         return literal;
-    } 
+    }
 
     public static List<String> parseBytesArrayLiteral(String literal) {
         return parseArrayLiteral(literal, TypeUtils::parseBytesLiteral);
@@ -189,7 +194,8 @@ public class TypeUtils {
 
     public static BigInteger parseIntLiteral(String literal) {
         if (!TypeUtils.isIntLiteral(literal)) {
-            throw new IllegalArgumentException(String.format("Value '%s' is not an int literal.", literal));
+            throw new IllegalArgumentException(
+                    String.format("Value '%s' is not an int literal.", literal));
         }
         return new BigInteger(literal);
     }
@@ -200,7 +206,8 @@ public class TypeUtils {
 
     public static String parseStringLiteral(String literal) {
         if (!TypeUtils.isStringLiteral(literal)) {
-            throw new IllegalArgumentException(String.format("Value '%s' is not a string literal.", literal));
+            throw new IllegalArgumentException(
+                    String.format("Value '%s' is not a string literal.", literal));
         }
         return literal.substring(1, literal.length() - 1);
     }
@@ -208,10 +215,11 @@ public class TypeUtils {
     public static List<String> parseStringArrayLiteral(String literal) {
         return parseArrayLiteral(literal, TypeUtils::parseStringLiteral);
     }
-    
+
     private static <T> List<T> parseArrayLiteral(String literal, Function<String, T> converter) {
         if (!TypeUtils.isArrayLiteral(literal)) {
-            throw new IllegalArgumentException(String.format("Value '%s' is not an array literal.", literal));
+            throw new IllegalArgumentException(
+                    String.format("Value '%s' is not an array literal.", literal));
         }
         List<T> list = new ArrayList<>();
         final String[] elements = literal.substring(1, literal.length() - 1).split(",");

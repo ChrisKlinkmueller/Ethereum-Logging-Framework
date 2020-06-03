@@ -12,7 +12,7 @@ import au.csiro.data61.aap.elf.util.CompositeEthqlListener;
  * SemanticAnalysis
  */
 public class SemanticAnalysis extends CompositeEthqlListener<SemanticAnalyzer> {
-    
+
     public SemanticAnalysis(ErrorCollector errorCollector) {
         assert errorCollector != null;
         final VariableExistenceAnalyzer varAnalyzer = new VariableExistenceAnalyzer(errorCollector);
@@ -34,5 +34,5 @@ public class SemanticAnalysis extends CompositeEthqlListener<SemanticAnalyzer> {
         ParseTreeWalker walker = new ParseTreeWalker();
         walker.walk(this, parseTree);
     }
-    
+
 }

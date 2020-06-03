@@ -40,8 +40,7 @@ public class FilterDefinitionAnalyzer extends SemanticAnalyzer {
     }
 
     @Override
-    public void clear() {
-    }
+    public void clear() {}
 
     // #region block filter
 
@@ -52,11 +51,13 @@ public class FilterDefinitionAnalyzer extends SemanticAnalyzer {
         this.verifyBlockNumberVariable(ctx.from);
 
         if (ctx.from.KEY_CONTINUOUS() != null) {
-            this.errorCollector.addSemanticError(ctx.from.start, "The 'from' parameter cannot be set to CONTINUOUS.");
+            this.errorCollector.addSemanticError(ctx.from.start,
+                    "The 'from' parameter cannot be set to CONTINUOUS.");
         }
 
         if (ctx.to.KEY_EARLIEST() != null) {
-            this.errorCollector.addSemanticError(ctx.to.start, "The 'to' parameter cannot be set to EARLIEST.");
+            this.errorCollector.addSemanticError(ctx.to.start,
+                    "The 'to' parameter cannot be set to EARLIEST.");
         }
     }
 
@@ -74,10 +75,8 @@ public class FilterDefinitionAnalyzer extends SemanticAnalyzer {
     }
 
     private boolean checkBlockNumberLiteral(BlockNumberContext ctx) {
-        if (   ctx.valueExpression() != null 
-            && ctx.valueExpression().literal() != null 
-            && ctx.valueExpression().literal().INT_LITERAL() == null
-        ) {
+        if (ctx.valueExpression() != null && ctx.valueExpression().literal() != null
+                && ctx.valueExpression().literal().INT_LITERAL() == null) {
             this.addError(ctx.start, "BlockNumber must be an integer value or variable.");
             return true;
         }
@@ -88,7 +87,8 @@ public class FilterDefinitionAnalyzer extends SemanticAnalyzer {
         if (ctx.valueExpression() != null && ctx.valueExpression().variableName() != null) {
             final String solType = this.variableAnalyzer.getVariableType(ctx.getText());
             if (solType != null && !TypeUtils.isIntegerType(solType)) {
-                this.addError(ctx.start, String.format("'%s' must be an integer variable.", ctx.getText()));
+                this.addError(ctx.start,
+                        String.format("'%s' must be an integer variable.", ctx.getText()));
             }
         }
     }
@@ -110,9 +110,11 @@ public class FilterDefinitionAnalyzer extends SemanticAnalyzer {
 
     private void verifyAddressList(final AddressListContext ctx) {
         if (ctx.variableName() != null) {
-            final String solType = this.variableAnalyzer.getVariableType(ctx.variableName().getText());
+            final String solType =
+                    this.variableAnalyzer.getVariableType(ctx.variableName().getText());
             if (solType != null && !TypeUtils.isAddressType(solType)) {
-                this.addError(ctx.start, String.format("'%s' must be a string variable", ctx.variableName().getText()));
+                this.addError(ctx.start, String.format("'%s' must be a string variable",
+                        ctx.variableName().getText()));
             }
             return;
         }
@@ -130,7 +132,7 @@ public class FilterDefinitionAnalyzer extends SemanticAnalyzer {
     // #endregion transaction filter
 
 
-    
+
     // #region log entry filter
 
     @Override
@@ -152,34 +154,34 @@ public class FilterDefinitionAnalyzer extends SemanticAnalyzer {
     @Override
     public void exitConditionalOrExpression(ConditionalOrExpressionContext ctx) {
         if (ctx.conditionalOrExpression() != null) {
-            this.verifyBooleanBinaryOperation(ctx.conditionalOrExpression().start, ctx.conditionalAndExpression().start);
+            this.verifyBooleanBinaryOperation(ctx.conditionalOrExpression().start,
+                    ctx.conditionalAndExpression().start);
         }
     }
 
     @Override
     public void exitConditionalAndExpression(ConditionalAndExpressionContext ctx) {
         if (ctx.conditionalAndExpression() != null) {
-            this.verifyBooleanBinaryOperation(ctx.conditionalAndExpression().start, ctx.conditionalComparisonExpression().start);
+            this.verifyBooleanBinaryOperation(ctx.conditionalAndExpression().start,
+                    ctx.conditionalComparisonExpression().start);
         }
     }
 
     private void verifyBooleanBinaryOperation(Token left, Token right) {
         String typeRight = this.conditionalTypes.pop();
         String typeLeft = this.conditionalTypes.pop();
-        
+
         String result = TypeUtils.BOOL_TYPE_KEYWORD;
         if (typeLeft.equals(TYPE_ERROR_FLAG)) {
             result = TYPE_ERROR_FLAG;
-        }
-        else if (!TypeUtils.isBooleanType(typeLeft)) {
+        } else if (!TypeUtils.isBooleanType(typeLeft)) {
             this.addError(left, "Expression must return a boolean value.");
             result = TYPE_ERROR_FLAG;
         }
 
         if (typeRight.equals(TYPE_ERROR_FLAG)) {
             result = TYPE_ERROR_FLAG;
-        }
-        else if (!TypeUtils.isBooleanType(typeRight)) {
+        } else if (!TypeUtils.isBooleanType(typeRight)) {
             this.addError(right, "Expression must return a boolean value.");
             result = TYPE_ERROR_FLAG;
         }
@@ -188,7 +190,7 @@ public class FilterDefinitionAnalyzer extends SemanticAnalyzer {
     }
 
     @Override
-    public void exitConditionalComparisonExpression (ConditionalComparisonExpressionContext ctx) {
+    public void exitConditionalComparisonExpression(ConditionalComparisonExpressionContext ctx) {
         if (ctx.conditionalNotExpression().size() == 1) {
             return;
         }
@@ -204,34 +206,39 @@ public class FilterDefinitionAnalyzer extends SemanticAnalyzer {
         if (!containsBooleanExpression) {
             this.verifyComparison(ctx.start, ctx.comparators());
         }
-        
+
     }
 
     private static final Set<String> EQUALITY_COMPARATORS = Set.of("==", "!=");
     private static final Set<String> INTEGER_COMPARATORS = Set.of("<=", "<", ">", ">=");
+
     private void verifyComparison(Token token, ComparatorsContext comparators) {
         String typeRight = this.conditionalTypes.pop();
         String typeLeft = this.conditionalTypes.pop();
-        
+
         String result = TypeUtils.BOOL_TYPE_KEYWORD;
         if (typeRight.equals(TYPE_ERROR_FLAG) || typeLeft.equals(TYPE_ERROR_FLAG)) {
             result = TYPE_ERROR_FLAG;
-        }
-        else if (comparators.KEY_IN() != null) {            
+        } else if (comparators.KEY_IN() != null) {
             if (!TypeUtils.isArrayType(typeRight, typeLeft)) {
-                this.addError(token, String.format("Types are not compatible, cannot check containment of %s in %s.", typeLeft, typeRight));
+                this.addError(token,
+                        String.format(
+                                "Types are not compatible, cannot check containment of %s in %s.",
+                                typeLeft, typeRight));
                 result = TYPE_ERROR_FLAG;
             }
-        }
-        else if (EQUALITY_COMPARATORS.contains(comparators.getText())) {
+        } else if (EQUALITY_COMPARATORS.contains(comparators.getText())) {
             if (!TypeUtils.areCompatible(typeLeft, typeRight)) {
-                this.addError(token, String.format("Types are not compatible, cannot check equality of %s and %s values.", typeLeft, typeRight));
+                this.addError(token, String.format(
+                        "Types are not compatible, cannot check equality of %s and %s values.",
+                        typeLeft, typeRight));
                 result = TYPE_ERROR_FLAG;
             }
-        }
-        else if (INTEGER_COMPARATORS.contains(comparators.getText())) {
+        } else if (INTEGER_COMPARATORS.contains(comparators.getText())) {
             if (!TypeUtils.isIntegerType(typeLeft) && !TypeUtils.isIntegerType(typeRight)) {
-                this.addError(token, String.format("Types are not compatible, can only compare int values, but not %s and %s.", typeLeft, typeRight));
+                this.addError(token, String.format(
+                        "Types are not compatible, can only compare int values, but not %s and %s.",
+                        typeLeft, typeRight));
                 result = TYPE_ERROR_FLAG;
             }
         }
@@ -246,8 +253,10 @@ public class FilterDefinitionAnalyzer extends SemanticAnalyzer {
             return;
         }
 
-        if (ctx.KEY_NOT() != null && !type.equals(TYPE_ERROR_FLAG) && !TypeUtils.isBooleanType(type)) {
-            this.addError(ctx.start, "The NOT operator can only be applied to boolean expressions.");
+        if (ctx.KEY_NOT() != null && !type.equals(TYPE_ERROR_FLAG)
+                && !TypeUtils.isBooleanType(type)) {
+            this.addError(ctx.start,
+                    "The NOT operator can only be applied to boolean expressions.");
             type = TYPE_ERROR_FLAG;
         }
         this.conditionalTypes.push(type);
@@ -256,26 +265,29 @@ public class FilterDefinitionAnalyzer extends SemanticAnalyzer {
     @Override
     public void exitConditionalPrimaryExpression(ConditionalPrimaryExpressionContext ctx) {
         if (ctx.valueExpression() != null) {
-            final String type = InterpreterUtils.determineType(ctx.valueExpression(), this.variableAnalyzer);
+            final String type =
+                    InterpreterUtils.determineType(ctx.valueExpression(), this.variableAnalyzer);
             this.conditionalTypes.push(type);
         }
     }
 
-    //#endregion generic filter
+    // #endregion generic filter
 
 
-    
-    //#region Smart contract filter
+
+    // #region Smart contract filter
 
     @Override
     public void enterSmartContractFilter(SmartContractFilterContext ctx) {
-        final String type = InterpreterUtils.determineType(ctx.valueExpression(), this.variableAnalyzer);
+        final String type =
+                InterpreterUtils.determineType(ctx.valueExpression(), this.variableAnalyzer);
         if (type == null) {
             return;
         }
 
         if (!TypeUtils.isAddressType(type)) {
-            this.addError(ctx.valueExpression().start, "Smart contract address must be of address type.");
+            this.addError(ctx.valueExpression().start,
+                    "Smart contract address must be of address type.");
         }
     }
 
@@ -288,9 +300,10 @@ public class FilterDefinitionAnalyzer extends SemanticAnalyzer {
         final String literalType = InterpreterUtils.literalType(ctx.literal());
         final String solType = ctx.solType().getText();
         if (!TypeUtils.areCompatible(literalType, solType)) {
-            this.addError(ctx.solType().start, String.format("Cannot cast %s literal to %s.", literalType, solType));
+            this.addError(ctx.solType().start,
+                    String.format("Cannot cast %s literal to %s.", literalType, solType));
         }
     }
 
-    //#endregion Smart contract filter
+    // #endregion Smart contract filter
 }

@@ -26,10 +26,9 @@ public class Program extends Filter {
         } catch (final Throwable ex) {
             final String message = "Error when executing the program.";
             state.getExceptionHandler().handleExceptionAndDecideOnAbort(message, ex);
-        }
-        finally {
+        } finally {
             state.close();
         }
     }
-    
+
 }

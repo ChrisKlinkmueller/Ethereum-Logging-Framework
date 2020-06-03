@@ -35,7 +35,7 @@ class LogEntryItem extends GeneratorItem {
     Stream<LogEntryParameter> parameterStream() {
         return this.parameters.stream();
     }
-    
+
     void addItem(GeneratorItem item) {
         assert item != null;
         this.items.add(item);

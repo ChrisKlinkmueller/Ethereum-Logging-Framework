@@ -53,8 +53,9 @@ public class MethodResult<T> {
         return new MethodResult<T>(null, errorCause.getMessage(), errorCause);
     }
 
-    public static <S,T> MethodResult<T> ofError(MethodResult<S> errorResult) {
+    public static <S, T> MethodResult<T> ofError(MethodResult<S> errorResult) {
         assert errorResult != null && !errorResult.isSuccessful();
-        return new MethodResult<T>(null, errorResult.getErrorMessage(), errorResult.getErrorCause());
+        return new MethodResult<T>(null, errorResult.getErrorMessage(),
+                errorResult.getErrorCause());
     }
 }
