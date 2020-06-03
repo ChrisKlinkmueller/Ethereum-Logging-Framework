@@ -147,10 +147,12 @@ class ValidatorSemanticSpec extends ValidatorBaseSpec {
         |   TRANSACTIONS (ANY) (ANY) {}
         | }
         """.stripMargin()                   | []
-        "BLOCKS (var1) (8) {}"              | ["Variable 'var1' not defined."]
-        "BLOCKS (10) (8) {}"                | ["10 greater than 8"]
-        "BLOCKS (-10) (-8) {}"              | ["negative block number"]
-        "BLOCKS (\"123\") (0x123) {}"       | ["type not int"]
+        "BLOCKS (var1) (8) {}"              | ["Variable 'var1' not defined.", "The 'from' block number must be an integer variable, an integer literal or one of the values {EARLIEST, CURRENT}."]
+        "BLOCKS (10) (8) {}"                | ["The 'from' block number must be smaller than or equal to the 'to' block number."]
+        "BLOCKS (-10) (8) {}"               | ["The 'from' block number must be an integer larger than or equal to 0."]
+        "BLOCKS (10) (-8) {}"               | ["The 'to' block number must be an integer larger than or equal to 0.", "The 'from' block number must be smaller than or equal to the 'to' block number."]
+        "BLOCKS (\"123\") (10) {}"          | ["The 'from' block number must be an integer variable, an integer literal or one of the values {EARLIEST, CURRENT}."]
+        "BLOCKS (123) (0x123) {}"           | ["The 'to' block number must be an integer variable, an integer literal or one of the values {CONTINUOUS, CURRENT}."]
         """
         | TRANSACTIONS (ANY) (ANY) {
         |   BLOCKS (0) (1) {}

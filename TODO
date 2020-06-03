@@ -25,7 +25,7 @@ Parsing:
     ✔ Library lookup for method invocation @done(19-11-30 07:54)
     ☐ empty arrays are initiated with '[]', but the analyzer does not allow for empty arrays
     ☐ update grammar to allow only int-variables in the code and solidity int-types only in filters
-    ☐ block filter should only allow integer literals for block numbers, and enforce constraints: from <= to && from > 0 && to > 0
+    ✔ block filter should only allow integer literals for block numbers, and enforce constraints: from <= to && from > 0 && to > 0 @done(20-06-03 13:24)
     ☐ GenericFilter: right handside of IN operator should only be array variables or literals
     ☐ check parsing of address literals for smart contract filters
     ☐ check definition of methodcalls in smart contract filters
