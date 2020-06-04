@@ -35,12 +35,9 @@ class ValidatorSemanticSpec extends ValidatorBaseSpec {
         script                              | expectedErr
         """
         | string a = "";
-        | a = "new string";
-        |
         | string a = "";
-        | b = "";
-        """.stripMargin()                   | ["Variable 'a' is already defined.",
-                                               "Variable 'b' not defined."]
+        """.stripMargin()                   | ["Variable 'a' is already defined."]
+        "b = 1;"                            | ["Variable 'b' not defined."]
     }
 
     @Unroll
@@ -121,12 +118,21 @@ class ValidatorSemanticSpec extends ValidatorBaseSpec {
         |   "'."
         | );
         """.stripMargin()                   | ["Variable 'block.number' not defined."]
-        "EMIT CSV ROW (tableName) (5);"     | ["Variable 'tableName' not defined.",
-                                               "Attribute name must be specified for literals"]
+        """
+        | EMIT CSV ROW (tableName) (
+        |   5 AS blockNumber
+        | );
+        """.stripMargin()                   | ["Variable 'tableName' not defined."]
+        "EMIT CSV ROW (\"table\") (5);"     | ["Attribute name must be specified for literals"]
         """
         | EMIT XES EVENT
-        | ()(catId)()(birth AS xs:string concept:name);
-        """.stripMargin()                   | ["catId not defined", "birth not defined"]
+        | ()(catId)()("birth" AS xs:string concept:name);
+        """.stripMargin()                   | ["Variable 'catId' not defined."]
+        """
+        | int kittyId = 15;
+        | EMIT XES EVENT
+        | ()(kittyId)()(birth AS xs:string concept:name);
+        """.stripMargin()                   | ["Variable 'birth' not defined."]
     }
 
     @Unroll
@@ -200,23 +206,30 @@ class ValidatorSemanticSpec extends ValidatorBaseSpec {
         where:
         script                              | expectedErr
         """
-        | int i = 5;
-        | bool b = true;
-        | if (
-        |   (i == 5) &&
-        |   (true == (5 == 4)) &&
-        |   !b ||
-        |   (true && i in [5, 3])
-        | ) {}
+        | if (true) {}
         """.stripMargin()                   | []
         """
         | int i = 5;
-        | if (i > 0) {}
+        | if (i == 0) {}
+        """.stripMargin()                   | []
+        """
+        | if (5 > 0) {}
+        """.stripMargin()                   | []
+        """
+        | if (true && false) {}
+        """.stripMargin()                   | []
+        """
+        | if (true || false) {}
+        """.stripMargin()                   | []
+        """
+        | if (5 in [4,5,6]) {}
         """.stripMargin()                   | []
         "if (true == (5 == 4)) {}"          | []
+        """
+        | if (!false) {}
+        """.stripMargin()                   | []
         "if (true && i in [5, 3]) {}"       | ["variable i not defined."]
-        "if (5 && \"true\") {}"             | ["Expression must return a boolean value.",
-                                               "Expression must return a boolean value."]
+        "if (false && \"true\") {}"         | ["Expression must return a boolean value."]
         "if (i in \"[5,3]\") {}"            | ["type mismatch"]
     }
 
@@ -232,6 +245,10 @@ class ValidatorSemanticSpec extends ValidatorBaseSpec {
         | BLOCKS (6605100) (6615100) {
         |   SMART CONTRACT (0x931D387731bBbC988B312206c74F77D004D6B84c)
         |   (address addr, int i, string s = someMethod(int[] [5, 6])) {}
+        | }
+        """.stripMargin()                   | []
+        """
+        | BLOCKS (6605100) (6615100) {
         |   address addr = 0x931D387731bBbC988B312206c74F77D004D6B84c;
         |   SMART CONTRACT (addr)
         |   (int i, string s = someMethod(int[] [5, 6])) {}
@@ -258,16 +275,20 @@ class ValidatorSemanticSpec extends ValidatorBaseSpec {
         | BLOCKS (6605100) (6615100) {
         |   LOG ENTRIES (contract) (someMethod(uint indexed authorId, bytes32 sha)) {}
         | }
-        | uint authorId = 15;
         """.stripMargin()                   | []
         """
+        | BLOCKS (6605100) (6615100) {
+        |   LOG ENTRIES (contract) (someMethod(uint indexed authorId, bytes32 sha)) {}
+        | }
+        """.stripMargin()                   | ["Variable 'contract' not defined."]
+        """
+        | address contract = 0x931D387731bBbC988B312206c74F77D004D6B84c;
         | LOG ENTRIES
         | (contract)
         | (GitCommit(
         |   uint authorId,
         |   bytes32 sha
         | )) {}
-        """.stripMargin()                   | ["Invalid nesting of filters.",
-                                               "Variable 'contract' not defined."]
+        """.stripMargin()                   | ["Invalid nesting of filters."]
     }
 }

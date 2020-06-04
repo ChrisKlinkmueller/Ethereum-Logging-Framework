@@ -14,7 +14,8 @@ Feel free to edit this file when a test is added, modified, fixed or removed.
 
 - [x] test all the formats of comment
 - test identifier
-  - [x] allow `_` and non-leading numbers
+  - [x] allow `_`
+  - [x] allow non-leading numbers
   - [x] support unicode character
   - [x] don't allow `^`, which can't be part of Java identifier
   - [x] don't allow leading numbers
@@ -43,15 +44,18 @@ Feel free to edit this file when a test is added, modified, fixed or removed.
 - [x] method calls must match existing method signature
 - test emit
   - [x] happy path of log line, csv row, xes event
+  - [x] don't allow undeclared var as field of log line
   - [x] don't allow undeclared var as csv table name
-  - [ ] don't allow undeclared var as piid and xesEmitVariable
+  - [x] don't allow literal to not have attribute name
+  - [x] don't allow undeclared var as piid
+  - [ ] don't allow undeclared var as xesEmitVariable
 - block filter
   - [x] allow int block number
   - [x] allow key word earliest and current
   - [x] don't allow undeclared var as block number
-  - [ ] don't allow first argument to be greater than the second
-  - [ ] don't allow negative block number
-  - [ ] don't allow non-integer block number, such as bytes or string
+  - [x] don't allow first argument to be greater than the second
+  - [x] don't allow negative block number
+  - [x] don't allow non-integer block number, such as bytes or string
   - [x] don't allow block filter to be nested in transaction filter
 - transaction filter
   - [x] allow keyword ANY, address literal as sender/recipient address
@@ -59,15 +63,15 @@ Feel free to edit this file when a test is added, modified, fixed or removed.
   - [x] don't allow non-nested transaction filter
   - [x] don't allow byte literal that is not an address
 - generic filter
-  - [x] allow boolean literal, variable, comparison, AND, OR, keywork IN and parentheses
+  - [x] allow boolean literal, variable, comparison, AND, OR, negate, keywork IN and parentheses
   - [ ] don't allow undefined variable to appear in condition
   - [x] don't allow non-boolean value as operands of AND
   - [ ] don't allow non-list value after keywork IN
 - smart contract filter
-  - [ ] allow address literal or variable as contract address
+  - [ ] allow address literal as contract address
+  - [x] allow variable as contract address
   - [x] don't allow type mismatch in query parameters
 - log entry filter
   - [x] allow variable as address
-  - [x] log entry parameters are in the scope of log entry filter
-  - [x] don't undeclared var as address
+  - [x] don't allow undeclared var as address
   - [x] don't allow non-nested log entry filter
