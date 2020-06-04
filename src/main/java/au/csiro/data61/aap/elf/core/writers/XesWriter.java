@@ -84,9 +84,7 @@ public class XesWriter extends DataWriter {
     public void startEvent(String inputPid, String inputPiid, String inputEid) {
         final String pid = inputPid == null ? DEFAULT_PID : inputPid;
         final String piid = inputPiid == null ? DEFAULT_PIID : inputPiid;
-        final String eid =
-                inputEid == null ? String.format("%s%s", DEFAULT_EID, Long.toString(EID++))
-                        : inputEid;
+        final String eid = inputEid == null ? String.format("%s%s", DEFAULT_EID, Long.toString(EID++)) : inputEid;
         LOGGER.info(String.format("Event %s in trace %s in log %s started.", eid, piid, pid));
 
         this.findOrCreateTrace(pid, piid);
@@ -94,8 +92,7 @@ public class XesWriter extends DataWriter {
     }
 
     private void findOrCreateEvent(String pid, String piid, String eid) {
-        if (this.events.containsKey(pid) && this.events.get(pid).containsKey(piid)
-                && this.events.get(pid).get(piid).containsKey(eid)) {
+        if (this.events.containsKey(pid) && this.events.get(pid).containsKey(piid) && this.events.get(pid).get(piid).containsKey(eid)) {
             this.element = this.events.get(pid).get(piid).get(eid);
             return;
         }
@@ -129,8 +126,7 @@ public class XesWriter extends DataWriter {
 
     public void addFloatList(String key, List<BigInteger> values) {
         assert key != null && values != null && values.stream().allMatch(Objects::nonNull);
-        final List<Double> list =
-                values.stream().map(BigInteger::doubleValue).collect(Collectors.toList());
+        final List<Double> list = values.stream().map(BigInteger::doubleValue).collect(Collectors.toList());
         this.addListAttribute(key, list, XAttributeContinuousImpl::new);
         LOGGER.info(String.format("Float list attribute %s added.", key));
     }
@@ -143,8 +139,7 @@ public class XesWriter extends DataWriter {
 
     public void addIntList(String key, List<BigInteger> values) {
         assert key != null && values != null && values.stream().allMatch(Objects::nonNull);
-        final List<Long> list =
-                values.stream().map(BigInteger::longValue).collect(Collectors.toList());
+        final List<Long> list = values.stream().map(BigInteger::longValue).collect(Collectors.toList());
         this.addListAttribute(key, list, XAttributeContinuousImpl::new);
         LOGGER.info(String.format("Int list attribute %s added.", key));
     }
@@ -158,8 +153,7 @@ public class XesWriter extends DataWriter {
 
     public void addDateList(String key, List<BigInteger> values) {
         assert key != null && values != null && values.stream().allMatch(Objects::nonNull);
-        final List<Date> list = values.stream().map(BigInteger::longValue).map(Date::new)
-                .collect(Collectors.toList());
+        final List<Date> list = values.stream().map(BigInteger::longValue).map(Date::new).collect(Collectors.toList());
         this.addListAttribute(key, list, XAttributeTimestampImpl::new);
         LOGGER.info(String.format("Date list attribute %s added.", key));
     }
@@ -176,8 +170,7 @@ public class XesWriter extends DataWriter {
         LOGGER.info(String.format("String list attribute %s added.", key));
     }
 
-    private <T> void addListAttribute(String key, List<T> list,
-            BiFunction<String, T, XAttribute> attributeCreator) {
+    private <T> void addListAttribute(String key, List<T> list, BiFunction<String, T, XAttribute> attributeCreator) {
         final XAttributeListImpl attrList = new XAttributeListImpl(key);
         for (int i = 0; i < list.size(); i++) {
             T value = list.get(i);
@@ -187,8 +180,7 @@ public class XesWriter extends DataWriter {
         this.element.getAttributes().put(key, attrList);
     }
 
-    private <T> void addAttribute(String key, T value,
-            BiFunction<String, T, XAttribute> attributeCreator) {
+    private <T> void addAttribute(String key, T value, BiFunction<String, T, XAttribute> attributeCreator) {
         final XAttribute attr = attributeCreator.apply(key, value);
         this.element.getAttributes().put(key, attr);
     }
@@ -201,8 +193,7 @@ public class XesWriter extends DataWriter {
             final File folder = this.getOutputFolder().toAbsolutePath().toFile();
             final XesXmlSerializer serializer = new XesXmlSerializer();
             for (Entry<String, XLog> entry : logs.entrySet()) {
-                final String filename =
-                        String.format("log_%s_%s.xes", entry.getKey(), filenameSuffix);
+                final String filename = String.format("log_%s_%s.xes", entry.getKey(), filenameSuffix);
                 final File file = new File(folder, filename);
                 serializer.serialize(entry.getValue(), new FileOutputStream(file));
             }
@@ -220,7 +211,8 @@ public class XesWriter extends DataWriter {
 
     private Map<String, XLog> getLogs() {
         return Stream.concat(this.traces.keySet().stream(), this.events.keySet().stream())
-                .distinct().collect(Collectors.toMap(pid -> pid, pid -> createLog(pid)));
+            .distinct()
+            .collect(Collectors.toMap(pid -> pid, pid -> createLog(pid)));
     }
 
     private XLog createLog(String pid) {
@@ -240,8 +232,10 @@ public class XesWriter extends DataWriter {
 
     private void addEventsToLog(XTrace trace, String pid, String piid) {
         this.events.getOrDefault(pid, new LinkedHashMap<>())
-                .getOrDefault(piid, new LinkedHashMap<>()).entrySet().stream()
-                .forEach(entry -> trace.add(entry.getValue()));
+            .getOrDefault(piid, new LinkedHashMap<>())
+            .entrySet()
+            .stream()
+            .forEach(entry -> trace.add(entry.getValue()));
     }
 
     public static final String BOOLEAN_TYPE = "xs:boolean";
@@ -250,14 +244,20 @@ public class XesWriter extends DataWriter {
     public static final String INT_TYPE = "xs:int";
     public static final String STRING_TYPE = "xs:string";
     private static Map<String, Set<String>> SUPPORTED_SOL_TO_XES_CASTS = Map.of(
-            TypeUtils.ADDRESS_TYPE_KEYWORD, Set.of(STRING_TYPE), TypeUtils.BYTES_TYPE_KEYWORD,
-            Set.of(STRING_TYPE), TypeUtils.BOOL_TYPE_KEYWORD, Set.of(BOOLEAN_TYPE, STRING_TYPE),
-            TypeUtils.INT_TYPE_KEYWORD, Set.of(STRING_TYPE, FLOAT_TYPE, INT_TYPE),
-            TypeUtils.STRING_TYPE_KEYWORD, Set.of(STRING_TYPE));
+        TypeUtils.ADDRESS_TYPE_KEYWORD,
+        Set.of(STRING_TYPE),
+        TypeUtils.BYTES_TYPE_KEYWORD,
+        Set.of(STRING_TYPE),
+        TypeUtils.BOOL_TYPE_KEYWORD,
+        Set.of(BOOLEAN_TYPE, STRING_TYPE),
+        TypeUtils.INT_TYPE_KEYWORD,
+        Set.of(STRING_TYPE, FLOAT_TYPE, INT_TYPE),
+        TypeUtils.STRING_TYPE_KEYWORD,
+        Set.of(STRING_TYPE)
+    );
 
     public static boolean areTypesCompatible(String solType, String xesType) {
         final String rootType = TypeUtils.getRootType(solType);
-        return SUPPORTED_SOL_TO_XES_CASTS.getOrDefault(rootType, Collections.emptySet())
-                .contains(xesType);
+        return SUPPORTED_SOL_TO_XES_CASTS.getOrDefault(rootType, Collections.emptySet()).contains(xesType);
     }
 }

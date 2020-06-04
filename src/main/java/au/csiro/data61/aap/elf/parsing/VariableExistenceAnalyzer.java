@@ -53,8 +53,7 @@ public class VariableExistenceAnalyzer extends SemanticAnalyzer {
     }
 
     private boolean isFilterConstant(String name) {
-        return this.variableStream(name).map(variable -> variable.isConstant()).findFirst()
-                .orElse(false);
+        return this.variableStream(name).map(variable -> variable.isConstant()).findFirst().orElse(false);
     }
 
     public boolean isVariableDefined(String name) {
@@ -62,8 +61,7 @@ public class VariableExistenceAnalyzer extends SemanticAnalyzer {
     }
 
     public String getVariableType(String name) {
-        return this.variableStream(name).map(variable -> variable.getType()).findFirst()
-                .orElse(null);
+        return this.variableStream(name).map(variable -> variable.getType()).findFirst().orElse(null);
     }
 
     private Stream<Variable> variableStream(String name) {
@@ -73,8 +71,6 @@ public class VariableExistenceAnalyzer extends SemanticAnalyzer {
     private Stream<Variable> variableStream() {
         return this.visibleVariables.stream().flatMap(varList -> varList.stream());
     }
-
-
 
     // #region variable existence
 
@@ -86,8 +82,7 @@ public class VariableExistenceAnalyzer extends SemanticAnalyzer {
             this.verifyVariableAssignment((VariableAssignmentStatementContext) ctx.parent);
         } else if (ctx.parent instanceof LogEntryParameterContext) {
             this.verifyLogEntryParameter((LogEntryParameterContext) ctx.parent);
-        } else if (ctx.parent instanceof NamedEmitVariableContext
-                || ctx.parent instanceof XesEmitVariableContext) {
+        } else if (ctx.parent instanceof NamedEmitVariableContext || ctx.parent instanceof XesEmitVariableContext) {
             return;
         } else if (ctx.parent instanceof SmartContractParameterContext) {
             this.verifySmartContractParameter((SmartContractParameterContext) ctx.parent);
@@ -99,18 +94,15 @@ public class VariableExistenceAnalyzer extends SemanticAnalyzer {
     }
 
     private void verifyVariableDeclaration(VariableDeclarationStatementContext ctx) {
-        this.verifyVariableDeclaration(ctx.variableName().start, ctx.solType().getText(),
-                ctx.variableName().getText());
+        this.verifyVariableDeclaration(ctx.variableName().start, ctx.solType().getText(), ctx.variableName().getText());
     }
 
     private void verifyLogEntryParameter(LogEntryParameterContext ctx) {
-        this.verifyVariableDeclaration(ctx.variableName().start, ctx.solType().getText(),
-                ctx.variableName().getText());
+        this.verifyVariableDeclaration(ctx.variableName().start, ctx.solType().getText(), ctx.variableName().getText());
     }
 
     private void verifySmartContractParameter(SmartContractParameterContext ctx) {
-        this.verifyVariableDeclaration(ctx.variableName().start, ctx.solType().getText(),
-                ctx.variableName().getText());
+        this.verifyVariableDeclaration(ctx.variableName().start, ctx.solType().getText(), ctx.variableName().getText());
     }
 
     private void verifyVariableDeclaration(Token token, String solType, String variableName) {
@@ -152,8 +144,6 @@ public class VariableExistenceAnalyzer extends SemanticAnalyzer {
     }
 
     // #endregion variable existence
-
-
 
     // #region scope variables
 
@@ -201,13 +191,10 @@ public class VariableExistenceAnalyzer extends SemanticAnalyzer {
     }
 
     private void addFilterConstants(Map<String, String> nameTypeMap) {
-        nameTypeMap.entrySet().stream()
-                .forEach(entry -> this.addConstant(entry.getValue(), entry.getKey()));
+        nameTypeMap.entrySet().stream().forEach(entry -> this.addConstant(entry.getValue(), entry.getKey()));
     }
 
     // #endregion scope variables
-
-
 
     private static class Variable {
         final String name;

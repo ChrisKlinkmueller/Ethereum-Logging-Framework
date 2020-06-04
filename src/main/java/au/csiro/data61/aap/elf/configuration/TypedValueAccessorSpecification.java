@@ -22,8 +22,7 @@ public class TypedValueAccessorSpecification {
         return type;
     }
 
-    public static TypedValueAccessorSpecification of(String type,
-            ValueAccessorSpecification accessor) throws BuildException {
+    public static TypedValueAccessorSpecification of(String type, ValueAccessorSpecification accessor) throws BuildException {
         assert type != null;
         assert accessor != null;
         return new TypedValueAccessorSpecification(type, accessor.getValueAccessor());

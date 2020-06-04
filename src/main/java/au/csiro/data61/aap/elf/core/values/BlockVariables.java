@@ -50,14 +50,11 @@ public class BlockVariables {
         addBlockVariable(BLOCK_STATE_ROOT, "bytes", EthereumBlock::getStateRoot);
         addBlockVariable(BLOCK_TIMESTAMP, "int", EthereumBlock::getTimestamp);
         addBlockVariable(BLOCK_TOTAL_DIFFICULTY, "int", EthereumBlock::getTotalDifficulty);
-        addBlockVariable(BLOCK_TRANSACTIONS, "bytes",
-                block -> BigInteger.valueOf(block.transactionCount()));
+        addBlockVariable(BLOCK_TRANSACTIONS, "bytes", block -> BigInteger.valueOf(block.transactionCount()));
         addBlockVariable(BLOCK_TRANSACTION_ROOT, "int", EthereumBlock::getTransactionsRoot);
     }
 
-    private static void addBlockVariable(String name, String type,
-            Function<EthereumBlock, Object> blockValueExtractor) {
-        EthereumVariable.addVariable(BLOCK_VARIABLES, name, type,
-                state -> blockValueExtractor.apply(state.getReader().getCurrentBlock()));
+    private static void addBlockVariable(String name, String type, Function<EthereumBlock, Object> blockValueExtractor) {
+        EthereumVariable.addVariable(BLOCK_VARIABLES, name, type, state -> blockValueExtractor.apply(state.getReader().getCurrentBlock()));
     }
 }

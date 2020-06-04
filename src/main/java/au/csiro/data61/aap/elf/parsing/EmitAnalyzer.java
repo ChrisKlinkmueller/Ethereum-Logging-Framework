@@ -22,8 +22,7 @@ import au.csiro.data61.aap.elf.util.TypeUtils;
 public class EmitAnalyzer extends SemanticAnalyzer {
     private final VariableExistenceAnalyzer varAnalyzer;
 
-    public EmitAnalyzer(final ErrorCollector errorCollector,
-            final VariableExistenceAnalyzer varAnalyzer) {
+    public EmitAnalyzer(final ErrorCollector errorCollector, final VariableExistenceAnalyzer varAnalyzer) {
         super(errorCollector);
         assert varAnalyzer != null;
         this.varAnalyzer = varAnalyzer;
@@ -36,9 +35,10 @@ public class EmitAnalyzer extends SemanticAnalyzer {
     public void exitEmitStatementCsv(final EmitStatementCsvContext ctx) {
         this.verifyTableName(ctx.valueExpression());
 
-        this.verifyUniquenessOfNames(ctx.namedEmitVariable(),
-                varCtx -> varCtx.variableName() != null ? varCtx.variableName()
-                        : varCtx.valueExpression().variableName());
+        this.verifyUniquenessOfNames(
+            ctx.namedEmitVariable(),
+            varCtx -> varCtx.variableName() != null ? varCtx.variableName() : varCtx.valueExpression().variableName()
+        );
     }
 
     private void verifyTableName(ValueExpressionContext valueExpression) {
@@ -50,9 +50,10 @@ public class EmitAnalyzer extends SemanticAnalyzer {
 
     @Override
     public void exitEmitStatementXesEvent(EmitStatementXesEventContext ctx) {
-        this.verifyUniquenessOfNames(ctx.xesEmitVariable(),
-                varCtx -> varCtx.variableName() != null ? varCtx.variableName()
-                        : varCtx.valueExpression().variableName());
+        this.verifyUniquenessOfNames(
+            ctx.xesEmitVariable(),
+            varCtx -> varCtx.variableName() != null ? varCtx.variableName() : varCtx.valueExpression().variableName()
+        );
         this.verifyXesTypeCompatibility(ctx.xesEmitVariable());
         this.verifyXesId(ctx.pid);
         this.verifyXesId(ctx.piid);
@@ -61,9 +62,10 @@ public class EmitAnalyzer extends SemanticAnalyzer {
 
     @Override
     public void exitEmitStatementXesTrace(EmitStatementXesTraceContext ctx) {
-        this.verifyUniquenessOfNames(ctx.xesEmitVariable(),
-                varCtx -> varCtx.variableName() != null ? varCtx.variableName()
-                        : varCtx.valueExpression().variableName());
+        this.verifyUniquenessOfNames(
+            ctx.xesEmitVariable(),
+            varCtx -> varCtx.variableName() != null ? varCtx.variableName() : varCtx.valueExpression().variableName()
+        );
         this.verifyXesTypeCompatibility(ctx.xesEmitVariable());
         this.verifyXesId(ctx.pid);
         this.verifyXesId(ctx.piid);
@@ -78,8 +80,10 @@ public class EmitAnalyzer extends SemanticAnalyzer {
         }
     }
 
-    private <T extends ParserRuleContext> void verifyUniquenessOfNames(final List<T> variables,
-            final Function<T, VariableNameContext> nameAccessor) {
+    private <T extends ParserRuleContext> void verifyUniquenessOfNames(
+        final List<T> variables,
+        final Function<T, VariableNameContext> nameAccessor
+    ) {
         final Set<String> names = new HashSet<>();
         for (final T varCtx : variables) {
             final VariableNameContext nameCtx = nameAccessor.apply(varCtx);
@@ -106,16 +110,17 @@ public class EmitAnalyzer extends SemanticAnalyzer {
 
     private void verifyXesTypeCompatibility(XesEmitVariableContext ctx) {
         if (ctx.xesTypes() != null) {
-            final String solType =
-                    InterpreterUtils.determineType(ctx.valueExpression(), varAnalyzer);
+            final String solType = InterpreterUtils.determineType(ctx.valueExpression(), varAnalyzer);
             if (solType == null) {
                 this.addError(ctx.valueExpression().start, "Cannot infer type.");
             }
 
             final String xesType = ctx.xesTypes().getText();
             if (!XesWriter.areTypesCompatible(solType, xesType)) {
-                this.addError(ctx.valueExpression().start, String.format(
-                        "Cannot export solidity type '%s' as xes type '%s'.", solType, xesType));
+                this.addError(
+                    ctx.valueExpression().start,
+                    String.format("Cannot export solidity type '%s' as xes type '%s'.", solType, xesType)
+                );
             }
         }
     }

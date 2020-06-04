@@ -55,8 +55,7 @@ public class Web3jClient implements EthereumClient {
             this.web3j = Web3j.build(wsService);
             this.wsService = wsService;
         } catch (URISyntaxException | ConnectException ex) {
-            final String message = String
-                    .format("Error when connecting to the ethereum client with url '%s'.", url);
+            final String message = String.format("Error when connecting to the ethereum client with url '%s'.", url);
             LOGGER.log(Level.SEVERE, message, ex);
             throw ex;
         }
@@ -82,8 +81,13 @@ public class Web3jClient implements EthereumClient {
     }
 
     @SuppressWarnings("all")
-    public List<Type> queryPublicMember(String contract, BigInteger block, String memberName,
-            List<Type> inputParameters, List<TypeReference<?>> returnTypes) throws IOException {
+    public List<Type> queryPublicMember(
+        String contract,
+        BigInteger block,
+        String memberName,
+        List<Type> inputParameters,
+        List<TypeReference<?>> returnTypes
+    ) throws IOException {
         assert contract != null;
         assert block != null;
         assert memberName != null;
@@ -91,13 +95,14 @@ public class Web3jClient implements EthereumClient {
         assert returnTypes != null && returnTypes.stream().allMatch(Objects::nonNull);
         Function function = new Function(memberName, inputParameters, returnTypes);
         String data = FunctionEncoder.encode(function);
-        org.web3j.protocol.core.methods.request.Transaction tx =
-                org.web3j.protocol.core.methods.request.Transaction
-                        .createEthCallTransaction(contract, contract, data);
+        org.web3j.protocol.core.methods.request.Transaction tx = org.web3j.protocol.core.methods.request.Transaction
+            .createEthCallTransaction(contract, contract, data);
         final DefaultBlockParameterNumber number = new DefaultBlockParameterNumber(block);
         EthCall result = this.web3j.ethCall(tx, number).send();
-        return FunctionReturnDecoder.decode(result.getResult(), returnTypes.stream()
-                .map(t -> (TypeReference<Type>) t).collect(Collectors.toList()));
+        return FunctionReturnDecoder.decode(
+            result.getResult(),
+            returnTypes.stream().map(t -> (TypeReference<Type>) t).collect(Collectors.toList())
+        );
     }
 
     public EthereumBlock queryBlockData(BigInteger blockNumber) throws IOException {
@@ -116,16 +121,14 @@ public class Web3jClient implements EthereumClient {
 
             return this.transformBlockResults(blockResult, logResult);
         } catch (IOException ex) {
-            final String message = String
-                    .format("Error when retrieving the data for blocknumber '%s'.", blockNumber);
+            final String message = String.format("Error when retrieving the data for blocknumber '%s'.", blockNumber);
             LOGGER.log(Level.SEVERE, message, ex);
             throw ex;
         }
     }
 
     TransactionReceipt queryTransactionReceipt(String hash) throws IOException {
-        final EthGetTransactionReceipt transactionReceipt =
-                this.web3j.ethGetTransactionReceipt(hash).send();
+        final EthGetTransactionReceipt transactionReceipt = this.web3j.ethGetTransactionReceipt(hash).send();
         return transactionReceipt.getResult();
     }
 
@@ -157,10 +160,11 @@ public class Web3jClient implements EthereumClient {
 
     private void addLog(EthereumBlock ethBlock, Log log) {
         final EthereumTransaction tx = ethBlock.transactionStream()
-                .filter(t -> t.getHash().equals(log.getTransactionHash())).findAny().orElse(null);
+            .filter(t -> t.getHash().equals(log.getTransactionHash()))
+            .findAny()
+            .orElse(null);
         if (tx == null) {
-            LOGGER.log(Level.WARNING, String.format("Couldn't find transaction with hash '%s'.",
-                    log.getTransactionHash()));
+            LOGGER.log(Level.WARNING, String.format("Couldn't find transaction with hash '%s'.", log.getTransactionHash()));
             return;
         }
 

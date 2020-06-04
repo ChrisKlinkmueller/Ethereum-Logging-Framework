@@ -22,8 +22,9 @@ public class LogLineExportSpecification extends InstructionSpecification<AddLogL
 
     public static LogLineExportSpecification ofValues(List<ValueAccessorSpecification> accessors) {
         assert accessors != null && accessors.stream().allMatch(Objects::nonNull);
-        return new LogLineExportSpecification(new AddLogLineInstruction(accessors.stream()
-                .map(ValueAccessorSpecification::getValueAccessor).collect(Collectors.toList())));
+        return new LogLineExportSpecification(
+            new AddLogLineInstruction(accessors.stream().map(ValueAccessorSpecification::getValueAccessor).collect(Collectors.toList()))
+        );
     }
 
 }

@@ -23,9 +23,12 @@ public class LogEntryVariables {
         addLogEntryVariable(LOG_ADDRESS, "address", EthereumLogEntry::getAddress);
     }
 
-    private static void addLogEntryVariable(String name, String type,
-            Function<EthereumLogEntry, Object> blockValueExtractor) {
-        EthereumVariable.addVariable(LOG_ENTRY_VARIABLES, name, type,
-                state -> blockValueExtractor.apply(state.getReader().getCurrentLogEntry()));
+    private static void addLogEntryVariable(String name, String type, Function<EthereumLogEntry, Object> blockValueExtractor) {
+        EthereumVariable.addVariable(
+            LOG_ENTRY_VARIABLES,
+            name,
+            type,
+            state -> blockValueExtractor.apply(state.getReader().getCurrentLogEntry())
+        );
     }
 }

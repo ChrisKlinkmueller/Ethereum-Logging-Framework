@@ -20,15 +20,13 @@ public class Validator {
         this.interpreter = new EthqlInterpreter();
     }
 
-    public List<EthqlProcessingError> analyzeScript(String ethqlFile)
-            throws EthqlProcessingException {
+    public List<EthqlProcessingError> analyzeScript(String ethqlFile) throws EthqlProcessingException {
         final EthqlProcessingResult<ParseTree> result = this.parseScript(ethqlFile);
         assert result != null;
         return result.getErrors();
     }
 
-    public List<EthqlProcessingError> analyzeScript(InputStream stream)
-            throws EthqlProcessingException {
+    public List<EthqlProcessingError> analyzeScript(InputStream stream) throws EthqlProcessingException {
         final EthqlProcessingResult<ParseTree> result = this.parseScript(stream);
         return result.getErrors();
     }
@@ -39,8 +37,7 @@ public class Validator {
         return parseScript(fileStream);
     }
 
-    EthqlProcessingResult<ParseTree> parseScript(InputStream stream)
-            throws EthqlProcessingException {
+    EthqlProcessingResult<ParseTree> parseScript(InputStream stream) throws EthqlProcessingException {
         assert stream != null;
         return this.interpreter.parseDocument(stream);
     }
@@ -54,19 +51,16 @@ public class Validator {
         try {
             return new FileInputStream(file);
         } catch (FileNotFoundException ex) {
-            throw new EthqlProcessingException(String.format("Invalid file path: '%s'.", ethqlFile),
-                    ex);
+            throw new EthqlProcessingException(String.format("Invalid file path: '%s'.", ethqlFile), ex);
         }
     }
 
-    public static ParseTree createParseTree(final String ethqlFile)
-            throws EthqlProcessingException {
+    public static ParseTree createParseTree(final String ethqlFile) throws EthqlProcessingException {
         final Validator validator = new Validator();
         final EthqlProcessingResult<ParseTree> validatorResult = validator.parseScript(ethqlFile);
 
         if (!validatorResult.isSuccessful()) {
-            throw new EthqlProcessingException(
-                    "The ethql script is not valid. For detailed analysis results, run validator.");
+            throw new EthqlProcessingException("The ethql script is not valid. For detailed analysis results, run validator.");
         }
 
         return validatorResult.getResult();

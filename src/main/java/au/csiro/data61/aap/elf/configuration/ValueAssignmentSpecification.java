@@ -11,12 +11,10 @@ public class ValueAssignmentSpecification extends InstructionSpecification<Varia
         super(assignment);
     }
 
-    public static ValueAssignmentSpecification of(ValueMutatorSpecification mutator,
-            ValueAccessorSpecification accessor) {
+    public static ValueAssignmentSpecification of(ValueMutatorSpecification mutator, ValueAccessorSpecification accessor) {
         assert mutator != null;
         assert accessor != null;
-        return new ValueAssignmentSpecification(
-                new VariableAssignment(mutator.getMutator(), accessor.getValueAccessor()));
+        return new ValueAssignmentSpecification(new VariableAssignment(mutator.getMutator(), accessor.getValueAccessor()));
     }
 
 }

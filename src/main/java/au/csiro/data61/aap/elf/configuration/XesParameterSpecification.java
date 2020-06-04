@@ -16,73 +16,53 @@ public class XesParameterSpecification {
         return this.parameter;
     }
 
-    public static XesParameterSpecification ofBooleanParameter(String name,
-            ValueAccessorSpecification accessor) {
+    public static XesParameterSpecification ofBooleanParameter(String name, ValueAccessorSpecification accessor) {
         assert name != null && accessor != null;
-        return new XesParameterSpecification(
-                XesParameter.boolParameter(name, accessor.getValueAccessor()));
+        return new XesParameterSpecification(XesParameter.boolParameter(name, accessor.getValueAccessor()));
     }
 
-    public static XesParameterSpecification ofBooleanListParameter(String name,
-            ValueAccessorSpecification accessor) {
+    public static XesParameterSpecification ofBooleanListParameter(String name, ValueAccessorSpecification accessor) {
         assert name != null && accessor != null;
-        return new XesParameterSpecification(
-                XesParameter.boolListParameter(name, accessor.getValueAccessor()));
+        return new XesParameterSpecification(XesParameter.boolListParameter(name, accessor.getValueAccessor()));
     }
 
-    public static XesParameterSpecification ofDateParameter(String name,
-            ValueAccessorSpecification accessor) {
+    public static XesParameterSpecification ofDateParameter(String name, ValueAccessorSpecification accessor) {
         assert name != null && accessor != null;
-        return new XesParameterSpecification(
-                XesParameter.dateParameter(name, accessor.getValueAccessor()));
+        return new XesParameterSpecification(XesParameter.dateParameter(name, accessor.getValueAccessor()));
     }
 
-    public static XesParameterSpecification ofDateListParameter(String name,
-            ValueAccessorSpecification accessor) {
+    public static XesParameterSpecification ofDateListParameter(String name, ValueAccessorSpecification accessor) {
         assert name != null && accessor != null;
-        return new XesParameterSpecification(
-                XesParameter.dateListParameter(name, accessor.getValueAccessor()));
+        return new XesParameterSpecification(XesParameter.dateListParameter(name, accessor.getValueAccessor()));
     }
 
-    public static XesParameterSpecification ofIntegerParameter(String name,
-            ValueAccessorSpecification accessor) {
+    public static XesParameterSpecification ofIntegerParameter(String name, ValueAccessorSpecification accessor) {
         assert name != null && accessor != null;
-        return new XesParameterSpecification(
-                XesParameter.integerParameter(name, accessor.getValueAccessor()));
+        return new XesParameterSpecification(XesParameter.integerParameter(name, accessor.getValueAccessor()));
     }
 
-    public static XesParameterSpecification ofIntegerListParameter(String name,
-            ValueAccessorSpecification accessor) {
+    public static XesParameterSpecification ofIntegerListParameter(String name, ValueAccessorSpecification accessor) {
         assert name != null && accessor != null;
-        return new XesParameterSpecification(
-                XesParameter.integerListParameter(name, accessor.getValueAccessor()));
+        return new XesParameterSpecification(XesParameter.integerListParameter(name, accessor.getValueAccessor()));
     }
 
-    public static XesParameterSpecification ofFloatParameter(String name,
-            ValueAccessorSpecification accessor) {
+    public static XesParameterSpecification ofFloatParameter(String name, ValueAccessorSpecification accessor) {
         assert name != null && accessor != null;
-        return new XesParameterSpecification(
-                XesParameter.floatParameter(name, accessor.getValueAccessor()));
+        return new XesParameterSpecification(XesParameter.floatParameter(name, accessor.getValueAccessor()));
     }
 
-    public static XesParameterSpecification ofFloatListParameter(String name,
-            ValueAccessorSpecification accessor) {
+    public static XesParameterSpecification ofFloatListParameter(String name, ValueAccessorSpecification accessor) {
         assert name != null && accessor != null;
-        return new XesParameterSpecification(
-                XesParameter.floatListParameter(name, accessor.getValueAccessor()));
+        return new XesParameterSpecification(XesParameter.floatListParameter(name, accessor.getValueAccessor()));
     }
 
-    public static XesParameterSpecification ofStringParameter(String name,
-            ValueAccessorSpecification accessor) {
+    public static XesParameterSpecification ofStringParameter(String name, ValueAccessorSpecification accessor) {
         assert name != null && accessor != null;
-        return new XesParameterSpecification(
-                XesParameter.stringParameter(name, accessor.getValueAccessor()));
+        return new XesParameterSpecification(XesParameter.stringParameter(name, accessor.getValueAccessor()));
     }
 
-    public static XesParameterSpecification ofStringListParameter(String name,
-            ValueAccessorSpecification accessor) {
+    public static XesParameterSpecification ofStringListParameter(String name, ValueAccessorSpecification accessor) {
         assert name != null && accessor != null;
-        return new XesParameterSpecification(
-                XesParameter.stringListParameter(name, accessor.getValueAccessor()));
+        return new XesParameterSpecification(XesParameter.stringListParameter(name, accessor.getValueAccessor()));
     }
 }
