@@ -28,10 +28,11 @@ class ValidatorSyntaxSpec extends ValidatorBaseSpec {
 
         where:
         script                      | expectedErr
-        "int crypto_kitties8 = 0;"  | []
+        "int crypto_kitties = 0;"   | []
+        "cryptoKitties8 = 0;"       | []
         "int 变量 = 0;"              | []
-        "int _private^ = 0;"        | ["token recognition error at: '^'"]
-        "int 8crypto_kitties = 0;"  | ["extraneous input '8' expecting Identifier"]
+        "int private^ = 0;"         | ["token recognition error at: '^'"]
+        "int 8cryptoKitties = 0;"   | ["extraneous input '8' expecting Identifier"]
     }
 
     def "type"() {
