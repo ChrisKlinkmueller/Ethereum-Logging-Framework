@@ -22,8 +22,11 @@ public class ValidatorTest {
         try {
             List<EthqlProcessingError> errors = validator.analyzeScript(url.getFile());
             System.out.println(errors.size());
-            errors.forEach(error -> System.out.println(String.format("At line %s, col %s: %s",
-                    error.getLine(), error.getColumn(), error.getErrorMessage())));
+            errors.forEach(
+                error -> System.out.println(
+                    String.format("At line %s, col %s: %s", error.getLine(), error.getColumn(), error.getErrorMessage())
+                )
+            );
         } catch (EthqlProcessingException e) {
             e.printStackTrace();
         }

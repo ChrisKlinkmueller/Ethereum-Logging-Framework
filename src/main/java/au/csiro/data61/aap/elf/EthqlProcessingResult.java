@@ -17,11 +17,9 @@ public class EthqlProcessingResult<T> {
     private final EthqlProcessingError[] errors;
 
     private EthqlProcessingResult(T result, EthqlProcessingError[] errors) {
-        assert errors == null ? true
-                : 0 <= errors.length && Arrays.stream(errors).allMatch(error -> error != null);
+        assert errors == null ? true : 0 <= errors.length && Arrays.stream(errors).allMatch(error -> error != null);
         this.result = result;
-        this.errors =
-                errors == null ? new EthqlProcessingError[0] : Arrays.copyOf(errors, errors.length);
+        this.errors = errors == null ? new EthqlProcessingError[0] : Arrays.copyOf(errors, errors.length);
     }
 
     public boolean isSuccessful() {
@@ -37,8 +35,7 @@ public class EthqlProcessingResult<T> {
     }
 
     public String getErrorMessage() {
-        return this.errorStream().map(error -> error.getErrorMessage())
-                .collect(Collectors.joining(ERROR_MESSAGE_JOIN));
+        return this.errorStream().map(error -> error.getErrorMessage()).collect(Collectors.joining(ERROR_MESSAGE_JOIN));
     }
 
     public EthqlProcessingError getError(int index) {

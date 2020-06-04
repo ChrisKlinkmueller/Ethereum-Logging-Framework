@@ -42,8 +42,7 @@ public class SpecificationComposer {
     }
 
     public void prepareLogEntryFilterBuild() throws BuildException {
-        this.prepareBuild(FactoryState.LOG_ENTRY_FILTER, FactoryState.BLOCK_RANGE_FILTER,
-                FactoryState.TRANSACTION_FILTER);
+        this.prepareBuild(FactoryState.LOG_ENTRY_FILTER, FactoryState.BLOCK_RANGE_FILTER, FactoryState.TRANSACTION_FILTER);
     }
 
     public void prepareSmartContractFilterBuild() throws BuildException {
@@ -51,25 +50,32 @@ public class SpecificationComposer {
     }
 
     public void prepareGenericFilterBuild() throws BuildException {
-        this.prepareBuild(FactoryState.GENERIC_FILTER, FactoryState.BLOCK_RANGE_FILTER,
-                FactoryState.TRANSACTION_FILTER, FactoryState.LOG_ENTRY_FILTER,
-                FactoryState.SMART_CONTRACT_FILTER, FactoryState.PROGRAM);
+        this.prepareBuild(
+            FactoryState.GENERIC_FILTER,
+            FactoryState.BLOCK_RANGE_FILTER,
+            FactoryState.TRANSACTION_FILTER,
+            FactoryState.LOG_ENTRY_FILTER,
+            FactoryState.SMART_CONTRACT_FILTER,
+            FactoryState.PROGRAM
+        );
     }
 
-    private void prepareBuild(FactoryState newState, FactoryState... possibleCurrentStates)
-            throws BuildException {
+    private void prepareBuild(FactoryState newState, FactoryState... possibleCurrentStates) throws BuildException {
         final boolean areStatesEmpty = this.states.isEmpty() && possibleCurrentStates.length == 0;
         final boolean currentStatesMatches = !this.states.isEmpty()
-                && Arrays.stream(possibleCurrentStates).anyMatch(s -> this.states.peek() == s);
+            && Arrays.stream(possibleCurrentStates).anyMatch(s -> this.states.peek() == s);
 
         if (!(areStatesEmpty || currentStatesMatches)) {
-            throw new BuildException(possibleCurrentStates.length == 0
-                    ? String.format("A %s can only be build when no other filter is being build.",
-                            newState)
-                    : String.format("A %s cannot be added to %s, but only to: %s.", newState,
-                            this.states.peek(),
-                            Arrays.stream(possibleCurrentStates).map(state -> state.toString())
-                                    .collect(Collectors.joining(", "))));
+            throw new BuildException(
+                possibleCurrentStates.length == 0
+                    ? String.format("A %s can only be build when no other filter is being build.", newState)
+                    : String.format(
+                        "A %s cannot be added to %s, but only to: %s.",
+                        newState,
+                        this.states.peek(),
+                        Arrays.stream(possibleCurrentStates).map(state -> state.toString()).collect(Collectors.joining(", "))
+                    )
+            );
         }
 
         this.states.push(newState);
@@ -78,9 +84,9 @@ public class SpecificationComposer {
 
     public Program buildProgram() throws BuildException {
         if (this.states.peek() != FactoryState.PROGRAM) {
-            throw new BuildException(String.format(
-                    "Cannot build a program, when construction of %s has not been finished.",
-                    this.states.peek()));
+            throw new BuildException(
+                String.format("Cannot build a program, when construction of %s has not been finished.", this.states.peek())
+            );
         }
 
         final Program program = new Program(this.instructions.peek());
@@ -88,84 +94,81 @@ public class SpecificationComposer {
         return program;
     }
 
-    public void buildBlockRange(BlockNumberSpecification fromBlock,
-            BlockNumberSpecification toBlock) throws BuildException {
+    public void buildBlockRange(BlockNumberSpecification fromBlock, BlockNumberSpecification toBlock) throws BuildException {
         assert fromBlock != null && fromBlock.getType() != Type.CONTINUOUS;
         assert toBlock != null && toBlock.getType() != Type.EARLIEST;
 
         if (this.states.peek() != FactoryState.BLOCK_RANGE_FILTER) {
-            throw new BuildException(String.format(
-                    "Cannot build a block filter, when construction of %s has not been finished.",
-                    this.states.peek()));
+            throw new BuildException(
+                String.format("Cannot build a block filter, when construction of %s has not been finished.", this.states.peek())
+            );
         }
 
-        final BlockFilter blockRange = new BlockFilter(fromBlock.getValueAccessor(),
-                toBlock.getStopCriterion(), this.instructions.peek());
+        final BlockFilter blockRange = new BlockFilter(fromBlock.getValueAccessor(), toBlock.getStopCriterion(), this.instructions.peek());
 
         this.closeScope(blockRange);
     }
 
-    public void buildTransactionFilter(AddressListSpecification senders,
-            AddressListSpecification recipients) throws BuildException {
+    public void buildTransactionFilter(AddressListSpecification senders, AddressListSpecification recipients) throws BuildException {
         assert senders != null;
         assert recipients != null;
 
         if (this.states.peek() != FactoryState.TRANSACTION_FILTER) {
-            throw new BuildException(String.format(
-                    "Cannot build a transaction filter, when construction of %s has not been finished.",
-                    this.states.peek()));
+            throw new BuildException(
+                String.format("Cannot build a transaction filter, when construction of %s has not been finished.", this.states.peek())
+            );
         }
 
-        final TransactionFilter filter = new TransactionFilter(senders.getAddressCheck(),
-                recipients.getAddressCheck(), this.instructions.peek());
+        final TransactionFilter filter = new TransactionFilter(
+            senders.getAddressCheck(),
+            recipients.getAddressCheck(),
+            this.instructions.peek()
+        );
 
         this.closeScope(filter);
     }
 
-    public void buildLogEntryFilter(AddressListSpecification contracts,
-            LogEntrySignatureSpecification signature) throws BuildException {
+    public void buildLogEntryFilter(AddressListSpecification contracts, LogEntrySignatureSpecification signature) throws BuildException {
         assert contracts != null;
         assert signature != null;
 
         if (this.states.peek() != FactoryState.LOG_ENTRY_FILTER) {
-            throw new BuildException(String.format(
-                    "Cannot build a log entry filter, when construction of %s has not been finished.",
-                    this.states.peek()));
+            throw new BuildException(
+                String.format("Cannot build a log entry filter, when construction of %s has not been finished.", this.states.peek())
+            );
         }
 
-        final LogEntryFilter filter = new LogEntryFilter(contracts.getAddressCheck(),
-                signature.getSignature(), this.instructions.peek());
+        final LogEntryFilter filter = new LogEntryFilter(contracts.getAddressCheck(), signature.getSignature(), this.instructions.peek());
         this.closeScope(filter);
     }
 
-    public void buildGenericFilter(GenericFilterPredicateSpecification predicate)
-            throws BuildException {
+    public void buildGenericFilter(GenericFilterPredicateSpecification predicate) throws BuildException {
         assert predicate != null;
 
         if (this.states.peek() != FactoryState.GENERIC_FILTER) {
-            throw new BuildException(String.format(
-                    "Cannot build a generic filter, when construction of %s has not been finished.",
-                    this.states.peek()));
+            throw new BuildException(
+                String.format("Cannot build a generic filter, when construction of %s has not been finished.", this.states.peek())
+            );
         }
 
-        final GenericFilter filter =
-                new GenericFilter(predicate.getPredicate(), this.instructions.peek());
+        final GenericFilter filter = new GenericFilter(predicate.getPredicate(), this.instructions.peek());
         this.closeScope(filter);
     }
 
-    public void buildSmartContractFilter(SmartContractFilterSpecification specification)
-            throws BuildException {
+    public void buildSmartContractFilter(SmartContractFilterSpecification specification) throws BuildException {
         assert specification != null;
 
         if (this.states.peek() != FactoryState.SMART_CONTRACT_FILTER) {
-            throw new BuildException(String.format(
-                    "Cannot build a smart contract filter, when construction of %s has not been finished.",
-                    this.states.peek()));
+            throw new BuildException(
+                String.format("Cannot build a smart contract filter, when construction of %s has not been finished.", this.states.peek())
+            );
         }
 
-        final SmartContractFilter filter =
-                new SmartContractFilter(specification.getContractAddress(),
-                        specification.getQueries(), this.instructions.peek());
+        final SmartContractFilter filter = new SmartContractFilter(
+            specification.getContractAddress(),
+            specification.getQueries(),
+            this.instructions.peek()
+        );
         this.closeScope(filter);
     }
 
@@ -184,15 +187,12 @@ public class SpecificationComposer {
         this.instructions.peek().add(instruction.getInstruction());
     }
 
-    public void addVariableAssignment(ValueMutatorSpecification variable,
-            ValueAccessorSpecification value) {
-        final Instruction variableAssignment =
-                this.createVariableAssignment(variable.getMutator(), value.getValueAccessor());
+    public void addVariableAssignment(ValueMutatorSpecification variable, ValueAccessorSpecification value) {
+        final Instruction variableAssignment = this.createVariableAssignment(variable.getMutator(), value.getValueAccessor());
         this.instructions.peek().add(variableAssignment);
     }
 
-    private Instruction createVariableAssignment(ValueMutator variable,
-            ValueAccessor valueAccessor) {
+    private Instruction createVariableAssignment(ValueMutator variable, ValueAccessor valueAccessor) {
         return state -> {
             final Object value = valueAccessor.getValue(state);
             variable.setValue(value, state);
@@ -200,7 +200,12 @@ public class SpecificationComposer {
     }
 
     private static enum FactoryState {
-        PROGRAM, BLOCK_RANGE_FILTER, TRANSACTION_FILTER, LOG_ENTRY_FILTER, SMART_CONTRACT_FILTER, GENERIC_FILTER;
+        PROGRAM,
+        BLOCK_RANGE_FILTER,
+        TRANSACTION_FILTER,
+        LOG_ENTRY_FILTER,
+        SMART_CONTRACT_FILTER,
+        GENERIC_FILTER;
 
         @Override
         public String toString() {
@@ -218,12 +223,9 @@ public class SpecificationComposer {
                 case GENERIC_FILTER:
                     return "generic filter";
                 default:
-                    throw new IllegalArgumentException(
-                            String.format("FactoryState constant '%s' unknown.", this));
+                    throw new IllegalArgumentException(String.format("FactoryState constant '%s' unknown.", this));
             }
         }
     }
-
-
 
 }

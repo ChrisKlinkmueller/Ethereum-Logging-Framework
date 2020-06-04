@@ -33,8 +33,7 @@ public class LogEntrySignature {
         assert parameters != null && parameters.stream().allMatch(Objects::nonNull);
         this.name = name;
         this.parameters = new ArrayList<>(parameters);
-        this.event = new Event(this.name,
-                parameters.stream().map(Parameter::getType).collect(Collectors.toList()));
+        this.event = new Event(this.name, parameters.stream().map(Parameter::getType).collect(Collectors.toList()));
         this.encodedSignature = EventEncoder.encode(this.event);
     }
 
@@ -56,8 +55,7 @@ public class LogEntrySignature {
     }
 
     boolean hasSignature(final EthereumLogEntry logEntry) {
-        return !logEntry.getTopics().isEmpty()
-                && logEntry.getTopics().get(0).equals(this.encodedSignature);
+        return !logEntry.getTopics().isEmpty() && logEntry.getTopics().get(0).equals(this.encodedSignature);
     }
 
     public void addLogEntryValues(ProgramState state, EthereumLogEntry logEntry) throws Throwable {
@@ -70,17 +68,17 @@ public class LogEntrySignature {
         assert logEntry.getTopics().size() == topicParameters.size() + 1;
         for (int i = 0; i < topicParameters.size(); i++) {
             final Parameter topic = topicParameters.get(i);
-            Object value =
-                    TypeDecoder.instantiateType(topic.getType(), logEntry.getTopics().get(i + 1));
+            Object value = TypeDecoder.instantiateType(topic.getType(), logEntry.getTopics().get(i + 1));
             state.getValueStore().setValue(topic.getName(), value);
         }
     }
 
     private void addData(ProgramState state, EthereumLogEntry logEntry) throws Throwable {
         final List<Parameter> dataVariables = this.getEntryParameters(false);
-        final List<Object> results = FunctionReturnDecoder
-                .decode(logEntry.getData(), this.event.getNonIndexedParameters()).stream()
-                .map(type -> type.getValue()).collect(Collectors.toList());
+        final List<Object> results = FunctionReturnDecoder.decode(logEntry.getData(), this.event.getNonIndexedParameters())
+            .stream()
+            .map(type -> type.getValue())
+            .collect(Collectors.toList());
         assert dataVariables.size() == results.size();
         for (int i = 0; i < dataVariables.size(); i++) {
             String name = dataVariables.get(i).getName();
@@ -90,7 +88,6 @@ public class LogEntrySignature {
     }
 
     private List<Parameter> getEntryParameters(boolean indexed) {
-        return this.parameters.stream().filter(param -> param.isIndexed() == indexed)
-                .collect(Collectors.toList());
+        return this.parameters.stream().filter(param -> param.isIndexed() == indexed).collect(Collectors.toList());
     }
 }

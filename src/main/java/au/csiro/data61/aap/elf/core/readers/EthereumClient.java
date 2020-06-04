@@ -17,6 +17,11 @@ public interface EthereumClient {
     public EthereumBlock queryBlockData(BigInteger blockNumber) throws Throwable;
 
     @SuppressWarnings("all")
-    public List<Type> queryPublicMember(String contract, BigInteger block, String memberName,
-            List<Type> inputParameters, List<TypeReference<?>> returnTypes) throws Throwable;
+    public List<Type> queryPublicMember(
+        String contract,
+        BigInteger block,
+        String memberName,
+        List<Type> inputParameters,
+        List<TypeReference<?>> returnTypes
+    ) throws Throwable;
 }

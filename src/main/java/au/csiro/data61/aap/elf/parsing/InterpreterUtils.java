@@ -42,12 +42,10 @@ public class InterpreterUtils {
             return MethodResult.ofError("Parameter 'string' cannot be null.");
         }
         try {
-            final InputStream is =
-                    new ByteArrayInputStream(string.getBytes(StandardCharsets.UTF_8.name()));
+            final InputStream is = new ByteArrayInputStream(string.getBytes(StandardCharsets.UTF_8.name()));
             return charStreamfromInputStream(is);
         } catch (UnsupportedEncodingException ex) {
-            final String errorMessage =
-                    "UTF-8 encoding not supported for string to inputstream conversion.";
+            final String errorMessage = "UTF-8 encoding not supported for string to inputstream conversion.";
             LOG.log(Level.SEVERE, errorMessage, ex);
             return MethodResult.ofError(errorMessage, ex);
         }
@@ -63,8 +61,7 @@ public class InterpreterUtils {
         return createParser(charstreamResult, errorCollector);
     }
 
-    private static MethodResult<EthqlParser> createParser(MethodResult<CharStream> charstreamResult,
-            ErrorCollector errorCollector) {
+    private static MethodResult<EthqlParser> createParser(MethodResult<CharStream> charstreamResult, ErrorCollector errorCollector) {
         if (!charstreamResult.isSuccessful()) {
             return MethodResult.ofError(charstreamResult);
         }
@@ -84,10 +81,8 @@ public class InterpreterUtils {
         return MethodResult.ofResult(syntacticParser);
     }
 
-    public static String determineType(ValueExpressionContext ctx,
-            VariableExistenceAnalyzer varAnalyzer) {
-        return ctx.literal() != null ? literalType(ctx.literal())
-                : varAnalyzer.getVariableType(ctx.variableName().getText());
+    public static String determineType(ValueExpressionContext ctx, VariableExistenceAnalyzer varAnalyzer) {
+        return ctx.literal() != null ? literalType(ctx.literal()) : varAnalyzer.getVariableType(ctx.variableName().getText());
     }
 
     public static String literalType(LiteralContext ctx) {
@@ -114,7 +109,6 @@ public class InterpreterUtils {
             }
         }
 
-        throw new UnsupportedOperationException(
-                String.format("Literal '%s' not supported", ctx.getText()));
+        throw new UnsupportedOperationException(String.format("Literal '%s' not supported", ctx.getText()));
     }
 }

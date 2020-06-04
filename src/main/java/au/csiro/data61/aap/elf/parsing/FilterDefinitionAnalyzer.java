@@ -32,8 +32,7 @@ public class FilterDefinitionAnalyzer extends SemanticAnalyzer {
     private final VariableExistenceAnalyzer variableAnalyzer;
     private final Stack<String> conditionalTypes;
 
-    public FilterDefinitionAnalyzer(final ErrorCollector errorCollector,
-            final VariableExistenceAnalyzer variableAnalyzer) {
+    public FilterDefinitionAnalyzer(final ErrorCollector errorCollector, final VariableExistenceAnalyzer variableAnalyzer) {
         super(errorCollector);
         assert variableAnalyzer != null;
         this.variableAnalyzer = variableAnalyzer;
@@ -49,15 +48,19 @@ public class FilterDefinitionAnalyzer extends SemanticAnalyzer {
     public void exitBlockFilter(final BlockFilterContext ctx) {
         final BlockNumber from = this.determineBlockNumber(ctx.from);
         if (from.getType() == Type.INVALID || from.getType() == Type.CONTINUOUS) {
-            this.addError(ctx.from.start, "The 'from' block number must be an integer variable, "
-                    + "an integer literal or one of the values {EARLIEST, CURRENT}.");
+            this.addError(
+                ctx.from.start,
+                "The 'from' block number must be an integer variable, " + "an integer literal or one of the values {EARLIEST, CURRENT}."
+            );
             return;
         }
 
         final BlockNumber to = this.determineBlockNumber(ctx.to);
         if (to.getType() == Type.INVALID || to.getType() == Type.EARLIEST) {
-            this.addError(ctx.to.start, "The 'to' block number must be an integer variable, "
-                    + "an integer literal or one of the values {CONTINUOUS, CURRENT}.");
+            this.addError(
+                ctx.to.start,
+                "The 'to' block number must be an integer variable, " + "an integer literal or one of the values {CONTINUOUS, CURRENT}."
+            );
             return;
         }
 
@@ -66,20 +69,15 @@ public class FilterDefinitionAnalyzer extends SemanticAnalyzer {
         }
 
         if (from.getValue().compareTo(BigInteger.ZERO) < 0) {
-            this.addError(
-                ctx.from.start, 
-                String.format("The 'from' block number must be an integer larger than or equal to 0.")
-            );
+            this.addError(ctx.from.start, String.format("The 'from' block number must be an integer larger than or equal to 0."));
         }
 
         if (to.getValue().compareTo(BigInteger.ZERO) < 0) {
-            this.addError(ctx.to.start, String
-                    .format("The 'to' block number must be an integer larger than or equal to 0."));
+            this.addError(ctx.to.start, String.format("The 'to' block number must be an integer larger than or equal to 0."));
         }
 
         if (from.getValue().compareTo(to.getValue()) > 0) {
-            this.addError(ctx.from.start, String.format(
-                    "The 'from' block number must be smaller than or equal to the 'to' block number."));
+            this.addError(ctx.from.start, String.format("The 'from' block number must be smaller than or equal to the 'to' block number."));
         }
     }
 
@@ -122,8 +120,6 @@ public class FilterDefinitionAnalyzer extends SemanticAnalyzer {
 
     // #endregion block filter
 
-
-
     // #region transaction filter
 
     @Override
@@ -137,11 +133,9 @@ public class FilterDefinitionAnalyzer extends SemanticAnalyzer {
 
     private void verifyAddressList(final AddressListContext ctx) {
         if (ctx.variableName() != null) {
-            final String solType =
-                    this.variableAnalyzer.getVariableType(ctx.variableName().getText());
+            final String solType = this.variableAnalyzer.getVariableType(ctx.variableName().getText());
             if (solType != null && !TypeUtils.isAddressType(solType)) {
-                this.addError(ctx.start, String.format("'%s' must be a string variable",
-                        ctx.variableName().getText()));
+                this.addError(ctx.start, String.format("'%s' must be a string variable", ctx.variableName().getText()));
             }
             return;
         }
@@ -149,16 +143,13 @@ public class FilterDefinitionAnalyzer extends SemanticAnalyzer {
         if (ctx.BYTES_LITERAL() != null) {
             for (final TerminalNode node : ctx.BYTES_LITERAL()) {
                 if (!TypeUtils.isAddressLiteral(node.getText())) {
-                    this.addError(node.getSymbol(),
-                            String.format("'%s' is not a valid address literal.", node.getText()));
+                    this.addError(node.getSymbol(), String.format("'%s' is not a valid address literal.", node.getText()));
                 }
             }
         }
     }
 
     // #endregion transaction filter
-
-
 
     // #region log entry filter
 
@@ -168,8 +159,6 @@ public class FilterDefinitionAnalyzer extends SemanticAnalyzer {
     }
 
     // #endregion log entry filter
-
-
 
     // #region generic filter
 
@@ -181,16 +170,14 @@ public class FilterDefinitionAnalyzer extends SemanticAnalyzer {
     @Override
     public void exitConditionalOrExpression(ConditionalOrExpressionContext ctx) {
         if (ctx.conditionalOrExpression() != null) {
-            this.verifyBooleanBinaryOperation(ctx.conditionalOrExpression().start,
-                    ctx.conditionalAndExpression().start);
+            this.verifyBooleanBinaryOperation(ctx.conditionalOrExpression().start, ctx.conditionalAndExpression().start);
         }
     }
 
     @Override
     public void exitConditionalAndExpression(ConditionalAndExpressionContext ctx) {
         if (ctx.conditionalAndExpression() != null) {
-            this.verifyBooleanBinaryOperation(ctx.conditionalAndExpression().start,
-                    ctx.conditionalComparisonExpression().start);
+            this.verifyBooleanBinaryOperation(ctx.conditionalAndExpression().start, ctx.conditionalComparisonExpression().start);
         }
     }
 
@@ -248,24 +235,23 @@ public class FilterDefinitionAnalyzer extends SemanticAnalyzer {
             result = TYPE_ERROR_FLAG;
         } else if (comparators.KEY_IN() != null) {
             if (!TypeUtils.isArrayType(typeRight, typeLeft)) {
-                this.addError(token,
-                        String.format(
-                                "Types are not compatible, cannot check containment of %s in %s.",
-                                typeLeft, typeRight));
+                this.addError(token, String.format("Types are not compatible, cannot check containment of %s in %s.", typeLeft, typeRight));
                 result = TYPE_ERROR_FLAG;
             }
         } else if (EQUALITY_COMPARATORS.contains(comparators.getText())) {
             if (!TypeUtils.areCompatible(typeLeft, typeRight)) {
-                this.addError(token, String.format(
-                        "Types are not compatible, cannot check equality of %s and %s values.",
-                        typeLeft, typeRight));
+                this.addError(
+                    token,
+                    String.format("Types are not compatible, cannot check equality of %s and %s values.", typeLeft, typeRight)
+                );
                 result = TYPE_ERROR_FLAG;
             }
         } else if (INTEGER_COMPARATORS.contains(comparators.getText())) {
             if (!TypeUtils.isIntegerType(typeLeft) && !TypeUtils.isIntegerType(typeRight)) {
-                this.addError(token, String.format(
-                        "Types are not compatible, can only compare int values, but not %s and %s.",
-                        typeLeft, typeRight));
+                this.addError(
+                    token,
+                    String.format("Types are not compatible, can only compare int values, but not %s and %s.", typeLeft, typeRight)
+                );
                 result = TYPE_ERROR_FLAG;
             }
         }
@@ -280,10 +266,8 @@ public class FilterDefinitionAnalyzer extends SemanticAnalyzer {
             return;
         }
 
-        if (ctx.KEY_NOT() != null && !type.equals(TYPE_ERROR_FLAG)
-                && !TypeUtils.isBooleanType(type)) {
-            this.addError(ctx.start,
-                    "The NOT operator can only be applied to boolean expressions.");
+        if (ctx.KEY_NOT() != null && !type.equals(TYPE_ERROR_FLAG) && !TypeUtils.isBooleanType(type)) {
+            this.addError(ctx.start, "The NOT operator can only be applied to boolean expressions.");
             type = TYPE_ERROR_FLAG;
         }
         this.conditionalTypes.push(type);
@@ -292,29 +276,24 @@ public class FilterDefinitionAnalyzer extends SemanticAnalyzer {
     @Override
     public void exitConditionalPrimaryExpression(ConditionalPrimaryExpressionContext ctx) {
         if (ctx.valueExpression() != null) {
-            final String type =
-                    InterpreterUtils.determineType(ctx.valueExpression(), this.variableAnalyzer);
+            final String type = InterpreterUtils.determineType(ctx.valueExpression(), this.variableAnalyzer);
             this.conditionalTypes.push(type);
         }
     }
 
     // #endregion generic filter
 
-
-
     // #region Smart contract filter
 
     @Override
     public void enterSmartContractFilter(SmartContractFilterContext ctx) {
-        final String type =
-                InterpreterUtils.determineType(ctx.valueExpression(), this.variableAnalyzer);
+        final String type = InterpreterUtils.determineType(ctx.valueExpression(), this.variableAnalyzer);
         if (type == null) {
             return;
         }
 
         if (!TypeUtils.isAddressType(type)) {
-            this.addError(ctx.valueExpression().start,
-                    "Smart contract address must be of address type.");
+            this.addError(ctx.valueExpression().start, "Smart contract address must be of address type.");
         }
     }
 
@@ -327,8 +306,7 @@ public class FilterDefinitionAnalyzer extends SemanticAnalyzer {
         final String literalType = InterpreterUtils.literalType(ctx.literal());
         final String solType = ctx.solType().getText();
         if (!TypeUtils.areCompatible(literalType, solType)) {
-            this.addError(ctx.solType().start,
-                    String.format("Cannot cast %s literal to %s.", literalType, solType));
+            this.addError(ctx.solType().start, String.format("Cannot cast %s literal to %s.", literalType, solType));
         }
     }
 

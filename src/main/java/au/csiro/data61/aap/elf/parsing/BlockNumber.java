@@ -49,6 +49,11 @@ class BlockNumber {
     }
 
     enum Type {
-        INVALID, VARIABLE, LITERAL, CURRENT, EARLIEST, CONTINUOUS
+        INVALID,
+        VARIABLE,
+        LITERAL,
+        CURRENT,
+        EARLIEST,
+        CONTINUOUS
     }
 }

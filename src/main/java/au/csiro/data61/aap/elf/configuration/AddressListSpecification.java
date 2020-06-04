@@ -26,16 +26,13 @@ public class AddressListSpecification {
     public static AddressListSpecification ofAddress(String expectedAddress) {
         assert expectedAddress != null;
         final String lowerCaseAddress = expectedAddress.toLowerCase();
-        return new AddressListSpecification((state, address) -> address != null
-                && lowerCaseAddress.equals(address.toLowerCase()));
+        return new AddressListSpecification((state, address) -> address != null && lowerCaseAddress.equals(address.toLowerCase()));
     }
 
     public static AddressListSpecification ofAddresses(List<String> expectedAddresses) {
         assert expectedAddresses != null && expectedAddresses.stream().allMatch(Objects::nonNull);
-        final List<String> lowerCaseAddresses =
-                expectedAddresses.stream().map(ad -> ad.toLowerCase()).collect(Collectors.toList());
-        return new AddressListSpecification((state, address) -> address != null
-                && lowerCaseAddresses.contains(address.toLowerCase()));
+        final List<String> lowerCaseAddresses = expectedAddresses.stream().map(ad -> ad.toLowerCase()).collect(Collectors.toList());
+        return new AddressListSpecification((state, address) -> address != null && lowerCaseAddresses.contains(address.toLowerCase()));
     }
 
     public static AddressListSpecification ofAddresses(String... expectedAddresses) {

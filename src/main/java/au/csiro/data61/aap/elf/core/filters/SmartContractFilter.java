@@ -15,8 +15,7 @@ public class SmartContractFilter extends Filter {
     private final List<SmartContractQuery> queries;
     private final ValueAccessor contractAddress;
 
-    public SmartContractFilter(ValueAccessor contractAddress, List<SmartContractQuery> queries,
-            List<Instruction> instructions) {
+    public SmartContractFilter(ValueAccessor contractAddress, List<SmartContractQuery> queries, List<Instruction> instructions) {
         super(instructions);
         assert contractAddress != null;
         assert queries != null;
@@ -32,6 +31,5 @@ public class SmartContractFilter extends Filter {
         }
         this.executeInstructions(state);
     }
-
 
 }

@@ -27,8 +27,7 @@ public class ValueAccessorSpecification {
         return new ValueAccessorSpecification(state -> value);
     }
 
-    public static ValueAccessorSpecification addressArrayLiteral(String literal)
-            throws BuildException {
+    public static ValueAccessorSpecification addressArrayLiteral(String literal) throws BuildException {
         assert literal != null;
         final List<String> values = TypeUtils.parseBytesArrayLiteral(literal);
         return new ValueAccessorSpecification(state -> values);
@@ -40,8 +39,7 @@ public class ValueAccessorSpecification {
         return new ValueAccessorSpecification(state -> value);
     }
 
-    public static ValueAccessorSpecification booleanArrayLiteral(String literal)
-            throws BuildException {
+    public static ValueAccessorSpecification booleanArrayLiteral(String literal) throws BuildException {
         assert literal != null;
         final List<Boolean> values = TypeUtils.parseBoolArrayLiteral(literal);
         return new ValueAccessorSpecification(state -> values);
@@ -53,8 +51,7 @@ public class ValueAccessorSpecification {
         return new ValueAccessorSpecification(state -> value);
     }
 
-    public static ValueAccessorSpecification bytesArrayLiteral(String literal)
-            throws BuildException {
+    public static ValueAccessorSpecification bytesArrayLiteral(String literal) throws BuildException {
         assert literal != null;
         final List<String> values = TypeUtils.parseBytesArrayLiteral(literal);
         return new ValueAccessorSpecification(state -> values);
@@ -66,8 +63,7 @@ public class ValueAccessorSpecification {
         return new ValueAccessorSpecification(state -> number);
     }
 
-    public static ValueAccessorSpecification integerArrayLiteral(String literal)
-            throws BuildException {
+    public static ValueAccessorSpecification integerArrayLiteral(String literal) throws BuildException {
         assert literal != null;
         final List<BigInteger> values = TypeUtils.parseIntArrayLiteral(literal);
         return new ValueAccessorSpecification(state -> values);
@@ -77,8 +73,7 @@ public class ValueAccessorSpecification {
         return new ValueAccessorSpecification(state -> BigInteger.valueOf(literal));
     }
 
-    public static ValueAccessorSpecification integerLiteral(BigInteger literal)
-            throws BuildException {
+    public static ValueAccessorSpecification integerLiteral(BigInteger literal) throws BuildException {
         assert literal != null;
         return new ValueAccessorSpecification(state -> literal);
     }
@@ -89,8 +84,7 @@ public class ValueAccessorSpecification {
         return new ValueAccessorSpecification(state -> value);
     }
 
-    public static ValueAccessorSpecification stringArrayLiteral(String literal)
-            throws BuildException {
+    public static ValueAccessorSpecification stringArrayLiteral(String literal) throws BuildException {
         assert literal != null;
         final List<String> values = TypeUtils.parseStringArrayLiteral(literal);
         return new ValueAccessorSpecification(state -> values);

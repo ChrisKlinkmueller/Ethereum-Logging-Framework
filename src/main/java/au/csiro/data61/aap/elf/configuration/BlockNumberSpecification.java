@@ -16,8 +16,7 @@ public class BlockNumberSpecification {
     private final FilterPredicate<BigInteger> stopCriterion;
     private final Type type;
 
-    private BlockNumberSpecification(ValueAccessor accessor,
-            FilterPredicate<BigInteger> stopCriterion, Type type) {
+    private BlockNumberSpecification(ValueAccessor accessor, FilterPredicate<BigInteger> stopCriterion, Type type) {
         this.accessor = accessor;
         this.stopCriterion = stopCriterion;
         this.type = type;
@@ -30,7 +29,6 @@ public class BlockNumberSpecification {
     FilterPredicate<BigInteger> getStopCriterion() {
         return this.stopCriterion;
     }
-
 
     Type getType() {
         return this.type;
@@ -74,8 +72,7 @@ public class BlockNumberSpecification {
     }
 
     public static BlockNumberSpecification ofEarliest() throws BuildException {
-        final ValueAccessor accessor =
-                ValueAccessorSpecification.integerLiteral(BigInteger.ZERO).getValueAccessor();
+        final ValueAccessor accessor = ValueAccessorSpecification.integerLiteral(BigInteger.ZERO).getValueAccessor();
         return new BlockNumberSpecification(accessor, null, Type.EARLIEST);
     }
 
@@ -84,7 +81,11 @@ public class BlockNumberSpecification {
     }
 
     static enum Type {
-        CONTINUOUS, CURRENT, EARLIEST, NUMBER, VARIABLE
+        CONTINUOUS,
+        CURRENT,
+        EARLIEST,
+        NUMBER,
+        VARIABLE
     }
 
 }

@@ -49,10 +49,8 @@ public class DataReader {
 
     public Stream<EthereumLogEntry> logEntryStream() {
         return this.currentTransaction == null
-                ? (this.currentBlock == null ? Stream.empty()
-                        : this.currentBlock.transactionStream()
-                                .flatMap(EthereumTransaction::logStream))
-                : this.currentTransaction.logStream();
+            ? (this.currentBlock == null ? Stream.empty() : this.currentBlock.transactionStream().flatMap(EthereumTransaction::logStream))
+            : this.currentTransaction.logStream();
     }
 
     public void connect(String url) throws ProgramException {
@@ -64,9 +62,7 @@ public class DataReader {
         try {
             this.client = new Web3jClient(url);
         } catch (ConnectException | URISyntaxException e) {
-            throw new ProgramException(
-                    String.format("Error when connecting to Ethereum node using URL '%s'.", url),
-                    e);
+            throw new ProgramException(String.format("Error when connecting to Ethereum node using URL '%s'.", url), e);
         }
     }
 

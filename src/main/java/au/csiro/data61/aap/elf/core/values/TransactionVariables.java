@@ -47,27 +47,23 @@ public class TransactionVariables {
         addTransactionVariable(TX_VALUE, "int", EthereumTransaction::getValue);
         addTransactionVariable(TX_BLOCKHASH, "bytes", EthereumTransaction::getBlockHash);
         addTransactionVariable(TX_INPUT, "string", EthereumTransaction::getInput);
-        addTransactionVariable(TX_TRANSACTIONINDEX, "int",
-                EthereumTransaction::getTransactionIndex);
+        addTransactionVariable(TX_TRANSACTIONINDEX, "int", EthereumTransaction::getTransactionIndex);
         addTransactionVariable(TX_NONCE, "int", EthereumTransaction::getNonce);
         addTransactionVariable(TX_S, "string", EthereumTransaction::getS);
-        addTransactionVariable(TX_CUMULATIVE_GAS_USED, "int",
-                EthereumTransaction::getCumulativeGasUsed);
+        addTransactionVariable(TX_CUMULATIVE_GAS_USED, "int", EthereumTransaction::getCumulativeGasUsed);
         addTransactionVariable(TX_GAS_USED, "int", EthereumTransaction::getGasUsed);
-        addTransactionVariable(TX_CONTRACT_ADRESS, "string",
-                EthereumTransaction::getContractAddress);
+        addTransactionVariable(TX_CONTRACT_ADRESS, "string", EthereumTransaction::getContractAddress);
         addTransactionVariable(TX_LOGS_BLOOM, "string", EthereumTransaction::getLogsBloom);
         addTransactionVariable(TX_ROOT, "string", EthereumTransaction::getRoot);
         addTransactionVariable(TX_STATUS, "string", EthereumTransaction::getStatus);
         addTransactionVariable(TX_SUCCESS, "bool", EthereumTransaction::isSuccessful);
     }
 
-    private static void addTransactionVariable(String name, String type,
-            ValueExtractor<EthereumTransaction> transactionValueExtractor) {
+    private static void addTransactionVariable(String name, String type, ValueExtractor<EthereumTransaction> transactionValueExtractor) {
         EthereumVariable.addVariable(TRANSACTION_VARIABLES, name, type, state -> {
             final EthereumTransaction tx = state.getReader().getCurrentTransaction() == null
-                    ? state.getReader().getCurrentLogEntry().getTransaction()
-                    : state.getReader().getCurrentTransaction();
+                ? state.getReader().getCurrentLogEntry().getTransaction()
+                : state.getReader().getCurrentTransaction();
             return transactionValueExtractor.extractValue(tx);
         });
     }

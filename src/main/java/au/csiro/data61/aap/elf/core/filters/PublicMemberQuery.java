@@ -23,8 +23,7 @@ public class PublicMemberQuery implements SmartContractQuery {
     private final List<SmartContractParameter> inputParameters;
     private final List<Parameter> outputParameters;
 
-    public PublicMemberQuery(String memberName, List<SmartContractParameter> inputParameters,
-            List<Parameter> outputParameters) {
+    public PublicMemberQuery(String memberName, List<SmartContractParameter> inputParameters, List<Parameter> outputParameters) {
         assert memberName != null;
         assert inputParameters != null && inputParameters.stream().allMatch(Objects::nonNull);
         assert outputParameters != null && outputParameters.stream().allMatch(Objects::nonNull);
@@ -44,12 +43,10 @@ public class PublicMemberQuery implements SmartContractQuery {
             final BigInteger block = state.getReader().getCurrentBlock().getNumber();
             final List<Type> inputs = this.createInputTypes(state);
             final List<TypeReference<?>> outputs = this.createReturnTypes();
-            final List<Type> values =
-                    client.queryPublicMember(contract, block, this.memberName, inputs, outputs);
+            final List<Type> values = client.queryPublicMember(contract, block, this.memberName, inputs, outputs);
             this.setValues(values, state);
         } catch (Throwable cause) {
-            throw new ProgramException(
-                    String.format("Error querying members of smart contract %s", contract), cause);
+            throw new ProgramException(String.format("Error querying members of smart contract %s", contract), cause);
         }
     }
 
@@ -64,15 +61,13 @@ public class PublicMemberQuery implements SmartContractQuery {
     }
 
     private List<TypeReference<?>> createReturnTypes() {
-        return this.outputParameters.stream().map(param -> param.getType())
-                .collect(Collectors.toList());
+        return this.outputParameters.stream().map(param -> param.getType()).collect(Collectors.toList());
     }
 
     @SuppressWarnings("all")
     private void setValues(List<Type> values, ProgramState state) {
         if (!this.matchOutputParameters(values)) {
-            throw new IllegalArgumentException(
-                    "Output parameters not compatible with return values.");
+            throw new IllegalArgumentException("Output parameters not compatible with return values.");
         }
 
         IntStream.range(0, values.size()).forEach(i -> {
@@ -88,8 +83,7 @@ public class PublicMemberQuery implements SmartContractQuery {
             return false;
         }
 
-        return IntStream.range(0, values.size())
-                .allMatch(i -> typesMatch(values.get(i), this.outputParameters.get(i)));
+        return IntStream.range(0, values.size()).allMatch(i -> typesMatch(values.get(i), this.outputParameters.get(i)));
     }
 
     @SuppressWarnings("all")

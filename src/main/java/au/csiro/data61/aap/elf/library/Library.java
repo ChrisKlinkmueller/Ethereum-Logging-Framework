@@ -30,80 +30,56 @@ public class Library {
         this.registeredMethods = new HashMap<>();
 
         try {
-            this.addMethod(new MethodSignature("connect", null, "string"),
-                    ProgramState::connectClient);
-            this.addMethod(new MethodSignature("setOutputFolder", null, "string"),
-                    ProgramState::setOutputFolder);
+            this.addMethod(new MethodSignature("connect", null, "string"), ProgramState::connectClient);
+            this.addMethod(new MethodSignature("setOutputFolder", null, "string"), ProgramState::setOutputFolder);
             this.addMethod(new MethodSignature("add", "int", "int", "int"), IntegerOperations::add);
-            this.addMethod(new MethodSignature("multiply", "int", "int", "int"),
-                    IntegerOperations::multiply);
-            this.addMethod(new MethodSignature("subtract", "int", "int", "int"),
-                    IntegerOperations::subtract);
-            this.addMethod(new MethodSignature("divide", "int", "int", "int"),
-                    IntegerOperations::divide);
-            this.addMethod(new MethodSignature("contains", "bool", "address[]", "address"),
-                    ListOperations::contains);
-            this.addMethod(new MethodSignature("contains", "bool", "int[]", "int"),
-                    ListOperations::contains);
-            this.addMethod(new MethodSignature("add", null, "int[]", "int"),
-                    ListOperations::addElement);
-            this.addMethod(new MethodSignature("add", null, "address[]", "address"),
-                    ListOperations::addElement);
-            this.addMethod(new MethodSignature("remove", null, "address[]", "address"),
-                    ListOperations::removeElement);
+            this.addMethod(new MethodSignature("multiply", "int", "int", "int"), IntegerOperations::multiply);
+            this.addMethod(new MethodSignature("subtract", "int", "int", "int"), IntegerOperations::subtract);
+            this.addMethod(new MethodSignature("divide", "int", "int", "int"), IntegerOperations::divide);
+            this.addMethod(new MethodSignature("contains", "bool", "address[]", "address"), ListOperations::contains);
+            this.addMethod(new MethodSignature("contains", "bool", "int[]", "int"), ListOperations::contains);
+            this.addMethod(new MethodSignature("add", null, "int[]", "int"), ListOperations::addElement);
+            this.addMethod(new MethodSignature("add", null, "address[]", "address"), ListOperations::addElement);
+            this.addMethod(new MethodSignature("remove", null, "address[]", "address"), ListOperations::removeElement);
             this.addMethod(new MethodSignature("clear", null, "address[]"), ListOperations::clear);
 
-            this.addMethod(ValueDictionary::boolToBool, "bool", ValueDictionary.METHOD_NAME, "bool",
-                    "bool", "bool[]", "bool[]");
-            this.addMethod(ValueDictionary::stringToBool, "bool", ValueDictionary.METHOD_NAME,
-                    "byte", "bool", "byte[]", "bool[]");
-            this.addMethod(ValueDictionary::intToBool, "bool", ValueDictionary.METHOD_NAME, "int",
-                    "bool", "int[]", "bool[]");
-            this.addMethod(ValueDictionary::stringToBool, "bool", ValueDictionary.METHOD_NAME,
-                    "string", "bool", "string[]", "bool[]");
-            this.addMethod(ValueDictionary::boolToString, "byte", ValueDictionary.METHOD_NAME,
-                    "bool", "byte", "bool[]", "byte[]");
-            this.addMethod(ValueDictionary::stringToString, "byte", ValueDictionary.METHOD_NAME,
-                    "byte", "byte", "byte[]", "byte[]");
-            this.addMethod(ValueDictionary::intToString, "byte", ValueDictionary.METHOD_NAME, "int",
-                    "byte", "int[]", "byte[]");
-            this.addMethod(ValueDictionary::stringToString, "byte", ValueDictionary.METHOD_NAME,
-                    "string", "byte", "string[]", "byte[]");
-            this.addMethod(ValueDictionary::boolToInt, "int", ValueDictionary.METHOD_NAME, "bool",
-                    "int", "bool[]", "int[]");
-            this.addMethod(ValueDictionary::stringToInt, "int", ValueDictionary.METHOD_NAME, "byte",
-                    "int", "byte[]", "int[]");
-            this.addMethod(ValueDictionary::intToInt, "int", ValueDictionary.METHOD_NAME, "int",
-                    "int", "int[]", "int[]");
-            this.addMethod(ValueDictionary::stringToInt, "int", ValueDictionary.METHOD_NAME,
-                    "string", "int", "string[]", "int[]");
-            this.addMethod(ValueDictionary::boolToString, "string", ValueDictionary.METHOD_NAME,
-                    "bool", "string", "bool[]", "string[]");
-            this.addMethod(ValueDictionary::stringToString, "string", ValueDictionary.METHOD_NAME,
-                    "byte", "string", "byte[]", "string[]");
-            this.addMethod(ValueDictionary::intToString, "string", ValueDictionary.METHOD_NAME,
-                    "int", "string", "int[]", "string[]");
-            this.addMethod(ValueDictionary::stringToString, "string", ValueDictionary.METHOD_NAME,
-                    "string", "string", "string[]", "string[]");
+            this.addMethod(ValueDictionary::boolToBool, "bool", ValueDictionary.METHOD_NAME, "bool", "bool", "bool[]", "bool[]");
+            this.addMethod(ValueDictionary::stringToBool, "bool", ValueDictionary.METHOD_NAME, "byte", "bool", "byte[]", "bool[]");
+            this.addMethod(ValueDictionary::intToBool, "bool", ValueDictionary.METHOD_NAME, "int", "bool", "int[]", "bool[]");
+            this.addMethod(ValueDictionary::stringToBool, "bool", ValueDictionary.METHOD_NAME, "string", "bool", "string[]", "bool[]");
+            this.addMethod(ValueDictionary::boolToString, "byte", ValueDictionary.METHOD_NAME, "bool", "byte", "bool[]", "byte[]");
+            this.addMethod(ValueDictionary::stringToString, "byte", ValueDictionary.METHOD_NAME, "byte", "byte", "byte[]", "byte[]");
+            this.addMethod(ValueDictionary::intToString, "byte", ValueDictionary.METHOD_NAME, "int", "byte", "int[]", "byte[]");
+            this.addMethod(ValueDictionary::stringToString, "byte", ValueDictionary.METHOD_NAME, "string", "byte", "string[]", "byte[]");
+            this.addMethod(ValueDictionary::boolToInt, "int", ValueDictionary.METHOD_NAME, "bool", "int", "bool[]", "int[]");
+            this.addMethod(ValueDictionary::stringToInt, "int", ValueDictionary.METHOD_NAME, "byte", "int", "byte[]", "int[]");
+            this.addMethod(ValueDictionary::intToInt, "int", ValueDictionary.METHOD_NAME, "int", "int", "int[]", "int[]");
+            this.addMethod(ValueDictionary::stringToInt, "int", ValueDictionary.METHOD_NAME, "string", "int", "string[]", "int[]");
+            this.addMethod(ValueDictionary::boolToString, "string", ValueDictionary.METHOD_NAME, "bool", "string", "bool[]", "string[]");
+            this.addMethod(ValueDictionary::stringToString, "string", ValueDictionary.METHOD_NAME, "byte", "string", "byte[]", "string[]");
+            this.addMethod(ValueDictionary::intToString, "string", ValueDictionary.METHOD_NAME, "int", "string", "int[]", "string[]");
+            this.addMethod(
+                ValueDictionary::stringToString,
+                "string",
+                ValueDictionary.METHOD_NAME,
+                "string",
+                "string",
+                "string[]",
+                "string[]"
+            );
 
-            this.addMethod(BitMapping::mapBitsToString, "string", BitMapping.METHOD_NAME, "int",
-                    "int", "int", "string[]");
-            this.addMethod(BitMapping::mapBitsToString, "byte", BitMapping.METHOD_NAME, "int",
-                    "int", "int", "byte[]");
-            this.addMethod(BitMapping::mapBitsToInt, "int", BitMapping.METHOD_NAME, "int", "int",
-                    "int", "int[]");
-            this.addMethod(BitMapping::mapBitsToBool, "bool", BitMapping.METHOD_NAME, "int", "int",
-                    "int", "bool[]");
+            this.addMethod(BitMapping::mapBitsToString, "string", BitMapping.METHOD_NAME, "int", "int", "int", "string[]");
+            this.addMethod(BitMapping::mapBitsToString, "byte", BitMapping.METHOD_NAME, "int", "int", "int", "byte[]");
+            this.addMethod(BitMapping::mapBitsToInt, "int", BitMapping.METHOD_NAME, "int", "int", "int", "int[]");
+            this.addMethod(BitMapping::mapBitsToBool, "bool", BitMapping.METHOD_NAME, "int", "int", "int", "bool[]");
 
         } catch (LibraryException e) {
             e.printStackTrace();
         }
     }
 
-    private void addMethod(Method method, String returnType, String methodName,
-            String... parameterTypes) {
-        final MethodSignature signature =
-                new MethodSignature(methodName, returnType, parameterTypes);
+    private void addMethod(Method method, String returnType, String methodName, String... parameterTypes) {
+        final MethodSignature signature = new MethodSignature(methodName, returnType, parameterTypes);
         try {
             this.addMethod(signature, method);
         } catch (LibraryException ex) {
@@ -117,13 +93,10 @@ public class Library {
         this.registeredMethods.putIfAbsent(signature.getMethodName(), new LinkedList<>());
         final List<LibraryEntry> entries = this.registeredMethods.get(signature.getMethodName());
         if (this.containsEntry(entries, signature)) {
-            throw new LibraryException(String.format("Entry with signature '%s' already exists.",
-                    signature.getSignature()));
+            throw new LibraryException(String.format("Entry with signature '%s' already exists.", signature.getSignature()));
         }
         entries.add(new LibraryEntry(method, signature));
     }
-
-
 
     public boolean isMethodNameKnown(String methodName) {
         return this.registeredMethods.containsKey(methodName);
@@ -137,15 +110,16 @@ public class Library {
         return this.findEntry(methodName, parameterTypes, LibraryEntry::getSignature);
     }
 
-    private <T> T findEntry(String methodName, List<String> parameterTypes,
-            Function<LibraryEntry, T> mapper) {
+    private <T> T findEntry(String methodName, List<String> parameterTypes, Function<LibraryEntry, T> mapper) {
         assert methodName != null;
         assert parameterTypes != null && parameterTypes.stream().allMatch(Objects::nonNull);
-        final MethodSignature requestedSignature =
-                new MethodSignature(methodName, "", parameterTypes);
-        return this.registeredMethods.getOrDefault(methodName, Collections.emptyList()).stream()
-                .filter(re -> re.isCompatibleWith(requestedSignature)).map(re -> mapper.apply(re))
-                .findFirst().orElse(null);
+        final MethodSignature requestedSignature = new MethodSignature(methodName, "", parameterTypes);
+        return this.registeredMethods.getOrDefault(methodName, Collections.emptyList())
+            .stream()
+            .filter(re -> re.isCompatibleWith(requestedSignature))
+            .map(re -> mapper.apply(re))
+            .findFirst()
+            .orElse(null);
     }
 
     private boolean containsEntry(List<LibraryEntry> entries, MethodSignature signature) {

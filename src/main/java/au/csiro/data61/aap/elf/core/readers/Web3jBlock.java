@@ -106,5 +106,4 @@ class Web3jBlock extends EthereumBlock {
         return this.block.getUncles();
     }
 
-
 }

@@ -12,16 +12,14 @@ import au.csiro.data61.aap.elf.core.values.ValueAccessor;
 public class AddXesEventInstruction extends AddXesElementInstruction {
     private final ValueAccessor eid;
 
-    public AddXesEventInstruction(ValueAccessor pid, ValueAccessor piid, ValueAccessor eid,
-            List<XesParameter> parameters) {
+    public AddXesEventInstruction(ValueAccessor pid, ValueAccessor piid, ValueAccessor eid, List<XesParameter> parameters) {
         super(pid, piid, parameters);
         this.eid = eid;
 
     }
 
     @Override
-    protected void startElement(XesWriter writer, ProgramState state, String pid, String piid)
-            throws ProgramException {
+    protected void startElement(XesWriter writer, ProgramState state, String pid, String piid) throws ProgramException {
         final String eid = this.getId(state, this.eid);
         writer.startEvent(pid, piid, eid);
     }

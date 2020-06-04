@@ -25,33 +25,35 @@ public class SmartContractQuerySpecification {
         return this.query;
     }
 
-    public static SmartContractQuerySpecification ofMemberVariable(
-            ParameterSpecification variable) {
+    public static SmartContractQuerySpecification ofMemberVariable(ParameterSpecification variable) {
         assert variable != null;
-        final SmartContractQuery query = new PublicMemberQuery(variable.getParameter().getName(),
-                Collections.emptyList(), Arrays.asList(variable.getParameter()));
+        final SmartContractQuery query = new PublicMemberQuery(
+            variable.getParameter().getName(),
+            Collections.emptyList(),
+            Arrays.asList(variable.getParameter())
+        );
         return new SmartContractQuerySpecification(query);
     }
 
-    public static SmartContractQuerySpecification ofMemberFunction(String functionName,
-            List<TypedValueAccessorSpecification> inputParameters,
-            List<ParameterSpecification> outpuParameters) {
+    public static SmartContractQuerySpecification ofMemberFunction(
+        String functionName,
+        List<TypedValueAccessorSpecification> inputParameters,
+        List<ParameterSpecification> outpuParameters
+    ) {
         assert inputParameters != null;
         assert outpuParameters != null;
         assert functionName != null;
 
         final List<SmartContractParameter> inputs = inputParameters.stream()
-                .map(param -> createSmartContractParameter(param)).collect(Collectors.toList());
+            .map(param -> createSmartContractParameter(param))
+            .collect(Collectors.toList());
 
-        final List<Parameter> outputs =
-                outpuParameters.stream().map(p -> p.getParameter()).collect(Collectors.toList());
+        final List<Parameter> outputs = outpuParameters.stream().map(p -> p.getParameter()).collect(Collectors.toList());
 
-        return new SmartContractQuerySpecification(
-                new PublicMemberQuery(functionName, inputs, outputs));
+        return new SmartContractQuerySpecification(new PublicMemberQuery(functionName, inputs, outputs));
     }
 
-    private static SmartContractParameter createSmartContractParameter(
-            TypedValueAccessorSpecification param) {
+    private static SmartContractParameter createSmartContractParameter(TypedValueAccessorSpecification param) {
         final String name = createParameterName();
         return new SmartContractParameter(param.getType(), name, param.getAccessor());
     }

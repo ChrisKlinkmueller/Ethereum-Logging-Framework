@@ -67,8 +67,7 @@ public class MethodSignature {
     }
 
     public String getSignature() {
-        return String.format("%s(%s)", this.methodName,
-                this.parameterTypeStream().collect(Collectors.joining(",")));
+        return String.format("%s(%s)", this.methodName, this.parameterTypeStream().collect(Collectors.joining(",")));
     }
 
     public boolean isCompatibleWith(MethodSignature signature) {
@@ -89,6 +88,5 @@ public class MethodSignature {
         }
         return true;
     }
-
 
 }

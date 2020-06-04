@@ -17,8 +17,7 @@ public abstract class AddXesElementInstruction implements Instruction {
     private final ValueAccessor pid;
     private final ValueAccessor piid;
 
-    protected AddXesElementInstruction(ValueAccessor pid, ValueAccessor piid,
-            List<XesParameter> parameters) {
+    protected AddXesElementInstruction(ValueAccessor pid, ValueAccessor piid, List<XesParameter> parameters) {
         assert parameters != null && parameters.stream().allMatch(Objects::nonNull);
         this.pid = pid;
         this.piid = piid;
@@ -39,6 +38,5 @@ public abstract class AddXesElementInstruction implements Instruction {
         return accessor == null ? null : accessor.getValue(state).toString();
     }
 
-    protected abstract void startElement(XesWriter writer, ProgramState state, String pid,
-            String piid) throws ProgramException;
+    protected abstract void startElement(XesWriter writer, ProgramState state, String pid, String piid) throws ProgramException;
 }

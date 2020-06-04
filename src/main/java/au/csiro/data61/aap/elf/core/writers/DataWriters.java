@@ -18,7 +18,7 @@ public class DataWriters {
         this.logWriter = new LogWriter();
         this.xesWriter = new XesWriter();
 
-        this.writers = new DataWriter[] {this.csvWriter, this.logWriter, this.xesWriter};
+        this.writers = new DataWriter[] { this.csvWriter, this.logWriter, this.xesWriter };
     }
 
     public XesWriter getXesWriter() {

@@ -21,16 +21,14 @@ public class LogWriter extends DataWriter {
     public void addLogLine(List<Object> itemParts) {
         assert itemParts != null;
 
-        this.lines.add(
-                itemParts.stream().map(obj -> this.asString(obj)).collect(Collectors.joining()));
+        this.lines.add(itemParts.stream().map(obj -> this.asString(obj)).collect(Collectors.joining()));
     }
 
     @Override
     protected void writeState(String filenameSuffix) throws Throwable {
         assert filenameSuffix != null;
         if (!this.lines.isEmpty()) {
-            final Path outputPath = Paths.get(this.getOutputFolder().toString(),
-                    String.format("%s.log", filenameSuffix));
+            final Path outputPath = Paths.get(this.getOutputFolder().toString(), String.format("%s.log", filenameSuffix));
 
             try (BufferedWriter writer = new BufferedWriter(new FileWriter(outputPath.toFile()))) {
                 for (String line : lines) {

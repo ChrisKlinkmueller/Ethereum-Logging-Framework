@@ -28,8 +28,7 @@ public class Extractor {
         walker.walk(rootListener, parseTree);
 
         if (builder.containsError()) {
-            throw new EthqlProcessingException("Error when configuring the data extraction.",
-                    builder.getError());
+            throw new EthqlProcessingException("Error when configuring the data extraction.", builder.getError());
         }
 
         final Program program = builder.getProgram();

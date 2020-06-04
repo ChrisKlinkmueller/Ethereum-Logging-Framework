@@ -32,20 +32,16 @@ public class TypeUtils {
         final boolean typeIsArray = type.matches(ARRAY_PATTERN);
         final boolean expectedTypeIsArray = type.matches(ARRAY_PATTERN);
         if (typeIsArray && expectedTypeIsArray) {
-            return areCompatible(type.substring(0, type.length() - 2),
-                    expectedType.substring(0, expectedType.length() - 2));
+            return areCompatible(type.substring(0, type.length() - 2), expectedType.substring(0, expectedType.length() - 2));
         } else if (typeIsArray || expectedTypeIsArray) {
             return false;
         }
 
         return (type.contains(INT_TYPE_KEYWORD) && expectedType.contains(INT_TYPE_KEYWORD))
-                || (type.contains(BYTES_TYPE_KEYWORD) && expectedType.contains(BYTES_TYPE_KEYWORD))
-                || (type.contains(ADDRESS_TYPE_KEYWORD)
-                        && expectedType.contains(BYTES_TYPE_KEYWORD))
-                || (type.contains(BYTES_TYPE_KEYWORD)
-                        && expectedType.contains(ADDRESS_TYPE_KEYWORD))
-                || (type.contains(ADDRESS_TYPE_KEYWORD)
-                        && expectedType.contains(ADDRESS_TYPE_KEYWORD));
+            || (type.contains(BYTES_TYPE_KEYWORD) && expectedType.contains(BYTES_TYPE_KEYWORD))
+            || (type.contains(ADDRESS_TYPE_KEYWORD) && expectedType.contains(BYTES_TYPE_KEYWORD))
+            || (type.contains(BYTES_TYPE_KEYWORD) && expectedType.contains(ADDRESS_TYPE_KEYWORD))
+            || (type.contains(ADDRESS_TYPE_KEYWORD) && expectedType.contains(ADDRESS_TYPE_KEYWORD));
     }
 
     public static boolean isArrayType(String arrayType, String baseType) {
@@ -66,8 +62,7 @@ public class TypeUtils {
         } else if (type.contains(STRING_TYPE_KEYWORD)) {
             return STRING_TYPE_KEYWORD;
         } else {
-            throw new IllegalArgumentException(
-                    String.format("''%s' not recognized as a valid type.", type));
+            throw new IllegalArgumentException(String.format("''%s' not recognized as a valid type.", type));
         }
 
     }
@@ -105,11 +100,9 @@ public class TypeUtils {
         assert solidityType != null && value != null;
         try {
             return TypeDecoder.instantiateType(solidityType, value).getValue();
-        } catch (InvocationTargetException | NoSuchMethodException | InstantiationException
-                | IllegalAccessException | ClassNotFoundException e) {
-            throw new ProgramException(
-                    String.format("Error when decoding value '%s' as '%s'", value, solidityType),
-                    e);
+        } catch (InvocationTargetException | NoSuchMethodException | InstantiationException | IllegalAccessException
+            | ClassNotFoundException e) {
+            throw new ProgramException(String.format("Error when decoding value '%s' as '%s'", value, solidityType), e);
         }
     }
 
@@ -124,8 +117,7 @@ public class TypeUtils {
     }
 
     public static boolean isArrayLiteral(String literal) {
-        return literal != null && 2 <= literal.length() && literal.charAt(0) == '['
-                && literal.charAt(literal.length() - 1) == ']';
+        return literal != null && 2 <= literal.length() && literal.charAt(0) == '[' && literal.charAt(literal.length() - 1) == ']';
     }
 
     private static final int ADDRESS_BYTES_LENGTH = 20;
@@ -151,8 +143,7 @@ public class TypeUtils {
     }
 
     public static boolean isBooleanLiteral(String literal) {
-        return literal != null
-                && (literal.toLowerCase().equals("true") || literal.toLowerCase().equals("false"));
+        return literal != null && (literal.toLowerCase().equals("true") || literal.toLowerCase().equals("false"));
     }
 
     private static final String INT_PATTERN = "[0]|[1-9][0-9]*";
@@ -162,14 +153,12 @@ public class TypeUtils {
     }
 
     public static boolean isStringLiteral(String literal) {
-        return literal != null && 2 <= literal.length() && literal.charAt(0) == '\"'
-                && literal.charAt(literal.length() - 1) == '\"';
+        return literal != null && 2 <= literal.length() && literal.charAt(0) == '\"' && literal.charAt(literal.length() - 1) == '\"';
     }
 
     public static Boolean parseBoolLiteral(String literal) {
         if (!TypeUtils.isBooleanLiteral(literal)) {
-            throw new IllegalArgumentException(
-                    String.format("Value '%s' is not a string literal.", literal));
+            throw new IllegalArgumentException(String.format("Value '%s' is not a string literal.", literal));
         }
         return Boolean.parseBoolean(literal);
     }
@@ -178,11 +167,9 @@ public class TypeUtils {
         return parseArrayLiteral(literal, TypeUtils::parseBoolLiteral);
     }
 
-
     public static String parseBytesLiteral(String literal) {
         if (!TypeUtils.isBytesLiteral(literal)) {
-            throw new IllegalArgumentException(
-                    String.format("Value '%s' is not a bytes or address literal.", literal));
+            throw new IllegalArgumentException(String.format("Value '%s' is not a bytes or address literal.", literal));
         }
         return literal;
     }
@@ -191,11 +178,9 @@ public class TypeUtils {
         return parseArrayLiteral(literal, TypeUtils::parseBytesLiteral);
     }
 
-
     public static BigInteger parseIntLiteral(String literal) {
         if (!TypeUtils.isIntLiteral(literal)) {
-            throw new IllegalArgumentException(
-                    String.format("Value '%s' is not an int literal.", literal));
+            throw new IllegalArgumentException(String.format("Value '%s' is not an int literal.", literal));
         }
         return new BigInteger(literal);
     }
@@ -206,8 +191,7 @@ public class TypeUtils {
 
     public static String parseStringLiteral(String literal) {
         if (!TypeUtils.isStringLiteral(literal)) {
-            throw new IllegalArgumentException(
-                    String.format("Value '%s' is not a string literal.", literal));
+            throw new IllegalArgumentException(String.format("Value '%s' is not a string literal.", literal));
         }
         return literal.substring(1, literal.length() - 1);
     }
@@ -218,8 +202,7 @@ public class TypeUtils {
 
     private static <T> List<T> parseArrayLiteral(String literal, Function<String, T> converter) {
         if (!TypeUtils.isArrayLiteral(literal)) {
-            throw new IllegalArgumentException(
-                    String.format("Value '%s' is not an array literal.", literal));
+            throw new IllegalArgumentException(String.format("Value '%s' is not an array literal.", literal));
         }
         List<T> list = new ArrayList<>();
         final String[] elements = literal.substring(1, literal.length() - 1).split(",");

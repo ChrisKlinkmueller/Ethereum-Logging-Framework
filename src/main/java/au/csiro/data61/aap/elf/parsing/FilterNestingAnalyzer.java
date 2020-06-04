@@ -89,32 +89,28 @@ public class FilterNestingAnalyzer extends SemanticAnalyzer {
 
     static {
         VALID_ENCLOSING_FILTERS = new HashMap<>();
-        VALID_ENCLOSING_FILTERS.put(BLOCK_FILTER,
-                FilterNestingAnalyzer::areBlockFilterParentsValid);
-        VALID_ENCLOSING_FILTERS.put(TRANSACTION_FILTER,
-                FilterNestingAnalyzer::areTransactionFilterParentsValid);
-        VALID_ENCLOSING_FILTERS.put(LOG_ENRY_FILTER,
-                FilterNestingAnalyzer::areLogEntryFilterParentsValid);
-        VALID_ENCLOSING_FILTERS.put(GENERIC_FILTER,
-                FilterNestingAnalyzer::areGenericFilterParentsValid);
-        VALID_ENCLOSING_FILTERS.put(SMART_CONTRACT_FILTER,
-                FilterNestingAnalyzer::areSmartContractFilterParentsValid);
+        VALID_ENCLOSING_FILTERS.put(BLOCK_FILTER, FilterNestingAnalyzer::areBlockFilterParentsValid);
+        VALID_ENCLOSING_FILTERS.put(TRANSACTION_FILTER, FilterNestingAnalyzer::areTransactionFilterParentsValid);
+        VALID_ENCLOSING_FILTERS.put(LOG_ENRY_FILTER, FilterNestingAnalyzer::areLogEntryFilterParentsValid);
+        VALID_ENCLOSING_FILTERS.put(GENERIC_FILTER, FilterNestingAnalyzer::areGenericFilterParentsValid);
+        VALID_ENCLOSING_FILTERS.put(SMART_CONTRACT_FILTER, FilterNestingAnalyzer::areSmartContractFilterParentsValid);
     }
 
     private static boolean areBlockFilterParentsValid(Stack<String> stack) {
-        return !stack.isEmpty() && stack.get(0).equals(PROGRAM) && IntStream.range(1, stack.size())
-                .allMatch(i -> stack.get(i).equals(GENERIC_FILTER));
+        return !stack.isEmpty()
+            && stack.get(0).equals(PROGRAM)
+            && IntStream.range(1, stack.size()).allMatch(i -> stack.get(i).equals(GENERIC_FILTER));
     }
 
     private static boolean areTransactionFilterParentsValid(Stack<String> stack) {
-        return !stack.isEmpty() && stack.get(0).equals(PROGRAM)
-                && countFilters(stack, BLOCK_FILTER) == 1;
+        return !stack.isEmpty() && stack.get(0).equals(PROGRAM) && countFilters(stack, BLOCK_FILTER) == 1;
     }
 
     private static boolean areLogEntryFilterParentsValid(Stack<String> stack) {
-        return !stack.isEmpty() && stack.get(0).equals(PROGRAM)
-                && countFilters(stack, BLOCK_FILTER) == 1
-                && countFilters(stack, TRANSACTION_FILTER) <= 1;
+        return !stack.isEmpty()
+            && stack.get(0).equals(PROGRAM)
+            && countFilters(stack, BLOCK_FILTER) == 1
+            && countFilters(stack, TRANSACTION_FILTER) <= 1;
     }
 
     private static long countFilters(Stack<String> stack, String filter) {

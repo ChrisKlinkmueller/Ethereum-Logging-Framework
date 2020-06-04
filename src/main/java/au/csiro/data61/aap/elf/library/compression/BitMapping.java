@@ -12,18 +12,15 @@ import au.csiro.data61.aap.elf.core.exceptions.ProgramException;
 public class BitMapping {
     public static final String METHOD_NAME = "mapBits";
 
-    public static Object mapBitsToBool(Object[] parameters, ProgramState state)
-            throws ProgramException {
+    public static Object mapBitsToBool(Object[] parameters, ProgramState state) throws ProgramException {
         return mapBits(parameters, Boolean.class);
     }
 
-    public static Object mapBitsToInt(Object[] parameters, ProgramState state)
-            throws ProgramException {
+    public static Object mapBitsToInt(Object[] parameters, ProgramState state) throws ProgramException {
         return mapBits(parameters, BigInteger.class);
     }
 
-    public static Object mapBitsToString(Object[] parameters, ProgramState state)
-            throws ProgramException {
+    public static Object mapBitsToString(Object[] parameters, ProgramState state) throws ProgramException {
         return mapBits(parameters, String.class);
     }
 
