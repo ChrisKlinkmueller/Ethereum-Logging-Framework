@@ -29,6 +29,10 @@ Parsing:
     ☐ GenericFilter: right handside of IN operator should only be array variables or literals
     ☐ check parsing of address literals for smart contract filters
     ☐ check definition of methodcalls in smart contract filters
+    ☐ Undefined variables in boolean expressions might throw variables: 
+        see ValidatorSemanticSpec: 
+          "if (true && i in [5, 3]) {}" | ["variable i not defined."], 
+          "if (i in \"[5,3]\") {}"            | ["type mismatch"]
     
 
 Building:
