@@ -104,6 +104,13 @@
       <version>1.10.10</version>
       <scope>test</scope>
     </dependency>
+    <!-- objenesis is used to bypass constructor when mocking -->
+    <dependency>
+      <groupId>org.objenesis</groupId>
+      <artifactId>objenesis</artifactId>
+      <version>3.1</version>
+      <scope>test</scope>
+    </dependency>
   </dependencies>
 
   <build>

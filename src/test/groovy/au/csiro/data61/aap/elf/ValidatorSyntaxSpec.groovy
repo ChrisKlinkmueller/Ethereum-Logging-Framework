@@ -1,9 +1,26 @@
 package au.csiro.data61.aap.elf
 
-class ValidatorSyntaxSpec extends ValidatorBaseSpec {
+import au.csiro.data61.aap.elf.parsing.ErrorCollector
+import au.csiro.data61.aap.elf.parsing.EthqlInterpreter
+import au.csiro.data61.aap.elf.parsing.SemanticAnalysis
+import org.antlr.v4.runtime.tree.ParseTree
+import spock.lang.Specification
+
+class ValidatorSyntaxSpec extends Specification {
+    // we don't want to detect semantic errors while testing syntax validator
+    // so here we mock a no-op semantic analyser
+    SemanticAnalysis noOpAnalyser = Stub(SemanticAnalysis) {
+        analyze(_ as ParseTree) >> {}
+    }
+    EthqlInterpreter interpreter = new EthqlInterpreter(new ErrorCollector(), noOpAnalyser)
+
+    static List<EthqlProcessingError> validateSyntax(String script, EthqlInterpreter interpreter) {
+        interpreter.parseDocument(new ByteArrayInputStream(script.getBytes())).getErrors()
+    }
+
     def "comment"() {
         expect:
-        validate(script, validator).size() == 0
+        validateSyntax(script, interpreter).size() == 0
 
         where:
         script << [
@@ -23,7 +40,7 @@ class ValidatorSyntaxSpec extends ValidatorBaseSpec {
 
     def "identifier"() {
         expect:
-        List<EthqlProcessingError> errors = validate(script, validator)
+        List<EthqlProcessingError> errors = validateSyntax(script, interpreter)
         errors*.getErrorMessage() == expectedErr
 
         where:
@@ -41,7 +58,7 @@ class ValidatorSyntaxSpec extends ValidatorBaseSpec {
 
     def "type"() {
         expect:
-        List<EthqlProcessingError> errors = validate(script, validator)
+        List<EthqlProcessingError> errors = validateSyntax(script, interpreter)
         errors*.getErrorMessage() == expectedErr
 
         where:
@@ -55,7 +72,7 @@ class ValidatorSyntaxSpec extends ValidatorBaseSpec {
 
     def "literal"() {
         expect:
-        List<EthqlProcessingError> errors = validate(script, validator)
+        List<EthqlProcessingError> errors = validateSyntax(script, interpreter)
         errors*.getErrorMessage() == expectedErr
 
         where:
