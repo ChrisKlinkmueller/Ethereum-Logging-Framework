@@ -29,7 +29,11 @@ class ValidatorSyntaxSpec extends ValidatorBaseSpec {
         where:
         script                      | expectedErr
         "int crypto_kitties = 0;"   | []
-        "cryptoKitties8 = 0;"       | []
+        // "int cryptoKitties8 = 0;"   | []
+        """
+        | int cryptoKitties8 = 0;
+        | cryptoKitties8 = 10;
+        """.stripMargin()           | []
         "int 变量 = 0;"              | []
         "int private^ = 0;"         | ["token recognition error at: '^'"]
         "int 8cryptoKitties = 0;"   | ["extraneous input '8' expecting Identifier"]
