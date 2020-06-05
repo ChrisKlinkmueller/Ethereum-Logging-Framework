@@ -8,7 +8,7 @@ import java.util.List;
 
 import org.antlr.v4.runtime.tree.ParseTree;
 
-import au.csiro.data61.aap.elf.parsing.EthqlInterpreter;;
+import au.csiro.data61.aap.elf.parsing.EthqlInterpreter;
 
 /**
  * Validator
@@ -34,7 +34,7 @@ public class Validator {
     EthqlProcessingResult<ParseTree> parseScript(String ethqlFile) throws EthqlProcessingException {
         assert ethqlFile != null;
         final InputStream fileStream = this.createFileStream(ethqlFile);
-        return parseScript(fileStream);
+        return this.parseScript(fileStream);
     }
 
     EthqlProcessingResult<ParseTree> parseScript(InputStream stream) throws EthqlProcessingException {
