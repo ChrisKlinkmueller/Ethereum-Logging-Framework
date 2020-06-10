@@ -12,6 +12,26 @@ import io.reactivex.functions.BiFunction;
  */
 public class ListOperations {
 
+    public static Object newAddressArray(Object[] parameters, ProgramState state) {
+        return new ArrayList<>();
+    }
+
+    public static Object newBoolArray(Object[] parameters, ProgramState state) {
+        return new ArrayList<>();
+    }
+
+    public static Object newByteArray(Object[] parameters, ProgramState state) {
+        return new ArrayList<>();
+    }
+
+    public static Object newIntArray(Object[] parameters, ProgramState state) {
+        return new ArrayList<>();
+    }
+
+    public static Object newStringArray(Object[] parameters, ProgramState state) {
+        return new ArrayList<>();
+    }
+
     public static Object addElement(Object[] parameters, ProgramState state) throws ProgramException {
         return operate(parameters, (list, value) -> {
             list.add(value);

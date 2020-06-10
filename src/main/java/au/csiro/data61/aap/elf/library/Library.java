@@ -73,6 +73,11 @@ public class Library {
             this.addMethod(BitMapping::mapBitsToInt, "int", BitMapping.METHOD_NAME, "int", "int", "int", "int[]");
             this.addMethod(BitMapping::mapBitsToBool, "bool", BitMapping.METHOD_NAME, "int", "int", "int", "bool[]");
 
+            this.addMethod(ListOperations::newAddressArray, "address[]", "newAddressArray");
+            this.addMethod(ListOperations::newBoolArray, "bool[]", "newBoolArray");
+            this.addMethod(ListOperations::newByteArray, "byte[]", "newByteArray");
+            this.addMethod(ListOperations::newIntArray, "int[]", "newIntArray");
+            this.addMethod(ListOperations::newStringArray, "string[]", "newStringArray");
         } catch (LibraryException e) {
             e.printStackTrace();
         }

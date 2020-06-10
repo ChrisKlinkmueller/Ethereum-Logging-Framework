@@ -48,7 +48,7 @@ class ValidatorSemanticSpec extends ValidatorBaseSpec {
 
         where:
         script                              | expectedErr
-        "int[] a = [];"                     | []
+        "int[] a = newIntArray();"          | []
         "int a = 0x876;"                    | ["Cannot assign a byte value to a int variable."]
         "string a = 5;"                     | ["Cannot assign a int value to a string variable."]
         "uint a = -15;"                     | ["out of range"]
