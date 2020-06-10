@@ -14,7 +14,7 @@ import au.csiro.data61.aap.elf.EthqlProcessingError;
 /**
  * ErrorCollector
  */
-class ErrorCollector extends BaseErrorListener {
+public class ErrorCollector extends BaseErrorListener {
     private final List<EthqlProcessingError> errors;
 
     public ErrorCollector() {

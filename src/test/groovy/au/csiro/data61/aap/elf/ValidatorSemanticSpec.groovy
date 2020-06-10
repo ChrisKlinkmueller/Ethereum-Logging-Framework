@@ -1,9 +1,16 @@
 package au.csiro.data61.aap.elf
 
 import au.csiro.data61.aap.samples.SampleUtils
+import spock.lang.Specification
 import spock.lang.Unroll
 
-class ValidatorSemanticSpec extends ValidatorBaseSpec {
+class ValidatorSemanticSpec extends Specification {
+    Validator validator = new Validator()
+
+    static List<EthqlProcessingError> validate(String script, Validator validator) {
+        validator.analyzeScript(new ByteArrayInputStream(script.getBytes()))
+    }
+
     @Unroll
     private def "#url.getFile() should pass validation"() {
         when:
