@@ -112,7 +112,7 @@ public class EmitAnalyzer extends SemanticAnalyzer {
         if (ctx.xesTypes() != null) {
             final String solType = InterpreterUtils.determineType(ctx.valueExpression(), varAnalyzer);
             if (solType == null) {
-                this.addError(ctx.valueExpression().start, "Cannot infer type.");
+                return;
             }
 
             final String xesType = ctx.xesTypes().getText();
