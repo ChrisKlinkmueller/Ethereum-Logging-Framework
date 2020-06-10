@@ -224,13 +224,20 @@ class ValidatorSemanticSpec extends ValidatorBaseSpec {
         """
         | if (5 in [4,5,6]) {}
         """.stripMargin()                   | []
+        """
+        | int i = 5;
+        | if (i in [4,5,6]) {}
+        """.stripMargin()                   | []
         "if (true == (5 == 4)) {}"          | []
         """
         | if (!false) {}
         """.stripMargin()                   | []
-        "if (true && i in [5, 3]) {}"       | ["variable i not defined."]
+        "if (true && i in new int[5, 3]) {}"| ["variable i not defined."]
         "if (false && \"true\") {}"         | ["Expression must return a boolean value."]
-        "if (i in \"[5,3]\") {}"            | ["type mismatch"]
+        """
+        | int i = 4; 
+        | if (i in \"[5,3]\") {}
+        """.stripMargin()                   | ["Types are not compatible, cannot check containment of int in string."]
     }
 
     @Unroll
