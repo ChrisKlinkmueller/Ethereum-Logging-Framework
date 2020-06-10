@@ -84,7 +84,7 @@ class ValidatorSyntaxSpec extends Specification {
         "bool a = TrUe;"            | []
         "bool a = fAlSe;"           | []
         "bytes a = 0x2d8f6c;"       | []
-        "string[] a = [];"          | []
+        "string[] a = newStringArray();" | []
         "int a = [5,-9,10];"        | []
         "string a = 'string\";"     | ["token recognition error at: '''",
                                        "token recognition error at: '\";'",
