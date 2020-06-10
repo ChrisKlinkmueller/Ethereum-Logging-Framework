@@ -232,7 +232,7 @@ class ValidatorSemanticSpec extends ValidatorBaseSpec {
         """
         | if (!false) {}
         """.stripMargin()                   | []
-        "if (true && i in new int[5, 3]) {}"| ["variable i not defined."]
+        "if (true && i in [5, 3]) {}"       | ["Variable 'i' not defined."]
         "if (false && \"true\") {}"         | ["Expression must return a boolean value."]
         """
         | int i = 4; 

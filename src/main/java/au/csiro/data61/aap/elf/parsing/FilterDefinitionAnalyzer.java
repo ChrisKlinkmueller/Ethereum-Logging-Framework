@@ -36,7 +36,7 @@ public class FilterDefinitionAnalyzer extends SemanticAnalyzer {
         super(errorCollector);
         assert variableAnalyzer != null;
         this.variableAnalyzer = variableAnalyzer;
-        this.conditionalTypes = new Stack<String>();
+        this.conditionalTypes = new Stack<>();
     }
 
     @Override
@@ -69,15 +69,15 @@ public class FilterDefinitionAnalyzer extends SemanticAnalyzer {
         }
 
         if (from.getValue().compareTo(BigInteger.ZERO) < 0) {
-            this.addError(ctx.from.start, String.format("The 'from' block number must be an integer larger than or equal to 0."));
+            this.addError(ctx.from.start, "The 'from' block number must be an integer larger than or equal to 0.");
         }
 
         if (to.getValue().compareTo(BigInteger.ZERO) < 0) {
-            this.addError(ctx.to.start, String.format("The 'to' block number must be an integer larger than or equal to 0."));
+            this.addError(ctx.to.start, "The 'to' block number must be an integer larger than or equal to 0.");
         }
 
         if (from.getValue().compareTo(to.getValue()) > 0) {
-            this.addError(ctx.from.start, String.format("The 'from' block number must be smaller than or equal to the 'to' block number."));
+            this.addError(ctx.from.start, "The 'from' block number must be smaller than or equal to the 'to' block number.");
         }
     }
 
@@ -112,7 +112,7 @@ public class FilterDefinitionAnalyzer extends SemanticAnalyzer {
 
         final String variableName = ctx.getText();
         final String variableType = this.variableAnalyzer.getVariableType(variableName);
-        if (variableType == null || !TypeUtils.isIntegerType(variableType)) {
+        if (!TypeUtils.isIntegerType(variableType)) {
             return BlockNumber.ofInvalid();
         }
         return BlockNumber.ofVariable();
@@ -182,8 +182,12 @@ public class FilterDefinitionAnalyzer extends SemanticAnalyzer {
     }
 
     private void verifyBooleanBinaryOperation(Token left, Token right) {
-        String typeRight = this.conditionalTypes.pop();
-        String typeLeft = this.conditionalTypes.pop();
+        String typeRight = this.conditionalTypes.peek() == null ? null : this.conditionalTypes.pop();
+        String typeLeft = this.conditionalTypes.peek() == null ? null : this.conditionalTypes.pop();
+
+        if (typeRight == null || typeLeft == null) {
+            return;
+        }
 
         String result = TypeUtils.BOOL_TYPE_KEYWORD;
         if (typeLeft.equals(TYPE_ERROR_FLAG)) {
@@ -227,8 +231,12 @@ public class FilterDefinitionAnalyzer extends SemanticAnalyzer {
     private static final Set<String> INTEGER_COMPARATORS = Set.of("<=", "<", ">", ">=");
 
     private void verifyComparison(Token token, ComparatorsContext comparators) {
-        String typeRight = this.conditionalTypes.pop();
-        String typeLeft = this.conditionalTypes.pop();
+        String typeRight = this.conditionalTypes.peek() == null ? null : this.conditionalTypes.pop();
+        String typeLeft = this.conditionalTypes.peek() == null ? null : this.conditionalTypes.pop();
+
+        if (typeRight == null || typeLeft == null) {
+            return;
+        }
 
         String result = TypeUtils.BOOL_TYPE_KEYWORD;
         if (typeRight.equals(TYPE_ERROR_FLAG) || typeLeft.equals(TYPE_ERROR_FLAG)) {
@@ -261,7 +269,7 @@ public class FilterDefinitionAnalyzer extends SemanticAnalyzer {
 
     @Override
     public void exitConditionalNotExpression(ConditionalNotExpressionContext ctx) {
-        String type = this.conditionalTypes.pop();
+        String type = this.conditionalTypes.peek() == null ? null : this.conditionalTypes.pop();
         if (type == null) {
             return;
         }
