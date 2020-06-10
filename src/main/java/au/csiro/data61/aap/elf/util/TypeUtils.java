@@ -1,26 +1,21 @@
 package au.csiro.data61.aap.elf.util;
 
-import java.lang.reflect.InvocationTargetException;
 import java.math.BigInteger;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.function.Function;
 
-import org.web3j.abi.TypeDecoder;
-
-import au.csiro.data61.aap.elf.core.exceptions.ProgramException;
-
 /**
  * TypeUtils
  */
 public class TypeUtils {
-    public static String ARRAY_SUFFIX = "[]";
-    public static String ADDRESS_TYPE_KEYWORD = "address";
-    public static String BOOL_TYPE_KEYWORD = "bool";
-    public static String BYTES_TYPE_KEYWORD = "byte";
-    public static String INT_TYPE_KEYWORD = "int";
-    public static String STRING_TYPE_KEYWORD = "string";
-    private static final String ARRAY_PATTERN = "[a-zA-Z0-9\\[\\]]+\\[\\]";
+    public static final String ADDRESS_TYPE_KEYWORD = "address";
+    private static final String ADDRESS_TYPE_ALIAS_KEYWORD = "bytes20";
+    public static final String BOOL_TYPE_KEYWORD = "bool";
+    public static final String BYTES_TYPE_KEYWORD = "byte";
+    public static final String INT_TYPE_KEYWORD = "int";
+    public static final String STRING_TYPE_KEYWORD = "string";
+    private static final String ARRAY_PATTERN = "[a-zA-Z0-9]+\\[\\]";
 
     public static boolean areCompatible(String type, String expectedType) {
         assert type != null && expectedType != null;
@@ -77,7 +72,7 @@ public class TypeUtils {
     }
 
     public static boolean isAddressType(String solType) {
-        return solType != null && solType.equals(ADDRESS_TYPE_KEYWORD);
+        return solType != null && (solType.equals(ADDRESS_TYPE_KEYWORD) || solType.equals(ADDRESS_TYPE_ALIAS_KEYWORD));
     }
 
     public static boolean isBooleanType(String solType) {
@@ -96,7 +91,7 @@ public class TypeUtils {
         return solType != null && solType.contains(STRING_TYPE_KEYWORD);
     }
 
-    public static Object convertValueTo(String solidityType, Object value) throws ProgramException {
+    /*public static Object convertValueTo(String solidityType, Object value) throws ProgramException {
         assert solidityType != null && value != null;
         try {
             return TypeDecoder.instantiateType(solidityType, value).getValue();
@@ -104,7 +99,7 @@ public class TypeUtils {
             | ClassNotFoundException e) {
             throw new ProgramException(String.format("Error when decoding value '%s' as '%s'", value, solidityType), e);
         }
-    }
+    }*/
 
     private static final String INTEGER_PATTERN = "^-?\\d+";
 
@@ -210,10 +205,5 @@ public class TypeUtils {
             list.add(converter.apply(element));
         }
         return list;
-    }
-
-    @FunctionalInterface
-    private static interface Converter<T> {
-        public T convert(String literal);
     }
 }
