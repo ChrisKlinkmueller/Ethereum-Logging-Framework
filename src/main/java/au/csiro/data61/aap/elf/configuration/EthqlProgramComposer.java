@@ -71,6 +71,12 @@ public class EthqlProgramComposer extends EthqlBaseListener {
         this.genericFilterPredicates = new Stack<Object>();
     }
 
+    public EthqlProgramComposer(SpecificationComposer composer, VariableExistenceAnalyzer analyzer) {
+        this.composer = composer;
+        this.variableAnalyzer = analyzer;
+        this.genericFilterPredicates = new Stack<Object>();
+    }
+
     public boolean containsError() {
         return this.error != null;
     }

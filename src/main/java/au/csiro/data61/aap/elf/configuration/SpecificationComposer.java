@@ -187,11 +187,6 @@ public class SpecificationComposer {
         this.instructions.peek().add(instruction.getInstruction());
     }
 
-    public void addVariableAssignment(ValueMutatorSpecification variable, ValueAccessorSpecification value) {
-        final Instruction variableAssignment = this.createVariableAssignment(variable.getMutator(), value.getValueAccessor());
-        this.instructions.peek().add(variableAssignment);
-    }
-
     private Instruction createVariableAssignment(ValueMutator variable, ValueAccessor valueAccessor) {
         return state -> {
             final Object value = valueAccessor.getValue(state);
