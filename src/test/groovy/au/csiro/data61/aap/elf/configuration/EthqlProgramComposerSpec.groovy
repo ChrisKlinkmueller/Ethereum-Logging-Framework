@@ -5,6 +5,7 @@ import au.csiro.data61.aap.elf.EthqlProcessingResult
 import au.csiro.data61.aap.elf.Validator
 import au.csiro.data61.aap.elf.core.ProgramState
 import au.csiro.data61.aap.elf.core.filters.PublicMemberQuery
+import au.csiro.data61.aap.elf.core.filters.SmartContractQuery
 import au.csiro.data61.aap.elf.parsing.VariableExistenceAnalyzer
 import au.csiro.data61.aap.elf.configuration.BlockNumberSpecification.Type
 import org.antlr.v4.runtime.tree.ParseTree
@@ -12,8 +13,6 @@ import org.antlr.v4.runtime.tree.ParseTreeWalker
 import org.web3j.abi.datatypes.Address
 import spock.lang.Specification
 import spock.lang.Unroll
-
-import java.util.stream.IntStream
 
 class EthqlProgramComposerSpec extends Specification {
     SpecificationComposer specComposer = Mock(SpecificationComposer)
@@ -98,10 +97,12 @@ class EthqlProgramComposerSpec extends Specification {
             for (addr in addrs) spec.addressCheck.test(new ProgramState(), addr)
         }, { LogEntrySignatureSpecification spec ->
             spec.getSignature().getName() == name
-            IntStream.range(0, paramTypes.size()).forEach(idx -> {
-                spec.getSignature().getParameter(idx).name == paramNames[idx]
-                spec.getSignature().getParameter(idx).type.type == paramTypes[idx]
-            })
+            paramTypes.eachWithIndex { Object paramType, int i ->
+                with(spec.getSignature().getParameter(i)) {
+                    getType().type == paramType
+                    getName() == paramNames[i]
+                }
+            }
         })
         then:
         1 * specComposer.buildBlockRange(_, _)
@@ -151,7 +152,7 @@ class EthqlProgramComposerSpec extends Specification {
         when:
         compose(composer, """
         | BLOCKS (0) (6) {
-        |   SMART CONTRACT ($addr) ($query) {}
+        |   SMART CONTRACT ($addr) (${String.join(")(", queries)}) {}
         | }
         """.stripMargin())
         then:
@@ -163,8 +164,9 @@ class EthqlProgramComposerSpec extends Specification {
         then:
         1 * specComposer.buildSmartContractFilter({ SmartContractFilterSpecification spec ->
             spec.getContractAddress().getValue(new ProgramState()) == addr
-            PublicMemberQuery query = spec.getQueries().head()
-            query.memberName == memberName
+            spec.getQueries().eachWithIndex { SmartContractQuery q, int i ->
+                ((PublicMemberQuery) q).memberName == memberNames[i]
+            }.every()
         })
         then:
         1 * specComposer.buildBlockRange(_, _)
@@ -172,8 +174,8 @@ class EthqlProgramComposerSpec extends Specification {
         1 * specComposer.buildProgram()
 
         where:
-        addr                                         | query                                        | memberName
-        "0x931D387731bBbC988B312206c74F77D004D6B84c" | "address johnAddr = lookup(string \"John\")" | "lookup"
+        addr                                         | queries                                        | memberNames
+        "0x931D387731bBbC988B312206c74F77D004D6B84c" | ["address johnAddr = lookup(string \"John\")"] | ["lookup"]
     }
 
     def "composer should delegate spec composer for value assignment"() {
