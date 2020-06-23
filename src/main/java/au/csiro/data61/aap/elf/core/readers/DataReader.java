@@ -55,7 +55,7 @@ public class DataReader {
 
     public void connect(String url) throws ProgramException {
         assert url != null;
-        if (this.client != null) {
+        if (this.getClient() != null) {
             throw new ProgramException("Already connected to Ethereum node.");
         }
 
@@ -67,8 +67,8 @@ public class DataReader {
     }
 
     public void close() {
-        if (this.client != null) {
-            this.client.close();
+        if (this.getClient() != null) {
+            this.getClient().close();
         }
     }
 

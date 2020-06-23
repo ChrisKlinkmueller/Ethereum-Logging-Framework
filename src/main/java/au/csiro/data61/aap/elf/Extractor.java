@@ -10,14 +10,33 @@ import au.csiro.data61.aap.elf.parsing.EthqlListener;
 import au.csiro.data61.aap.elf.parsing.VariableExistenceAnalyzer;
 import au.csiro.data61.aap.elf.util.CompositeEthqlListener;
 
+import java.io.InputStream;
+
 /**
  * Extractor
  */
 public class Extractor {
+    private final ProgramState state;
+
+    public Extractor() {
+        this.state = new ProgramState();
+    }
+
+    Extractor(ProgramState state) {
+        this.state = state;
+    }
 
     public void extractData(final String ethqlFilepath) throws EthqlProcessingException {
         final ParseTree parseTree = Validator.createParseTree(ethqlFilepath);
+        this.executeProgram(parseTree);
+    }
 
+    public void extractData(final InputStream stream) throws EthqlProcessingException {
+        final ParseTree parseTree = Validator.createParseTree(stream);
+        this.executeProgram(parseTree);
+    }
+
+    private void executeProgram(ParseTree parseTree) throws EthqlProcessingException {
         final CompositeEthqlListener<EthqlListener> rootListener = new CompositeEthqlListener<>();
         final VariableExistenceAnalyzer analyzer = new VariableExistenceAnalyzer();
         rootListener.addListener(analyzer);
@@ -32,11 +51,6 @@ public class Extractor {
         }
 
         final Program program = builder.getProgram();
-        this.executeProgram(program);
-    }
-
-    private void executeProgram(Program program) {
-        final ProgramState state = new ProgramState();
-        program.execute(state);
+        program.execute(this.state);
     }
 }

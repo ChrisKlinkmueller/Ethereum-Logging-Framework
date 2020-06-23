@@ -179,11 +179,10 @@ public class RawBlock extends EthereumBlock {
     public static RawBlock[] fromJsonString(String json) throws JsonProcessingException {
         ObjectMapper objectMapper = new ObjectMapper();
         RawBlock[] blocks = objectMapper.readValue(json, RawBlock[].class);
-        Arrays.stream(blocks).forEach(block ->
-                block.transactionStream().forEach(tx -> {
-                    tx.logStream().forEach(log -> log.setTransaction(tx));
-                    tx.setBlock(block);
-                }));
+        Arrays.stream(blocks).forEach(block -> block.transactionStream().forEach(tx -> {
+            tx.logStream().forEach(log -> log.setTransaction(tx));
+            tx.setBlock(block);
+        }));
         return blocks;
     }
 }
