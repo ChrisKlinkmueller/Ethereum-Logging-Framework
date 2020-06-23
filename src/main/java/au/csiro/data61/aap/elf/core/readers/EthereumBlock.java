@@ -1,5 +1,7 @@
 package au.csiro.data61.aap.elf.core.readers;
 
+import com.fasterxml.jackson.annotation.JsonProperty;
+
 import java.math.BigInteger;
 import java.util.ArrayList;
 import java.util.Iterator;
@@ -10,6 +12,7 @@ import java.util.stream.Stream;
  * EthereumBlock
  */
 public abstract class EthereumBlock implements Iterable<EthereumTransaction> {
+    @JsonProperty
     private final List<EthereumTransaction> transactions;
 
     protected EthereumBlock() {

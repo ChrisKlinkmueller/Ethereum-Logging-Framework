@@ -3,10 +3,12 @@ package au.csiro.data61.aap.elf.core.readers;
 import java.math.BigInteger;
 
 import au.csiro.data61.aap.elf.core.exceptions.ProgramException;
+import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 
 /**
  * EthereumTransaction
  */
+@JsonIgnoreProperties(ignoreUnknown = true)
 public class RawTransaction extends EthereumTransaction {
     private String from;
     private BigInteger gas;

@@ -1,14 +1,19 @@
 package au.csiro.data61.aap.elf.core.readers;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
+import com.fasterxml.jackson.annotation.JsonTypeInfo;
+
 import java.math.BigInteger;
 import java.util.List;
 
 /**
  * EthereumLog
  */
+@JsonTypeInfo(use = JsonTypeInfo.Id.CLASS, defaultImpl = RawLogEntry.class)
 public abstract class EthereumLogEntry {
     private EthereumTransaction tx;
 
+    @JsonIgnore
     public EthereumTransaction getTransaction() {
         return this.tx;
     }

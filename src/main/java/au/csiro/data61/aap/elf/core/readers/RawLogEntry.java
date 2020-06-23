@@ -1,5 +1,7 @@
 package au.csiro.data61.aap.elf.core.readers;
 
+import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
+
 import java.math.BigInteger;
 import java.util.ArrayList;
 import java.util.List;
@@ -7,6 +9,7 @@ import java.util.List;
 /**
  * EthereumLog
  */
+@JsonIgnoreProperties(ignoreUnknown = true)
 public class RawLogEntry extends EthereumLogEntry {
     private boolean removed;
     private BigInteger logIndex;

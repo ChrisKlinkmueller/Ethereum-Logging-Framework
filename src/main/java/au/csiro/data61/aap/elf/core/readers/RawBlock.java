@@ -1,7 +1,11 @@
 package au.csiro.data61.aap.elf.core.readers;
 
+import com.fasterxml.jackson.core.JsonProcessingException;
+import com.fasterxml.jackson.databind.ObjectMapper;
+
 import java.math.BigInteger;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
 
@@ -170,5 +174,16 @@ public class RawBlock extends EthereumBlock {
 
     public void setUncles(List<String> uncles) {
         this.uncles = new ArrayList<>(uncles);
+    }
+
+    public static RawBlock[] fromJsonString(String json) throws JsonProcessingException {
+        ObjectMapper objectMapper = new ObjectMapper();
+        RawBlock[] blocks = objectMapper.readValue(json, RawBlock[].class);
+        Arrays.stream(blocks).forEach(block ->
+                block.transactionStream().forEach(tx -> {
+                    tx.logStream().forEach(log -> log.setTransaction(tx));
+                    tx.setBlock(block);
+                }));
+        return blocks;
     }
 }

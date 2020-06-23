@@ -6,12 +6,18 @@ import java.util.List;
 import java.util.stream.Stream;
 
 import au.csiro.data61.aap.elf.core.exceptions.ProgramException;
+import com.fasterxml.jackson.annotation.JsonIgnore;
+import com.fasterxml.jackson.annotation.JsonProperty;
+import com.fasterxml.jackson.annotation.JsonTypeInfo;
 
 /**
  * EthereumTransaction
  */
+@JsonTypeInfo(use = JsonTypeInfo.Id.CLASS, defaultImpl = RawTransaction.class)
 public abstract class EthereumTransaction {
+    @JsonIgnore
     private EthereumBlock block;
+    @JsonProperty
     private final List<EthereumLogEntry> logs;
 
     public EthereumTransaction() {
