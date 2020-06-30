@@ -1,9 +1,13 @@
 package au.csiro.data61.aap.elf
 
 import au.csiro.data61.aap.elf.core.ProgramState
+import au.csiro.data61.aap.elf.core.exceptions.ExceptionHandler
 import au.csiro.data61.aap.elf.core.readers.DataReader
 import au.csiro.data61.aap.elf.core.readers.EthereumClient
 import au.csiro.data61.aap.elf.core.readers.RawBlock
+import org.web3j.abi.TypeDecoder
+import org.web3j.abi.TypeReference
+import org.web3j.abi.datatypes.Type
 import spock.lang.Shared
 import spock.lang.Specification
 import java.nio.file.Files
@@ -12,6 +16,7 @@ import java.nio.file.Paths
 class ExtractorSpec extends Specification {
     @Shared
     File testOutputFolder = new File("test_output")
+    ExceptionHandler exceptionHandler = Mock(ExceptionHandler)
 
     def setup() {
         assert testOutputFolder.mkdirs()
@@ -47,12 +52,59 @@ class ExtractorSpec extends Specification {
         """.stripMargin())
     }
 
+    def "smart contract filter should return expected result"() {
+        given:
+        def extractor = extractorFor(readBlocksFromJson("blocks.json"))
+
+        when:
+        extract("""
+        | setOutputFolder("${testOutputFolder.getPath()}");
+        | address plus100Contract = 0x1234512345123451234512345123451234512345;
+        | BLOCKS (0) (0) {
+        |   SMART CONTRACT (plus100Contract)
+        |                  (uint plus100Block = plus100()) {
+        |     EMIT LOG LINE ("current block number + 100: ", plus100Block);
+        |   }
+        | }
+        """.stripMargin(), extractor)
+        then:
+        checkOutputFile("all.log", """
+        | current block number + 100: 100
+        """.stripMargin())
+    }
+
+    def "smart contract filter should abort when contract not exist"() {
+        given:
+        def extractor = extractorFor(readBlocksFromJson("blocks.json"))
+
+        when:
+        extract("""
+        | setOutputFolder("${testOutputFolder.getPath()}");
+        | address plus100Contract = 0x54321543215432154321543215432154321;
+        | BLOCKS (0) (0) {
+        |   SMART CONTRACT (plus100Contract)
+        |                  (uint plus100Block = plus100()) {
+        |     EMIT LOG LINE ("current block number + 100: ", plus100Block);
+        |   }
+        | }
+        """.stripMargin(), extractor)
+        then:
+        1 * exceptionHandler.handleExceptionAndDecideOnAbort(
+                _ as String,
+                { Throwable th ->
+                    th.getMessage() == "Error querying members of smart contract 0x54321543215432154321543215432154321"
+                    th.getCause().getMessage() == "Output parameters not compatible with return values."
+                }
+        )
+    }
+
     static void extract(String script, Extractor extractor) {
         extractor.extractData(new ByteArrayInputStream(script.getBytes()))
     }
 
     Extractor extractorFor(RawBlock[] blocks) {
         ProgramState state = Spy(ProgramState) {
+            getExceptionHandler() >> exceptionHandler
             getReader() >> Spy(DataReader) {
                 getClient() >> Stub(EthereumClient) {
                     close() >> {}
@@ -63,6 +115,27 @@ class ExtractorSpec extends Specification {
                                 throw new IOException("""block number $i doesn't exist.""")
                             else blocks[i.toInteger()]
                         }
+                    }
+                    // A smart contract with one function that
+                    // returns current block number plus 100.
+                    // the contract is deployed at block 1.
+                    queryPublicMember(
+                            _ as String,
+                            _ as BigInteger,
+                            _ as String,
+                            _ as List<Type>,
+                            _ as List<TypeReference<Type>>
+                    ) >> {
+                        String contract,
+                        BigInteger block,
+                        String memberName,
+                        List<Type> inputs,
+                        List<TypeReference<Type>> outputs ->
+                            if (contract == "0x1234512345123451234512345123451234512345")
+                                if (memberName == "plus100" && block >= 1)
+                                    [TypeDecoder.instantiateType("uint", block + 100)]
+                                else []
+                            else []
                     }
                 }
             }
@@ -76,8 +149,8 @@ class ExtractorSpec extends Specification {
         RawBlock.fromJsonString(blocksJson)
     }
 
-    Boolean checkOutputFile(String fileName, String expectedContent) {
+    void checkOutputFile(String fileName, String expectedContent) {
         File outputFile = new File(testOutputFolder.getPath(), fileName)
-        outputFile.text.replaceAll("\\s+", "") == expectedContent.replaceAll("\\s+", "")
+        assert outputFile.text.replaceAll("\\s+", "") == expectedContent.replaceAll("\\s+", "")
     }
 }
