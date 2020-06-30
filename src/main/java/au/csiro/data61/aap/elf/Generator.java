@@ -4,6 +4,8 @@ import org.antlr.v4.runtime.tree.ParseTree;
 
 import au.csiro.data61.aap.elf.generation.SolidityCodeGeneration;
 
+import java.io.InputStream;
+
 /**
  * Generator
  */
@@ -15,4 +17,9 @@ public class Generator {
         return generation.generateLoggingFunctionality(parseTree);
     }
 
+    public String generateLoggingFunctionality(InputStream stream) throws EthqlProcessingException {
+        final ParseTree parseTree = Validator.createParseTree(stream);
+        final SolidityCodeGeneration generation = new SolidityCodeGeneration();
+        return generation.generateLoggingFunctionality(parseTree);
+    }
 }

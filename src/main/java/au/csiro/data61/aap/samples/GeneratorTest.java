@@ -10,15 +10,15 @@ import au.csiro.data61.aap.elf.Generator;
 public class GeneratorTest {
 
     public static void main(String[] args) {
-        Generator extractor = new Generator();
-        SampleUtils.getGeneratorResources().forEach(url -> test(extractor, url));
+        Generator generator = new Generator();
+        SampleUtils.getGeneratorResources().forEach(url -> test(generator, url));
     }
 
-    private static void test(Generator extractor, URL url) {
+    private static void test(Generator generator, URL url) {
         System.out.println(url.getFile());
 
         try {
-            String code = extractor.generateLoggingFunctionality(url.getFile());
+            String code = generator.generateLoggingFunctionality(url.getFile());
             System.out.println(code);
         } catch (Throwable ex) {
             ex.printStackTrace();
