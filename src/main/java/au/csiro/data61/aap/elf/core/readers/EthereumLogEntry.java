@@ -9,7 +9,7 @@ import java.util.List;
 /**
  * EthereumLog
  */
-@JsonTypeInfo(use = JsonTypeInfo.Id.CLASS, defaultImpl = RawLogEntry.class)
+@JsonTypeInfo(use = JsonTypeInfo.Id.CLASS, include = JsonTypeInfo.As.EXISTING_PROPERTY, defaultImpl = RawLogEntry.class)
 public abstract class EthereumLogEntry {
     private EthereumTransaction tx;
 

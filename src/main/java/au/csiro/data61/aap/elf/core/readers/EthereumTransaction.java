@@ -13,7 +13,7 @@ import com.fasterxml.jackson.annotation.JsonTypeInfo;
 /**
  * EthereumTransaction
  */
-@JsonTypeInfo(use = JsonTypeInfo.Id.CLASS, defaultImpl = RawTransaction.class)
+@JsonTypeInfo(use = JsonTypeInfo.Id.CLASS, include = JsonTypeInfo.As.EXISTING_PROPERTY, defaultImpl = RawTransaction.class)
 public abstract class EthereumTransaction {
     @JsonIgnore
     private EthereumBlock block;
