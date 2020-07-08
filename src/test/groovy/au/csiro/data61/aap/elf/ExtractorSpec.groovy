@@ -11,10 +11,8 @@ import com.fasterxml.jackson.databind.ObjectMapper
 import org.web3j.abi.TypeDecoder
 import org.web3j.abi.TypeReference
 import org.web3j.abi.datatypes.Type
-import spock.lang.Ignore
 import spock.lang.Shared
 import spock.lang.Specification
-import spock.lang.Timeout
 
 import java.nio.file.Files
 import java.nio.file.Paths
@@ -31,42 +29,6 @@ class ExtractorSpec extends Specification {
 
     def cleanup() {
         assert testOutputFolder.deleteDir()
-    }
-
-    @Ignore
-    @Timeout(5)
-    // This test case should fail because it should time out
-    def "block filter should time out when 'to' hasn't been mined yet"() {
-        given:
-        def extractor = extractorFor(readBlocksFromJson("blocks.json"))
-
-        when:
-        extract("""
-        | setOutputFolder("${testOutputFolder.getPath()}");
-        | BLOCKS (2) (6) {
-        |   EMIT LOG LINE ("block number: ", block.number);
-        | }
-        """.stripMargin(), extractor)
-        then:
-        notThrown()
-    }
-
-    @Ignore
-    @Timeout(5)
-    // This test case should fail because it should time out
-    def "block filter should time out when 'from' hasn't been mined yet"() {
-        given:
-        def extractor = extractorFor(readBlocksFromJson("blocks.json"))
-
-        when:
-        extract("""
-        | setOutputFolder("${testOutputFolder.getPath()}");
-        | BLOCKS (5) (10) {
-        |   EMIT LOG LINE ("block number: ", block.number);
-        | }
-        """.stripMargin(), extractor)
-        then:
-        notThrown()
     }
 
     def "log entry filter should return expected result"() {
