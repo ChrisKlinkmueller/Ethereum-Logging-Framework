@@ -47,12 +47,21 @@ mvn verify
 
 Now you're ready to develop!
 
-## Test
+## Unit Test
 
 To run unit tests, run
 ```bash
 mvn test
 ```
+
+## Integration Test
+
+To run integration tests with a local ethereum network, run
+```bash
+mvn -Pintegration-tests verify
+```
+which will automatically start a local ethereum network before tests
+and tear down the network afterwards.
 
 ## License
 
