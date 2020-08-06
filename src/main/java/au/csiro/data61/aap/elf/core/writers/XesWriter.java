@@ -198,13 +198,13 @@ public class XesWriter extends DataWriter {
                 serializer.serialize(entry.getValue(), new FileOutputStream(file));
             }
         } catch (Throwable t) {
+            LOGGER.info("Xes export finished unsuccessfully.");
             final String message = "Error exporting data to XES.";
             throw new ProgramException(message, t);
         } finally {
             this.events.clear();
             this.traces.clear();
             this.element = null;
-            LOGGER.info("Xes export finished unsuccessfully.");
         }
         LOGGER.info("Xes export finished.");
     }
