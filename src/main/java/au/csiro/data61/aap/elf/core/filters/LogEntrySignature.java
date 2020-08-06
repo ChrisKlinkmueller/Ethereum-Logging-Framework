@@ -68,7 +68,7 @@ public class LogEntrySignature {
         assert logEntry.getTopics().size() == topicParameters.size() + 1;
         for (int i = 0; i < topicParameters.size(); i++) {
             final Parameter topic = topicParameters.get(i);
-            Object value = TypeDecoder.instantiateType(topic.getType(), logEntry.getTopics().get(i + 1));
+            Object value = TypeDecoder.instantiateType(topic.getType(), logEntry.getTopics().get(i + 1)).getValue();
             state.getValueStore().setValue(topic.getName(), value);
         }
     }
