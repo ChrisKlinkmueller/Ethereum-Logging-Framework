@@ -4,7 +4,6 @@ import java.util.List;
 import java.util.Objects;
 
 import au.csiro.data61.aap.elf.core.exceptions.ProgramException;
-import au.csiro.data61.aap.elf.core.Instruction;
 import au.csiro.data61.aap.elf.core.values.ValueAccessor;
 import au.csiro.data61.aap.elf.core.values.ValueMutator;
 

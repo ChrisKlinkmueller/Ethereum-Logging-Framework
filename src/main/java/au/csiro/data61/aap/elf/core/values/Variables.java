@@ -1,8 +1,6 @@
 package au.csiro.data61.aap.elf.core.values;
 
 import au.csiro.data61.aap.elf.core.exceptions.ProgramException;
-import au.csiro.data61.aap.elf.core.values.ValueAccessor;
-import au.csiro.data61.aap.elf.core.values.ValueMutator;
 
 /**
  * Variables
