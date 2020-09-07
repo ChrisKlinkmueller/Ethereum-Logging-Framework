@@ -14,6 +14,14 @@ public class SampleUtils {
     public static final String AUGUR_REGISTRY = "AugurContractRegistry.ethql";
     public static final String GIT_GENERATOR = "GeneratorGitExample.ethql";
     public static final String SHIRT_GENERATOR = "GeneratorShirtExample.ethql";
+    public static final String BOCKRATH_FORSAGE = "Bockrath_Forsage.ethql";
+    public static final String BOCKRATH_RAIDEN = "Bockrath_Raiden.ethql";
+    public static final String REBESKY_AUGUR = "Rebesky_Augur.ethql";
+    public static final String REBESKY_CHICKEN_HUNT = "Rebesky_ChickenHunt.ethql";
+    public static final String REBESKY_IDEX_1 = "Rebesky_Idex1.ethql";
+    public static final String REBESKY_IDEX_2 = "Rebesky_Idex2.ethql";
+    public static final String REBESKY_IDEX_3 = "Rebesky_Idex3.ethql";
+
 
     public static List<URL> getExtractorResources() {
         return getResources(CRYPTO_KITTIES, NETWORK_STATISTICS, AUGUR_REGISTRY);
@@ -24,7 +32,20 @@ public class SampleUtils {
     }
 
     public static List<URL> getAllResources() {
-        return getResources(CRYPTO_KITTIES, NETWORK_STATISTICS, AUGUR_REGISTRY, GIT_GENERATOR, SHIRT_GENERATOR);
+        return getResources(
+            CRYPTO_KITTIES, 
+            NETWORK_STATISTICS, 
+            AUGUR_REGISTRY, 
+            GIT_GENERATOR, 
+            SHIRT_GENERATOR,
+            BOCKRATH_FORSAGE,
+            BOCKRATH_RAIDEN,
+            REBESKY_AUGUR,
+            REBESKY_CHICKEN_HUNT,
+            REBESKY_IDEX_1,
+            REBESKY_IDEX_2,
+            REBESKY_IDEX_3        
+        );
     }
 
     public static List<URL> getResources(String... resources) {

@@ -1,0 +1,69 @@
+// Author: Martin Rebesky
+
+connect("ws://localhost:8546/");
+setOutputFolder("./test_output");
+address augur = 0x75228DcE4D82566d93068A8D5d49435216551599;
+
+BLOCKS (5926229) (10193336) {
+  LOG ENTRIES (0x75228DcE4D82566d93068A8D5d49435216551599) (MarketCreated(bytes32 indexed topic, string description, string extraInfo, address indexed universe, address market, address indexed marketCreator, bytes32[] outcomes, uint256 marketCreationFee, int256 minPrice, int256 maxPrice, uint8 marketType)){
+    add(markets, market);
+    EMIT XES EVENT ()(market)()("Markt erstellt" as xs:string concept:name);
+    if(marketType == 0){
+      EMIT XES EVENT ()(market)()("Ja-Nein Markt" as xs:string concept:name);
+    }
+    if(marketType == 1){
+      EMIT XES EVENT ()(market)()("kategorischer Markt" as xs:string concept:name);
+    }
+    if(marketType == 2){
+      EMIT XES EVENT ()(market)()("skalar Markt" as xs:string concept:name);
+    }
+  }
+    
+  LOG ENTRIES (0x75228DcE4D82566d93068A8D5d49435216551599) (MarketFinalized(address indexed universe, address indexed market)){
+    EMIT XES EVENT ()(market)()("Markt finalisieren" as xs:string concept:name);
+  }
+     
+  LOG ENTRIES (0x75228DcE4D82566d93068A8D5d49435216551599) (MarketMigrated(address indexed market, address indexed originalUniverse, address indexed newUniverse)){
+    EMIT XES EVENT ()(market)()("Markt migrieren" as xs:string concept:name);
+  }
+     
+  LOG ENTRIES (0x75228DcE4D82566d93068A8D5d49435216551599) (DisputeCrowdsourcerCreated(address indexed universe, address indexed market, address disputeCrowdsourcer, uint256[] payoutNumerators, uint256 size, bool invalid)){
+    EMIT XES EVENT ()(market)()("Streitrunde erstellen" as xs:string concept:name);
+  }
+     
+  LOG ENTRIES (0x75228DcE4D82566d93068A8D5d49435216551599) (DisputeCrowdsourcerContribution(address indexed universe, address indexed reporter, address indexed market, address disputeCrowdsourcer, uint256 amountStaked)){
+    EMIT XES EVENT ()(market)()("zur Streitrunde beitragen" as xs:string concept:name);
+  }
+     
+  LOG ENTRIES (0x75228DcE4D82566d93068A8D5d49435216551599) (DisputeCrowdsourcerCompleted(address indexed universe, address indexed market, address disputeCrowdsourcer)){
+    EMIT XES EVENT ()(market)()("Streitrunde abschließen" as xs:string concept:name);
+  }
+     
+  LOG ENTRIES (0x75228DcE4D82566d93068A8D5d49435216551599) (DisputeCrowdsourcerRedeemed(address indexed universe, address indexed reporter, address indexed market, address disputeCrowdsourcer, uint256 amountRedeemed, uint256 repReceived, uint256 reportingFeesReceived, uint256[] payoutNumerators)){
+    EMIT XES EVENT ()(market)()("Streitrunde beilegen" as xs:string concept:name);
+  }
+     
+  LOG ENTRIES (0x75228DcE4D82566d93068A8D5d49435216551599) (MarketTransferred(address indexed universe, address indexed market, address from, address to)){
+    EMIT XES EVENT ()(market)()("Markt transferieren" as xs:string concept:name);
+  }
+  
+  LOG ENTRIES (0x75228DcE4D82566d93068A8D5d49435216551599) (InitialReportSubmitted(address indexed universe, address indexed reporter, address indexed market, uint256 amountStaked, bool isDesignatedReporter, uint256[] payoutNumerators, bool invalid)){
+    EMIT XES EVENT ()(market)()("ersten Bericht bestätigen" as xs:string concept:name);
+  }
+     
+  LOG ENTRIES (0x75228DcE4D82566d93068A8D5d49435216551599) (ReportingParticipantDisavowed(address indexed universe, address indexed market, address reportingParticipant)){
+    EMIT XES EVENT ()(market)()("Reporter ablehnen" as xs:string concept:name);
+  }
+     
+  LOG ENTRIES (0x75228DcE4D82566d93068A8D5d49435216551599) (InitialReporterRedeemed(address indexed universe, address indexed reporter, address indexed market, uint256 amountRedeemed, uint256 repReceived, uint256 reportingFeesReceived, uint256[] payoutNumerators)){
+    EMIT XES EVENT ()(market)()("Reporter erlösen" as xs:string concept:name);
+  }
+     
+  LOG ENTRIES (0x75228DcE4D82566d93068A8D5d49435216551599) (InitialReporterTransferred(address indexed universe, address indexed market, address from, address to)){
+    EMIT XES EVENT ()(market)()("ersten Reporter übertragen" as xs:string concept:name);
+  }
+     
+  LOG ENTRIES (0x75228DcE4D82566d93068A8D5d49435216551599) (TradingProceedsClaimed(address indexed universe, address indexed shareToken, address indexed sender, address market, uint256 numShares, uint256 numPayoutTokens, uint256 finalTokenBalance)){
+    EMIT XES EVENT ()(market)()("Erlös beanspruchen" as xs:string concept:name);
+  }
+}

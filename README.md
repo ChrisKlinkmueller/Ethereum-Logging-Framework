@@ -16,6 +16,15 @@ Example ethql documents include
 - [GeneratorShirtExample.ethql](./src/main/resources/GeneratorGitExample.ethql)
 - [GeneratorGitExample.ethql](./src/main/resources/GeneratorShirtExample.ethql)
 - [NetworkStatistics.ethql](./src/main/resources/NetworkStatistics.ethql)
+- Scripts contributed by Hendrik Bockrath
+  - [Bockrath_Forsage.ethql](./src/main/resources/Bockrath_Forsage.ethql)
+  - [Bockrath_Raiden.ethql](./src/main/resources/Bockrath_Raiden.ethql)
+- Scripts contributed by Martin Rebesky
+  - [Rebesky_Augur.ethql](./src/main/resources/Rebesky_Augur.ethql)
+  - [Rebesky_ChickenHunt.ethql](./src/main/resources/Rebesky_ChickenHunt.ethql)
+  - [Rebesky_Idex1.ethql](./src/main/resources/Rebesky_Idex1.ethql)
+  - [Rebesky_Idex2.ethql](./src/main/resources/Rebesky_Idex2.ethql)
+  - [Rebesky_Idex3.ethql](./src/main/resources/Rebesky_Idex3.ethql)
 
 Code demonstrating the use of the component scan be found here
 - [Validator](src/main/java/au/csiro/data61/aap/samples/ValidatorTest.java)
@@ -57,3 +66,5 @@ mvn test
 ## License
 
 This software is released under the CSIRO Open Source Software Licence Agreement. Details can be found [LICENSE.md](LICENSE.md). Moreover the third party components distributed with the software and their licenses are listed in [NOTICE.md](NOTICE.md).
+
+
