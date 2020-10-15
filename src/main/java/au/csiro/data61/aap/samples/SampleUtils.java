@@ -22,7 +22,6 @@ public class SampleUtils {
     public static final String REBESKY_IDEX_2 = "Rebesky_Idex2.ethql";
     public static final String REBESKY_IDEX_3 = "Rebesky_Idex3.ethql";
 
-
     public static List<URL> getExtractorResources() {
         return getResources(CRYPTO_KITTIES, NETWORK_STATISTICS, AUGUR_REGISTRY);
     }
@@ -33,10 +32,10 @@ public class SampleUtils {
 
     public static List<URL> getAllResources() {
         return getResources(
-            CRYPTO_KITTIES, 
-            NETWORK_STATISTICS, 
-            AUGUR_REGISTRY, 
-            GIT_GENERATOR, 
+            CRYPTO_KITTIES,
+            NETWORK_STATISTICS,
+            AUGUR_REGISTRY,
+            GIT_GENERATOR,
             SHIRT_GENERATOR,
             BOCKRATH_FORSAGE,
             BOCKRATH_RAIDEN,
@@ -44,7 +43,7 @@ public class SampleUtils {
             REBESKY_CHICKEN_HUNT,
             REBESKY_IDEX_1,
             REBESKY_IDEX_2,
-            REBESKY_IDEX_3        
+            REBESKY_IDEX_3
         );
     }
 
