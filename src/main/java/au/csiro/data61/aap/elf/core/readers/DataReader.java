@@ -66,7 +66,7 @@ public class DataReader {
         }
     }
 
-	public void connectIpc(String path) throws ProgramException {
+    public void connectIpc(String path) throws ProgramException {
         assert path != null;
         if (this.client != null) {
             throw new ProgramException("Already connected to Ethereum node.");
@@ -77,7 +77,7 @@ public class DataReader {
         } catch (ConnectException e) {
             throw new ProgramException(String.format("Error when connecting to Ethereum node via ipc.", path), e);
         }
-	}
+    }
 
     public void close() {
         if (this.client != null) {

@@ -51,7 +51,7 @@ public class Web3jClient implements EthereumClient {
         this.service = null;
         this.web3j = Web3j.build(wsService);
     }
-    
+
     private Web3jClient(Service service) {
         this.service = service;
         this.wsService = null;
@@ -81,25 +81,23 @@ public class Web3jClient implements EthereumClient {
         assert path != null && !path.isBlank();
 
         final Service service = createIpcService(path);
-        
+
         if (service == null) {
             final String message = String.format("Ipc connection not for %s operating system.", osName());
             throw new ConnectException(message);
         }
-        
+
         return new Web3jClient(service);
     }
 
     private static Service createIpcService(String path) {
         if (isWindowsOS()) {
             return new WindowsIpcService(path);
-        }   
-        else if (isUnixOs()) {
+        } else if (isUnixOs()) {
             return new UnixIpcService(path);
-        }   
-        else {
+        } else {
             return null;
-        }  
+        }
     }
 
     private static boolean isWindowsOS() {
@@ -117,12 +115,10 @@ public class Web3jClient implements EthereumClient {
     public void close() {
         if (this.wsService != null) {
             this.wsService.close();
-        }
-        else if (this.service != null) {
+        } else if (this.service != null) {
             try {
                 this.service.close();
-            }
-            catch (IOException ex) {
+            } catch (IOException ex) {
                 final String message = "Error when closing Web3j service.";
                 LOGGER.log(Level.SEVERE, message, ex);
             }
