@@ -41,14 +41,16 @@ Details of the framework are described in more detail in the following publicati
 
 ## Build
 
-1. Ensure Java 13 is installed locally and the env var `JAVA_HOME` is properly set.
+1. Ensure Java 13 or higher is installed locally and the env var `JAVA_HOME` is properly set. [AdoptOpenJDK](https://adoptopenjdk.net/installation.html) provides binaries and installation guides for various operating systems.
 
-To check whether Java has been set up correctly, run
+2. Install Apache Maven. Distribution archive and installation guidelines are available at [maven.apache.org](https://maven.apache.org/index.html).
+
+3. To check whether Java and Maven have been set up correctly, run
 ```bash
 mvn --version
 ```
 
-2. To build the project, run
+4. To build the project, run
 ```bash
 cd ethereum-logging-framework
 mvn verify
