@@ -17,6 +17,7 @@ import org.web3j.abi.FunctionReturnDecoder;
 import org.web3j.abi.TypeReference;
 import org.web3j.abi.datatypes.Function;
 import org.web3j.abi.datatypes.Type;
+import org.web3j.protocol.Service;
 import org.web3j.protocol.Web3j;
 import org.web3j.protocol.core.DefaultBlockParameterNumber;
 import org.web3j.protocol.core.methods.request.EthFilter;
@@ -29,6 +30,8 @@ import org.web3j.protocol.core.methods.response.EthLog;
 import org.web3j.protocol.core.methods.response.Log;
 import org.web3j.protocol.core.methods.response.TransactionReceipt;
 import org.web3j.protocol.core.methods.response.EthBlock.Block;
+import org.web3j.protocol.ipc.UnixIpcService;
+import org.web3j.protocol.ipc.WindowsIpcService;
 import org.web3j.protocol.websocket.WebSocketClient;
 import org.web3j.protocol.websocket.WebSocketService;
 
@@ -39,30 +42,91 @@ public class Web3jClient implements EthereumClient {
     private static final Logger LOGGER = Logger.getLogger(EthereumClient.class.getName());
     private static final String URL = "ws://localhost:8546/";
 
+    private final Service service;
     private final WebSocketService wsService;
     private final Web3j web3j;
 
-    public Web3jClient() throws URISyntaxException, ConnectException {
-        this(URL);
+    private Web3jClient(WebSocketService wsService) {
+        this.wsService = wsService;
+        this.service = null;
+        this.web3j = Web3j.build(wsService);
+    }
+    
+    private Web3jClient(Service service) {
+        this.service = service;
+        this.wsService = null;
+        this.web3j = Web3j.build(service);
     }
 
-    public Web3jClient(String url) throws URISyntaxException, ConnectException {
+    public static Web3jClient connectWebsocket() throws URISyntaxException, ConnectException {
+        return connectWebsocket(URL);
+    }
+
+    public static Web3jClient connectWebsocket(String url) throws URISyntaxException, ConnectException {
+        assert url != null && !url.isBlank();
+
         try {
             final WebSocketClient wsClient = new WebSocketClient(new URI(url));
             final WebSocketService wsService = new WebSocketService(wsClient, false);
             wsService.connect();
-
-            this.web3j = Web3j.build(wsService);
-            this.wsService = wsService;
+            return new Web3jClient(wsService);
         } catch (URISyntaxException | ConnectException ex) {
-            final String message = String.format("Error when connecting to the ethereum client with url '%s'.", url);
+            final String message = String.format("Error when connecting to the ethereum client via Websocket with url '%s'.", url);
             LOGGER.log(Level.SEVERE, message, ex);
             throw ex;
         }
     }
 
+    public static Web3jClient connectIpc(String path) throws ConnectException {
+        assert path != null && !path.isBlank();
+
+        final Service service = createIpcService(path);
+        
+        if (service == null) {
+            final String message = String.format("Ipc connection not for %s operating system.", osName());
+            throw new ConnectException(message);
+        }
+        
+        return new Web3jClient(service);
+    }
+
+    private static Service createIpcService(String path) {
+        if (isWindowsOS()) {
+            return new WindowsIpcService(path);
+        }   
+        else if (isUnixOs()) {
+            return new UnixIpcService(path);
+        }   
+        else {
+            return null;
+        }  
+    }
+
+    private static boolean isWindowsOS() {
+        return osName().contains("win");
+    }
+
+    private static boolean isUnixOs() {
+        return osName().contains("nix");
+    }
+
+    private static String osName() {
+        return System.getProperty("os.name").toLowerCase();
+    }
+
     public void close() {
-        this.wsService.close();
+        if (this.wsService != null) {
+            this.wsService.close();
+        }
+        else if (this.service != null) {
+            try {
+                this.service.close();
+            }
+            catch (IOException ex) {
+                final String message = "Error when closing Web3j service.";
+                LOGGER.log(Level.SEVERE, message, ex);
+            }
+        }
     }
 
     public BigInteger queryBlockNumber() throws Throwable {

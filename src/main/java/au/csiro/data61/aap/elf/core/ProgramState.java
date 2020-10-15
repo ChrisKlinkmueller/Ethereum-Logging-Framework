@@ -58,11 +58,19 @@ public class ProgramState {
         this.getReader().close();
     }
 
-    public static Object connectClient(Object[] parameters, ProgramState state) throws ProgramException {
+    public static Object connectWebsocketClient(Object[] parameters, ProgramState state) throws ProgramException {
         assert parameters != null && parameters.length == 1;
         assert parameters[0] instanceof String;
         final String url = (String) parameters[0];
         state.getReader().connect(url);
+        return null;
+    }
+
+    public static Object connectIpcClient(Object[] parameters, ProgramState state) throws ProgramException {
+        assert parameters != null && parameters.length == 1;
+        assert parameters[0] instanceof String;
+        final String path = (String) parameters[0];
+        state.getReader().connectIpc(path);
         return null;
     }
 

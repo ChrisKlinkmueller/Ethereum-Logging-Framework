@@ -30,7 +30,8 @@ public class Library {
         this.registeredMethods = new HashMap<>();
 
         try {
-            this.addMethod(new MethodSignature("connect", null, "string"), ProgramState::connectClient);
+            this.addMethod(new MethodSignature("connect", null, "string"), ProgramState::connectWebsocketClient);
+            this.addMethod(new MethodSignature("connectIpc", null, "string"), ProgramState::connectIpcClient);
             this.addMethod(new MethodSignature("setOutputFolder", null, "string"), ProgramState::setOutputFolder);
             this.addMethod(new MethodSignature("add", "int", "int", "int"), IntegerOperations::add);
             this.addMethod(new MethodSignature("multiply", "int", "int", "int"), IntegerOperations::multiply);

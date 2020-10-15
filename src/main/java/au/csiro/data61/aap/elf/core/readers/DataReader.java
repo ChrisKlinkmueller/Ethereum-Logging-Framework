@@ -60,11 +60,24 @@ public class DataReader {
         }
 
         try {
-            this.client = new Web3jClient(url);
+            this.client = Web3jClient.connectWebsocket(url);
         } catch (ConnectException | URISyntaxException e) {
-            throw new ProgramException(String.format("Error when connecting to Ethereum node using URL '%s'.", url), e);
+            throw new ProgramException(String.format("Error when connecting to Ethereum node via websocket using URL '%s'.", url), e);
         }
     }
+
+	public void connectIpc(String path) throws ProgramException {
+        assert path != null;
+        if (this.client != null) {
+            throw new ProgramException("Already connected to Ethereum node.");
+        }
+
+        try {
+            this.client = Web3jClient.connectIpc(path);
+        } catch (ConnectException e) {
+            throw new ProgramException(String.format("Error when connecting to Ethereum node via ipc.", path), e);
+        }
+	}
 
     public void close() {
         if (this.client != null) {
