@@ -9,6 +9,7 @@
   <artifactId>elf</artifactId>
   <version>0.2.1</version>
   <name>Ethereum Logging Framework</name>
+  <packaging>jar</packaging>
 
   <properties>
     <java.version>13</java.version>
@@ -23,7 +24,18 @@
     <web3j.version>4.5.5</web3j.version>
     <logback-classic.version>1.2.3</logback-classic.version>
     <jackson.version>2.10.1</jackson.version>
+    <elf.skip.assemble>true</elf.skip.assemble>
   </properties>
+
+
+
+  <repositories>
+    <repository>
+      <id>project.local</id>
+      <name>project</name>
+      <url>file:${project.basedir}/lib</url>
+    </repository>
+  </repositories>
 
   <dependencies>
     <dependency>
@@ -78,18 +90,14 @@
     </dependency>
     <dependency>
       <groupId>org.deckfour</groupId>
-      <artifactId>xes</artifactId>
-      <version>1.0.0</version>
-      <scope>system</scope>
-      <systemPath>${project.basedir}/lib/OpenXES-20181205.jar</systemPath>
+      <artifactId>open-xes</artifactId>
+      <version>1.0</version>
     </dependency>
     <dependency>
       <!-- spex is needed for open xes -->
       <groupId>org.deckfour</groupId>
-      <artifactId>Spex</artifactId>
-      <version>1.0.0</version>
-      <scope>system</scope>
-      <systemPath>${project.basedir}/lib/Spex.jar</systemPath>
+      <artifactId>spex</artifactId>
+      <version>1.0</version>
     </dependency>
     <dependency>
       <groupId>org.spockframework</groupId>
@@ -150,43 +158,6 @@
         <plugin>
           <artifactId>maven-jar-plugin</artifactId>
           <version>3.0.2</version>
-        </plugin>
-        <plugin>
-          <artifactId>maven-install-plugin</artifactId>
-          <version>2.5.2</version>
-          <inherited>false</inherited>
-          <executions>
-            <execution>
-              <id>install-xes</id>
-              <goals>
-                <goal>install-file</goal>
-              </goals>
-              <phase>process-resources</phase>
-              <configuration>
-                <groupId>org.deckfour</groupId>
-                <artifactId>xes</artifactId>
-                <version>1.0.0</version>
-                <packaging>jar</packaging>
-                <file>${basedir}/lib/OpenXES-20181205.jar</file>
-                <generatePom>true</generatePom>
-              </configuration>
-            </execution>
-            <execution>
-              <id>install-spex</id>
-              <configuration>
-                <groupId>org.deckfour</groupId>
-                <artifactId>Spex</artifactId>
-                <version>1.0.0</version>
-                <packaging>jar</packaging>
-                <file>${basedir}/lib/Spex.jar</file>
-                <generatePom>true</generatePom>
-              </configuration>
-              <goals>
-                <goal>install-file</goal>
-              </goals>
-              <phase>process-resources</phase>
-            </execution>
-          </executions>
         </plugin>
         <plugin>
           <artifactId>maven-deploy-plugin</artifactId>
@@ -276,6 +247,53 @@
             </format>
           </formats>
         </configuration>
+      </plugin>
+      <plugin>
+        <groupId>org.apache.maven.plugins</groupId>
+        <artifactId>maven-assembly-plugin</artifactId>
+        <executions>
+          <execution>
+            <phase>package</phase>
+            <goals>
+              <goal>single</goal>
+            </goals>
+            <configuration>
+              <skipAssembly>${elf.skip.assemble}</skipAssembly>
+              <finalName>elf-cmd</finalName>
+              <archive>
+                <manifest>
+                  <mainClass>au.csiro.data61.aap.elf.ElfApp</mainClass>
+                </manifest>
+              </archive>
+              <descriptorRefs>
+                <descriptorRef>jar-with-dependencies</descriptorRef>
+              </descriptorRefs>
+              <appendAssemblyId>false</appendAssemblyId>
+            </configuration>
+          </execution>
+        </executions>
+      </plugin>
+      <plugin>
+        <artifactId>maven-deploy-plugin</artifactId>
+        <version>2.8.2</version>
+        <executions>
+          <execution>
+            <id>deploy-file</id>
+            <phase>deploy</phase>
+            <goals>
+              <goal>deploy-file</goal>
+            </goals>
+            <configuration>
+              <repositoryId>project.local</repositoryId>
+              <file>${project.basedir}/lib/Spex.jar</file>
+              <url>file:///${project.basedir}/lib</url>
+              <groupId>org.deckfour</groupId>
+              <artifactId>spex</artifactId>
+              <version>1.0</version>
+              <packaging>jar</packaging>
+            </configuration>
+          </execution>
+        </executions>
       </plugin>
     </plugins>
   </build>
