@@ -54,7 +54,6 @@ Details of the framework are described in more detail in the following publicati
     ```bash
     cd lib
     mvn deploy:deploy-file "-Durl=file:///<project-path>/lib" "-Dfile=Spex.jar" "-DgroupId=org.deckfour" "-DartifactId=spex" "-Dversion=1.0" "-Dpackaging=jar"
-    
     mvn deploy:deploy-file "-Durl=file:///<project-path>/lib" "-Dfile=OpenXES-20181205.jar" "-DgroupId=org.deckfour" "-DartifactId=open-xes" "-Dversion=1.0" "-Dpackaging=jar"
     ```
    
