@@ -112,7 +112,7 @@ public class TypeUtils {
     }
 
     public static boolean isArrayLiteral(String literal) {
-        return literal != null && 2 <= literal.length() && literal.charAt(0) == '[' && literal.charAt(literal.length() - 1) == ']';
+        return literal != null && 2 <= literal.length() && literal.charAt(0) == '{' && literal.charAt(literal.length() - 1) == '}';
     }
 
     private static final int ADDRESS_BYTES_LENGTH = 20;
