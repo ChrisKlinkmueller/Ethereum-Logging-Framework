@@ -267,19 +267,19 @@ arrayLiteral
     ;
 
 stringArrayLiteral
-    : '[' STRING_LITERAL (',' STRING_LITERAL)* ']'
+    : '{' STRING_LITERAL (',' STRING_LITERAL)* '}'
     ;
 
 intArrayLiteral
-    : '[' (INT_LITERAL) (',' INT_LITERAL)* ']'
+    : '{' (INT_LITERAL) (',' INT_LITERAL)* '}'
     ;
 
 booleanArrayLiteral
-    : '[' BOOLEAN_LITERAL (',' BOOLEAN_LITERAL)* ']'
+    : '{' BOOLEAN_LITERAL (',' BOOLEAN_LITERAL)* '}'
     ;
 
 bytesArrayLiteral
-    : '[' BYTES_LITERAL (',' BYTES_LITERAL)* ']'
+    : '{' BYTES_LITERAL (',' BYTES_LITERAL)* '}'
     ;
 
 STRING_LITERAL : '"' StringCharacters? '"'; //'"' ('\\"' | ~["\r\n])* '"';

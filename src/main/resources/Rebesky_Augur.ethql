@@ -6,7 +6,6 @@ address augur = 0x75228DcE4D82566d93068A8D5d49435216551599;
 
 BLOCKS (5926229) (10193336) {
   LOG ENTRIES (0x75228DcE4D82566d93068A8D5d49435216551599) (MarketCreated(bytes32 indexed topic, string description, string extraInfo, address indexed universe, address market, address indexed marketCreator, bytes32[] outcomes, uint256 marketCreationFee, int256 minPrice, int256 maxPrice, uint8 marketType)){
-    add(markets, market);
     EMIT XES EVENT ()(market)()("Markt erstellt" as xs:string concept:name);
     if(marketType == 0){
       EMIT XES EVENT ()(market)()("Ja-Nein Markt" as xs:string concept:name);

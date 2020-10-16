@@ -35,7 +35,7 @@ class EthqlProgramComposerSpec extends Specification {
             "1 != 2",
             "true == true",
             "(1 < 2) && (3 >= 2)",
-            "5 in [12,5] || 2 in [12,5]",
+            "5 in {12,5} || 2 in {12,5}",
             "(2 > 3) || (5 <= 10)",
             "true && true",
             "false || true",

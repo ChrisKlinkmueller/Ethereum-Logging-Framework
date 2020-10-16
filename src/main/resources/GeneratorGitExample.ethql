@@ -2,7 +2,7 @@ address contract = 0x0000000000000000000000000000000000000000;
 
 BLOCKS (EARLIEST) (CURRENT) {
     LOG ENTRIES (contract) (GitCommit(uint authorId, bytes32 sha)) {
-        string author = mapValue(authorId, "unknown", [0,1,2,3], ["first", "second", "third", "fourth"]);
+        string author = mapValue(authorId, "unknown", {0,1,2,3}, {"first", "second", "third", "fourth"});
         EMIT CSV ROW ("commits") (author, sha);
     }
 }

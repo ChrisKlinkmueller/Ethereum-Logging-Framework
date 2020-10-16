@@ -4,7 +4,7 @@ connect("ws://localhost:8546/");
 // use setOutputFolder to specify Folder
 setOutputFolder("./test_output");
 
-address[] registeredAddresses= [0x0000000000000000000000000000000000000000];
+address[] registeredAddresses= {0x0000000000000000000000000000000000000000};
 address augurContract = 0xb3337164e91b9f05c87c7662c7ac684e8e0ff3e7;
 
 BLOCKS (5926250) (5926350) {

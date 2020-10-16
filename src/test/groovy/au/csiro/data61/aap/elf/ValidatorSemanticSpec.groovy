@@ -76,7 +76,7 @@ class ValidatorSemanticSpec extends Specification {
         "connect(5);"                       | ["Method 'connect' with parameters 'int' unknown."]
         """
         | string result = contains(
-        |   [0x931D387731bBbC988B312206c74F77D004D6B84c],
+        |   {0x931D387731bBbC988B312206c74F77D004D6B84c},
         |   0x931D387731bBbC988B312206c74F77D004D6B84c
         | );
         """.stripMargin()                   | ["Cannot assign a bool value to a string variable."]
@@ -84,8 +84,8 @@ class ValidatorSemanticSpec extends Specification {
         | int result = mapValue(
         |   4,
         |   "unknown",
-        |   [0,1,2,3],
-        |   ["first", "second", "third", "fourth"]
+        |   {0,1,2,3},
+        |   {"first", "second", "third", "fourth"}
         | );
         """.stripMargin()                   | ["Cannot assign a string value to a int variable."]
     }
@@ -229,17 +229,17 @@ class ValidatorSemanticSpec extends Specification {
         | if (true || false) {}
         """.stripMargin()                   | []
         """
-        | if (5 in [4,5,6]) {}
+        | if (5 in {4,5,6}) {}
         """.stripMargin()                   | []
         """
         | int i = 5;
-        | if (i in [4,5,6]) {}
+        | if (i in {4,5,6}) {}
         """.stripMargin()                   | []
         "if (true == (5 == 4)) {}"          | []
         """
         | if (!false) {}
         """.stripMargin()                   | []
-        "if (true && i in [5, 3]) {}"       | ["Variable 'i' not defined."]
+        "if (true && i in {5, 3}) {}"       | ["Variable 'i' not defined."]
         "if (false && \"true\") {}"         | ["Expression must return a boolean value."]
         """
         | int i = 4; 
@@ -258,21 +258,21 @@ class ValidatorSemanticSpec extends Specification {
         """
         | BLOCKS (6605100) (6615100) {
         |   SMART CONTRACT (0x931D387731bBbC988B312206c74F77D004D6B84c)
-        |   (address addr, int i, string s = someMethod(int[] [5, 6])) {}
+        |   (address addr, int i, string s = someMethod(int[] {5, 6})) {}
         | }
         """.stripMargin()                   | []
         """
         | BLOCKS (6605100) (6615100) {
         |   address addr = 0x931D387731bBbC988B312206c74F77D004D6B84c;
         |   SMART CONTRACT (addr)
-        |   (int i, string s = someMethod(int[] [5, 6])) {}
+        |   (int i, string s = someMethod(int[] {5, 6})) {}
         | }
         """.stripMargin()                   | []
         """
         | BLOCKS (6605100) (6615100) {
         |   address addr = 0x931D387731bBbC988B312206c74F77D004D6B84c;
         |   SMART CONTRACT (addr)
-        |   (int i, string s = someMethod(int[] ["5", "6"])) {}
+        |   (int i, string s = someMethod(int[] {"5", "6"})) {}
         | }
         """.stripMargin()                   | ["Cannot cast string[] literal to int[]."]
     }
