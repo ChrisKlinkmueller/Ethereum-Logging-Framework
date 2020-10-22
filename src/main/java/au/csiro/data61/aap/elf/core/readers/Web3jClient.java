@@ -93,7 +93,7 @@ public class Web3jClient implements EthereumClient {
     private static Service createIpcService(String path) {
         if (isWindowsOS()) {
             return new WindowsIpcService(path);
-        } else if (isUnixOs()) {
+        } else if (isUnixOs() || isLinuxOs()) {
             return new UnixIpcService(path);
         } else {
             return null;
@@ -106,6 +106,10 @@ public class Web3jClient implements EthereumClient {
 
     private static boolean isUnixOs() {
         return osName().contains("nix");
+    }
+
+    private static boolean isLinuxOs() {
+        return osName().contains("linux");
     }
 
     private static String osName() {
