@@ -1,12 +1,29 @@
 {
     "configurations": [
         {
+            "type": "java",
+            "name": "CodeLens (Launch) - ExtractorTest",
+            "request": "launch",
+            "mainClass": "au.csiro.data61.aap.samples.ExtractorTest",
+            "projectName": "elf"
+        },
+        {
+            "type": "java",
+            "name": "CodeLens (Launch) - ValidatorTest",
+            "request": "launch",
+            "mainClass": "au.csiro.data61.aap.samples.ValidatorTest",
+            "projectName": "elf"
+        },
+        {
             "name": "CryptoKitties - Validation test",
             "type": "java",
             "request": "launch",
             "mainClass": "au.csiro.data61.aap.elf.ElfApp",
-            "projectName": "elf", 
-            "args": ["validate", "src/main/resources/CryptoKitties.ethql"]
+            "projectName": "elf",
+            "args": [
+                "validate",
+                "src/main/resources/CryptoKitties.ethql"
+            ]
         },
         {
             "name": "CryptoKitties Ethql Parsing Test",

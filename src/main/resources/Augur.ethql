@@ -1,0 +1,269 @@
+// based on the script Rebesky_Augur.ethql by Martin Rebesky
+
+connectIpc("/data2/geth-archive/chaindata/geth.ipc");
+setOutputFolder("./test_output");
+address augur = 0x75228DcE4D82566d93068A8D5d49435216551599;
+
+// BLOCKS (5926229) (10193336) {
+BLOCKS    (6500000)  (6510000) {
+  LOG ENTRIES (augur) (
+    MarketCreated(
+      bytes32 indexed topic, 
+      string description, 
+      string extraInfo, 
+      address indexed universe, 
+      address market, 
+      address indexed marketCreator, 
+      bytes32[] outcomes, 
+      uint256 marketCreationFee, 
+      int256 minPrice, 
+      int256 maxPrice, 
+      uint8 marketType
+    )
+  ) {
+    string type = mapValue(marketType, "unknown", {0, 1, 3}, {"binary", "categorical", "scalar"});
+    EMIT XES TRACE ()(market)(
+      universe as xs:string universe,
+      description as xs:string description, 
+      extraInfo as xs:string extraInfo, 
+      type as xs:string marketType, 
+      //outcomes, 
+      minPrice as xs:int minPrice, 
+      maxPrice as xs:int maxPrice,
+      block.number as xs:int blockNumber
+    );
+        
+    EMIT XES EVENT ()(market)()(
+      "create market" as xs:string concept:name, 
+      universe as xs:string universe, 
+      marketCreator as xs:string creator, 
+      marketCreationFee as xs:int creationFee,
+      block.number as xs:int blockNumber
+    );
+  }
+    
+  LOG ENTRIES (augur) (
+    MarketFinalized(
+      address indexed universe, 
+      address indexed market
+    )
+  ){
+    EMIT XES EVENT ()(market)()(
+      "finalize market" as xs:string concept:name, 
+      universe as xs:string universe,
+      block.number as xs:int blockNumber
+    );
+  }
+     
+  LOG ENTRIES (augur) (
+    MarketMigrated(
+      address indexed market, 
+      address indexed originalUniverse, 
+      address indexed newUniverse
+    )
+  ){
+    EMIT XES EVENT ()(market)()(
+      "migrate market" as xs:string concept:name,
+      originalUniverse as xs:string originalUniverse,
+      newUniverse as xs:string newUniverse,
+      block.number as xs:int blockNumber
+    );
+  }
+     
+  LOG ENTRIES (augur) (
+    DisputeCrowdsourcerCreated(
+      address indexed universe, 
+      address indexed market, 
+      address disputeCrowdsourcer, 
+      uint256[] payoutNumerators, 
+      uint256 size, 
+      bool invalid
+    )
+  ){
+    EMIT XES EVENT ()(market)()(
+      "create dispute" as xs:string concept:name, 
+      universe as xs:string universe,
+      disputeCrowdsourcer as xs:string disputeCrowdsourcer,
+      //payoutNumerators ,
+      size as xs:int size,
+      invalid as xs:boolean invalid,
+      block.number as xs:int blockNumber
+    );
+  }
+     
+  LOG ENTRIES (augur) (
+    DisputeCrowdsourcerContribution(
+      address indexed universe, 
+      address indexed reporter, 
+      address indexed market, 
+      address disputeCrowdsourcer, 
+      uint256 amountStaked)
+  ){
+    EMIT XES EVENT ()(market)()(
+      "contribute to dispute" as xs:string concept:name, 
+      universe as xs:string universe,
+      reporter as xs:string reporter,
+      disputeCrowdsourcer as xs:string disputeCrowdsourcer,
+      amountStaked as xs:int amountStaked,
+      block.number as xs:int blockNumber
+    );
+  }
+     
+  LOG ENTRIES (augur) (
+    DisputeCrowdsourcerCompleted(
+      address indexed universe, 
+      address indexed market, 
+      address disputeCrowdsourcer
+    )
+  ){
+    EMIT XES EVENT ()(market)()(
+      "complete dispute" as xs:string concept:name,
+      universe as xs:string universe,
+      disputeCrowdsourcer as xs:string disputeCrowdsourcer,
+      block.number as xs:int blockNumber
+    );
+  }
+     
+  LOG ENTRIES (augur) (
+    DisputeCrowdsourcerRedeemed(
+      address indexed universe, 
+      address indexed reporter, 
+      address indexed market, 
+      address disputeCrowdsourcer, 
+      uint256 amountRedeemed, 
+      uint256 repReceived, 
+      uint256 reportingFeesReceived, 
+      uint256[] payoutNumerators
+    )
+  ){
+    EMIT XES EVENT ()(market)()(
+      "redeem as dispute crowdsourcer" as xs:string concept:name,
+      universe as xs:string universe,
+      reporter as xs:string reporter,
+      disputeCrowdsourcer as xs:string disputeCrowdsourcer,
+      amountRedeemed as xs:int amountRedeemed,
+      repReceived as xs:int repReceived,
+      reportingFeesReceived as xs:int reportingFeesReceived,
+      block.number as xs:int blockNumber
+      //, payoutNumerators
+    );
+  }
+     
+  LOG ENTRIES (augur) (
+    MarketTransferred(
+      address indexed universe, 
+      address indexed market, 
+      address from, 
+      address to
+    )
+  ){
+    EMIT XES EVENT ()(market)()(
+      "transfer market" as xs:string concept:name,
+      universe as xs:string universe,
+      from as xs:string from, 
+      to as xs:string to,
+      block.number as xs:int blockNumber
+    );
+  }
+  
+  LOG ENTRIES (augur) (
+    InitialReportSubmitted(
+      address indexed universe, 
+      address indexed reporter, 
+      address indexed market, 
+      uint256 amountStaked, 
+      bool isDesignatedReporter, 
+      uint256[] payoutNumerators, 
+      bool invalid
+    )
+  ) {
+    EMIT XES EVENT ()(market)()(
+      "submit initial report" as xs:string concept:name,
+      universe as xs:string universe,
+      reporter as xs:string reporter,
+      amountStaked as xs:int amountStaked,
+      isDesignatedReporter as xs:boolean isDesignatedReporter,
+      //payoutNumerators,
+      invalid as xs:boolean invalid,
+      block.number as xs:int blockNumber
+    );
+  }
+     
+  LOG ENTRIES (augur) (
+    ReportingParticipantDisavowed(
+      address indexed universe, 
+      address indexed market, 
+      address reportingParticipant
+    )
+  ){ 
+    EMIT XES EVENT ()(market)()(
+      "diavow reporting participant" as xs:string concept:name,
+      universe as xs:string universe,
+      reportingParticipant as xs:string reportingParticipant,
+      block.number as xs:int blockNumber
+    );
+  }
+     
+  LOG ENTRIES (augur) (
+    InitialReporterRedeemed(
+      address indexed universe, 
+      address indexed reporter, 
+      address indexed market, 
+      uint256 amountRedeemed, 
+      uint256 repReceived, 
+      uint256 reportingFeesReceived, 
+      uint256[] payoutNumerators
+    )
+  ){
+    EMIT XES EVENT ()(market)()(
+      "redeem as initial reporter" as xs:string concept:name,
+      universe as xs:string universe,
+      reporter as xs:string reporter,
+      amountRedeemed as xs:int amountRedeemed,
+      repReceived as xs:int repReceived,
+      reportingFeesReceived as xs:int reportingFeesReceived,
+      // payoutNumerators,
+      block.number as xs:int blockNumber
+    );
+  }
+     
+  LOG ENTRIES (augur) (
+    InitialReporterTransferred(
+        address indexed universe, 
+        address indexed market, 
+        address from, 
+        address to
+      )
+    ){
+      EMIT XES EVENT ()(market)()(
+        "transfer initial reporting duty" as xs:string concept:name,
+        universe as xs:string universe,
+        from as xs:string from, 
+        to as xs:string to,
+        block.number as xs:int blockNumber
+      );
+  }
+     
+  LOG ENTRIES (augur) (
+    TradingProceedsClaimed(
+      address indexed universe, 
+      address indexed shareToken, 
+      address indexed sender, 
+      address market, 
+      uint256 numShares, 
+      uint256 numPayoutTokens, 
+      uint256 finalTokenBalance
+    )
+  ) {
+    EMIT XES EVENT ()(market)()(
+      "claim trading proceeds" as xs:string concept:name,
+      universe as xs:string universe,
+      shareToken as xs:string shareToken,
+      sender as xs:string sender,
+      numShares as xs:int numShares,
+      numPayoutTokens as xs:int numPayoutTokens,
+      finalTokenBalance as xs:int finalTokenBalance,
+      block.number as xs:int blockNumber
+    );
+  }
+}

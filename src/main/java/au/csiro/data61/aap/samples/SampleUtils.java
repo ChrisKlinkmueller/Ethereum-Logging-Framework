@@ -12,6 +12,7 @@ public class SampleUtils {
     public static final String CRYPTO_KITTIES = "CryptoKitties.ethql";
     public static final String NETWORK_STATISTICS = "NetworkStatistics.ethql";
     public static final String AUGUR_REGISTRY = "AugurContractRegistry.ethql";
+    public static final String AUGUR = "Augur.ethql";
     public static final String GIT_GENERATOR = "GeneratorGitExample.ethql";
     public static final String SHIRT_GENERATOR = "GeneratorShirtExample.ethql";
     public static final String BOCKRATH_FORSAGE = "Bockrath_Forsage.ethql";
@@ -43,7 +44,8 @@ public class SampleUtils {
             REBESKY_CHICKEN_HUNT,
             REBESKY_IDEX_1,
             REBESKY_IDEX_2,
-            REBESKY_IDEX_3
+            REBESKY_IDEX_3,
+            AUGUR
         );
     }
 
