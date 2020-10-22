@@ -19,6 +19,7 @@ public class ElfApp {
                 CMD_VALIDATE
             );
             System.out.println(message);
+            return;
         }
 
         final String filepath = args[INDEX_PATH];
@@ -26,6 +27,7 @@ public class ElfApp {
         if (!file.exists()) {
             final String message = String.format("Invalid file path: %s", filepath);
             System.out.println(message);
+            return;
         }
 
         final String command = args[INDEX_CMD].toLowerCase();
