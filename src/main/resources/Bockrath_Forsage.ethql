@@ -16,10 +16,10 @@ BLOCKS (10310000) (10311000) {
         address indexed caller, uint8 matrix, uint8 level)
     ){
         IF (matrix == 1) {
-            EMIT XES EVENT ("forsage-0xd73b")(user)()("Reinvest Matrix-1" as xs:string concept:name level as xs:int level);
+            EMIT XES EVENT ("forsage-0xd73b")(user)()("Reinvest Matrix-1" as xs:string concept:name, level as xs:int level);
         }
         IF (matrix == 2) {
-            EMIT XES EVENT ("forsage-0xd73b")(user)()("Reinvest Matrix-2" as xs:string concept:name level as xs:int level);
+            EMIT XES EVENT ("forsage-0xd73b")(user)()("Reinvest Matrix-2" as xs:string concept:name, level as xs:int level);
         }
     }
 
@@ -29,12 +29,12 @@ BLOCKS (10310000) (10311000) {
     ){
         IF (matrix == 1) {
             EMIT XES EVENT ("forsage-0xd73b")(user)()("Upgrade Matrix-1"
-            as xs:string concept:name level as xs:int level);
+            as xs:string concept:name, level as xs:int level);
         }
 
         IF (matrix == 2) {
             EMIT XES EVENT ("forsage-0xd73b")(user)()("Upgrade Matrix-2"
-            as xs:string concept:name level as xs:int level);
+            as xs:string concept:name, level as xs:int level);
         }
     }
 
@@ -42,10 +42,10 @@ BLOCKS (10310000) (10311000) {
         NewUserPlace(address indexed user, address indexed referrer, uint8 matrix, uint8 level, uint8 place)
     ){
         IF (matrix == 1) {
-            EMIT XES EVENT ("forsage-0xd73b")(user)()("New User-Place Matrix-1" as xs:string concept:name level as xs:int level place as xs:int place);
+            EMIT XES EVENT ("forsage-0xd73b")(user)()("New User-Place Matrix-1" as xs:string concept:name, level as xs:int level, place as xs:int place);
         }
         IF (matrix == 2) {
-            EMIT XES EVENT ("forsage-0xd73b")(user)()("New User-Place Matrix-2" as xs:string concept:name level as xs:int level place as xs:int place);
+            EMIT XES EVENT ("forsage-0xd73b")(user)()("New User-Place Matrix-2" as xs:string concept:name, level as xs:int level, place as xs:int place);
         }
     }
 
@@ -53,10 +53,10 @@ BLOCKS (10310000) (10311000) {
         MissedEthReceive(address indexed receiver, address indexed from, uint8 matrix, uint8 level)
     ){
         IF (matrix == 1) {
-            EMIT XES EVENT ("forsage-0xd73b")(receiver)()("Missed Eth-Receive Matrix-1" as xs:string concept:name level as xs:int level);
+            EMIT XES EVENT ("forsage-0xd73b")(receiver)()("Missed Eth-Receive Matrix-1" as xs:string concept:name, level as xs:int level);
         }
         IF (matrix == 2) {
-            EMIT XES EVENT ("forsage-0xd73b")(receiver)()("Missed Eth-Receive Matrix-2" as xs:string concept:name level as xs:int level);
+            EMIT XES EVENT ("forsage-0xd73b")(receiver)()("Missed Eth-Receive Matrix-2" as xs:string concept:name, level as xs:int level);
         }
     }
 
@@ -66,10 +66,10 @@ BLOCKS (10310000) (10311000) {
         IF (matrix == 1) {
             EMIT XES EVENT ("forsage-0xd73b")(receiver)()(
             "Recieved Extra Eth-Dividends Matrix-1" as xs:string
-            concept:name level as xs:int level);
+            concept:name, level as xs:int level);
         }
         IF (matrix == 2) {
-            EMIT XES EVENT ("forsage-0xd73b")(receiver)()("Recieved Extra Eth-Dividends Matrix-2" as xs:string concept:name level as xs:int level);
+            EMIT XES EVENT ("forsage-0xd73b")(receiver)()("Recieved Extra Eth-Dividends Matrix-2" as xs:string concept:name, level as xs:int level);
         }
     }
 }

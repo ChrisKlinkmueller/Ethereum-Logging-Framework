@@ -122,11 +122,11 @@ emitStatementLog
     ;
 
 emitStatementXesTrace
-    : KEY_EMIT KEY_XES_TRACE '(' (pid=valueExpression)? ')' '(' (piid=valueExpression)? ')' '(' xesEmitVariable+ ')' ';'
+    : KEY_EMIT KEY_XES_TRACE '(' (pid=valueExpression)? ')' '(' (piid=valueExpression)? ')' '(' xesEmitVariable (',' xesEmitVariable)* ')' ';'
     ;
 
 emitStatementXesEvent
-    : KEY_EMIT KEY_XES_EVENT '(' (pid=valueExpression)? ')' '(' (piid=valueExpression)? ')' '(' (eid=valueExpression)? ')' '(' xesEmitVariable+ ')' ';'
+    : KEY_EMIT KEY_XES_EVENT '(' (pid=valueExpression)? ')' '(' (piid=valueExpression)? ')' '(' (eid=valueExpression)? ')' '(' xesEmitVariable (',' xesEmitVariable)* ')' ';'
     ;
 
 xesEmitVariable
