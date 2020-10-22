@@ -129,5 +129,5 @@ block_data.json
 !lib/*.jar
 /lib/org
 CsvTransform.java
-Open Source Questionaire.docx
+*.docx
 
