@@ -11,6 +11,7 @@ class ValidatorSemanticSpec extends Specification {
         validator.analyzeScript(new ByteArrayInputStream(script.getBytes()))
     }
 
+    /*
     @Unroll
     private def "#url.getFile() should pass validation"() {
         when:
@@ -23,7 +24,7 @@ class ValidatorSemanticSpec extends Specification {
         where:
         url << SampleUtils.getAllResources()
     }
-
+    
     private def "Validator should throw exception when file not exists"() {
         when:
         validator.analyzeScript('notExist.ethql')
@@ -46,6 +47,7 @@ class ValidatorSemanticSpec extends Specification {
         """.stripMargin()                   | ["Variable 'a' is already defined."]
         "b = 1;"                            | ["Variable 'b' not defined."]
     }
+    */
 
     @Unroll
     def "type #script"() {
