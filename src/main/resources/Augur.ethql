@@ -6,7 +6,7 @@ address augur = 0x75228DcE4D82566d93068A8D5d49435216551599;
 
 // BLOCKS (5926229) (10193336) {
 BLOCKS    (6500000)  (6510000) {
-  LOG ENTRIES (augur) (
+  LOG ENTRIES (0x75228DcE4D82566d93068A8D5d49435216551599) (
     MarketCreated(
       bytes32 indexed topic, 
       string description, 
@@ -21,7 +21,7 @@ BLOCKS    (6500000)  (6510000) {
       uint8 marketType
     )
   ) {
-    string type = mapValue(marketType, "unknown", {0, 1, 3}, {"binary", "categorical", "scalar"});
+    string type = mapValue(marketType, "unknown", {0, 1, 2}, {"binary", "categorical", "scalar"});
     EMIT XES TRACE ()(market)(
       universe as xs:string universe,
       description as xs:string description, 
@@ -42,7 +42,7 @@ BLOCKS    (6500000)  (6510000) {
     );
   }
     
-  LOG ENTRIES (augur) (
+  LOG ENTRIES (0x75228DcE4D82566d93068A8D5d49435216551599) (
     MarketFinalized(
       address indexed universe, 
       address indexed market
@@ -55,7 +55,7 @@ BLOCKS    (6500000)  (6510000) {
     );
   }
      
-  LOG ENTRIES (augur) (
+  LOG ENTRIES (0x75228DcE4D82566d93068A8D5d49435216551599) (
     MarketMigrated(
       address indexed market, 
       address indexed originalUniverse, 
@@ -70,7 +70,7 @@ BLOCKS    (6500000)  (6510000) {
     );
   }
      
-  LOG ENTRIES (augur) (
+  LOG ENTRIES (0x75228DcE4D82566d93068A8D5d49435216551599) (
     DisputeCrowdsourcerCreated(
       address indexed universe, 
       address indexed market, 
@@ -91,7 +91,7 @@ BLOCKS    (6500000)  (6510000) {
     );
   }
      
-  LOG ENTRIES (augur) (
+  LOG ENTRIES (0x75228DcE4D82566d93068A8D5d49435216551599) (
     DisputeCrowdsourcerContribution(
       address indexed universe, 
       address indexed reporter, 
@@ -109,7 +109,7 @@ BLOCKS    (6500000)  (6510000) {
     );
   }
      
-  LOG ENTRIES (augur) (
+  LOG ENTRIES (0x75228DcE4D82566d93068A8D5d49435216551599) (
     DisputeCrowdsourcerCompleted(
       address indexed universe, 
       address indexed market, 
@@ -124,7 +124,7 @@ BLOCKS    (6500000)  (6510000) {
     );
   }
      
-  LOG ENTRIES (augur) (
+  LOG ENTRIES (0x75228DcE4D82566d93068A8D5d49435216551599) (
     DisputeCrowdsourcerRedeemed(
       address indexed universe, 
       address indexed reporter, 
@@ -149,7 +149,7 @@ BLOCKS    (6500000)  (6510000) {
     );
   }
      
-  LOG ENTRIES (augur) (
+  LOG ENTRIES (0x75228DcE4D82566d93068A8D5d49435216551599) (
     MarketTransferred(
       address indexed universe, 
       address indexed market, 
@@ -166,7 +166,7 @@ BLOCKS    (6500000)  (6510000) {
     );
   }
   
-  LOG ENTRIES (augur) (
+  LOG ENTRIES (0x75228DcE4D82566d93068A8D5d49435216551599) (
     InitialReportSubmitted(
       address indexed universe, 
       address indexed reporter, 
@@ -189,7 +189,7 @@ BLOCKS    (6500000)  (6510000) {
     );
   }
      
-  LOG ENTRIES (augur) (
+  LOG ENTRIES (0x75228DcE4D82566d93068A8D5d49435216551599) (
     ReportingParticipantDisavowed(
       address indexed universe, 
       address indexed market, 
@@ -197,14 +197,14 @@ BLOCKS    (6500000)  (6510000) {
     )
   ){ 
     EMIT XES EVENT ()(market)()(
-      "diavow reporting participant" as xs:string concept:name,
+      "disavow reporting participant" as xs:string concept:name,
       universe as xs:string universe,
       reportingParticipant as xs:string reportingParticipant,
       block.number as xs:int blockNumber
     );
   }
      
-  LOG ENTRIES (augur) (
+  LOG ENTRIES (0x75228DcE4D82566d93068A8D5d49435216551599) (
     InitialReporterRedeemed(
       address indexed universe, 
       address indexed reporter, 
@@ -227,7 +227,7 @@ BLOCKS    (6500000)  (6510000) {
     );
   }
      
-  LOG ENTRIES (augur) (
+  LOG ENTRIES (0x75228DcE4D82566d93068A8D5d49435216551599) (
     InitialReporterTransferred(
         address indexed universe, 
         address indexed market, 
@@ -244,7 +244,7 @@ BLOCKS    (6500000)  (6510000) {
       );
   }
      
-  LOG ENTRIES (augur) (
+  LOG ENTRIES (0x75228DcE4D82566d93068A8D5d49435216551599) (
     TradingProceedsClaimed(
       address indexed universe, 
       address indexed shareToken, 
