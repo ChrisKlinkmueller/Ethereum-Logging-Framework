@@ -251,7 +251,7 @@ public class XesWriter extends DataWriter {
         TypeUtils.BOOL_TYPE_KEYWORD,
         Set.of(BOOLEAN_TYPE, STRING_TYPE),
         TypeUtils.INT_TYPE_KEYWORD,
-        Set.of(STRING_TYPE, FLOAT_TYPE, INT_TYPE),
+        Set.of(STRING_TYPE, FLOAT_TYPE, INT_TYPE, DATE_TYPE),
         TypeUtils.STRING_TYPE_KEYWORD,
         Set.of(STRING_TYPE)
     );

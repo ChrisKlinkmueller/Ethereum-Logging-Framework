@@ -76,10 +76,8 @@ public class ValidatorSemanticSpec {
 
     private static Stream<Arguments> variableDefinitionScripts() {
         return Stream.of(
-            Arguments.of("string a = \"\"; string a = \"\";", 
-                        List.of("Variable 'a' is already defined.")),
-            Arguments.of("b = 1;", 
-                        List.of("Variable 'b' not defined."))
+            Arguments.of("string a = \"\"; string a = \"\";", List.of("Variable 'a' is already defined.")),
+            Arguments.of("b = 1;", List.of("Variable 'b' not defined."))
         );
     }
 
@@ -91,20 +89,19 @@ public class ValidatorSemanticSpec {
 
     private static Stream<Arguments> methodCallScripts() {
         return Stream.of(
-            Arguments.of("connect(\"localhost:8465\");", 
-                        Collections.emptyList()),
-            Arguments.of("int result = add(10, -5);", 
-                        Collections.emptyList()),
-            Arguments.of("connec(\"localhost:8465\");", 
-                        List.of("Method 'connec' with parameters 'string' unknown.")),
-            Arguments.of("connect(\"localhost:8465\", 5);", 
-                        List.of("Method 'connect' with parameters 'string, int' unknown.")),
-            Arguments.of("connect(5);", 
-                        List.of("Method 'connect' with parameters 'int' unknown.")),
-            Arguments.of("string result = contains({0x931D387731bBbC988B312206c74F77D004D6B84c}, 0x931D387731bBbC988B312206c74F77D004D6B84c);", 
-                        List.of("Cannot assign a bool value to a string variable.")),
-            Arguments.of("int result = mapValue(4, \"unknown\", {0,1,2,3}, {\"first\", \"second\", \"third\", \"fourth\"});", 
-                        List.of("Cannot assign a string value to a int variable."))
+            Arguments.of("connect(\"localhost:8465\");", Collections.emptyList()),
+            Arguments.of("int result = add(10, -5);", Collections.emptyList()),
+            Arguments.of("connec(\"localhost:8465\");", List.of("Method 'connec' with parameters 'string' unknown.")),
+            Arguments.of("connect(\"localhost:8465\", 5);", List.of("Method 'connect' with parameters 'string, int' unknown.")),
+            Arguments.of("connect(5);", List.of("Method 'connect' with parameters 'int' unknown.")),
+            Arguments.of(
+                "string result = contains({0x931D387731bBbC988B312206c74F77D004D6B84c}, 0x931D387731bBbC988B312206c74F77D004D6B84c);",
+                List.of("Cannot assign a bool value to a string variable.")
+            ),
+            Arguments.of(
+                "int result = mapValue(4, \"unknown\", {0,1,2,3}, {\"first\", \"second\", \"third\", \"fourth\"});",
+                List.of("Cannot assign a string value to a int variable.")
+            )
         );
     }
 
@@ -116,22 +113,23 @@ public class ValidatorSemanticSpec {
 
     private static Stream<Arguments> emitScripts() {
         return Stream.of(
-            Arguments.of("EMIT LOG LINE (\"Block\", 5, \": New FeeToken registered with address '\", 0x123, \"'.\");",
-                        Collections.emptyList()),
-            Arguments.of("EMIT CSV ROW (\"table\") (5 AS blockNumber, 0x123 AS addr); ",
-                        Collections.emptyList()),
-            Arguments.of("int kittyId = 15; EMIT XES EVENT ()(kittyId)()(\"birth\" AS xs:string concept:name);",
-                        Collections.emptyList()),
-            Arguments.of("EMIT LOG LINE (\"Block \", block.number, \": New FeeToken registered with address '\", 0x123, \"'.\");",
-                        List.of("Variable 'block.number' not defined.")),
-            Arguments.of("EMIT CSV ROW (tableName) (5 AS blockNumber);",
-                        List.of("Variable 'tableName' not defined.")),
-            Arguments.of("EMIT CSV ROW (\"table\") (5);",
-                        List.of("Attribute name must be specified for literals")),
-            Arguments.of("EMIT XES EVENT()(catId)()(\"birth\" AS xs:string concept:name);",
-                        List.of("Variable 'catId' not defined.")),
-            Arguments.of("int kittyId = 15; EMIT XES EVENT()(kittyId)()(birth AS xs:string concept:name);",
-                        List.of("Variable 'birth' not defined."))
+            Arguments.of(
+                "EMIT LOG LINE (\"Block\", 5, \": New FeeToken registered with address '\", 0x123, \"'.\");",
+                Collections.emptyList()
+            ),
+            Arguments.of("EMIT CSV ROW (\"table\") (5 AS blockNumber, 0x123 AS addr); ", Collections.emptyList()),
+            Arguments.of("int kittyId = 15; EMIT XES EVENT ()(kittyId)()(\"birth\" AS xs:string concept:name);", Collections.emptyList()),
+            Arguments.of(
+                "EMIT LOG LINE (\"Block \", block.number, \": New FeeToken registered with address '\", 0x123, \"'.\");",
+                List.of("Variable 'block.number' not defined.")
+            ),
+            Arguments.of("EMIT CSV ROW (tableName) (5 AS blockNumber);", List.of("Variable 'tableName' not defined.")),
+            Arguments.of("EMIT CSV ROW (\"table\") (5);", List.of("Attribute name must be specified for literals")),
+            Arguments.of("EMIT XES EVENT()(catId)()(\"birth\" AS xs:string concept:name);", List.of("Variable 'catId' not defined.")),
+            Arguments.of(
+                "int kittyId = 15; EMIT XES EVENT()(kittyId)()(birth AS xs:string concept:name);",
+                List.of("Variable 'birth' not defined.")
+            )
         );
     }
 
@@ -143,28 +141,36 @@ public class ValidatorSemanticSpec {
 
     private static Stream<Arguments> blockFilterScripts() {
         return Stream.of(
-            Arguments.of("BLOCKS (6605100) (6615100) { TRANSACTIONS (ANY) (ANY) {} }",
-                        Collections.emptyList()),
-            Arguments.of("BLOCKS (Earliest) (cuRRent) { TRANSACTIONS (ANY) (ANY) {} }",
-                        Collections.emptyList()),
-            Arguments.of("BLOCKS (var1) (8) {}",
-                        List.of("Variable 'var1' not defined.", 
-                            "The 'from' block number must be an integer variable, an integer literal or one of the values {EARLIEST, CURRENT}."
-                        )),
-            Arguments.of("BLOCKS (10) (8) {}",
-                        List.of("The 'from' block number must be smaller than or equal to the 'to' block number.")),
-            Arguments.of("BLOCKS (-10) (8) {}", 
-                        List.of("The 'from' block number must be an integer larger than or equal to 0.")),
-            Arguments.of("BLOCKS (10) (-8) {}",
-                        List.of("The 'to' block number must be an integer larger than or equal to 0.", 
-                            "The 'from' block number must be smaller than or equal to the 'to' block number."
-                        )),
-            Arguments.of("BLOCKS (\"123\") (10) {}",
-                        List.of("The 'from' block number must be an integer variable, an integer literal or one of the values {EARLIEST, CURRENT}.")),
-            Arguments.of("BLOCKS (123) (0x123) {}", 
-                        List.of("The 'to' block number must be an integer variable, an integer literal or one of the values {CONTINUOUS, CURRENT}.")),
-            Arguments.of("TRANSACTIONS (ANY) (ANY) { BLOCKS (0) (1) {} }", 
-                        List.of("Invalid nesting of filters.", "Invalid nesting of filters."))
+            Arguments.of("BLOCKS (6605100) (6615100) { TRANSACTIONS (ANY) (ANY) {} }", Collections.emptyList()),
+            Arguments.of("BLOCKS (Earliest) (cuRRent) { TRANSACTIONS (ANY) (ANY) {} }", Collections.emptyList()),
+            Arguments.of(
+                "BLOCKS (var1) (8) {}",
+                List.of(
+                    "Variable 'var1' not defined.",
+                    "The 'from' block number must be an integer variable, an integer literal or one of the values {EARLIEST, CURRENT}."
+                )
+            ),
+            Arguments.of("BLOCKS (10) (8) {}", List.of("The 'from' block number must be smaller than or equal to the 'to' block number.")),
+            Arguments.of("BLOCKS (-10) (8) {}", List.of("The 'from' block number must be an integer larger than or equal to 0.")),
+            Arguments.of(
+                "BLOCKS (10) (-8) {}",
+                List.of(
+                    "The 'to' block number must be an integer larger than or equal to 0.",
+                    "The 'from' block number must be smaller than or equal to the 'to' block number."
+                )
+            ),
+            Arguments.of(
+                "BLOCKS (\"123\") (10) {}",
+                List.of("The 'from' block number must be an integer variable, an integer literal or one of the values {EARLIEST, CURRENT}.")
+            ),
+            Arguments.of(
+                "BLOCKS (123) (0x123) {}",
+                List.of("The 'to' block number must be an integer variable, an integer literal or one of the values {CONTINUOUS, CURRENT}.")
+            ),
+            Arguments.of(
+                "TRANSACTIONS (ANY) (ANY) { BLOCKS (0) (1) {} }",
+                List.of("Invalid nesting of filters.", "Invalid nesting of filters.")
+            )
         );
     }
 }

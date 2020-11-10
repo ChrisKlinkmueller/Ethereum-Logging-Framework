@@ -177,6 +177,7 @@ public class VariableExistenceAnalyzer extends SemanticAnalyzer {
 
     @Override
     public void enterBlockFilter(BlockFilterContext ctx) {
+        this.addFilterConstants(EthereumVariables.getTransactionVariableNamesAndTypes());
         this.addFilterConstants(EthereumVariables.getBlockVariableNamesAndTypes());
     }
 
@@ -191,7 +192,12 @@ public class VariableExistenceAnalyzer extends SemanticAnalyzer {
     }
 
     private void addFilterConstants(Map<String, String> nameTypeMap) {
-        nameTypeMap.entrySet().stream().forEach(entry -> this.addConstant(entry.getValue(), entry.getKey()));
+        nameTypeMap.entrySet().stream()
+            .forEach(entry -> {
+                if (!this.isVariableDefined(entry.getKey())) {
+                    this.addConstant(entry.getValue(), entry.getKey());
+                }
+            });
     }
 
     // #endregion scope variables
