@@ -41,7 +41,7 @@ public class BlockVariables {
         addBlockVariable(BLOCK_HASH, "bytes", EthereumBlock::getHash);
         addBlockVariable(BLOCK_LOGS_BLOOM, "string", EthereumBlock::getLogsBloom);
         addBlockVariable(BLOCK_MINER, "address", EthereumBlock::getMiner);
-        addBlockVariable(BLOCK_NONCE, "bytes", EthereumBlock::getNonce);
+        addBlockVariable(BLOCK_NONCE, "int", EthereumBlock::getNonce);
         addBlockVariable(BLOCK_NUMBER, "int", EthereumBlock::getNumber);
         addBlockVariable(BLOCK_PARENT_HASH, "bytes", EthereumBlock::getParentHash);
         addBlockVariable(BLOCK_RECEIPTS_ROOT, "bytes", EthereumBlock::getReceiptsRoot);
@@ -50,8 +50,8 @@ public class BlockVariables {
         addBlockVariable(BLOCK_STATE_ROOT, "bytes", EthereumBlock::getStateRoot);
         addBlockVariable(BLOCK_TIMESTAMP, "int", EthereumBlock::getTimestamp);
         addBlockVariable(BLOCK_TOTAL_DIFFICULTY, "int", EthereumBlock::getTotalDifficulty);
-        addBlockVariable(BLOCK_TRANSACTIONS, "bytes", block -> BigInteger.valueOf(block.transactionCount()));
-        addBlockVariable(BLOCK_TRANSACTION_ROOT, "int", EthereumBlock::getTransactionsRoot);
+        addBlockVariable(BLOCK_TRANSACTIONS, "int", block -> BigInteger.valueOf(block.transactionCount()));
+        addBlockVariable(BLOCK_TRANSACTION_ROOT, "string", EthereumBlock::getTransactionsRoot);
     }
 
     private static void addBlockVariable(String name, String type, Function<EthereumBlock, Object> blockValueExtractor) {
