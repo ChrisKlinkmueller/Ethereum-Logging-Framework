@@ -3,19 +3,26 @@
 <project xmlns="http://maven.apache.org/POM/4.0.0"
   xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
   xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+
   <modelVersion>4.0.0</modelVersion>
 
   <groupId>au.csiro.data61.aap</groupId>
+
   <artifactId>elf</artifactId>
+
   <version>0.2.1</version>
+
   <name>Ethereum Logging Framework</name>
+
   <packaging>jar</packaging>
 
   <properties>
-    <java.version>13</java.version>
+    <java.version>11</java.version>
+
     <maven.compiler.source>${java.version}</maven.compiler.source>
     <maven.compiler.target>${java.version}</maven.compiler.target>
     <maven.compiler.release>${java.version}</maven.compiler.release>
+
     <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
 
     <antlr4.version>4.7.2</antlr4.version>
@@ -26,18 +33,17 @@
     <elf.skip.assemble>true</elf.skip.assemble>
   </properties>
 
-
-
+  <!-- Local Maven repository -->
   <repositories>
     <repository>
-      <id>project.local</id>
-      <name>project</name>
-      <url>file:${project.basedir}/lib</url>
+      <id>etc.repo</id>
+      <url>file://${project.basedir}/etc/repo</url>
     </repository>
   </repositories>
 
   <dependencyManagement>
     <dependencies>
+
       <dependency>
         <groupId>org.junit</groupId>
         <artifactId>junit-bom</artifactId>
@@ -45,20 +51,27 @@
         <type>pom</type>
         <scope>import</scope>
       </dependency>
+
     </dependencies>
   </dependencyManagement>
 
   <dependencies>
+
+    <!-- jackson -->
     <dependency>
       <groupId>com.fasterxml.jackson.core</groupId>
       <artifactId>jackson-databind</artifactId>
       <version>${jackson.version}</version>
     </dependency>
+
+    <!-- antlr -->
     <dependency>
       <groupId>org.antlr</groupId>
       <artifactId>antlr4-runtime</artifactId>
       <version>${antlr4.version}</version>
     </dependency>
+
+    <!-- web3j -->
     <dependency>
       <groupId>org.web3j</groupId>
       <artifactId>core</artifactId>
@@ -69,23 +82,28 @@
       <artifactId>abi</artifactId>
       <version>${web3j.version}</version>
     </dependency>
+
+    <!-- logback -->
     <dependency>
       <groupId>ch.qos.logback</groupId>
       <artifactId>logback-classic</artifactId>
       <version>${logback-classic.version}</version>
       <scope>runtime</scope>
     </dependency>
+
+    <!-- open-xes -->
     <dependency>
       <groupId>org.deckfour</groupId>
       <artifactId>open-xes</artifactId>
       <version>1.0</version>
     </dependency>
+    <!-- spex is needed for OPEN-XES -->
     <dependency>
-      <!-- spex is needed for open xes -->
       <groupId>org.deckfour</groupId>
       <artifactId>spex</artifactId>
       <version>1.0</version>
     </dependency>
+
     <dependency>
       <groupId>javax.xml.bind</groupId>
       <artifactId>jaxb-api</artifactId>
@@ -98,12 +116,14 @@
       <artifactId>junit-jupiter</artifactId>
       <scope>test</scope>
     </dependency>
+
     <dependency>
       <groupId>org.spockframework</groupId>
       <artifactId>spock-core</artifactId>
       <version>2.0-M2-groovy-3.0</version>
       <scope>test</scope>
     </dependency>
+
     <!-- bytebuddy is used to mock non-interface types in tests -->
     <dependency>
       <groupId>net.bytebuddy</groupId>
@@ -111,6 +131,7 @@
       <version>1.10.10</version>
       <scope>test</scope>
     </dependency>
+
     <!-- objenesis is used to bypass constructor when mocking -->
     <dependency>
       <groupId>org.objenesis</groupId>
@@ -118,22 +139,27 @@
       <version>3.1</version>
       <scope>test</scope>
     </dependency>
+
   </dependencies>
 
   <build>
-    <pluginManagement><!-- lock down plugins versions to avoid using Maven 
-        defaults (may be moved to parent pom) -->
+    <pluginManagement>
+      <!-- lock down plugins versions to avoid using Maven defaults (may 
+        be moved to parent pom) -->
       <plugins>
+
         <!-- clean lifecycle, see https://maven.apache.org/ref/current/maven-core/lifecycles.html#clean_Lifecycle -->
         <plugin>
           <artifactId>maven-clean-plugin</artifactId>
           <version>3.1.0</version>
         </plugin>
+
         <!-- default lifecycle, jar packaging: see https://maven.apache.org/ref/current/maven-core/default-bindings.html#Plugin_bindings_for_jar_packaging -->
         <plugin>
           <artifactId>maven-resources-plugin</artifactId>
           <version>3.0.2</version>
         </plugin>
+
         <plugin>
           <groupId>org.apache.maven.plugins</groupId>
           <artifactId>maven-compiler-plugin</artifactId>
@@ -145,6 +171,7 @@
             <showDeprecation>true</showDeprecation>
           </configuration>
         </plugin>
+
         <plugin>
           <artifactId>maven-surefire-plugin</artifactId>
           <version>2.22.1</version>
@@ -154,31 +181,40 @@
             </includes>
           </configuration>
         </plugin>
+
         <plugin>
           <artifactId>maven-jar-plugin</artifactId>
           <version>3.0.2</version>
         </plugin>
+
         <plugin>
           <artifactId>maven-deploy-plugin</artifactId>
           <version>2.8.2</version>
         </plugin>
+
         <!-- site lifecycle, see https://maven.apache.org/ref/current/maven-core/lifecycles.html#site_Lifecycle -->
         <plugin>
           <artifactId>maven-site-plugin</artifactId>
           <version>3.7.1</version>
         </plugin>
+
         <plugin>
           <artifactId>maven-project-info-reports-plugin</artifactId>
           <version>3.0.0</version>
         </plugin>
+
         <plugin>
           <groupId>org.antlr</groupId>
           <artifactId>antlr4-maven-plugin</artifactId>
           <version>${antlr4.version}</version>
         </plugin>
+
       </plugins>
     </pluginManagement>
+
     <plugins>
+
+      <!-- antlr -->
       <plugin>
         <groupId>org.antlr</groupId>
         <artifactId>antlr4-maven-plugin</artifactId>
@@ -198,8 +234,9 @@
           </execution>
         </executions>
       </plugin>
+
+      <!-- The gmavenplus plugin is used to compile Groovy code -->
       <plugin>
-        <!-- The gmavenplus plugin is used to compile Groovy code. -->
         <groupId>org.codehaus.gmavenplus</groupId>
         <artifactId>gmavenplus-plugin</artifactId>
         <version>1.9.0</version>
@@ -212,6 +249,7 @@
           </execution>
         </executions>
       </plugin>
+
       <plugin>
         <groupId>com.diffplug.spotless</groupId>
         <artifactId>spotless-maven-plugin</artifactId>
@@ -247,6 +285,7 @@
           </formats>
         </configuration>
       </plugin>
+
       <plugin>
         <groupId>org.apache.maven.plugins</groupId>
         <artifactId>maven-assembly-plugin</artifactId>
@@ -272,6 +311,7 @@
           </execution>
         </executions>
       </plugin>
+
       <plugin>
         <artifactId>maven-deploy-plugin</artifactId>
         <version>2.8.2</version>
@@ -294,6 +334,7 @@
           </execution>
         </executions>
       </plugin>
+
     </plugins>
   </build>
 </project>
