@@ -37,7 +37,7 @@
   <repositories>
     <repository>
       <id>etc.repo</id>
-      <url>file://${project.basedir}/etc/repo</url>
+      <url>file:${project.basedir}/m4</url>
     </repository>
   </repositories>
 
@@ -324,7 +324,7 @@
             </goals>
             <configuration>
               <repositoryId>project.local</repositoryId>
-              <file>${project.basedir}/lib/Spex.jar</file>
+              <file>lib/spex-1.0.jar</file>
               <url>file:///${project.basedir}/lib</url>
               <groupId>org.deckfour</groupId>
               <artifactId>spex</artifactId>
