@@ -126,7 +126,7 @@ local.properties
 
 block_data.json
 /test_output
-!m4/*.jar
+!lib/*.jar
 /lib/org
 CsvTransform.java
 *.docx

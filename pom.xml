@@ -36,8 +36,8 @@
   <!-- Local Maven repository -->
   <repositories>
     <repository>
-      <id>etc.repo</id>
-      <url>file:${project.basedir}/m4</url>
+      <id>lib.repo</id>
+      <url>file:${project.basedir}/lib/repo</url>
     </repository>
   </repositories>
 
