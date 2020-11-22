@@ -11,7 +11,11 @@ import org.antlr.v4.runtime.tree.ParseTree;
 import au.csiro.data61.aap.elf.parsing.EthqlInterpreter;
 
 /**
- * Validator
+ * Validator class, serves mostly as a wrapper around {@link au.csiro.data61.aap.elf.parsing.EthqlInterpreter}.
+ *
+ * @see au.csiro.data61.aap.elf.parsing.EthqlInterpreter
+ * @see #createParseTree
+ *
  */
 public class Validator {
     private final EthqlInterpreter interpreter;
