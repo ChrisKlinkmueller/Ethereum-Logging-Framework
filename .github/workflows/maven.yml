@@ -6,7 +6,7 @@ name: Java CI with Maven
 on: [push, pull_request]
 
 jobs:
-  build:
+  verify:
 
     runs-on: ubuntu-latest
 
@@ -20,4 +20,4 @@ jobs:
         architecture: x64
     
     - name: Verify with Maven
-      run: mvn -B verify --file pom.xml
+      run: mvn -B verify -ntp --file pom.xml
