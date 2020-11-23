@@ -12,6 +12,8 @@ import au.csiro.data61.aap.elf.parsing.EthqlInterpreter;
 
 /**
  * Validator class, serves mostly as a wrapper around {@link au.csiro.data61.aap.elf.parsing.EthqlInterpreter}.
+ * EthqlInterpreter method {@link au.csiro.data61.aap.elf.parsing.EthqlInterpreter#parseDocument(InputStream)} takes
+ * as a parameter an InputStream object.
  *
  * @see au.csiro.data61.aap.elf.parsing.EthqlInterpreter
  * @see #createParseTree
