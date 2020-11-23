@@ -6,7 +6,8 @@ import java.util.function.BiFunction;
 import au.csiro.data61.aap.elf.core.ProgramState;
 
 /**
- * IntegerOperations
+ * IntegerOperations, serves mostly as a wrapper around {@link java.math.BigInteger} operations.
+ *
  */
 public class IntegerOperations {
 

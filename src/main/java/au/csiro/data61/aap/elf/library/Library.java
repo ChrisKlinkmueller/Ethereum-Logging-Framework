@@ -18,7 +18,7 @@ import au.csiro.data61.aap.elf.library.types.IntegerOperations;
 import au.csiro.data61.aap.elf.library.types.ListOperations;
 
 /**
- * Library
+ * Library of methods and operators, which can be used in the manifest file.
  */
 public class Library {
     private static final Logger LOGGER = Logger.getLogger(Library.class.getName());
