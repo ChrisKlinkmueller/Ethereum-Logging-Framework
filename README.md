@@ -1,5 +1,6 @@
 # Ethereum Logging Framework
 
+[![Build Status](https://elf-ci.rohrschacht.de/job/BLF/badge/icon)](https://elf-ci.rohrschacht.de/job/BLF/)
 
 This framework provides advanced logging capabilities for Ethereum applications on top of Web3J / Ethereum's JSON RPC. It consists of four components:
 
