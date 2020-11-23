@@ -12,7 +12,7 @@ import au.csiro.data61.aap.elf.core.ProgramState;
 
 /**
  * LogEntryFilter To understand how to decode event data and topics, see:
- * https://www.programcreek.com/java-api-examples/?class=org.web3j.abi.FunctionReturnDecoder&method=decode
+ * https://www.programcreek.com/java-api-examples/?class=org.web3j.abi.FunctionReturnDecoder&amp;method=decode
  */
 public class LogEntryFilter extends Filter {
     private final FilterPredicate<String> contractCriterion;
