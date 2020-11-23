@@ -1,7 +1,10 @@
-# Ethereum Logging Framework
+# Blockchain Logging Framework
 
 [![Build Status](https://elf-ci.rohrschacht.de/job/BLF/badge/icon?subject=Jenkins%20CI)](https://elf-ci.rohrschacht.de/job/BLF) [![Github Java CI with Maven](https://github.com/ADSP-2020/Blockchain-Logging-Framework/workflows/Java%20CI%20with%20Maven/badge.svg)](https://github.com/TU-ADSP/Blockchain-Logging-Framework/actions?query=workflow%3A%22Java+CI+with+Maven%22)
 
+## Documentation
+
+Please visit the [javadoc](https://tu-adsp.github.io/BLF-Javadoc/master/index.html) documentation for more information.
 
 This framework provides advanced logging capabilities for Ethereum applications on top of Web3J / Ethereum's JSON RPC. It consists of four components:
 
