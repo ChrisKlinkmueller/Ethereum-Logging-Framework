@@ -1,340 +1,336 @@
 <?xml version="1.0" encoding="UTF-8"?>
 
 <project xmlns="http://maven.apache.org/POM/4.0.0"
-  xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-  xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
 
-  <modelVersion>4.0.0</modelVersion>
+	<modelVersion>4.0.0</modelVersion>
 
-  <groupId>au.csiro.data61.aap</groupId>
+	<groupId>au.csiro.data61.aap</groupId>
 
-  <artifactId>elf</artifactId>
+	<artifactId>elf</artifactId>
 
-  <version>0.2.1</version>
+	<version>0.2.1</version>
 
-  <name>Ethereum Logging Framework</name>
+	<name>Ethereum Logging Framework</name>
 
-  <packaging>jar</packaging>
+	<packaging>jar</packaging>
 
-  <properties>
-    <java.version>11</java.version>
+	<properties>
+		<java.version>11</java.version>
 
-    <maven.compiler.source>${java.version}</maven.compiler.source>
-    <maven.compiler.target>${java.version}</maven.compiler.target>
-    <maven.compiler.release>${java.version}</maven.compiler.release>
+		<maven.compiler.source>${java.version}</maven.compiler.source>
+		<maven.compiler.target>${java.version}</maven.compiler.target>
+		<maven.compiler.release>${java.version}</maven.compiler.release>
 
-    <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
+		<project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
 
-    <antlr4.version>4.7.2</antlr4.version>
-    <junit.jupiter.version>5.7.0</junit.jupiter.version>
-    <web3j.version>4.5.5</web3j.version>
-    <logback-classic.version>1.2.3</logback-classic.version>
-    <jackson.version>2.10.1</jackson.version>
-    <elf.skip.assemble>true</elf.skip.assemble>
-  </properties>
+		<antlr4.version>4.7.2</antlr4.version>
+		<junit.jupiter.version>5.7.0</junit.jupiter.version>
+		<web3j.version>4.5.5</web3j.version>
+		<logback-classic.version>1.2.3</logback-classic.version>
+		<jackson.version>2.10.1</jackson.version>
+		<elf.skip.assemble>true</elf.skip.assemble>
+	</properties>
 
-  <!-- Local Maven repository -->
-  <repositories>
-    <repository>
-      <id>lib.repo</id>
-      <url>file:${project.basedir}/lib/repo</url>
-    </repository>
-  </repositories>
+	<!-- Local Maven repository -->
+	<repositories>
+		<repository>
+			<id>lib.repo</id>
+			<url>file:${project.basedir}/lib/repo</url>
+		</repository>
+	</repositories>
 
-  <dependencyManagement>
-    <dependencies>
+	<dependencyManagement>
+		<dependencies>
 
-      <dependency>
-        <groupId>org.junit</groupId>
-        <artifactId>junit-bom</artifactId>
-        <version>${junit.jupiter.version}</version>
-        <type>pom</type>
-        <scope>import</scope>
-      </dependency>
+			<dependency>
+				<groupId>org.junit</groupId>
+				<artifactId>junit-bom</artifactId>
+				<version>${junit.jupiter.version}</version>
+				<type>pom</type>
+				<scope>import</scope>
+			</dependency>
 
-    </dependencies>
-  </dependencyManagement>
+		</dependencies>
+	</dependencyManagement>
 
-  <dependencies>
+	<dependencies>
 
-    <!-- jackson -->
-    <dependency>
-      <groupId>com.fasterxml.jackson.core</groupId>
-      <artifactId>jackson-databind</artifactId>
-      <version>${jackson.version}</version>
-    </dependency>
+		<!-- jackson -->
+		<dependency>
+			<groupId>com.fasterxml.jackson.core</groupId>
+			<artifactId>jackson-databind</artifactId>
+			<version>${jackson.version}</version>
+		</dependency>
 
-    <!-- antlr -->
-    <dependency>
-      <groupId>org.antlr</groupId>
-      <artifactId>antlr4-runtime</artifactId>
-      <version>${antlr4.version}</version>
-    </dependency>
+		<!-- antlr -->
+		<dependency>
+			<groupId>org.antlr</groupId>
+			<artifactId>antlr4-runtime</artifactId>
+			<version>${antlr4.version}</version>
+		</dependency>
 
-    <!-- web3j -->
-    <dependency>
-      <groupId>org.web3j</groupId>
-      <artifactId>core</artifactId>
-      <version>${web3j.version}</version>
-    </dependency>
-    <dependency>
-      <groupId>org.web3j</groupId>
-      <artifactId>abi</artifactId>
-      <version>${web3j.version}</version>
-    </dependency>
+		<!-- web3j -->
+		<dependency>
+			<groupId>org.web3j</groupId>
+			<artifactId>core</artifactId>
+			<version>${web3j.version}</version>
+		</dependency>
+		<dependency>
+			<groupId>org.web3j</groupId>
+			<artifactId>abi</artifactId>
+			<version>${web3j.version}</version>
+		</dependency>
 
-    <!-- logback -->
-    <dependency>
-      <groupId>ch.qos.logback</groupId>
-      <artifactId>logback-classic</artifactId>
-      <version>${logback-classic.version}</version>
-      <scope>runtime</scope>
-    </dependency>
+		<!-- logback -->
+		<dependency>
+			<groupId>ch.qos.logback</groupId>
+			<artifactId>logback-classic</artifactId>
+			<version>${logback-classic.version}</version>
+			<scope>runtime</scope>
+		</dependency>
 
-    <!-- open-xes -->
-    <dependency>
-      <groupId>org.deckfour</groupId>
-      <artifactId>open-xes</artifactId>
-      <version>1.0</version>
-    </dependency>
-    <!-- spex is needed for OPEN-XES -->
-    <dependency>
-      <groupId>org.deckfour</groupId>
-      <artifactId>spex</artifactId>
-      <version>1.0</version>
-    </dependency>
+		<!-- open-xes -->
+		<dependency>
+			<groupId>org.deckfour</groupId>
+			<artifactId>open-xes</artifactId>
+			<version>1.0</version>
+		</dependency>
+		<!-- spex is needed for OPEN-XES -->
+		<dependency>
+			<groupId>org.deckfour</groupId>
+			<artifactId>spex</artifactId>
+			<version>1.0</version>
+		</dependency>
 
-    <dependency>
-      <groupId>javax.xml.bind</groupId>
-      <artifactId>jaxb-api</artifactId>
-      <version>2.3.1</version>
-    </dependency>
+		<dependency>
+			<groupId>javax.xml.bind</groupId>
+			<artifactId>jaxb-api</artifactId>
+			<version>2.3.1</version>
+		</dependency>
 
-    <!-- Testing -->
-    <dependency>
-      <groupId>org.junit.jupiter</groupId>
-      <artifactId>junit-jupiter</artifactId>
-      <scope>test</scope>
-    </dependency>
+		<!-- Testing -->
+		<dependency>
+			<groupId>org.junit.jupiter</groupId>
+			<artifactId>junit-jupiter</artifactId>
+			<scope>test</scope>
+		</dependency>
 
-    <dependency>
-      <groupId>org.spockframework</groupId>
-      <artifactId>spock-core</artifactId>
-      <version>2.0-M2-groovy-3.0</version>
-      <scope>test</scope>
-    </dependency>
+		<dependency>
+			<groupId>org.spockframework</groupId>
+			<artifactId>spock-core</artifactId>
+			<version>2.0-M2-groovy-3.0</version>
+			<scope>test</scope>
+		</dependency>
 
-    <!-- bytebuddy is used to mock non-interface types in tests -->
-    <dependency>
-      <groupId>net.bytebuddy</groupId>
-      <artifactId>byte-buddy</artifactId>
-      <version>1.10.10</version>
-      <scope>test</scope>
-    </dependency>
+		<!-- bytebuddy is used to mock non-interface types in tests -->
+		<dependency>
+			<groupId>net.bytebuddy</groupId>
+			<artifactId>byte-buddy</artifactId>
+			<version>1.10.10</version>
+			<scope>test</scope>
+		</dependency>
 
-    <!-- objenesis is used to bypass constructor when mocking -->
-    <dependency>
-      <groupId>org.objenesis</groupId>
-      <artifactId>objenesis</artifactId>
-      <version>3.1</version>
-      <scope>test</scope>
-    </dependency>
+		<!-- objenesis is used to bypass constructor when mocking -->
+		<dependency>
+			<groupId>org.objenesis</groupId>
+			<artifactId>objenesis</artifactId>
+			<version>3.1</version>
+			<scope>test</scope>
+		</dependency>
 
-  </dependencies>
+	</dependencies>
 
-  <build>
-    <pluginManagement>
-      <!-- lock down plugins versions to avoid using Maven defaults (may 
-        be moved to parent pom) -->
-      <plugins>
+	<build>
+		<pluginManagement>
+			<!-- lock down plugins versions to avoid using Maven defaults (may be 
+				moved to parent pom) -->
+			<plugins>
 
-        <!-- clean lifecycle, see https://maven.apache.org/ref/current/maven-core/lifecycles.html#clean_Lifecycle -->
-        <plugin>
-          <artifactId>maven-clean-plugin</artifactId>
-          <version>3.1.0</version>
-        </plugin>
+				<!-- clean lifecycle, see https://maven.apache.org/ref/current/maven-core/lifecycles.html#clean_Lifecycle -->
+				<plugin>
+					<artifactId>maven-clean-plugin</artifactId>
+					<version>3.1.0</version>
+				</plugin>
 
-        <!-- default lifecycle, jar packaging: see https://maven.apache.org/ref/current/maven-core/default-bindings.html#Plugin_bindings_for_jar_packaging -->
-        <plugin>
-          <artifactId>maven-resources-plugin</artifactId>
-          <version>3.0.2</version>
-        </plugin>
+				<!-- default lifecycle, jar packaging: see https://maven.apache.org/ref/current/maven-core/default-bindings.html#Plugin_bindings_for_jar_packaging -->
+				<plugin>
+					<artifactId>maven-resources-plugin</artifactId>
+					<version>3.0.2</version>
+				</plugin>
 
-        <plugin>
-          <groupId>org.apache.maven.plugins</groupId>
-          <artifactId>maven-compiler-plugin</artifactId>
-          <version>3.8.1</version>
-          <configuration>
-            <source>${java.version}</source>
-            <target>${java.version}</target>
-            <showWarnings>true</showWarnings>
-            <showDeprecation>true</showDeprecation>
-          </configuration>
-        </plugin>
+				<plugin>
+					<groupId>org.apache.maven.plugins</groupId>
+					<artifactId>maven-compiler-plugin</artifactId>
+					<version>3.8.1</version>
+					<configuration>
+						<source>${java.version}</source>
+						<target>${java.version}</target>
+						<showWarnings>true</showWarnings>
+						<showDeprecation>true</showDeprecation>
+					</configuration>
+				</plugin>
 
-        <plugin>
-          <artifactId>maven-surefire-plugin</artifactId>
-          <version>2.22.1</version>
-          <configuration>
-            <includes>
-              <include>**/*Spec.java</include>
-            </includes>
-          </configuration>
-        </plugin>
+				<plugin>
+					<artifactId>maven-surefire-plugin</artifactId>
+					<version>2.22.1</version>
+					<configuration>
+						<includes>
+							<include>**/*Spec.java</include>
+						</includes>
+					</configuration>
+				</plugin>
 
-        <plugin>
-          <artifactId>maven-jar-plugin</artifactId>
-          <version>3.0.2</version>
-        </plugin>
+				<plugin>
+					<artifactId>maven-jar-plugin</artifactId>
+					<version>3.0.2</version>
+				</plugin>
 
-        <plugin>
-          <artifactId>maven-deploy-plugin</artifactId>
-          <version>2.8.2</version>
-        </plugin>
+				<plugin>
+					<artifactId>maven-deploy-plugin</artifactId>
+					<version>2.8.2</version>
+				</plugin>
 
-        <!-- site lifecycle, see https://maven.apache.org/ref/current/maven-core/lifecycles.html#site_Lifecycle -->
-        <plugin>
-          <artifactId>maven-site-plugin</artifactId>
-          <version>3.7.1</version>
-        </plugin>
+				<!-- site lifecycle, see https://maven.apache.org/ref/current/maven-core/lifecycles.html#site_Lifecycle -->
+				<plugin>
+					<artifactId>maven-site-plugin</artifactId>
+					<version>3.7.1</version>
+				</plugin>
 
-        <plugin>
-          <artifactId>maven-project-info-reports-plugin</artifactId>
-          <version>3.0.0</version>
-        </plugin>
+				<plugin>
+					<artifactId>maven-project-info-reports-plugin</artifactId>
+					<version>3.0.0</version>
+				</plugin>
 
-        <plugin>
-          <groupId>org.antlr</groupId>
-          <artifactId>antlr4-maven-plugin</artifactId>
-          <version>${antlr4.version}</version>
-        </plugin>
+				<plugin>
+					<groupId>org.antlr</groupId>
+					<artifactId>antlr4-maven-plugin</artifactId>
+					<version>${antlr4.version}</version>
+				</plugin>
 
-      </plugins>
-    </pluginManagement>
+				<!-- antlr -->
+				<plugin>
+					<groupId>org.antlr</groupId>
+					<artifactId>antlr4-maven-plugin</artifactId>
+					<version>${antlr4.version}</version>
+					<configuration>
+						<arguments>
+							<argument>-visitor</argument>
+						</arguments>
+					</configuration>
+					<executions>
+						<execution>
+							<id>antlr-generate</id>
+							<phase>generate-sources</phase>
+							<goals>
+								<goal>antlr4</goal>
+							</goals>
+						</execution>
+					</executions>
+				</plugin>
 
-    <plugins>
+				<!-- The gmavenplus plugin is used to compile Groovy code -->
+				<plugin>
+					<groupId>org.codehaus.gmavenplus</groupId>
+					<artifactId>gmavenplus-plugin</artifactId>
+					<version>1.9.0</version>
+					<executions>
+						<execution>
+							<goals>
+								<goal>compile</goal>
+								<goal>compileTests</goal>
+							</goals>
+						</execution>
+					</executions>
+				</plugin>
 
-      <!-- antlr -->
-      <plugin>
-        <groupId>org.antlr</groupId>
-        <artifactId>antlr4-maven-plugin</artifactId>
-        <version>${antlr4.version}</version>
-        <configuration>
-          <arguments>
-            <argument>-visitor</argument>
-          </arguments>
-        </configuration>
-        <executions>
-          <execution>
-            <id>antlr-generate</id>
-            <phase>generate-sources</phase>
-            <goals>
-              <goal>antlr4</goal>
-            </goals>
-          </execution>
-        </executions>
-      </plugin>
+				<plugin>
+					<groupId>com.diffplug.spotless</groupId>
+					<artifactId>spotless-maven-plugin</artifactId>
+					<version>1.31.1</version>
+					<executions>
+						<execution>
+							<phase>process-sources</phase>
+							<goals>
+								<goal>apply</goal>
+							</goals>
+						</execution>
+					</executions>
+					<configuration>
+						<java>
+							<eclipse>
+								<file>.spotless/java.xml</file>
+								<version>4.13.0</version>
+							</eclipse>
+						</java>
+						<formats>
+							<format>
+								<includes>
+									<include>*.xml</include>
+								</includes>
+								<eclipseWtp>
+									<type>XML</type>
+									<files>
+										<file>.spotless/xml.prefs</file>
+									</files>
+									<version>4.13.0</version>
+								</eclipseWtp>
+							</format>
+						</formats>
+					</configuration>
+				</plugin>
 
-      <!-- The gmavenplus plugin is used to compile Groovy code -->
-      <plugin>
-        <groupId>org.codehaus.gmavenplus</groupId>
-        <artifactId>gmavenplus-plugin</artifactId>
-        <version>1.9.0</version>
-        <executions>
-          <execution>
-            <goals>
-              <goal>compile</goal>
-              <goal>compileTests</goal>
-            </goals>
-          </execution>
-        </executions>
-      </plugin>
+				<plugin>
+					<groupId>org.apache.maven.plugins</groupId>
+					<artifactId>maven-assembly-plugin</artifactId>
+					<executions>
+						<execution>
+							<phase>package</phase>
+							<goals>
+								<goal>single</goal>
+							</goals>
+							<configuration>
+								<skipAssembly>${elf.skip.assemble}</skipAssembly>
+								<finalName>elf-cmd</finalName>
+								<archive>
+									<manifest>
+										<mainClass>au.csiro.data61.aap.elf.ElfApp</mainClass>
+									</manifest>
+								</archive>
+								<descriptorRefs>
+									<descriptorRef>jar-with-dependencies</descriptorRef>
+								</descriptorRefs>
+								<appendAssemblyId>false</appendAssemblyId>
+							</configuration>
+						</execution>
+					</executions>
+				</plugin>
 
-      <plugin>
-        <groupId>com.diffplug.spotless</groupId>
-        <artifactId>spotless-maven-plugin</artifactId>
-        <version>1.31.1</version>
-        <executions>
-          <execution>
-            <phase>process-sources</phase>
-            <goals>
-              <goal>apply</goal>
-            </goals>
-          </execution>
-        </executions>
-        <configuration>
-          <java>
-            <eclipse>
-              <file>.spotless/java.xml</file>
-              <version>4.13.0</version>
-            </eclipse>
-          </java>
-          <formats>
-            <format>
-              <includes>
-                <include>*.xml</include>
-              </includes>
-              <eclipseWtp>
-                <type>XML</type>
-                <files>
-                  <file>.spotless/xml.prefs</file>
-                </files>
-                <version>4.13.0</version>
-              </eclipseWtp>
-            </format>
-          </formats>
-        </configuration>
-      </plugin>
+				<plugin>
+					<artifactId>maven-deploy-plugin</artifactId>
+					<version>2.8.2</version>
+					<executions>
+						<execution>
+							<id>deploy-file</id>
+							<phase>deploy</phase>
+							<goals>
+								<goal>deploy-file</goal>
+							</goals>
+							<configuration>
+								<repositoryId>project.local</repositoryId>
+								<file>lib/spex-1.0.jar</file>
+								<url>file:///${project.basedir}/lib</url>
+								<groupId>org.deckfour</groupId>
+								<artifactId>spex</artifactId>
+								<version>1.0</version>
+								<packaging>jar</packaging>
+							</configuration>
+						</execution>
+					</executions>
+				</plugin>
 
-      <plugin>
-        <groupId>org.apache.maven.plugins</groupId>
-        <artifactId>maven-assembly-plugin</artifactId>
-        <executions>
-          <execution>
-            <phase>package</phase>
-            <goals>
-              <goal>single</goal>
-            </goals>
-            <configuration>
-              <skipAssembly>${elf.skip.assemble}</skipAssembly>
-              <finalName>elf-cmd</finalName>
-              <archive>
-                <manifest>
-                  <mainClass>au.csiro.data61.aap.elf.ElfApp</mainClass>
-                </manifest>
-              </archive>
-              <descriptorRefs>
-                <descriptorRef>jar-with-dependencies</descriptorRef>
-              </descriptorRefs>
-              <appendAssemblyId>false</appendAssemblyId>
-            </configuration>
-          </execution>
-        </executions>
-      </plugin>
-
-      <plugin>
-        <artifactId>maven-deploy-plugin</artifactId>
-        <version>2.8.2</version>
-        <executions>
-          <execution>
-            <id>deploy-file</id>
-            <phase>deploy</phase>
-            <goals>
-              <goal>deploy-file</goal>
-            </goals>
-            <configuration>
-              <repositoryId>project.local</repositoryId>
-              <file>lib/spex-1.0.jar</file>
-              <url>file:///${project.basedir}/lib</url>
-              <groupId>org.deckfour</groupId>
-              <artifactId>spex</artifactId>
-              <version>1.0</version>
-              <packaging>jar</packaging>
-            </configuration>
-          </execution>
-        </executions>
-      </plugin>
-
-    </plugins>
-  </build>
+			</plugins>
+		</pluginManagement>
+	</build>
 </project>
