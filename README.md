@@ -67,9 +67,9 @@ Details of the framework are described in more detail in the following publicati
     cd ethereum-logging-framework
     mvn verify
     ```
-    - To build the executable jar ```elf-cmd.jar```, add the option
+    - To not build the executable jar ```elf-cmd.jar```, add the option
       ```bash
-      "-Delf.skip.assemble=false"
+      "-Delf.skip.assemble=true"
       ``` 
     - To skip testing, add the option
       ```bash

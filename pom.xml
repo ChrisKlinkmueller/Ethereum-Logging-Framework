@@ -30,7 +30,7 @@
     <web3j.version>4.5.5</web3j.version>
     <logback-classic.version>1.2.3</logback-classic.version>
     <jackson.version>2.10.1</jackson.version>
-    <elf.skip.assemble>true</elf.skip.assemble>
+    <elf.skip.assemble>false</elf.skip.assemble>
   </properties>
 
   <!-- Local Maven repository -->
