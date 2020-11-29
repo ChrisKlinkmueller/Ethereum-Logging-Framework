@@ -11,7 +11,6 @@ import java.util.logging.Level;
 import java.util.logging.Logger;
 
 import au.csiro.data61.aap.elf.core.Method;
-import au.csiro.data61.aap.elf.core.ProgramState;
 import au.csiro.data61.aap.elf.library.compression.BitMapping;
 import au.csiro.data61.aap.elf.library.compression.ValueDictionary;
 import au.csiro.data61.aap.elf.library.types.IntegerOperations;
@@ -22,7 +21,7 @@ import au.csiro.data61.aap.elf.library.types.ListOperations;
  */
 public class Library {
     private static final Logger LOGGER = Logger.getLogger(Library.class.getName());
-    public static Library INSTANCE = new Library();
+    public static final Library INSTANCE = new Library();
 
     private final Map<String, List<LibraryEntry>> registeredMethods;
 
@@ -30,9 +29,6 @@ public class Library {
         this.registeredMethods = new HashMap<>();
 
         try {
-            this.addMethod(new MethodSignature("connect", null, "string"), ProgramState::connectWebsocketClient);
-            this.addMethod(new MethodSignature("connectIpc", null, "string"), ProgramState::connectIpcClient);
-            this.addMethod(new MethodSignature("setOutputFolder", null, "string"), ProgramState::setOutputFolder);
             this.addMethod(new MethodSignature("add", "int", "int", "int"), IntegerOperations::add);
             this.addMethod(new MethodSignature("multiply", "int", "int", "int"), IntegerOperations::multiply);
             this.addMethod(new MethodSignature("subtract", "int", "int", "int"), IntegerOperations::subtract);
@@ -93,18 +89,15 @@ public class Library {
     }
 
     public void addMethod(MethodSignature signature, Method method) throws LibraryException {
-        assert signature != null;
-        assert method != null;
+        if (signature == null || method == null) {
+            throw new LibraryException("Signature or method is null");
+        }
         this.registeredMethods.putIfAbsent(signature.getMethodName(), new LinkedList<>());
         final List<LibraryEntry> entries = this.registeredMethods.get(signature.getMethodName());
         if (this.containsEntry(entries, signature)) {
             throw new LibraryException(String.format("Entry with signature '%s' already exists.", signature.getSignature()));
         }
         entries.add(new LibraryEntry(method, signature));
-    }
-
-    public boolean isMethodNameKnown(String methodName) {
-        return this.registeredMethods.containsKey(methodName);
     }
 
     public Method findMethod(String methodName, List<String> parameterTypes) {
@@ -122,7 +115,7 @@ public class Library {
         return this.registeredMethods.getOrDefault(methodName, Collections.emptyList())
             .stream()
             .filter(re -> re.isCompatibleWith(requestedSignature))
-            .map(re -> mapper.apply(re))
+            .map(mapper::apply)
             .findFirst()
             .orElse(null);
     }
