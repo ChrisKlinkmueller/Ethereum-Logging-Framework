@@ -23,7 +23,7 @@ public class CompositeEthqlListener<T extends EthqlListener> implements EthqlLis
     }
 
     public void addListener(T listener) throws CompositeListenerException {
-        if (listener == null){
+        if (listener == null) {
             throw new CompositeListenerException("Listener is null");
         }
         this.analyzers.add(listener);

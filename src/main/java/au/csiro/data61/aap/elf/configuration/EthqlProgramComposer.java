@@ -174,9 +174,7 @@ public class EthqlProgramComposer extends EthqlBaseListener {
 
     private AddressListSpecification getAddressListSpecification(AddressListContext ctx) {
         if (ctx.BYTES_LITERAL() != null) {
-            return AddressListSpecification.ofAddresses(
-                ctx.BYTES_LITERAL().stream().map(ParseTree::getText).collect(Collectors.toList())
-            );
+            return AddressListSpecification.ofAddresses(ctx.BYTES_LITERAL().stream().map(ParseTree::getText).collect(Collectors.toList()));
         } else if (ctx.KEY_ANY() != null) {
             return AddressListSpecification.ofAny();
         } else if (ctx.variableName() != null) {

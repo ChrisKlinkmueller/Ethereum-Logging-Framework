@@ -7,6 +7,7 @@ import java.util.function.Function;
 import java.util.stream.Collectors;
 import java.util.stream.IntStream;
 
+import au.csiro.data61.aap.elf.util.CompositeListenerException;
 import org.antlr.v4.runtime.tree.ParseTree;
 import org.antlr.v4.runtime.tree.ParseTreeWalker;
 
@@ -35,7 +36,13 @@ public class SolidityCodeGeneration {
     }
 
     private void init(List<BaseGenerator> generators) {
-        generators.forEach(gen -> this.listener.addListener(gen));
+        generators.forEach(gen -> {
+            try {
+                this.listener.addListener(gen);
+            } catch (CompositeListenerException e) {
+                e.printStackTrace();
+            }
+        });
     }
 
     public String generateLoggingFunctionality(ParseTree parseTree) {
