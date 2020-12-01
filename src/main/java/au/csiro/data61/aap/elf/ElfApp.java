@@ -1,7 +1,12 @@
 package au.csiro.data61.aap.elf;
 
+import au.csiro.data61.aap.elf.configuration.EthqlProgramComposer;
+import au.csiro.data61.aap.elf.util.CompositeListenerException;
+
 import java.io.File;
 import java.util.List;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 
 public class ElfApp {
     private static final int INDEX_CMD = 0;
@@ -9,6 +14,7 @@ public class ElfApp {
     private static final String CMD_GENERATE = "generate";
     private static final String CMD_EXTRACT = "extract";
     private static final String CMD_VALIDATE = "validate";
+    private static final Logger LOGGER = Logger.getLogger(ElfApp.class.getName());
 
     public static void main(String[] args) {
         if (args.length < 2) {
@@ -18,7 +24,7 @@ public class ElfApp {
                 CMD_EXTRACT,
                 CMD_VALIDATE
             );
-            System.out.println(message);
+            LOGGER.log(Level.SEVERE, message);
             return;
         }
 
@@ -26,26 +32,31 @@ public class ElfApp {
         final File file = new File(filepath);
         if (!file.exists()) {
             final String message = String.format("Invalid file path: %s", filepath);
-            System.out.println(message);
+            LOGGER.log(Level.SEVERE, message);
             return;
         }
 
         final String command = args[INDEX_CMD].toLowerCase();
-        if (command.equals(CMD_GENERATE)) {
-            generate(filepath);
-        } else if (command.equals(CMD_EXTRACT)) {
-            extract(filepath);
-        } else if (command.equals(CMD_VALIDATE)) {
-            validate(filepath);
-        } else {
-            final String message = String.format(
-                "Unsupported command. Must be %s, %s, or %s. But was: %s",
-                CMD_GENERATE,
-                CMD_EXTRACT,
-                CMD_VALIDATE,
-                command
-            );
-            System.out.println(message);
+        switch (command) {
+            case CMD_GENERATE:
+                generate(filepath);
+                break;
+            case CMD_EXTRACT:
+                extract(filepath);
+                break;
+            case CMD_VALIDATE:
+                validate(filepath);
+                break;
+            default:
+                final String message = String.format(
+                    "Unsupported command. Must be %s, %s, or %s. But was: %s",
+                    CMD_GENERATE,
+                    CMD_EXTRACT,
+                    CMD_VALIDATE,
+                    command
+                );
+                LOGGER.log(Level.SEVERE, message);
+                break;
         }
     }
 
@@ -53,7 +64,7 @@ public class ElfApp {
         final Generator generator = new Generator();
         try {
             final String generatedCode = generator.generateLoggingFunctionality(filepath);
-            System.out.println(generatedCode);
+            LOGGER.log(Level.INFO, generatedCode);
         } catch (EthqlProcessingException ex) {
             ex.printStackTrace(System.err);
         }
@@ -66,6 +77,8 @@ public class ElfApp {
             extractor.extractData(filepath);
         } catch (EthqlProcessingException ex) {
             ex.printStackTrace(System.err);
+        } catch (CompositeListenerException e) {
+            e.printStackTrace();
         }
     }
 
@@ -82,11 +95,11 @@ public class ElfApp {
 
     private static void printValidationResult(List<EthqlProcessingError> errors) {
         if (errors.isEmpty()) {
-            System.out.println("The validation didn't find errors.");
+            LOGGER.log(Level.INFO, "The validation did not find errors.");
             return;
         }
 
-        System.out.println("The validation detected the following errors:");
+        LOGGER.log(Level.WARNING, "The validation detected the following errors:");
         errors.forEach(System.out::println);
     }
 

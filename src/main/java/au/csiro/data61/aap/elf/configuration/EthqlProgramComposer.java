@@ -1,56 +1,18 @@
 package au.csiro.data61.aap.elf.configuration;
 
-import java.util.ArrayList;
-import java.util.LinkedList;
-import java.util.List;
-import java.util.Stack;
+import java.util.*;
 import java.util.function.BiFunction;
 import java.util.logging.Logger;
 import java.util.stream.Collectors;
 
+import au.csiro.data61.aap.elf.core.ProgramState;
+import au.csiro.data61.aap.elf.parsing.*;
 import org.antlr.v4.runtime.ParserRuleContext;
 
 import au.csiro.data61.aap.elf.core.filters.Program;
-import au.csiro.data61.aap.elf.parsing.EthqlBaseListener;
-import au.csiro.data61.aap.elf.parsing.InterpreterUtils;
-import au.csiro.data61.aap.elf.parsing.VariableExistenceAnalyzer;
-import au.csiro.data61.aap.elf.parsing.EthqlParser.AddressListContext;
-import au.csiro.data61.aap.elf.parsing.EthqlParser.BlockFilterContext;
-import au.csiro.data61.aap.elf.parsing.EthqlParser.BlockNumberContext;
-import au.csiro.data61.aap.elf.parsing.EthqlParser.ConditionalAndExpressionContext;
-import au.csiro.data61.aap.elf.parsing.EthqlParser.ConditionalComparisonExpressionContext;
-import au.csiro.data61.aap.elf.parsing.EthqlParser.ConditionalNotExpressionContext;
-import au.csiro.data61.aap.elf.parsing.EthqlParser.ConditionalOrExpressionContext;
-import au.csiro.data61.aap.elf.parsing.EthqlParser.ConditionalPrimaryExpressionContext;
-import au.csiro.data61.aap.elf.parsing.EthqlParser.DocumentContext;
-import au.csiro.data61.aap.elf.parsing.EthqlParser.EmitStatementCsvContext;
-import au.csiro.data61.aap.elf.parsing.EthqlParser.EmitStatementLogContext;
-import au.csiro.data61.aap.elf.parsing.EthqlParser.EmitStatementXesEventContext;
-import au.csiro.data61.aap.elf.parsing.EthqlParser.EmitStatementXesTraceContext;
-import au.csiro.data61.aap.elf.parsing.EthqlParser.FilterContext;
-import au.csiro.data61.aap.elf.parsing.EthqlParser.GenericFilterContext;
-import au.csiro.data61.aap.elf.parsing.EthqlParser.LiteralContext;
-import au.csiro.data61.aap.elf.parsing.EthqlParser.LogEntryFilterContext;
-import au.csiro.data61.aap.elf.parsing.EthqlParser.LogEntryParameterContext;
-import au.csiro.data61.aap.elf.parsing.EthqlParser.LogEntrySignatureContext;
-import au.csiro.data61.aap.elf.parsing.EthqlParser.MethodInvocationContext;
-import au.csiro.data61.aap.elf.parsing.EthqlParser.MethodStatementContext;
-import au.csiro.data61.aap.elf.parsing.EthqlParser.NamedEmitVariableContext;
-import au.csiro.data61.aap.elf.parsing.EthqlParser.PublicFunctionQueryContext;
-import au.csiro.data61.aap.elf.parsing.EthqlParser.PublicVariableQueryContext;
-import au.csiro.data61.aap.elf.parsing.EthqlParser.ScopeContext;
-import au.csiro.data61.aap.elf.parsing.EthqlParser.SmartContractFilterContext;
-import au.csiro.data61.aap.elf.parsing.EthqlParser.SmartContractParameterContext;
-import au.csiro.data61.aap.elf.parsing.EthqlParser.SmartContractQueryContext;
-import au.csiro.data61.aap.elf.parsing.EthqlParser.SmartContractQueryParameterContext;
-import au.csiro.data61.aap.elf.parsing.EthqlParser.StatementExpressionContext;
-import au.csiro.data61.aap.elf.parsing.EthqlParser.TransactionFilterContext;
-import au.csiro.data61.aap.elf.parsing.EthqlParser.ValueExpressionContext;
-import au.csiro.data61.aap.elf.parsing.EthqlParser.VariableAssignmentStatementContext;
-import au.csiro.data61.aap.elf.parsing.EthqlParser.VariableDeclarationStatementContext;
-import au.csiro.data61.aap.elf.parsing.EthqlParser.VariableNameContext;
-import au.csiro.data61.aap.elf.parsing.EthqlParser.XesEmitVariableContext;
+import au.csiro.data61.aap.elf.parsing.EthqlParser.*;
 import au.csiro.data61.aap.elf.util.TypeUtils;
+import org.antlr.v4.runtime.tree.ParseTree;
 
 /**
  * EthqlProgramComposer
@@ -61,14 +23,14 @@ public class EthqlProgramComposer extends EthqlBaseListener {
     private final SpecificationComposer composer;
     private final VariableExistenceAnalyzer variableAnalyzer;
 
-    private final Stack<Object> genericFilterPredicates;
+    private final Deque<Object> genericFilterPredicates;
     private BuildException error;
     private Program program;
 
     public EthqlProgramComposer(VariableExistenceAnalyzer analyzer) {
         this.composer = new SpecificationComposer();
         this.variableAnalyzer = analyzer;
-        this.genericFilterPredicates = new Stack<Object>();
+        this.genericFilterPredicates = new ArrayDeque<>();
     }
 
     public boolean containsError() {
@@ -106,6 +68,42 @@ public class EthqlProgramComposer extends EthqlBaseListener {
         } finally {
             this.genericFilterPredicates.clear();
         }
+    }
+
+    @Override
+    public void exitConnection(ConnectionContext ctx) {
+        this.handleEthqlElement(ctx, this::buildConnection);
+    }
+
+    private void buildConnection(ConnectionContext ctx) throws BuildException {
+        MethodSpecification webConnectionMethod;
+
+        if (ctx.KEY_IPC() != null) {
+            webConnectionMethod = MethodSpecification.of(ProgramState::connectIpcClient);
+        } else {
+            webConnectionMethod = MethodSpecification.of(ProgramState::connectWebsocketClient);
+        }
+
+        final List<ValueAccessorSpecification> accessors = new ArrayList<>();
+        accessors.add(this.getLiteral(ctx.literal()));
+
+        final MethodCallSpecification call = MethodCallSpecification.of(webConnectionMethod, accessors);
+        this.composer.addInstruction(call);
+    }
+
+    @Override
+    public void exitOutputFolder(OutputFolderContext ctx) {
+        this.handleEthqlElement(ctx, this::buildOutputFolder);
+    }
+
+    private void buildOutputFolder(OutputFolderContext ctx) throws BuildException {
+        MethodSpecification outputFolderMethod = MethodSpecification.of(ProgramState::setOutputFolder);
+
+        final List<ValueAccessorSpecification> accessors = new ArrayList<>();
+        accessors.add(this.getLiteral(ctx.literal()));
+
+        final MethodCallSpecification call = MethodCallSpecification.of(outputFolderMethod, accessors);
+        this.composer.addInstruction(call);
     }
 
     @Override
@@ -174,11 +172,9 @@ public class EthqlProgramComposer extends EthqlBaseListener {
         this.composer.buildLogEntryFilter(contracts, signature);
     }
 
-    private AddressListSpecification getAddressListSpecification(AddressListContext ctx) throws BuildException {
+    private AddressListSpecification getAddressListSpecification(AddressListContext ctx) {
         if (ctx.BYTES_LITERAL() != null) {
-            return AddressListSpecification.ofAddresses(
-                ctx.BYTES_LITERAL().stream().map(literal -> literal.getText()).collect(Collectors.toList())
-            );
+            return AddressListSpecification.ofAddresses(ctx.BYTES_LITERAL().stream().map(ParseTree::getText).collect(Collectors.toList()));
         } else if (ctx.KEY_ANY() != null) {
             return AddressListSpecification.ofAny();
         } else if (ctx.variableName() != null) {
@@ -209,7 +205,7 @@ public class EthqlProgramComposer extends EthqlBaseListener {
         this.composer.prepareGenericFilterBuild();
     }
 
-    private void buildGenericFilter(GenericFilterContext ctx) throws BuildException {
+    private void buildGenericFilter() throws BuildException {
         LOGGER.info("Build Generic Filter");
 
         if (this.genericFilterPredicates.size() != 1) {
@@ -246,7 +242,7 @@ public class EthqlProgramComposer extends EthqlBaseListener {
         } else if (ctx.transactionFilter() != null) {
             this.buildTransactionFilter(ctx.transactionFilter());
         } else if (ctx.genericFilter() != null) {
-            this.buildGenericFilter(ctx.genericFilter());
+            this.buildGenericFilter();
         } else if (ctx.smartContractFilter() != null) {
             this.buildSmartContractFilter(ctx.smartContractFilter());
         } else {
@@ -324,7 +320,7 @@ public class EthqlProgramComposer extends EthqlBaseListener {
         final ValueAccessorSpecification spec1 = (ValueAccessorSpecification) value1;
         final ValueAccessorSpecification spec2 = (ValueAccessorSpecification) value2;
 
-        GenericFilterPredicateSpecification predicate = null;
+        GenericFilterPredicateSpecification predicate;
         switch (ctx.comparators().getText().toLowerCase()) {
             case "==":
                 predicate = GenericFilterPredicateSpecification.equals(spec1, spec2);
@@ -417,7 +413,7 @@ public class EthqlProgramComposer extends EthqlBaseListener {
     private SmartContractQuerySpecification handlePublicFunctionQuery(PublicFunctionQueryContext ctx) throws BuildException {
         final List<ParameterSpecification> outputParams = ctx.smartContractParameter()
             .stream()
-            .map(paramCtx -> this.createParameterSpecification(paramCtx))
+            .map(this::createParameterSpecification)
             .collect(Collectors.toList());
 
         final List<TypedValueAccessorSpecification> inputParameters = new ArrayList<>();
@@ -443,7 +439,7 @@ public class EthqlProgramComposer extends EthqlBaseListener {
 
     }
 
-    private SmartContractQuerySpecification handlePublicVariableQuery(PublicVariableQueryContext ctx) throws BuildException {
+    private SmartContractQuerySpecification handlePublicVariableQuery(PublicVariableQueryContext ctx) {
         return SmartContractQuerySpecification.ofMemberVariable(createParameterSpecification(ctx.smartContractParameter()));
     }
 
@@ -520,7 +516,7 @@ public class EthqlProgramComposer extends EthqlBaseListener {
             final ValueAccessorSpecification accessor = this.getValueAccessor(varCtx.valueExpression());
             LOGGER.info(varCtx.getText());
 
-            XesParameterSpecification parameter = null;
+            XesParameterSpecification parameter;
             switch (varCtx.xesTypes().getText()) {
                 case "xs:string":
                     parameter = XesParameterSpecification.ofStringParameter(name, accessor);
@@ -618,8 +614,8 @@ public class EthqlProgramComposer extends EthqlBaseListener {
     }
 
     @FunctionalInterface
-    private static interface BuilderMethod<T> {
-        public void build(T ctx) throws BuildException;
+    private interface BuilderMethod<T> {
+        void build(T ctx) throws BuildException;
     }
 
     private ValueAccessorSpecification getValueAccessor(ValueExpressionContext ctx) throws BuildException {

@@ -6,7 +6,20 @@
 grammar Ethql;
 
 document
-    : statement* EOF
+    : (connection outputFolder)? statement* EOF
+    ;
+
+// TODO: add in the above statement
+//blockchainType
+//    : KEY_SET KEY_BLOCKCHAIN STRING_LITERAL
+//    ;
+
+connection
+    : KEY_SET (KEY_IPC)? KEY_CONNECTION literal
+    ;
+
+outputFolder
+    : KEY_SET KEY_OUTPUT_FOLDER literal
     ;
 
 statement
@@ -246,7 +259,11 @@ KEY_CSV_ROW: C S V ' ' R O W;
 KEY_LOG_LINE: L O G ' ' L I N E;
 KEY_XES_EVENT: X E S ' ' E V E N T;
 KEY_XES_TRACE: X E S ' ' T R A C E;
-
+KEY_SET: S E T;
+KEY_BLOCKCHAIN: B L O C K C H A I N;
+KEY_OUTPUT_FOLDER: O U T P U T ' ' F O L D E R;
+KEY_CONNECTION: C O N N E C T I O N;
+KEY_IPC: I P C;
 
 
 // Literals

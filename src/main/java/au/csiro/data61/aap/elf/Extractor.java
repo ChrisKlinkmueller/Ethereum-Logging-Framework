@@ -1,5 +1,6 @@
 package au.csiro.data61.aap.elf;
 
+import au.csiro.data61.aap.elf.util.CompositeListenerException;
 import org.antlr.v4.runtime.tree.ParseTree;
 import org.antlr.v4.runtime.tree.ParseTreeWalker;
 
@@ -15,7 +16,7 @@ import au.csiro.data61.aap.elf.util.CompositeEthqlListener;
  */
 public class Extractor {
 
-    public void extractData(final String ethqlFilepath) throws EthqlProcessingException {
+    public void extractData(final String ethqlFilepath) throws EthqlProcessingException, CompositeListenerException {
         final ParseTree parseTree = Validator.createParseTree(ethqlFilepath);
 
         final CompositeEthqlListener<EthqlListener> rootListener = new CompositeEthqlListener<>();

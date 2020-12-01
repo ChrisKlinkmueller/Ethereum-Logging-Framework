@@ -5,61 +5,12 @@ import java.util.List;
 import java.util.function.BiConsumer;
 import java.util.stream.Stream;
 
+import au.csiro.data61.aap.elf.parsing.EthqlParser.*;
 import org.antlr.v4.runtime.ParserRuleContext;
 import org.antlr.v4.runtime.tree.ErrorNode;
 import org.antlr.v4.runtime.tree.TerminalNode;
 
 import au.csiro.data61.aap.elf.parsing.EthqlListener;
-import au.csiro.data61.aap.elf.parsing.EthqlParser.AddressListContext;
-import au.csiro.data61.aap.elf.parsing.EthqlParser.ArrayLiteralContext;
-import au.csiro.data61.aap.elf.parsing.EthqlParser.BlockFilterContext;
-import au.csiro.data61.aap.elf.parsing.EthqlParser.BlockNumberContext;
-import au.csiro.data61.aap.elf.parsing.EthqlParser.BooleanArrayLiteralContext;
-import au.csiro.data61.aap.elf.parsing.EthqlParser.BytesArrayLiteralContext;
-import au.csiro.data61.aap.elf.parsing.EthqlParser.ComparatorsContext;
-import au.csiro.data61.aap.elf.parsing.EthqlParser.ConditionalAndExpressionContext;
-import au.csiro.data61.aap.elf.parsing.EthqlParser.ConditionalComparisonExpressionContext;
-import au.csiro.data61.aap.elf.parsing.EthqlParser.ConditionalExpressionContext;
-import au.csiro.data61.aap.elf.parsing.EthqlParser.ConditionalNotExpressionContext;
-import au.csiro.data61.aap.elf.parsing.EthqlParser.ConditionalOrExpressionContext;
-import au.csiro.data61.aap.elf.parsing.EthqlParser.ConditionalPrimaryExpressionContext;
-import au.csiro.data61.aap.elf.parsing.EthqlParser.DocumentContext;
-import au.csiro.data61.aap.elf.parsing.EthqlParser.EmitStatementContext;
-import au.csiro.data61.aap.elf.parsing.EthqlParser.EmitStatementCsvContext;
-import au.csiro.data61.aap.elf.parsing.EthqlParser.EmitStatementLogContext;
-import au.csiro.data61.aap.elf.parsing.EthqlParser.EmitStatementXesEventContext;
-import au.csiro.data61.aap.elf.parsing.EthqlParser.EmitStatementXesTraceContext;
-import au.csiro.data61.aap.elf.parsing.EthqlParser.ExpressionStatementContext;
-import au.csiro.data61.aap.elf.parsing.EthqlParser.FilterContext;
-import au.csiro.data61.aap.elf.parsing.EthqlParser.GenericFilterContext;
-import au.csiro.data61.aap.elf.parsing.EthqlParser.IntArrayLiteralContext;
-import au.csiro.data61.aap.elf.parsing.EthqlParser.LiteralContext;
-import au.csiro.data61.aap.elf.parsing.EthqlParser.LogEntryFilterContext;
-import au.csiro.data61.aap.elf.parsing.EthqlParser.LogEntryParameterContext;
-import au.csiro.data61.aap.elf.parsing.EthqlParser.LogEntrySignatureContext;
-import au.csiro.data61.aap.elf.parsing.EthqlParser.MethodInvocationContext;
-import au.csiro.data61.aap.elf.parsing.EthqlParser.MethodStatementContext;
-import au.csiro.data61.aap.elf.parsing.EthqlParser.NamedEmitVariableContext;
-import au.csiro.data61.aap.elf.parsing.EthqlParser.PublicFunctionQueryContext;
-import au.csiro.data61.aap.elf.parsing.EthqlParser.PublicVariableQueryContext;
-import au.csiro.data61.aap.elf.parsing.EthqlParser.ScopeContext;
-import au.csiro.data61.aap.elf.parsing.EthqlParser.SkippableLogEntryParameterContext;
-import au.csiro.data61.aap.elf.parsing.EthqlParser.SmartContractFilterContext;
-import au.csiro.data61.aap.elf.parsing.EthqlParser.SmartContractParameterContext;
-import au.csiro.data61.aap.elf.parsing.EthqlParser.SmartContractQueryContext;
-import au.csiro.data61.aap.elf.parsing.EthqlParser.SmartContractQueryParameterContext;
-import au.csiro.data61.aap.elf.parsing.EthqlParser.SolTypeContext;
-import au.csiro.data61.aap.elf.parsing.EthqlParser.SolTypeRuleContext;
-import au.csiro.data61.aap.elf.parsing.EthqlParser.StatementContext;
-import au.csiro.data61.aap.elf.parsing.EthqlParser.StatementExpressionContext;
-import au.csiro.data61.aap.elf.parsing.EthqlParser.StringArrayLiteralContext;
-import au.csiro.data61.aap.elf.parsing.EthqlParser.TransactionFilterContext;
-import au.csiro.data61.aap.elf.parsing.EthqlParser.ValueExpressionContext;
-import au.csiro.data61.aap.elf.parsing.EthqlParser.VariableAssignmentStatementContext;
-import au.csiro.data61.aap.elf.parsing.EthqlParser.VariableDeclarationStatementContext;
-import au.csiro.data61.aap.elf.parsing.EthqlParser.VariableNameContext;
-import au.csiro.data61.aap.elf.parsing.EthqlParser.XesEmitVariableContext;
-import au.csiro.data61.aap.elf.parsing.EthqlParser.XesTypesContext;
 
 /**
  * CompositeEthqlListener
@@ -71,8 +22,10 @@ public class CompositeEthqlListener<T extends EthqlListener> implements EthqlLis
         this.analyzers = new LinkedList<>();
     }
 
-    public void addListener(T listener) {
-        assert listener != null;
+    public void addListener(T listener) throws CompositeListenerException {
+        if (listener == null) {
+            throw new CompositeListenerException("Listener is null");
+        }
         this.analyzers.add(listener);
     }
 
@@ -112,6 +65,26 @@ public class CompositeEthqlListener<T extends EthqlListener> implements EthqlLis
     @Override
     public void exitDocument(DocumentContext ctx) {
         this.notifyListener(EthqlListener::exitDocument, ctx);
+    }
+
+    @Override
+    public void enterConnection(ConnectionContext ctx) {
+        this.notifyListener(EthqlListener::enterConnection, ctx);
+    }
+
+    @Override
+    public void exitConnection(ConnectionContext ctx) {
+        this.notifyListener(EthqlListener::exitConnection, ctx);
+    }
+
+    @Override
+    public void enterOutputFolder(OutputFolderContext ctx) {
+        this.notifyListener(EthqlListener::enterOutputFolder, ctx);
+    }
+
+    @Override
+    public void exitOutputFolder(OutputFolderContext ctx) {
+        this.notifyListener(EthqlListener::exitOutputFolder, ctx);
     }
 
     @Override
