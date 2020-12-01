@@ -5,6 +5,8 @@
 
 grammar Ethql;
 
+/** The entry parser rule defines the manifest file, a source and destination directory have to be specified.
+*   It can include an arbitrary number of statements and the explicit EOF defines that the entire file is parsed. */
 document
     : (connection outputFolder)? statement* EOF
     ;
@@ -22,16 +24,19 @@ outputFolder
     : KEY_SET KEY_OUTPUT_FOLDER literal
     ;
 
+/** A statement is either a scope, an expressionStatement or an emitStatement. */
 statement
     : scope
     | expressionStatement
     | emitStatement
     ;
 
+/** A scope is composed of a filter, which is applied to an arbitrary number of statements inside of {} braces. */
 scope
     : filter '{' statement* '}'
     ;
 
+/** A filter is either a blockFilter, a transactionFilter, a logEntryFilter, a genericFilter or a smartContractFilter. */
 filter
     : blockFilter
     | transactionFilter
@@ -40,10 +45,14 @@ filter
     | smartContractFilter
     ;
 
+/** A blockFilter is setting a block range and filters for the qualifying blocks in the respective scope. It starts with
+ *  the keyword BLOCKS and subsequently sets a starting and an ending blocknumber, each inside of () braces. */
 blockFilter
     : KEY_BLOCK_RANGE '(' from=blockNumber ')' '(' to=blockNumber ')'
     ;
 
+/** A blockNumber is either one of the keywords CURRENT, EARLIEST, CONTINUOUS or should be an integer number
+ *  representing a certain block of the current blockchain or a keyword. */
 blockNumber
     : KEY_CURRENT
     | KEY_EARLIEST
@@ -51,20 +60,31 @@ blockNumber
     | valueExpression
     ;
 
+/** A transactionFilter is taking sender and recipient addresses as input and filters for the qualifying transactions
+ *  in the respective scope. It starts with the keyword TRANSACTIONS and subsequently sets a mandatory sending addressList
+ *  and an optional recipients addressList. */
 transactionFilter
     : KEY_TRANSACTIONS '(' (senders=addressList)? ')' '(' recipients=addressList ')'
     ;
 
+/** An addressList is either an enumeration of at least one hexadecimal BYTES_LITERAL, separated by a comma, the keyword
+ *  ANY or a variableName. */
 addressList
     : BYTES_LITERAL (',' BYTES_LITERAL)*
     | KEY_ANY
     | variableName
     ;
 
+/** A logEntryFilter is taking addresses and a specific logEntrySignature as input and filters for the qualifying logs in
+ *  the respective scope. It starts with the keyword LOG ENTRIES and subsequently sets an addressList and an logEntrySignature,
+ *  each inside of () braces. */
 logEntryFilter
     : KEY_LOG_ENTRIES '(' addressList ')' '(' logEntrySignature ')'
     ;
 
+/** A logEntrySignature is an enumeration of at least one logEntryParameter and filters for the qualifying logs in
+ *  the respective scope. It starts with the keyword LOG ENTRIES and subsequently sets an addressList and an logEntrySignature,
+ *  each inside of () braces. */
 logEntrySignature
     : methodName=Identifier '(' (logEntryParameter (',' logEntryParameter)* )? ')'
     ;
@@ -237,14 +257,14 @@ variableName
 
 // Keywords
 
-KEY_BLOCK_RANGE : B L O C K S;
-KEY_EARLIEST : E A R L I E S T;
-KEY_CURRENT : C U R R E N T;
-KEY_CONTINUOUS : C O N T I N U O U S;
-KEY_ANY : A N Y;
-KEY_TRANSACTIONS : T R A N S A C T I O N S;
+KEY_BLOCK_RANGE : B L O C K S;                          // initiates a blockFilter
+KEY_EARLIEST : E A R L I E S T;                         // pick the earliest block the program can access in the source file
+KEY_CURRENT : C U R R E N T;                            // pick the latest block the program can access in the source file
+KEY_CONTINUOUS : C O N T I N U O U S;                   // set the program to a continous mode of extraction instead of an ending block
+KEY_ANY : A N Y;                                        // set no address restriction in an addressList in the transactionFilter
+KEY_TRANSACTIONS : T R A N S A C T I O N S;             // initiates a transactionFilter
 KEY_SMART_CONTRACT : S M A R T ' ' C O N T R A C T;
-KEY_LOG_ENTRIES : L O G ' ' E N T R I E S ;
+KEY_LOG_ENTRIES : L O G ' ' E N T R I E S ;             // initiates a logEntryFilter
 KEY_INDEXED : 'indexed';
 KEY_SKIP_INDEXED : '_indexed_';
 KEY_SKIP_DATA : '_';
@@ -308,7 +328,7 @@ BOOLEAN_LITERAL
   | F A L S E
   ;
 
-BYTES_LITERAL : '0x' [0-9a-fA-F]+;
+BYTES_LITERAL : '0x' [0-9a-fA-F]+; // A hexadecimal number, initiated with a '0x' and at least one hexadecimal digit
 
 
 
