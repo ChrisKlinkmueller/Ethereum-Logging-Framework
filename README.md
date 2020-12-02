@@ -86,6 +86,12 @@ To run unit tests, run
 ```bash
 mvn test
 ```
+## Enable Git Hooks
+
+```bash
+ git config --local core.hooksPath .githooks/
+ chmod u+x .githooks/pre-commit
+```
 
 ## License
 
