@@ -274,9 +274,10 @@ public class ItemGenerator extends BaseGenerator {
     }
 
     private void generateBitMappingEnum(BitMappingItem item) {
-        final String values = item.getValues()
+        final Object values = item.getValues()
             .stream()
             .map(val -> val instanceof String ? val.toString().toUpperCase() : this.createEnumValue(val))
+            // .map(val -> this.createEnumValue(val))
             .collect(Collectors.joining(", "));
 
         final String code = String.format("enum %s {%s}", this.getEnumName(item), values);

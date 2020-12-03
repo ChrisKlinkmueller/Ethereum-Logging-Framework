@@ -55,7 +55,7 @@ public abstract class EthereumTransaction {
     public Boolean isSuccessful() throws ProgramException {
         final String status = this.getStatus();
         if (status == null) {
-            return null;
+            return false;
         } else {
             return status.equals("0x1");
         }

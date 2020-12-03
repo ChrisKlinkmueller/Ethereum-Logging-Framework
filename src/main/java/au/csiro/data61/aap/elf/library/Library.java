@@ -23,6 +23,14 @@ public class Library {
     private static final Logger LOGGER = Logger.getLogger(Library.class.getName());
     public static final Library INSTANCE = new Library();
 
+    private static final String TYPE_STRING = "string";
+    private static final String TYPE_ADDRESS = "address";
+    private static final String TYPE_BOOLLIST = "bool[]";
+    private static final String TYPE_STRINGLIST = "string[]";
+    private static final String TYPE_INTLIST = "int[]";
+    private static final String TYPE_BYTELIST = "byte[]";
+    private static final String TYPE_ADDRESSLIST = "address[]";
+
     private final Map<String, List<LibraryEntry>> registeredMethods;
 
     private Library() {
@@ -33,47 +41,119 @@ public class Library {
             this.addMethod(new MethodSignature("multiply", "int", "int", "int"), IntegerOperations::multiply);
             this.addMethod(new MethodSignature("subtract", "int", "int", "int"), IntegerOperations::subtract);
             this.addMethod(new MethodSignature("divide", "int", "int", "int"), IntegerOperations::divide);
-            this.addMethod(new MethodSignature("contains", "bool", "address[]", "address"), ListOperations::contains);
-            this.addMethod(new MethodSignature("contains", "bool", "int[]", "int"), ListOperations::contains);
-            this.addMethod(new MethodSignature("add", null, "int[]", "int"), ListOperations::addElement);
-            this.addMethod(new MethodSignature("add", null, "address[]", "address"), ListOperations::addElement);
-            this.addMethod(new MethodSignature("remove", null, "address[]", "address"), ListOperations::removeElement);
-            this.addMethod(new MethodSignature("clear", null, "address[]"), ListOperations::clear);
+            this.addMethod(new MethodSignature("contains", "bool", TYPE_ADDRESSLIST, TYPE_ADDRESS), ListOperations::contains);
+            this.addMethod(new MethodSignature("contains", "bool", TYPE_INTLIST, "int"), ListOperations::contains);
+            this.addMethod(new MethodSignature("add", null, TYPE_INTLIST, "int"), ListOperations::addElement);
+            this.addMethod(new MethodSignature("add", null, TYPE_ADDRESSLIST, TYPE_ADDRESS), ListOperations::addElement);
+            this.addMethod(new MethodSignature("remove", null, TYPE_ADDRESSLIST, TYPE_ADDRESS), ListOperations::removeElement);
+            this.addMethod(new MethodSignature("clear", null, TYPE_ADDRESSLIST), ListOperations::clear);
 
-            this.addMethod(ValueDictionary::boolToBool, "bool", ValueDictionary.METHOD_NAME, "bool", "bool", "bool[]", "bool[]");
-            this.addMethod(ValueDictionary::stringToBool, "bool", ValueDictionary.METHOD_NAME, "byte", "bool", "byte[]", "bool[]");
-            this.addMethod(ValueDictionary::intToBool, "bool", ValueDictionary.METHOD_NAME, "int", "bool", "int[]", "bool[]");
-            this.addMethod(ValueDictionary::stringToBool, "bool", ValueDictionary.METHOD_NAME, "string", "bool", "string[]", "bool[]");
-            this.addMethod(ValueDictionary::boolToString, "byte", ValueDictionary.METHOD_NAME, "bool", "byte", "bool[]", "byte[]");
-            this.addMethod(ValueDictionary::stringToString, "byte", ValueDictionary.METHOD_NAME, "byte", "byte", "byte[]", "byte[]");
-            this.addMethod(ValueDictionary::intToString, "byte", ValueDictionary.METHOD_NAME, "int", "byte", "int[]", "byte[]");
-            this.addMethod(ValueDictionary::stringToString, "byte", ValueDictionary.METHOD_NAME, "string", "byte", "string[]", "byte[]");
-            this.addMethod(ValueDictionary::boolToInt, "int", ValueDictionary.METHOD_NAME, "bool", "int", "bool[]", "int[]");
-            this.addMethod(ValueDictionary::stringToInt, "int", ValueDictionary.METHOD_NAME, "byte", "int", "byte[]", "int[]");
-            this.addMethod(ValueDictionary::intToInt, "int", ValueDictionary.METHOD_NAME, "int", "int", "int[]", "int[]");
-            this.addMethod(ValueDictionary::stringToInt, "int", ValueDictionary.METHOD_NAME, "string", "int", "string[]", "int[]");
-            this.addMethod(ValueDictionary::boolToString, "string", ValueDictionary.METHOD_NAME, "bool", "string", "bool[]", "string[]");
-            this.addMethod(ValueDictionary::stringToString, "string", ValueDictionary.METHOD_NAME, "byte", "string", "byte[]", "string[]");
-            this.addMethod(ValueDictionary::intToString, "string", ValueDictionary.METHOD_NAME, "int", "string", "int[]", "string[]");
+            this.addMethod(ValueDictionary::boolToBool, "bool", ValueDictionary.METHOD_NAME, "bool", "bool", TYPE_BOOLLIST, TYPE_BOOLLIST);
+            this.addMethod(
+                ValueDictionary::stringToBool,
+                "bool",
+                ValueDictionary.METHOD_NAME,
+                "byte",
+                "bool",
+                TYPE_BYTELIST,
+                TYPE_BOOLLIST
+            );
+            this.addMethod(ValueDictionary::intToBool, "bool", ValueDictionary.METHOD_NAME, "int", "bool", TYPE_INTLIST, TYPE_BOOLLIST);
+            this.addMethod(
+                ValueDictionary::stringToBool,
+                "bool",
+                ValueDictionary.METHOD_NAME,
+                TYPE_STRING,
+                "bool",
+                TYPE_STRINGLIST,
+                TYPE_BOOLLIST
+            );
+            this.addMethod(
+                ValueDictionary::boolToString,
+                "byte",
+                ValueDictionary.METHOD_NAME,
+                "bool",
+                "byte",
+                TYPE_BOOLLIST,
+                TYPE_BYTELIST
+            );
             this.addMethod(
                 ValueDictionary::stringToString,
-                "string",
+                "byte",
                 ValueDictionary.METHOD_NAME,
-                "string",
-                "string",
-                "string[]",
-                "string[]"
+                "byte",
+                "byte",
+                TYPE_BYTELIST,
+                TYPE_BYTELIST
             );
-            this.addMethod(BitMapping::mapBitsToString, "string", BitMapping.METHOD_NAME, "int", "int", "int", "string[]");
-            this.addMethod(BitMapping::mapBitsToString, "byte", BitMapping.METHOD_NAME, "int", "int", "int", "byte[]");
-            this.addMethod(BitMapping::mapBitsToInt, "int", BitMapping.METHOD_NAME, "int", "int", "int", "int[]");
-            this.addMethod(BitMapping::mapBitsToBool, "bool", BitMapping.METHOD_NAME, "int", "int", "int", "bool[]");
+            this.addMethod(ValueDictionary::intToString, "byte", ValueDictionary.METHOD_NAME, "int", "byte", TYPE_INTLIST, TYPE_BYTELIST);
+            this.addMethod(
+                ValueDictionary::stringToString,
+                "byte",
+                ValueDictionary.METHOD_NAME,
+                TYPE_STRING,
+                "byte",
+                TYPE_STRINGLIST,
+                TYPE_BYTELIST
+            );
+            this.addMethod(ValueDictionary::boolToInt, "int", ValueDictionary.METHOD_NAME, "bool", "int", TYPE_BOOLLIST, TYPE_INTLIST);
+            this.addMethod(ValueDictionary::stringToInt, "int", ValueDictionary.METHOD_NAME, "byte", "int", TYPE_BYTELIST, TYPE_INTLIST);
+            this.addMethod(ValueDictionary::intToInt, "int", ValueDictionary.METHOD_NAME, "int", "int", TYPE_INTLIST, TYPE_INTLIST);
+            this.addMethod(
+                ValueDictionary::stringToInt,
+                "int",
+                ValueDictionary.METHOD_NAME,
+                TYPE_STRING,
+                "int",
+                TYPE_STRINGLIST,
+                TYPE_INTLIST
+            );
+            this.addMethod(
+                ValueDictionary::boolToString,
+                TYPE_STRING,
+                ValueDictionary.METHOD_NAME,
+                "bool",
+                TYPE_STRING,
+                TYPE_BOOLLIST,
+                TYPE_STRINGLIST
+            );
+            this.addMethod(
+                ValueDictionary::stringToString,
+                TYPE_STRING,
+                ValueDictionary.METHOD_NAME,
+                "byte",
+                TYPE_STRING,
+                TYPE_BYTELIST,
+                TYPE_STRINGLIST
+            );
+            this.addMethod(
+                ValueDictionary::intToString,
+                TYPE_STRING,
+                ValueDictionary.METHOD_NAME,
+                "int",
+                TYPE_STRING,
+                TYPE_INTLIST,
+                TYPE_STRINGLIST
+            );
+            this.addMethod(
+                ValueDictionary::stringToString,
+                TYPE_STRING,
+                ValueDictionary.METHOD_NAME,
+                TYPE_STRING,
+                TYPE_STRING,
+                TYPE_STRINGLIST,
+                TYPE_STRINGLIST
+            );
+            this.addMethod(BitMapping::mapBitsToString, TYPE_STRING, BitMapping.METHOD_NAME, "int", "int", "int", TYPE_STRINGLIST);
+            this.addMethod(BitMapping::mapBitsToString, "byte", BitMapping.METHOD_NAME, "int", "int", "int", TYPE_BYTELIST);
+            this.addMethod(BitMapping::mapBitsToInt, "int", BitMapping.METHOD_NAME, "int", "int", "int", TYPE_INTLIST);
+            this.addMethod(BitMapping::mapBitsToBool, "bool", BitMapping.METHOD_NAME, "int", "int", "int", TYPE_BOOLLIST);
 
-            this.addMethod(ListOperations::newAddressArray, "address[]", "newAddressArray");
-            this.addMethod(ListOperations::newBoolArray, "bool[]", "newBoolArray");
-            this.addMethod(ListOperations::newByteArray, "byte[]", "newByteArray");
-            this.addMethod(ListOperations::newIntArray, "int[]", "newIntArray");
-            this.addMethod(ListOperations::newStringArray, "string[]", "newStringArray");
+            this.addMethod(ListOperations::newAddressArray, TYPE_ADDRESSLIST, "newAddressArray");
+            this.addMethod(ListOperations::newBoolArray, TYPE_BOOLLIST, "newBoolArray");
+            this.addMethod(ListOperations::newByteArray, TYPE_BYTELIST, "newByteArray");
+            this.addMethod(ListOperations::newIntArray, TYPE_INTLIST, "newIntArray");
+            this.addMethod(ListOperations::newStringArray, TYPE_STRINGLIST, "newStringArray");
         } catch (LibraryException e) {
             e.printStackTrace();
         }

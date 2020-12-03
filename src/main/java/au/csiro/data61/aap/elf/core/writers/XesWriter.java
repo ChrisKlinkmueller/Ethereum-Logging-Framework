@@ -81,14 +81,14 @@ public class XesWriter extends DataWriter {
         return;
     }
 
-    public void startEvent(String inputPid, String inputPiid, String inputEid) {
+    public static void startEvent(XesWriter writer, String inputPid, String inputPiid, String inputEid) {
         final String pid = inputPid == null ? DEFAULT_PID : inputPid;
         final String piid = inputPiid == null ? DEFAULT_PIID : inputPiid;
         final String eid = inputEid == null ? String.format("%s%s", DEFAULT_EID, Long.toString(EID++)) : inputEid;
         LOGGER.info(String.format("Event %s in trace %s in log %s started.", eid, piid, pid));
 
-        this.findOrCreateTrace(pid, piid);
-        this.findOrCreateEvent(pid, piid, eid);
+        writer.findOrCreateTrace(pid, piid);
+        writer.findOrCreateEvent(pid, piid, eid);
     }
 
     private void findOrCreateEvent(String pid, String piid, String eid) {
@@ -195,7 +195,9 @@ public class XesWriter extends DataWriter {
             for (Entry<String, XLog> entry : logs.entrySet()) {
                 final String filename = String.format("log_%s_%s.xes", entry.getKey(), filenameSuffix);
                 final File file = new File(folder, filename);
-                serializer.serialize(entry.getValue(), new FileOutputStream(file));
+                try (final FileOutputStream outputStream = new FileOutputStream(file);) {
+                    serializer.serialize(entry.getValue(), outputStream);
+                }
             }
         } catch (Throwable t) {
             LOGGER.info("Xes export finished unsuccessfully.");

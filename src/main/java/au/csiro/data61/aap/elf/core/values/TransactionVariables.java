@@ -34,6 +34,8 @@ public class TransactionVariables {
     public static final String TX_STATUS = "tx.status";
     public static final String TX_SUCCESS = "tx.success";
 
+    private static final String TYPE_STRING = "string";
+
     static {
         TRANSACTION_VARIABLES = new HashSet<>();
         addTransactionVariable(TX_FROM, "address", EthereumTransaction::getFrom);
@@ -43,19 +45,19 @@ public class TransactionVariables {
         addTransactionVariable(TX_TO, "address", EthereumTransaction::getTo);
         addTransactionVariable(TX_BLOCKNUMBER, "int", EthereumTransaction::getBlockNumber);
         addTransactionVariable(TX_V, "int", EthereumTransaction::getV);
-        addTransactionVariable(TX_R, "string", EthereumTransaction::getR);
+        addTransactionVariable(TX_R, TYPE_STRING, EthereumTransaction::getR);
         addTransactionVariable(TX_VALUE, "int", EthereumTransaction::getValue);
         addTransactionVariable(TX_BLOCKHASH, "bytes", EthereumTransaction::getBlockHash);
-        addTransactionVariable(TX_INPUT, "string", EthereumTransaction::getInput);
+        addTransactionVariable(TX_INPUT, TYPE_STRING, EthereumTransaction::getInput);
         addTransactionVariable(TX_TRANSACTIONINDEX, "int", EthereumTransaction::getTransactionIndex);
         addTransactionVariable(TX_NONCE, "int", EthereumTransaction::getNonce);
-        addTransactionVariable(TX_S, "string", EthereumTransaction::getS);
+        addTransactionVariable(TX_S, TYPE_STRING, EthereumTransaction::getS);
         addTransactionVariable(TX_CUMULATIVE_GAS_USED, "int", EthereumTransaction::getCumulativeGasUsed);
         addTransactionVariable(TX_GAS_USED, "int", EthereumTransaction::getGasUsed);
-        addTransactionVariable(TX_CONTRACT_ADRESS, "string", EthereumTransaction::getContractAddress);
-        addTransactionVariable(TX_LOGS_BLOOM, "string", EthereumTransaction::getLogsBloom);
-        addTransactionVariable(TX_ROOT, "string", EthereumTransaction::getRoot);
-        addTransactionVariable(TX_STATUS, "string", EthereumTransaction::getStatus);
+        addTransactionVariable(TX_CONTRACT_ADRESS, TYPE_STRING, EthereumTransaction::getContractAddress);
+        addTransactionVariable(TX_LOGS_BLOOM, TYPE_STRING, EthereumTransaction::getLogsBloom);
+        addTransactionVariable(TX_ROOT, TYPE_STRING, EthereumTransaction::getRoot);
+        addTransactionVariable(TX_STATUS, TYPE_STRING, EthereumTransaction::getStatus);
         addTransactionVariable(TX_SUCCESS, "bool", EthereumTransaction::isSuccessful);
     }
 

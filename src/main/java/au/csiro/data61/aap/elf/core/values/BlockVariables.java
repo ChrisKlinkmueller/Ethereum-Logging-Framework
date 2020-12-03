@@ -32,26 +32,29 @@ public class BlockVariables {
     public static final String BLOCK_TIMESTAMP = "block.timestamp";
     public static final String BLOCK_TRANSACTIONS = "block.transactionCount";
 
+    private static final String TYPE_STRING = "string";
+    private static final String TYPE_BYTES = "bytes";
+
     static {
         BLOCK_VARIABLES = new HashSet<>();
         addBlockVariable(BLOCK_DIFFICULTY, "int", EthereumBlock::getDifficulty);
-        addBlockVariable(BLOCK_EXTRA_DATA, "string", EthereumBlock::getExtraData);
+        addBlockVariable(BLOCK_EXTRA_DATA, TYPE_STRING, EthereumBlock::getExtraData);
         addBlockVariable(BLOCK_GAS_LIMIT, "int", EthereumBlock::getGasLimit);
         addBlockVariable(BLOCK_GAS_USED, "int", EthereumBlock::getGasUsed);
-        addBlockVariable(BLOCK_HASH, "bytes", EthereumBlock::getHash);
-        addBlockVariable(BLOCK_LOGS_BLOOM, "string", EthereumBlock::getLogsBloom);
+        addBlockVariable(BLOCK_HASH, TYPE_BYTES, EthereumBlock::getHash);
+        addBlockVariable(BLOCK_LOGS_BLOOM, TYPE_STRING, EthereumBlock::getLogsBloom);
         addBlockVariable(BLOCK_MINER, "address", EthereumBlock::getMiner);
         addBlockVariable(BLOCK_NONCE, "int", EthereumBlock::getNonce);
         addBlockVariable(BLOCK_NUMBER, "int", EthereumBlock::getNumber);
-        addBlockVariable(BLOCK_PARENT_HASH, "bytes", EthereumBlock::getParentHash);
-        addBlockVariable(BLOCK_RECEIPTS_ROOT, "bytes", EthereumBlock::getReceiptsRoot);
-        addBlockVariable(BLOCK_SHA3_UNCLES, "bytes", EthereumBlock::getSha3uncles);
+        addBlockVariable(BLOCK_PARENT_HASH, TYPE_BYTES, EthereumBlock::getParentHash);
+        addBlockVariable(BLOCK_RECEIPTS_ROOT, TYPE_BYTES, EthereumBlock::getReceiptsRoot);
+        addBlockVariable(BLOCK_SHA3_UNCLES, TYPE_BYTES, EthereumBlock::getSha3uncles);
         addBlockVariable(BLOCK_SIZE, "int", EthereumBlock::getSize);
-        addBlockVariable(BLOCK_STATE_ROOT, "bytes", EthereumBlock::getStateRoot);
+        addBlockVariable(BLOCK_STATE_ROOT, TYPE_BYTES, EthereumBlock::getStateRoot);
         addBlockVariable(BLOCK_TIMESTAMP, "int", EthereumBlock::getTimestamp);
         addBlockVariable(BLOCK_TOTAL_DIFFICULTY, "int", EthereumBlock::getTotalDifficulty);
         addBlockVariable(BLOCK_TRANSACTIONS, "int", block -> BigInteger.valueOf(block.transactionCount()));
-        addBlockVariable(BLOCK_TRANSACTION_ROOT, "string", EthereumBlock::getTransactionsRoot);
+        addBlockVariable(BLOCK_TRANSACTION_ROOT, TYPE_STRING, EthereumBlock::getTransactionsRoot);
     }
 
     private static void addBlockVariable(String name, String type, Function<EthereumBlock, Object> blockValueExtractor) {
