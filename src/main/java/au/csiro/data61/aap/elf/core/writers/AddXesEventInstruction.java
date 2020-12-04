@@ -21,7 +21,7 @@ public class AddXesEventInstruction extends AddXesElementInstruction {
     @Override
     protected void startElement(XesWriter writer, ProgramState state, String pid, String piid) throws ProgramException {
         final String eid = this.getId(state, this.eid);
-        writer.startEvent(pid, piid, eid);
+        XesWriter.startEvent(writer, pid, piid, eid);
     }
 
 }

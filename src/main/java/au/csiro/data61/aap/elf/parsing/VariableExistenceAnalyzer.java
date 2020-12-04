@@ -122,7 +122,7 @@ public class VariableExistenceAnalyzer extends SemanticAnalyzer {
         }
 
         if (this.isFilterConstant(variableName)) {
-            this.addError(ctx.start, String.format("Variable '%s' not defined."));
+            this.addError(ctx.start, String.format("Variable '%s' not defined.", variableName));
         }
     }
 

@@ -8,10 +8,10 @@ import org.antlr.v4.runtime.Token;
 /**
  * BitMappingItem
  */
-class BitMappingItem extends GeneratorItem {
+class BitMappingItem<T> extends GeneratorItem {
     private BigInteger from;
     private BigInteger to;
-    private List<?> values;
+    private List<T> values;
     private String encodedAttribute;
     private String targetVariable;
 
@@ -24,7 +24,9 @@ class BitMappingItem extends GeneratorItem {
     }
 
     public void setFrom(BigInteger from) {
-        assert from != null;
+        if (from == null) {
+            throw new IllegalArgumentException("BitMappingItem.setFrom: null not allowed!");
+        }
         this.from = from;
     }
 
@@ -33,16 +35,20 @@ class BitMappingItem extends GeneratorItem {
     }
 
     public void setTo(BigInteger to) {
-        assert to != null;
+        if (to == null) {
+            throw new IllegalArgumentException("BitMappingItem.setTo: null not allowed!");
+        }
         this.to = to;
     }
 
-    public List<?> getValues() {
+    public List<T> getValues() {
         return this.values;
     }
 
-    public void setValues(List<?> values) {
-        assert values != null;
+    public void setValues(List<T> values) {
+        if (values == null) {
+            throw new IllegalArgumentException("BitMappingItem.setValues: null not allowed!");
+        }
         this.values = values;
     }
 

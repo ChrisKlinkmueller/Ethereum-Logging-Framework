@@ -7,24 +7,24 @@ import org.antlr.v4.runtime.Token;
 /**
  * ValueDictionaryItem
  */
-class ValueDictionaryItem extends GeneratorItem {
+class ValueDictionaryItem<S, T> extends GeneratorItem {
     private String targetVariable;
     private String targetType;
     private String encodedAttribute;
     private String encodedType;
     private Object defaultValue;
-    private List<?> fromValues;
-    private List<?> toValues;
+    private List<S> fromValues;
+    private List<T> toValues;
 
     ValueDictionaryItem(Token token, String specification) {
         super(token, specification);
     }
 
-    List<?> getFromValues() {
+    List<S> getFromValues() {
         return this.fromValues;
     }
 
-    void setFromValues(List<?> fromValues) {
+    void setFromValues(List<S> fromValues) {
         this.fromValues = fromValues;
     }
 
@@ -60,11 +60,11 @@ class ValueDictionaryItem extends GeneratorItem {
         this.encodedType = encodedType;
     }
 
-    List<?> getToValues() {
+    List<T> getToValues() {
         return this.toValues;
     }
 
-    void setToValues(List<?> toValues) {
+    void setToValues(List<T> toValues) {
         this.toValues = toValues;
     }
 
