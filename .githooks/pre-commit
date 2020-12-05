@@ -1,0 +1,8 @@
+#!/bin/sh
+
+files=$( ( git diff --cached --name-only --diff-filter=ACMR | grep -Ei "\.java$" ) || true)
+echo $files
+if [ ! -z "${files}" ]; then
+ exec mvn spotless:apply
+ exec git add $(echo "$files" | paste -s -d " " -)
+fi
