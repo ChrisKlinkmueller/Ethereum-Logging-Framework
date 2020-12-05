@@ -208,6 +208,7 @@
         <artifactId>antlr4-maven-plugin</artifactId>
         <version>${antlr4.version}</version>
         <configuration>
+          <libDirectory>${basedir}/src/main/antlr4/au/csiro/data61/aap/elf/parsing</libDirectory>
           <arguments>
             <argument>-visitor</argument>
           </arguments>
