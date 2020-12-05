@@ -1,11 +1,18 @@
-
-// UTIL
+// (outdated) based on
+//    ANTLR4 grammar for SQLite by Bart Kiers (https://github.com/antlr/grammars-v4/blob/master/sqlite/SQLite.g4), and
+//    ANTLR4 grammar for Java9 by Terence Parr & Sam Harwell (https://github.com/antlr/grammars-v4/blob/master/java9/Java9.g4)
+//    Tutorial for expression evaluation by Sebastien Ros (https://www.codeproject.com/articles/18880/state-of-the-art-expression-evaluation)
+//
+// 01/12/2020 helpful links
+//    ANTLR4 documentation (https://github.com/antlr/antlr4/blob/4.9/doc/index.md)
+//    Tutorial https://docs.google.com/document/d/1gQ2lsidvN2cDUUsHEkT05L-wGbX5mROB7d70Aaj3R64/edit#heading=h.xr0jj8vcdsgc
+//
 
 grammar Util;
 
-import Identifier, Fragments, Keywords, Literals, Types;
+import BcQLLexer;
 
-//      FILTER
+//      FILTER UTIL
 
 /** A blockNumber is either one of the keywords CURRENT, EARLIEST, CONTINUOUS or should be an integer number
     representing a certain block of the current blockchain or a keyword. */
@@ -29,7 +36,7 @@ addressList
 
 
 /** A logEntrySignature represents the structure of an existing log/event entry in the specified contract of the respective
-    logEntryFilter. It starts with defining the Identifier of the log/event entry and subsequently sets an enumeration of
+    logEntryFilter. Starts with defining the Identifier of the log/event entry and subsequently sets an enumeration of
     at least one logEntryParameter inside of () braces. */
 
 logEntrySignature
@@ -92,8 +99,8 @@ smartContractQueryParameter
 
 
 
-//      EMIT STATEMENTS
 
+//      EMIT STATEMENTS UTIL
 
 namedEmitVariable
     : valueExpression (KEY_AS variableName)?
@@ -111,21 +118,31 @@ xesTypes
     | 'xs:boolean'
     ;
 
-//      EXPRESSION STATEMENT
 
-expressionStatement 
+//      EXPRESSION STATEMENTS: Add additional functionality to the grammar
+
+expressionStatement
     : methodStatement
     | variableDeclarationStatement
     | variableAssignmentStatement
-    ; 
+    ;
+
+methodStatement
+    : methodInvocation
+    ;
+
+methodInvocation
+    : methodName=Identifier '(' (valueExpression (',' valueExpression)* )? ')'
+    ;
 
 variableDeclarationStatement
-    : solType variableName '=' statementExpression ';' 
-    ; 
+    : solType variableName '=' statementExpression ';'
+    ;
 
 variableAssignmentStatement
-    : variableName '=' statementExpression ';' 
+    : variableName '=' statementExpression ';'
     ;
+
 
 statementExpression
     : valueExpression
@@ -154,8 +171,8 @@ conditionalNotExpression
     : KEY_NOT? conditionalPrimaryExpression
     ;
 
-conditionalPrimaryExpression 
-    : valueExpression 
+conditionalPrimaryExpression
+    : valueExpression
     | '(' conditionalOrExpression ')'
     ;
 
@@ -174,28 +191,56 @@ comparators
     | KEY_IN
     ;
 
-methodStatement
-    : methodInvocation ';'
-    ;
-
-methodInvocation
-    : methodName=Identifier '(' (valueExpression (',' valueExpression)* )? ')'
-    ;
-
 variableName
     : Identifier
     | Identifier ':' Identifier
     | Identifier '.' Identifier
     ;
 
-WS
-    : [ \u000B\t\r\n]+ -> skip
+
+
+//      LITERALS
+
+literal
+    : STRING_LITERAL
+    | BOOLEAN_LITERAL
+    | BYTES_LITERAL
+    | INT_LITERAL
+    | arrayLiteral
     ;
 
-COMMENT
-    : '/*' .*? '*/' -> channel(HIDDEN)
+arrayLiteral
+    : stringArrayLiteral
+    | intArrayLiteral
+    | booleanArrayLiteral
+    | bytesArrayLiteral
     ;
 
-LINE_COMMENT
-    : '//' ~[\r\n]* -> channel(HIDDEN)
+stringArrayLiteral
+    : '{' STRING_LITERAL (',' STRING_LITERAL)* '}'
+    ;
+
+intArrayLiteral
+    : '{' (INT_LITERAL) (',' INT_LITERAL)* '}'
+    ;
+
+booleanArrayLiteral
+    : '{' BOOLEAN_LITERAL (',' BOOLEAN_LITERAL)* '}'
+    ;
+
+bytesArrayLiteral
+    : '{' BYTES_LITERAL (',' BYTES_LITERAL)* '}'
+    ;
+
+//      TYPES
+
+solTypeRule : solType EOF;
+
+solType
+    : SOL_ADDRESS_TYPE
+    | SOL_BOOL_TYPE
+    | SOL_BYTE_TYPE
+    | SOL_INT_TYPE
+    | SOL_STRING_TYPE
+    | solType '[' ']'
     ;

@@ -1,50 +1,66 @@
-// (outdated) based on
-//    ANTLR4 grammar for SQLite by Bart Kiers (https://github.com/antlr/grammars-v4/blob/master/sqlite/SQLite.g4), and
-//    ANTLR4 grammar for Java9 by Terence Parr & Sam Harwell (https://github.com/antlr/grammars-v4/blob/master/java9/Java9.g4)
+// based on
+//    (outdated) ANTLR4 grammar for SQLite by Bart Kiers (https://github.com/antlr/grammars-v4/blob/master/sqlite/SQLite.g4), and
+//    (outdated) ANTLR4 grammar for Java9 by Terence Parr & Sam Harwell (https://github.com/antlr/grammars-v4/blob/master/java9/Java9.g4)
 //    Tutorial for expression evaluation by Sebastien Ros (https://www.codeproject.com/articles/18880/state-of-the-art-expression-evaluation)
 //
-// 01/12/2020 helpful links
+// additional helpful links
 //    ANTLR4 documentation (https://github.com/antlr/antlr4/blob/4.9/doc/index.md)
-//    Tutorial https://docs.google.com/document/d/1gQ2lsidvN2cDUUsHEkT05L-wGbX5mROB7d70Aaj3R64/edit#heading=h.xr0jj8vcdsgc
-//
+//    ANTLR4 presentation by Terence Parr (https://vimeo.com/59285751)
+//    ANTLR4 introduction by TU Darmstadt in german (https://www.esa.informatik.tu-darmstadt.de/archive/twiki/pub/Lectures/Compiler113De/antlr-v4-handout.pdf)
+
 
 grammar Ethql;
-import Util, Identifier, Fragments, Keywords, Literals, Types;
 
-//      GENERAL
+import Util, BcQLLexer;
 
-/** The entry parser rule defines the manifest file, a source and destination directory can be specified.
+
+
+//      GENERAL: Entry rules which are initiating the parser tree
+
+/** The entry parser rule enters the manifest file, a source and destination directory should be specified.
  *  It can include an arbitrary number of statements and the explicit EOF defines that the entire file is parsed. */
+
 document
     : (connection outputFolder)? statement* EOF
     ;
+
 
 // TODO: add in the above statement
 //blockchainType
 //    : KEY_SET KEY_BLOCKCHAIN STRING_LITERAL
 //    ;
 
+/** The entry parser rule enters the manifest file, a source and destination directory should be specified.
+ *  It can include an arbitrary number of statements and the explicit EOF defines that the entire file is parsed. */
+
 connection
     : KEY_SET (KEY_IPC)? KEY_CONNECTION literal
     ;
+
 
 outputFolder
     : KEY_SET KEY_OUTPUT_FOLDER literal
     ;
 
+
 /** A statement is parsed to a scope, an expressionStatement or an emitStatement. */
+
 statement
     : scope
     | expressionStatement
     | emitStatement
     ;
 
+
 /** A scope is composed of a filter, which is applied to an arbitrary number of statements inside of {} braces. */
+
 scope
     : filter '{' statement* '}'
     ;
 
-//      FILTER
+
+
+//      FILTERS: Primary grammar rules to narrow down the logging data in scopes
 
 /** A filter is parsed to a blockFilter, a transactionFilter, a logEntryFilter, a genericFilter or a smartContractFilter. */
 
@@ -52,8 +68,8 @@ filter
     : blockFilter
     | transactionFilter
     | logEntryFilter
-    | genericFilter
     | smartContractFilter
+    | genericFilter
     ;
 
 
@@ -90,16 +106,6 @@ logEntryFilter
     ;
 
 
-/** A genericFilter allows users to introduce arbitrary criteria which can rely on entity or user-defined variables.
-
-    Can be nested into any other filter, but does not provide access to new variables. Starts with the keyword IF
-    and subsequently sets a conditionalExpression inside of () braces. */
-
-genericFilter
-    : KEY_IF '(' conditionalExpression ')'
-    ;
-
-
 /** A smartContractFilter allows for querying state information of smart contracts.
 
     Users must specify the contract address and the member variables or functions. Note that these variables and functions
@@ -110,9 +116,22 @@ smartContractFilter
     : KEY_SMART_CONTRACT '(' contractAddress=valueExpression ')' ('(' smartContractQuery ')')+
     ;
 
-//      EMIT STATEMENTS
 
-/** A emitStatement is parsed to a emitStatementCsv, a emitStatementLog, a emitStatementXesEvent or a emitStatementXesTrace */
+/** A genericFilter allows users to introduce arbitrary criteria which can rely on entity or user-defined variables.
+
+    Can be nested into any other filter, but does not provide access to new variables. Starts with the keyword IF
+    and subsequently sets a conditionalExpression inside of () braces. */
+
+genericFilter
+    : KEY_IF '(' conditionalExpression ')'
+    ;
+
+
+
+
+//      EMIT STATEMENTS: Defines the target data and the output format in a specific scope
+
+/** An emitStatement is parsed to an emitStatementCsv, an emitStatementLog, an emitStatementXesEvent or an emitStatementXesTrace */
 
 emitStatement
     : emitStatementCsv
@@ -121,19 +140,30 @@ emitStatement
     | emitStatementXesTrace
     ;
 
+
+/** An emitStatementCsv sets the CSV format as data output and allows for further target data and output format specification  */
+
 emitStatementCsv
     : KEY_EMIT KEY_CSV_ROW '(' tableName=valueExpression ')' '(' namedEmitVariable (',' namedEmitVariable)* ')'	';'
     ;
+
+
+/** An emitStatementLog sets the Log format as data output and allows for further target data and output format specification  */
 
 emitStatementLog
     : KEY_EMIT KEY_LOG_LINE '(' valueExpression (',' valueExpression)* ')' ';'
     ;
 
-emitStatementXesTrace
-    : KEY_EMIT KEY_XES_TRACE '(' (pid=valueExpression)? ')' '(' (piid=valueExpression)? ')' '(' xesEmitVariable (',' xesEmitVariable)* ')' ';'
-    ;
+
+/** An emitStatementXesTrace sets the XES event format as data output and allows for further target data and output format specification  */
 
 emitStatementXesEvent
     : KEY_EMIT KEY_XES_EVENT '(' (pid=valueExpression)? ')' '(' (piid=valueExpression)? ')' '(' (eid=valueExpression)? ')' '(' xesEmitVariable (',' xesEmitVariable)* ')' ';'
     ;
 
+
+/** An emitStatementXesTrace sets the XES trace format as data output and allows for further target data and output format specification  */
+
+emitStatementXesTrace
+    : KEY_EMIT KEY_XES_TRACE '(' (pid=valueExpression)? ')' '(' (piid=valueExpression)? ')' '(' xesEmitVariable (',' xesEmitVariable)* ')' ';'
+    ;
