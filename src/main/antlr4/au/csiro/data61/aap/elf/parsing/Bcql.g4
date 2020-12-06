@@ -9,9 +9,9 @@
 //    ANTLR4 introduction by TU Darmstadt in german (https://www.esa.informatik.tu-darmstadt.de/archive/twiki/pub/Lectures/Compiler113De/antlr-v4-handout.pdf)
 
 
-grammar Ethql;
+grammar Bcql;
 
-import Util, BcQLLexer;
+import BcqlUtil, BcqlLexemes;
 
 
 

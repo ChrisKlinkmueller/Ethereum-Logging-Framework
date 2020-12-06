@@ -8,9 +8,9 @@
 //    Tutorial https://docs.google.com/document/d/1gQ2lsidvN2cDUUsHEkT05L-wGbX5mROB7d70Aaj3R64/edit#heading=h.xr0jj8vcdsgc
 //
 
-grammar Util;
+grammar BcqlUtil;
 
-import BcQLLexer;
+import BcqlLexemes;
 
 //      FILTER UTIL
 

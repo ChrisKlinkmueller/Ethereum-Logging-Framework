@@ -10,14 +10,14 @@ import au.csiro.data61.aap.elf.parsing.*;
 import org.antlr.v4.runtime.ParserRuleContext;
 
 import au.csiro.data61.aap.elf.core.filters.Program;
-import au.csiro.data61.aap.elf.parsing.EthqlParser.*;
+import au.csiro.data61.aap.elf.parsing.BcqlParser.*;
 import au.csiro.data61.aap.elf.util.TypeUtils;
 import org.antlr.v4.runtime.tree.ParseTree;
 
 /**
  * EthqlProgramComposer
  */
-public class EthqlProgramComposer extends EthqlBaseListener {
+public class EthqlProgramComposer extends BcqlBaseListener {
     private static final Logger LOGGER = Logger.getLogger(EthqlProgramComposer.class.getName());
 
     private final SpecificationComposer composer;

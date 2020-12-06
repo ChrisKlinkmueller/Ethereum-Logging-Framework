@@ -8,12 +8,12 @@ import org.antlr.v4.runtime.Token;
 
 import au.csiro.data61.aap.elf.library.Library;
 import au.csiro.data61.aap.elf.library.MethodSignature;
-import au.csiro.data61.aap.elf.parsing.EthqlParser.MethodInvocationContext;
-import au.csiro.data61.aap.elf.parsing.EthqlParser.MethodStatementContext;
-import au.csiro.data61.aap.elf.parsing.EthqlParser.StatementExpressionContext;
-import au.csiro.data61.aap.elf.parsing.EthqlParser.ValueExpressionContext;
-import au.csiro.data61.aap.elf.parsing.EthqlParser.VariableAssignmentStatementContext;
-import au.csiro.data61.aap.elf.parsing.EthqlParser.VariableDeclarationStatementContext;
+import au.csiro.data61.aap.elf.parsing.BcqlParser.MethodInvocationContext;
+import au.csiro.data61.aap.elf.parsing.BcqlParser.MethodStatementContext;
+import au.csiro.data61.aap.elf.parsing.BcqlParser.StatementExpressionContext;
+import au.csiro.data61.aap.elf.parsing.BcqlParser.ValueExpressionContext;
+import au.csiro.data61.aap.elf.parsing.BcqlParser.VariableAssignmentStatementContext;
+import au.csiro.data61.aap.elf.parsing.BcqlParser.VariableDeclarationStatementContext;
 import au.csiro.data61.aap.elf.util.TypeUtils;
 
 /**

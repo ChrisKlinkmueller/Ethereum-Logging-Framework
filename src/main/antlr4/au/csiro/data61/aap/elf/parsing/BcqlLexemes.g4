@@ -1,5 +1,5 @@
 
-lexer grammar BcQLLexer;
+lexer grammar BcqlLexemes;
 
 //      KEYWORDS: Used to set certain grammar specifications and provide easily legible grammar vocabular.
 //      Are defined in single big letters to make them case insensitive (compare CASE FRAGMENTS).

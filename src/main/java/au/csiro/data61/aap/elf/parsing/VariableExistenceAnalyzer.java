@@ -9,19 +9,7 @@ import java.util.stream.Stream;
 import org.antlr.v4.runtime.Token;
 
 import au.csiro.data61.aap.elf.core.values.EthereumVariables;
-import au.csiro.data61.aap.elf.parsing.EthqlParser.BlockFilterContext;
-import au.csiro.data61.aap.elf.parsing.EthqlParser.DocumentContext;
-import au.csiro.data61.aap.elf.parsing.EthqlParser.LogEntryFilterContext;
-import au.csiro.data61.aap.elf.parsing.EthqlParser.LogEntryParameterContext;
-import au.csiro.data61.aap.elf.parsing.EthqlParser.NamedEmitVariableContext;
-import au.csiro.data61.aap.elf.parsing.EthqlParser.ScopeContext;
-import au.csiro.data61.aap.elf.parsing.EthqlParser.SmartContractParameterContext;
-import au.csiro.data61.aap.elf.parsing.EthqlParser.SmartContractQueryParameterContext;
-import au.csiro.data61.aap.elf.parsing.EthqlParser.TransactionFilterContext;
-import au.csiro.data61.aap.elf.parsing.EthqlParser.VariableAssignmentStatementContext;
-import au.csiro.data61.aap.elf.parsing.EthqlParser.VariableDeclarationStatementContext;
-import au.csiro.data61.aap.elf.parsing.EthqlParser.VariableNameContext;
-import au.csiro.data61.aap.elf.parsing.EthqlParser.XesEmitVariableContext;
+import au.csiro.data61.aap.elf.parsing.BcqlParser.*;
 
 /**
  * VariableCollector

@@ -8,9 +8,9 @@ import java.util.stream.IntStream;
 
 import org.antlr.v4.runtime.Token;
 
-import au.csiro.data61.aap.elf.parsing.EthqlParser.DocumentContext;
-import au.csiro.data61.aap.elf.parsing.EthqlParser.FilterContext;
-import au.csiro.data61.aap.elf.parsing.EthqlParser.ScopeContext;
+import au.csiro.data61.aap.elf.parsing.BcqlParser.DocumentContext;
+import au.csiro.data61.aap.elf.parsing.BcqlParser.FilterContext;
+import au.csiro.data61.aap.elf.parsing.BcqlParser.ScopeContext;
 
 /**
  * FilterCombinationAnalyzer

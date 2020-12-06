@@ -1,5 +1,6 @@
 package au.csiro.data61.aap.elf;
 
+import au.csiro.data61.aap.elf.parsing.BcqlListener;
 import au.csiro.data61.aap.elf.util.CompositeListenerException;
 import org.antlr.v4.runtime.tree.ParseTree;
 import org.antlr.v4.runtime.tree.ParseTreeWalker;
@@ -7,7 +8,6 @@ import org.antlr.v4.runtime.tree.ParseTreeWalker;
 import au.csiro.data61.aap.elf.configuration.EthqlProgramComposer;
 import au.csiro.data61.aap.elf.core.ProgramState;
 import au.csiro.data61.aap.elf.core.filters.Program;
-import au.csiro.data61.aap.elf.parsing.EthqlListener;
 import au.csiro.data61.aap.elf.parsing.VariableExistenceAnalyzer;
 import au.csiro.data61.aap.elf.util.CompositeEthqlListener;
 
@@ -20,7 +20,7 @@ public class Extractor {
 
         final ParseTree parseTree = Validator.createParseTree(ethqlFilepath);
 
-        final CompositeEthqlListener<EthqlListener> rootListener = new CompositeEthqlListener<>();
+        final CompositeEthqlListener<BcqlListener> rootListener = new CompositeEthqlListener<>();
         final VariableExistenceAnalyzer analyzer = new VariableExistenceAnalyzer();
         rootListener.addListener(analyzer);
         final EthqlProgramComposer builder = new EthqlProgramComposer(analyzer);

@@ -5,18 +5,17 @@ import java.util.List;
 import java.util.function.BiConsumer;
 import java.util.stream.Stream;
 
-import au.csiro.data61.aap.elf.parsing.EthqlParser.*;
+import au.csiro.data61.aap.elf.parsing.BcqlListener;
+import au.csiro.data61.aap.elf.parsing.BcqlParser.*;
 import org.antlr.v4.runtime.ParserRuleContext;
 import org.antlr.v4.runtime.tree.ErrorNode;
 import org.antlr.v4.runtime.tree.TerminalNode;
 
-import au.csiro.data61.aap.elf.parsing.EthqlListener;
-
 /**
- * CompositeEthqlListener
+ * CompositeBcqlListener
  */
-public class CompositeEthqlListener<T extends EthqlListener> implements EthqlListener {
-    private final List<T> analyzers;
+public class CompositeEthqlListener<T extends BcqlListener> implements BcqlListener {
+    private List<T> analyzers;
 
     public CompositeEthqlListener() {
         this.analyzers = new LinkedList<>();
@@ -33,552 +32,552 @@ public class CompositeEthqlListener<T extends EthqlListener> implements EthqlLis
         return this.analyzers.stream();
     }
 
-    private <S> void notifyListener(BiConsumer<EthqlListener, S> consumer, S object) {
+    private <S> void notifyListener(BiConsumer<BcqlListener, S> consumer, S object) {
         this.analyzers.forEach(l -> consumer.accept(l, object));
     }
 
     @Override
     public void visitTerminal(TerminalNode node) {
-        this.notifyListener(EthqlListener::visitTerminal, node);
+        this.notifyListener(BcqlListener::visitTerminal, node);
     }
 
     @Override
     public void visitErrorNode(ErrorNode node) {
-        this.notifyListener(EthqlListener::visitErrorNode, node);
+        this.notifyListener(BcqlListener::visitErrorNode, node);
     }
 
     @Override
     public void enterEveryRule(ParserRuleContext ctx) {
-        this.notifyListener(EthqlListener::enterEveryRule, ctx);
+        this.notifyListener(BcqlListener::enterEveryRule, ctx);
     }
 
     @Override
     public void exitEveryRule(ParserRuleContext ctx) {
-        this.notifyListener(EthqlListener::exitEveryRule, ctx);
+        this.notifyListener(BcqlListener::exitEveryRule, ctx);
     }
 
     @Override
     public void enterDocument(DocumentContext ctx) {
-        this.notifyListener(EthqlListener::enterDocument, ctx);
+        this.notifyListener(BcqlListener::enterDocument, ctx);
     }
 
     @Override
     public void exitDocument(DocumentContext ctx) {
-        this.notifyListener(EthqlListener::exitDocument, ctx);
+        this.notifyListener(BcqlListener::exitDocument, ctx);
     }
 
     @Override
     public void enterConnection(ConnectionContext ctx) {
-        this.notifyListener(EthqlListener::enterConnection, ctx);
+        this.notifyListener(BcqlListener::enterConnection, ctx);
     }
 
     @Override
     public void exitConnection(ConnectionContext ctx) {
-        this.notifyListener(EthqlListener::exitConnection, ctx);
+        this.notifyListener(BcqlListener::exitConnection, ctx);
     }
 
     @Override
     public void enterOutputFolder(OutputFolderContext ctx) {
-        this.notifyListener(EthqlListener::enterOutputFolder, ctx);
+        this.notifyListener(BcqlListener::enterOutputFolder, ctx);
     }
 
     @Override
     public void exitOutputFolder(OutputFolderContext ctx) {
-        this.notifyListener(EthqlListener::exitOutputFolder, ctx);
+        this.notifyListener(BcqlListener::exitOutputFolder, ctx);
     }
 
     @Override
     public void enterStatement(StatementContext ctx) {
-        this.notifyListener(EthqlListener::enterStatement, ctx);
+        this.notifyListener(BcqlListener::enterStatement, ctx);
     }
 
     @Override
     public void exitStatement(StatementContext ctx) {
-        this.notifyListener(EthqlListener::exitStatement, ctx);
+        this.notifyListener(BcqlListener::exitStatement, ctx);
     }
 
     @Override
     public void enterScope(ScopeContext ctx) {
-        this.notifyListener(EthqlListener::enterScope, ctx);
+        this.notifyListener(BcqlListener::enterScope, ctx);
     }
 
     @Override
     public void exitScope(ScopeContext ctx) {
-        this.notifyListener(EthqlListener::exitScope, ctx);
+        this.notifyListener(BcqlListener::exitScope, ctx);
     }
 
     @Override
     public void enterFilter(FilterContext ctx) {
-        this.notifyListener(EthqlListener::enterFilter, ctx);
+        this.notifyListener(BcqlListener::enterFilter, ctx);
     }
 
     @Override
     public void exitFilter(FilterContext ctx) {
-        this.notifyListener(EthqlListener::exitFilter, ctx);
+        this.notifyListener(BcqlListener::exitFilter, ctx);
     }
 
     @Override
     public void enterBlockFilter(BlockFilterContext ctx) {
-        this.notifyListener(EthqlListener::enterBlockFilter, ctx);
+        this.notifyListener(BcqlListener::enterBlockFilter, ctx);
     }
 
     @Override
     public void exitBlockFilter(BlockFilterContext ctx) {
-        this.notifyListener(EthqlListener::exitBlockFilter, ctx);
+        this.notifyListener(BcqlListener::exitBlockFilter, ctx);
     }
 
     @Override
     public void enterBlockNumber(BlockNumberContext ctx) {
-        this.notifyListener(EthqlListener::enterBlockNumber, ctx);
+        this.notifyListener(BcqlListener::enterBlockNumber, ctx);
     }
 
     @Override
     public void exitBlockNumber(BlockNumberContext ctx) {
-        this.notifyListener(EthqlListener::exitBlockNumber, ctx);
+        this.notifyListener(BcqlListener::exitBlockNumber, ctx);
     }
 
     @Override
     public void enterTransactionFilter(TransactionFilterContext ctx) {
-        this.notifyListener(EthqlListener::enterTransactionFilter, ctx);
+        this.notifyListener(BcqlListener::enterTransactionFilter, ctx);
     }
 
     @Override
     public void exitTransactionFilter(TransactionFilterContext ctx) {
-        this.notifyListener(EthqlListener::exitTransactionFilter, ctx);
+        this.notifyListener(BcqlListener::exitTransactionFilter, ctx);
     }
 
     @Override
     public void enterAddressList(AddressListContext ctx) {
-        this.notifyListener(EthqlListener::enterAddressList, ctx);
+        this.notifyListener(BcqlListener::enterAddressList, ctx);
     }
 
     @Override
     public void exitAddressList(AddressListContext ctx) {
-        this.notifyListener(EthqlListener::exitAddressList, ctx);
+        this.notifyListener(BcqlListener::exitAddressList, ctx);
     }
 
     @Override
     public void enterLogEntryFilter(LogEntryFilterContext ctx) {
-        this.notifyListener(EthqlListener::enterLogEntryFilter, ctx);
+        this.notifyListener(BcqlListener::enterLogEntryFilter, ctx);
     }
 
     @Override
     public void exitLogEntryFilter(LogEntryFilterContext ctx) {
-        this.notifyListener(EthqlListener::exitLogEntryFilter, ctx);
+        this.notifyListener(BcqlListener::exitLogEntryFilter, ctx);
     }
 
     @Override
     public void enterLogEntrySignature(LogEntrySignatureContext ctx) {
-        this.notifyListener(EthqlListener::enterLogEntrySignature, ctx);
+        this.notifyListener(BcqlListener::enterLogEntrySignature, ctx);
     }
 
     @Override
     public void exitLogEntrySignature(LogEntrySignatureContext ctx) {
-        this.notifyListener(EthqlListener::exitLogEntrySignature, ctx);
+        this.notifyListener(BcqlListener::exitLogEntrySignature, ctx);
     }
 
     @Override
     public void enterLogEntryParameter(LogEntryParameterContext ctx) {
-        this.notifyListener(EthqlListener::enterLogEntryParameter, ctx);
+        this.notifyListener(BcqlListener::enterLogEntryParameter, ctx);
     }
 
     @Override
     public void exitLogEntryParameter(LogEntryParameterContext ctx) {
-        this.notifyListener(EthqlListener::exitLogEntryParameter, ctx);
+        this.notifyListener(BcqlListener::exitLogEntryParameter, ctx);
     }
 
     @Override
     public void enterSkippableLogEntryParameter(SkippableLogEntryParameterContext ctx) {
-        this.notifyListener(EthqlListener::enterSkippableLogEntryParameter, ctx);
+        this.notifyListener(BcqlListener::enterSkippableLogEntryParameter, ctx);
     }
 
     @Override
     public void exitSkippableLogEntryParameter(SkippableLogEntryParameterContext ctx) {
-        this.notifyListener(EthqlListener::exitSkippableLogEntryParameter, ctx);
+        this.notifyListener(BcqlListener::exitSkippableLogEntryParameter, ctx);
     }
 
     @Override
     public void enterGenericFilter(GenericFilterContext ctx) {
-        this.notifyListener(EthqlListener::enterGenericFilter, ctx);
+        this.notifyListener(BcqlListener::enterGenericFilter, ctx);
     }
 
     @Override
     public void exitGenericFilter(GenericFilterContext ctx) {
-        this.notifyListener(EthqlListener::exitGenericFilter, ctx);
+        this.notifyListener(BcqlListener::exitGenericFilter, ctx);
     }
 
     @Override
     public void enterEmitStatement(EmitStatementContext ctx) {
-        this.notifyListener(EthqlListener::enterEmitStatement, ctx);
+        this.notifyListener(BcqlListener::enterEmitStatement, ctx);
     }
 
     @Override
     public void exitEmitStatement(EmitStatementContext ctx) {
-        this.notifyListener(EthqlListener::exitEmitStatement, ctx);
+        this.notifyListener(BcqlListener::exitEmitStatement, ctx);
     }
 
     @Override
     public void enterEmitStatementCsv(EmitStatementCsvContext ctx) {
-        this.notifyListener(EthqlListener::enterEmitStatementCsv, ctx);
+        this.notifyListener(BcqlListener::enterEmitStatementCsv, ctx);
     }
 
     @Override
     public void exitEmitStatementCsv(EmitStatementCsvContext ctx) {
-        this.notifyListener(EthqlListener::exitEmitStatementCsv, ctx);
+        this.notifyListener(BcqlListener::exitEmitStatementCsv, ctx);
     }
 
     @Override
     public void enterNamedEmitVariable(NamedEmitVariableContext ctx) {
-        this.notifyListener(EthqlListener::enterNamedEmitVariable, ctx);
+        this.notifyListener(BcqlListener::enterNamedEmitVariable, ctx);
     }
 
     @Override
     public void exitNamedEmitVariable(NamedEmitVariableContext ctx) {
-        this.notifyListener(EthqlListener::exitNamedEmitVariable, ctx);
+        this.notifyListener(BcqlListener::exitNamedEmitVariable, ctx);
     }
 
     @Override
     public void enterEmitStatementLog(EmitStatementLogContext ctx) {
-        this.notifyListener(EthqlListener::enterEmitStatementLog, ctx);
+        this.notifyListener(BcqlListener::enterEmitStatementLog, ctx);
     }
 
     @Override
     public void exitEmitStatementLog(EmitStatementLogContext ctx) {
-        this.notifyListener(EthqlListener::exitEmitStatementLog, ctx);
+        this.notifyListener(BcqlListener::exitEmitStatementLog, ctx);
     }
 
     @Override
     public void enterXesEmitVariable(XesEmitVariableContext ctx) {
-        this.notifyListener(EthqlListener::enterXesEmitVariable, ctx);
+        this.notifyListener(BcqlListener::enterXesEmitVariable, ctx);
 
     }
 
     @Override
     public void exitXesEmitVariable(XesEmitVariableContext ctx) {
-        this.notifyListener(EthqlListener::exitXesEmitVariable, ctx);
+        this.notifyListener(BcqlListener::exitXesEmitVariable, ctx);
     }
 
     @Override
     public void enterXesTypes(XesTypesContext ctx) {
-        this.notifyListener(EthqlListener::enterXesTypes, ctx);
+        this.notifyListener(BcqlListener::enterXesTypes, ctx);
 
     }
 
     @Override
     public void exitXesTypes(XesTypesContext ctx) {
-        this.notifyListener(EthqlListener::exitXesTypes, ctx);
+        this.notifyListener(BcqlListener::exitXesTypes, ctx);
     }
 
     @Override
     public void enterExpressionStatement(ExpressionStatementContext ctx) {
-        this.notifyListener(EthqlListener::enterExpressionStatement, ctx);
+        this.notifyListener(BcqlListener::enterExpressionStatement, ctx);
 
     }
 
     @Override
     public void exitExpressionStatement(ExpressionStatementContext ctx) {
-        this.notifyListener(EthqlListener::exitExpressionStatement, ctx);
+        this.notifyListener(BcqlListener::exitExpressionStatement, ctx);
     }
 
     @Override
     public void enterVariableDeclarationStatement(VariableDeclarationStatementContext ctx) {
-        this.notifyListener(EthqlListener::enterVariableDeclarationStatement, ctx);
+        this.notifyListener(BcqlListener::enterVariableDeclarationStatement, ctx);
 
     }
 
     @Override
     public void exitVariableDeclarationStatement(VariableDeclarationStatementContext ctx) {
-        this.notifyListener(EthqlListener::exitVariableDeclarationStatement, ctx);
+        this.notifyListener(BcqlListener::exitVariableDeclarationStatement, ctx);
     }
 
     @Override
     public void enterVariableAssignmentStatement(VariableAssignmentStatementContext ctx) {
-        this.notifyListener(EthqlListener::enterVariableAssignmentStatement, ctx);
+        this.notifyListener(BcqlListener::enterVariableAssignmentStatement, ctx);
 
     }
 
     @Override
     public void exitVariableAssignmentStatement(VariableAssignmentStatementContext ctx) {
-        this.notifyListener(EthqlListener::exitVariableAssignmentStatement, ctx);
+        this.notifyListener(BcqlListener::exitVariableAssignmentStatement, ctx);
     }
 
     @Override
     public void enterStatementExpression(StatementExpressionContext ctx) {
-        this.notifyListener(EthqlListener::enterStatementExpression, ctx);
+        this.notifyListener(BcqlListener::enterStatementExpression, ctx);
     }
 
     @Override
     public void exitStatementExpression(StatementExpressionContext ctx) {
-        this.notifyListener(EthqlListener::exitStatementExpression, ctx);
+        this.notifyListener(BcqlListener::exitStatementExpression, ctx);
     }
 
     @Override
     public void enterComparators(ComparatorsContext ctx) {
-        this.notifyListener(EthqlListener::enterComparators, ctx);
+        this.notifyListener(BcqlListener::enterComparators, ctx);
     }
 
     @Override
     public void exitComparators(ComparatorsContext ctx) {
-        this.notifyListener(EthqlListener::exitComparators, ctx);
+        this.notifyListener(BcqlListener::exitComparators, ctx);
     }
 
     @Override
     public void enterMethodInvocation(MethodInvocationContext ctx) {
-        this.notifyListener(EthqlListener::enterMethodInvocation, ctx);
+        this.notifyListener(BcqlListener::enterMethodInvocation, ctx);
     }
 
     @Override
     public void exitMethodInvocation(MethodInvocationContext ctx) {
-        this.notifyListener(EthqlListener::exitMethodInvocation, ctx);
+        this.notifyListener(BcqlListener::exitMethodInvocation, ctx);
     }
 
     @Override
     public void enterVariableName(VariableNameContext ctx) {
-        this.notifyListener(EthqlListener::enterVariableName, ctx);
+        this.notifyListener(BcqlListener::enterVariableName, ctx);
     }
 
     @Override
     public void exitVariableName(VariableNameContext ctx) {
-        this.notifyListener(EthqlListener::exitVariableName, ctx);
+        this.notifyListener(BcqlListener::exitVariableName, ctx);
     }
 
     @Override
     public void enterLiteral(LiteralContext ctx) {
-        this.notifyListener(EthqlListener::enterLiteral, ctx);
+        this.notifyListener(BcqlListener::enterLiteral, ctx);
     }
 
     @Override
     public void exitLiteral(LiteralContext ctx) {
-        this.notifyListener(EthqlListener::exitLiteral, ctx);
+        this.notifyListener(BcqlListener::exitLiteral, ctx);
     }
 
     @Override
     public void enterArrayLiteral(ArrayLiteralContext ctx) {
-        this.notifyListener(EthqlListener::enterArrayLiteral, ctx);
+        this.notifyListener(BcqlListener::enterArrayLiteral, ctx);
     }
 
     @Override
     public void exitArrayLiteral(ArrayLiteralContext ctx) {
-        this.notifyListener(EthqlListener::exitArrayLiteral, ctx);
+        this.notifyListener(BcqlListener::exitArrayLiteral, ctx);
     }
 
     @Override
     public void enterStringArrayLiteral(StringArrayLiteralContext ctx) {
-        this.notifyListener(EthqlListener::enterStringArrayLiteral, ctx);
+        this.notifyListener(BcqlListener::enterStringArrayLiteral, ctx);
     }
 
     @Override
     public void exitStringArrayLiteral(StringArrayLiteralContext ctx) {
-        this.notifyListener(EthqlListener::exitStringArrayLiteral, ctx);
+        this.notifyListener(BcqlListener::exitStringArrayLiteral, ctx);
     }
 
     @Override
     public void enterIntArrayLiteral(IntArrayLiteralContext ctx) {
-        this.notifyListener(EthqlListener::enterIntArrayLiteral, ctx);
+        this.notifyListener(BcqlListener::enterIntArrayLiteral, ctx);
     }
 
     @Override
     public void exitIntArrayLiteral(IntArrayLiteralContext ctx) {
-        this.notifyListener(EthqlListener::exitIntArrayLiteral, ctx);
+        this.notifyListener(BcqlListener::exitIntArrayLiteral, ctx);
     }
 
     @Override
     public void enterBooleanArrayLiteral(BooleanArrayLiteralContext ctx) {
-        this.notifyListener(EthqlListener::enterBooleanArrayLiteral, ctx);
+        this.notifyListener(BcqlListener::enterBooleanArrayLiteral, ctx);
     }
 
     @Override
     public void exitBooleanArrayLiteral(BooleanArrayLiteralContext ctx) {
-        this.notifyListener(EthqlListener::exitBooleanArrayLiteral, ctx);
+        this.notifyListener(BcqlListener::exitBooleanArrayLiteral, ctx);
     }
 
     @Override
     public void enterBytesArrayLiteral(BytesArrayLiteralContext ctx) {
-        this.notifyListener(EthqlListener::enterBytesArrayLiteral, ctx);
+        this.notifyListener(BcqlListener::enterBytesArrayLiteral, ctx);
     }
 
     @Override
     public void exitBytesArrayLiteral(BytesArrayLiteralContext ctx) {
-        this.notifyListener(EthqlListener::exitBytesArrayLiteral, ctx);
+        this.notifyListener(BcqlListener::exitBytesArrayLiteral, ctx);
     }
 
     @Override
     public void enterSolTypeRule(SolTypeRuleContext ctx) {
-        this.notifyListener(EthqlListener::enterSolTypeRule, ctx);
+        this.notifyListener(BcqlListener::enterSolTypeRule, ctx);
     }
 
     @Override
     public void exitSolTypeRule(SolTypeRuleContext ctx) {
-        this.notifyListener(EthqlListener::exitSolTypeRule, ctx);
+        this.notifyListener(BcqlListener::exitSolTypeRule, ctx);
     }
 
     @Override
     public void enterSolType(SolTypeContext ctx) {
-        this.notifyListener(EthqlListener::enterSolType, ctx);
+        this.notifyListener(BcqlListener::enterSolType, ctx);
     }
 
     @Override
     public void exitSolType(SolTypeContext ctx) {
-        this.notifyListener(EthqlListener::exitSolType, ctx);
+        this.notifyListener(BcqlListener::exitSolType, ctx);
     }
 
     @Override
     public void enterValueExpression(ValueExpressionContext ctx) {
-        this.notifyListener(EthqlListener::enterValueExpression, ctx);
+        this.notifyListener(BcqlListener::enterValueExpression, ctx);
     }
 
     @Override
     public void exitValueExpression(ValueExpressionContext ctx) {
-        this.notifyListener(EthqlListener::exitValueExpression, ctx);
+        this.notifyListener(BcqlListener::exitValueExpression, ctx);
     }
 
     @Override
     public void enterMethodStatement(MethodStatementContext ctx) {
-        this.notifyListener(EthqlListener::enterMethodStatement, ctx);
+        this.notifyListener(BcqlListener::enterMethodStatement, ctx);
     }
 
     @Override
     public void exitMethodStatement(MethodStatementContext ctx) {
-        this.notifyListener(EthqlListener::exitMethodStatement, ctx);
+        this.notifyListener(BcqlListener::exitMethodStatement, ctx);
     }
 
     @Override
     public void enterEmitStatementXesTrace(EmitStatementXesTraceContext ctx) {
-        this.notifyListener(EthqlListener::enterEmitStatementXesTrace, ctx);
+        this.notifyListener(BcqlListener::enterEmitStatementXesTrace, ctx);
     }
 
     @Override
     public void exitEmitStatementXesTrace(EmitStatementXesTraceContext ctx) {
-        this.notifyListener(EthqlListener::exitEmitStatementXesTrace, ctx);
+        this.notifyListener(BcqlListener::exitEmitStatementXesTrace, ctx);
     }
 
     @Override
     public void enterEmitStatementXesEvent(EmitStatementXesEventContext ctx) {
-        this.notifyListener(EthqlListener::enterEmitStatementXesEvent, ctx);
+        this.notifyListener(BcqlListener::enterEmitStatementXesEvent, ctx);
     }
 
     @Override
     public void exitEmitStatementXesEvent(EmitStatementXesEventContext ctx) {
-        this.notifyListener(EthqlListener::exitEmitStatementXesEvent, ctx);
+        this.notifyListener(BcqlListener::exitEmitStatementXesEvent, ctx);
     }
 
     @Override
     public void enterConditionalExpression(ConditionalExpressionContext ctx) {
-        this.notifyListener(EthqlListener::enterConditionalExpression, ctx);
+        this.notifyListener(BcqlListener::enterConditionalExpression, ctx);
     }
 
     @Override
     public void exitConditionalExpression(ConditionalExpressionContext ctx) {
-        this.notifyListener(EthqlListener::exitConditionalExpression, ctx);
+        this.notifyListener(BcqlListener::exitConditionalExpression, ctx);
     }
 
     @Override
     public void enterConditionalOrExpression(ConditionalOrExpressionContext ctx) {
-        this.notifyListener(EthqlListener::enterConditionalOrExpression, ctx);
+        this.notifyListener(BcqlListener::enterConditionalOrExpression, ctx);
     }
 
     @Override
     public void exitConditionalOrExpression(ConditionalOrExpressionContext ctx) {
-        this.notifyListener(EthqlListener::exitConditionalOrExpression, ctx);
+        this.notifyListener(BcqlListener::exitConditionalOrExpression, ctx);
     }
 
     @Override
     public void enterConditionalAndExpression(ConditionalAndExpressionContext ctx) {
-        this.notifyListener(EthqlListener::enterConditionalAndExpression, ctx);
+        this.notifyListener(BcqlListener::enterConditionalAndExpression, ctx);
     }
 
     @Override
     public void exitConditionalAndExpression(ConditionalAndExpressionContext ctx) {
-        this.notifyListener(EthqlListener::exitConditionalAndExpression, ctx);
+        this.notifyListener(BcqlListener::exitConditionalAndExpression, ctx);
     }
 
     @Override
     public void enterConditionalComparisonExpression(ConditionalComparisonExpressionContext ctx) {
-        this.notifyListener(EthqlListener::enterConditionalComparisonExpression, ctx);
+        this.notifyListener(BcqlListener::enterConditionalComparisonExpression, ctx);
     }
 
     @Override
     public void exitConditionalComparisonExpression(ConditionalComparisonExpressionContext ctx) {
-        this.notifyListener(EthqlListener::exitConditionalComparisonExpression, ctx);
+        this.notifyListener(BcqlListener::exitConditionalComparisonExpression, ctx);
     }
 
     @Override
     public void enterConditionalNotExpression(ConditionalNotExpressionContext ctx) {
-        this.notifyListener(EthqlListener::enterConditionalNotExpression, ctx);
+        this.notifyListener(BcqlListener::enterConditionalNotExpression, ctx);
     }
 
     @Override
     public void exitConditionalNotExpression(ConditionalNotExpressionContext ctx) {
-        this.notifyListener(EthqlListener::exitConditionalNotExpression, ctx);
+        this.notifyListener(BcqlListener::exitConditionalNotExpression, ctx);
     }
 
     @Override
     public void enterConditionalPrimaryExpression(ConditionalPrimaryExpressionContext ctx) {
-        this.notifyListener(EthqlListener::enterConditionalPrimaryExpression, ctx);
+        this.notifyListener(BcqlListener::enterConditionalPrimaryExpression, ctx);
     }
 
     @Override
     public void exitConditionalPrimaryExpression(ConditionalPrimaryExpressionContext ctx) {
-        this.notifyListener(EthqlListener::exitConditionalPrimaryExpression, ctx);
+        this.notifyListener(BcqlListener::exitConditionalPrimaryExpression, ctx);
     }
 
     @Override
     public void enterSmartContractFilter(SmartContractFilterContext ctx) {
-        this.notifyListener(EthqlListener::enterSmartContractFilter, ctx);
+        this.notifyListener(BcqlListener::enterSmartContractFilter, ctx);
     }
 
     @Override
     public void exitSmartContractFilter(SmartContractFilterContext ctx) {
-        this.notifyListener(EthqlListener::exitSmartContractFilter, ctx);
+        this.notifyListener(BcqlListener::exitSmartContractFilter, ctx);
     }
 
     @Override
     public void enterSmartContractQuery(SmartContractQueryContext ctx) {
-        this.notifyListener(EthqlListener::enterSmartContractQuery, ctx);
+        this.notifyListener(BcqlListener::enterSmartContractQuery, ctx);
     }
 
     @Override
     public void exitSmartContractQuery(SmartContractQueryContext ctx) {
-        this.notifyListener(EthqlListener::exitSmartContractQuery, ctx);
+        this.notifyListener(BcqlListener::exitSmartContractQuery, ctx);
     }
 
     @Override
     public void enterPublicVariableQuery(PublicVariableQueryContext ctx) {
-        this.notifyListener(EthqlListener::enterPublicVariableQuery, ctx);
+        this.notifyListener(BcqlListener::enterPublicVariableQuery, ctx);
     }
 
     @Override
     public void exitPublicVariableQuery(PublicVariableQueryContext ctx) {
-        this.notifyListener(EthqlListener::exitPublicVariableQuery, ctx);
+        this.notifyListener(BcqlListener::exitPublicVariableQuery, ctx);
     }
 
     @Override
     public void enterPublicFunctionQuery(PublicFunctionQueryContext ctx) {
-        this.notifyListener(EthqlListener::enterPublicFunctionQuery, ctx);
+        this.notifyListener(BcqlListener::enterPublicFunctionQuery, ctx);
     }
 
     @Override
     public void exitPublicFunctionQuery(PublicFunctionQueryContext ctx) {
-        this.notifyListener(EthqlListener::exitPublicFunctionQuery, ctx);
+        this.notifyListener(BcqlListener::exitPublicFunctionQuery, ctx);
     }
 
     @Override
     public void enterSmartContractQueryParameter(SmartContractQueryParameterContext ctx) {
-        this.notifyListener(EthqlListener::enterSmartContractQueryParameter, ctx);
+        this.notifyListener(BcqlListener::enterSmartContractQueryParameter, ctx);
     }
 
     @Override
     public void exitSmartContractQueryParameter(SmartContractQueryParameterContext ctx) {
-        this.notifyListener(EthqlListener::exitSmartContractQueryParameter, ctx);
+        this.notifyListener(BcqlListener::exitSmartContractQueryParameter, ctx);
     }
 
     @Override
     public void enterSmartContractParameter(SmartContractParameterContext ctx) {
-        this.notifyListener(EthqlListener::enterSmartContractParameter, ctx);
+        this.notifyListener(BcqlListener::enterSmartContractParameter, ctx);
     }
 
     @Override
     public void exitSmartContractParameter(SmartContractParameterContext ctx) {
-        this.notifyListener(EthqlListener::exitSmartContractParameter, ctx);
+        this.notifyListener(BcqlListener::exitSmartContractParameter, ctx);
     }
 }
