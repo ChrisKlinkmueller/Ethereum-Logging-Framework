@@ -21,14 +21,13 @@ import BcqlUtil, BcqlLexemes;
  *  It can include an arbitrary number of statements and the explicit EOF defines that the entire file is parsed. */
 
 document
-    : (connection outputFolder)? statement* EOF
+    : (blockchain connection outputFolder)? statement* EOF
     ;
 
 
-// TODO: add in the above statement
-//blockchainType
-//    : KEY_SET KEY_BLOCKCHAIN STRING_LITERAL
-//    ;
+blockchain
+    : KEY_SET KEY_BLOCKCHAIN literal
+    ;
 
 /** The entry parser rule enters the manifest file, a source and destination directory should be specified.
  *  It can include an arbitrary number of statements and the explicit EOF defines that the entire file is parsed. */

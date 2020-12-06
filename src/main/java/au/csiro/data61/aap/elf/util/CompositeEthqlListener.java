@@ -67,6 +67,16 @@ public class CompositeEthqlListener<T extends BcqlListener> implements BcqlListe
     }
 
     @Override
+    public void enterBlockchain(BlockchainContext ctx) {
+        this.notifyListener(BcqlListener::enterBlockchain, ctx);
+    }
+
+    @Override
+    public void exitBlockchain(BlockchainContext ctx) {
+        this.notifyListener(BcqlListener::exitBlockchain, ctx);
+    }
+
+    @Override
     public void enterConnection(ConnectionContext ctx) {
         this.notifyListener(BcqlListener::enterConnection, ctx);
     }
