@@ -27,7 +27,7 @@ public class ValidatorSemanticSpec {
             for (int i = 0; i < errors.size(); i++) {
                 assertEquals(errors.get(i).getErrorMessage(), errorMessages.get(i));
             }
-        } catch (EthqlProcessingException e) {
+        } catch (BcqlProcessingException e) {
             final String message = String.format(
                 "Processing of script '%s' should not have resulted in exception, but in error messages '%s'.",
                 script,
@@ -37,7 +37,7 @@ public class ValidatorSemanticSpec {
         }
     }
 
-    private List<EthqlProcessingError> validate(String script) throws EthqlProcessingException {
+    private List<EthqlProcessingError> validate(String script) throws BcqlProcessingException {
         return this.validator.analyzeScript(new ByteArrayInputStream(script.getBytes()));
     }
 
@@ -47,7 +47,7 @@ public class ValidatorSemanticSpec {
         try {
             final List<EthqlProcessingError> errors = this.validator.analyzeScript(url.getFile());
             assertEquals(0, errors.size());
-        } catch (EthqlProcessingException ex) {
+        } catch (BcqlProcessingException ex) {
             fail(ex);
         }
     }
@@ -62,7 +62,7 @@ public class ValidatorSemanticSpec {
         try {
             this.validator.analyzeScript(file);
             fail();
-        } catch (EthqlProcessingException ex) {
+        } catch (BcqlProcessingException ex) {
             final String message = String.format("Invalid file path: '%s'.", file);
             assertEquals(message, ex.getMessage());
         }

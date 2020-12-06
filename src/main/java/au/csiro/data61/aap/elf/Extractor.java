@@ -1,39 +1,39 @@
 package au.csiro.data61.aap.elf;
 
-import au.csiro.data61.aap.elf.parsing.BcqlListener;
-import au.csiro.data61.aap.elf.util.CompositeListenerException;
+import au.csiro.data61.aap.elf.util.RootListenerException;
 import org.antlr.v4.runtime.tree.ParseTree;
 import org.antlr.v4.runtime.tree.ParseTreeWalker;
 
-import au.csiro.data61.aap.elf.configuration.EthqlProgramComposer;
+import au.csiro.data61.aap.elf.configuration.EthereumListener;
 import au.csiro.data61.aap.elf.core.ProgramState;
 import au.csiro.data61.aap.elf.core.filters.Program;
-import au.csiro.data61.aap.elf.parsing.VariableExistenceAnalyzer;
-import au.csiro.data61.aap.elf.util.CompositeEthqlListener;
+import au.csiro.data61.aap.elf.parsing.VariableExistenceListener;
+import au.csiro.data61.aap.elf.util.RootListener;
 
 /**
  * Extractor
  */
 public class Extractor {
 
-    public void extractData(final String ethqlFilepath) throws EthqlProcessingException, CompositeListenerException {
+    public void extractData(final String bcqlFilepath) throws BcqlProcessingException, RootListenerException {
 
-        final ParseTree parseTree = Validator.createParseTree(ethqlFilepath);
+        final ParseTree parseTree = Validator.createParseTree(bcqlFilepath);
 
-        final CompositeEthqlListener<BcqlListener> rootListener = new CompositeEthqlListener<>();
-        final VariableExistenceAnalyzer analyzer = new VariableExistenceAnalyzer();
-        rootListener.addListener(analyzer);
-        final EthqlProgramComposer builder = new EthqlProgramComposer(analyzer);
-        rootListener.addListener(builder);
-
+        final RootListener rootListener = new RootListener();
+        final VariableExistenceListener variableExistenceListener = new VariableExistenceListener();
+        final EthereumListener ethereumListener = new EthereumListener(variableExistenceListener);
         final ParseTreeWalker walker = new ParseTreeWalker();
+
+        rootListener.addListener(variableExistenceListener);
+        rootListener.addListener(ethereumListener);
+
         walker.walk(rootListener, parseTree);
 
-        if (builder.containsError()) {
-            throw new EthqlProcessingException("Error when configuring the data extraction.", builder.getError());
+        if (ethereumListener.containsError()) {
+            throw new BcqlProcessingException("Error when configuring the data extraction.", ethereumListener.getError());
         }
 
-        final Program program = builder.getProgram();
+        final Program program = ethereumListener.getProgram();
         this.executeProgram(program);
     }
 

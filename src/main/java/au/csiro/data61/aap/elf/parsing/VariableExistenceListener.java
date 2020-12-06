@@ -14,14 +14,14 @@ import au.csiro.data61.aap.elf.parsing.BcqlParser.*;
 /**
  * VariableCollector
  */
-public class VariableExistenceAnalyzer extends SemanticAnalyzer {
+public class VariableExistenceListener extends SemanticAnalyzer {
     private final Stack<List<Variable>> visibleVariables;
 
-    public VariableExistenceAnalyzer() {
+    public VariableExistenceListener() {
         this(new ErrorCollector());
     }
 
-    public VariableExistenceAnalyzer(ErrorCollector errorCollector) {
+    public VariableExistenceListener(ErrorCollector errorCollector) {
         super(errorCollector);
 
         this.visibleVariables = new Stack<>();

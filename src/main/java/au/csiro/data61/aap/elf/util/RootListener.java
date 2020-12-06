@@ -3,37 +3,41 @@ package au.csiro.data61.aap.elf.util;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.function.BiConsumer;
-import java.util.stream.Stream;
 
+import au.csiro.data61.aap.elf.parsing.BcqlBaseListener;
 import au.csiro.data61.aap.elf.parsing.BcqlListener;
 import au.csiro.data61.aap.elf.parsing.BcqlParser.*;
 import org.antlr.v4.runtime.ParserRuleContext;
 import org.antlr.v4.runtime.tree.ErrorNode;
+import org.antlr.v4.runtime.tree.ParseTreeWalker;
 import org.antlr.v4.runtime.tree.TerminalNode;
 
 /**
- * CompositeBcqlListener
+ * Forwards callbacks from ParseTreeWalker to every added BcqlListener.
+ *
+ * @see BcqlListener
+ * @see ParseTreeWalker
  */
-public class CompositeEthqlListener<T extends BcqlListener> implements BcqlListener {
-    private List<T> analyzers;
+public class RootListener implements BcqlListener {
+    private final List<BcqlBaseListener> listeners;
 
-    public CompositeEthqlListener() {
-        this.analyzers = new LinkedList<>();
+    public RootListener() {
+        this.listeners = new LinkedList<>();
     }
 
-    public void addListener(T listener) throws CompositeListenerException {
+    public void addListener(BcqlBaseListener listener) throws RootListenerException {
         if (listener == null) {
-            throw new CompositeListenerException("Listener is null");
+            throw new RootListenerException("Listener is null");
         }
-        this.analyzers.add(listener);
+        this.listeners.add(listener);
     }
 
-    public Stream<T> listenerStream() {
-        return this.analyzers.stream();
+    public List<BcqlBaseListener> getListeners() {
+        return this.listeners;
     }
 
     private <S> void notifyListener(BiConsumer<BcqlListener, S> consumer, S object) {
-        this.analyzers.forEach(l -> consumer.accept(l, object));
+        this.listeners.forEach(l -> consumer.accept(l, object));
     }
 
     @Override

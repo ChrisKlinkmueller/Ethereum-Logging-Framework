@@ -1,18 +1,16 @@
 package au.csiro.data61.aap.elf.configuration
 
-import au.csiro.data61.aap.elf.EthqlProcessingException
+import au.csiro.data61.aap.elf.BcqlProcessingException
 import au.csiro.data61.aap.elf.EthqlProcessingResult
 import au.csiro.data61.aap.elf.Validator
-import au.csiro.data61.aap.elf.core.ProgramState
 import au.csiro.data61.aap.elf.core.filters.Program
-import au.csiro.data61.aap.elf.parsing.VariableExistenceAnalyzer
+import au.csiro.data61.aap.elf.parsing.VariableExistenceListener
 import org.antlr.v4.runtime.tree.ParseTree
 import org.antlr.v4.runtime.tree.ParseTreeWalker
 import spock.lang.Specification
-import spock.lang.Unroll
 
-class EthqlProgramComposerSpec extends Specification {
-    EthqlProgramComposer composer = new EthqlProgramComposer(Mock(VariableExistenceAnalyzer))
+class EthereumListenerSpec extends Specification {
+    EthereumListener composer = new EthereumListener(Mock(VariableExistenceListener))
 
     /*
     Fails
@@ -49,7 +47,7 @@ class EthqlProgramComposerSpec extends Specification {
     }
     */
 
-    static Program program(String script, EthqlProgramComposer composer) {
+    static Program program(String script, EthereumListener composer) {
         Validator validator = new Validator()
         EthqlProcessingResult<ParseTree> result = validator.parseScript(new ByteArrayInputStream(script.getBytes()))
         assert result.isSuccessful()
@@ -60,7 +58,7 @@ class EthqlProgramComposerSpec extends Specification {
         walker.walk(composer, tree)
 
         if (composer.containsError()) {
-            throw new EthqlProcessingException("Error when configuring the data extraction.", composer.getError())
+            throw new BcqlProcessingException("Error when configuring the data extraction.", composer.getError())
         }
 
         composer.getProgram()

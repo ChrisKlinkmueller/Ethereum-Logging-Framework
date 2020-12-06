@@ -1,7 +1,6 @@
 package au.csiro.data61.aap.elf;
 
-import au.csiro.data61.aap.elf.configuration.EthqlProgramComposer;
-import au.csiro.data61.aap.elf.util.CompositeListenerException;
+import au.csiro.data61.aap.elf.util.RootListenerException;
 
 import java.io.File;
 import java.util.List;
@@ -65,7 +64,7 @@ public class ElfApp {
         try {
             final String generatedCode = generator.generateLoggingFunctionality(filepath);
             LOGGER.log(Level.INFO, generatedCode);
-        } catch (EthqlProcessingException ex) {
+        } catch (BcqlProcessingException ex) {
             ex.printStackTrace(System.err);
         }
     }
@@ -75,9 +74,9 @@ public class ElfApp {
 
         try {
             extractor.extractData(filepath);
-        } catch (EthqlProcessingException ex) {
+        } catch (BcqlProcessingException ex) {
             ex.printStackTrace(System.err);
-        } catch (CompositeListenerException e) {
+        } catch (RootListenerException e) {
             e.printStackTrace();
         }
     }
@@ -88,7 +87,7 @@ public class ElfApp {
         try {
             final List<EthqlProcessingError> errors = validator.analyzeScript(filepath);
             printValidationResult(errors);
-        } catch (EthqlProcessingException ex) {
+        } catch (BcqlProcessingException ex) {
             ex.printStackTrace(System.err);
         }
     }

@@ -4,7 +4,7 @@ import java.net.URL;
 import java.util.List;
 
 import au.csiro.data61.aap.elf.EthqlProcessingError;
-import au.csiro.data61.aap.elf.EthqlProcessingException;
+import au.csiro.data61.aap.elf.BcqlProcessingException;
 import au.csiro.data61.aap.elf.Validator;
 
 /**
@@ -27,7 +27,7 @@ public class ValidatorTest {
                     String.format("At line %s, col %s: %s", error.getLine(), error.getColumn(), error.getErrorMessage())
                 )
             );
-        } catch (EthqlProcessingException e) {
+        } catch (BcqlProcessingException e) {
             e.printStackTrace();
         }
 

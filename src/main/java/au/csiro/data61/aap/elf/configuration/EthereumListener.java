@@ -14,20 +14,17 @@ import au.csiro.data61.aap.elf.parsing.BcqlParser.*;
 import au.csiro.data61.aap.elf.util.TypeUtils;
 import org.antlr.v4.runtime.tree.ParseTree;
 
-/**
- * EthqlProgramComposer
- */
-public class EthqlProgramComposer extends BcqlBaseListener {
-    private static final Logger LOGGER = Logger.getLogger(EthqlProgramComposer.class.getName());
+public class EthereumListener extends BaseBlockchainListener {
+    private static final Logger LOGGER = Logger.getLogger(EthereumListener.class.getName());
 
     private final SpecificationComposer composer;
-    private final VariableExistenceAnalyzer variableAnalyzer;
+    private final VariableExistenceListener variableAnalyzer;
 
     private final Deque<Object> genericFilterPredicates;
     private BuildException error;
     private Program program;
 
-    public EthqlProgramComposer(VariableExistenceAnalyzer analyzer) {
+    public EthereumListener(VariableExistenceListener analyzer) {
         this.composer = new SpecificationComposer();
         this.variableAnalyzer = analyzer;
         this.genericFilterPredicates = new ArrayDeque<>();
@@ -46,14 +43,15 @@ public class EthqlProgramComposer extends BcqlBaseListener {
     }
 
     @Override
-    public void enterDocument(DocumentContext ctx) {
-        this.handleEthqlElement(ctx, this::prepareProgramBuild);
-    }
-
-    private void prepareProgramBuild(DocumentContext ctx) throws BuildException {
+    public void enterBlockchain(BlockchainContext ctx) {
         LOGGER.info("Prepare Program Build");
         this.error = null;
-        this.composer.prepareProgramBuild();
+        try {
+            this.composer.prepareProgramBuild();
+        } catch (BuildException e) {
+            LOGGER.severe(String.format("Prepare Program Build failed: %s", e.getMessage()));
+            System.exit(1);
+        }
     }
 
     @Override

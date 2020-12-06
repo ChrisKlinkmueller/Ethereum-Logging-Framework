@@ -3,27 +3,27 @@ package au.csiro.data61.aap.elf.parsing;
 import java.util.List;
 import java.util.Objects;
 
-import au.csiro.data61.aap.elf.util.CompositeListenerException;
+import au.csiro.data61.aap.elf.util.RootListenerException;
 import org.antlr.v4.runtime.tree.ParseTree;
 import org.antlr.v4.runtime.tree.ParseTreeWalker;
 
-import au.csiro.data61.aap.elf.util.CompositeEthqlListener;
+import au.csiro.data61.aap.elf.util.RootListener;
 
 /**
  * SemanticAnalysis
  */
-public class SemanticAnalysis extends CompositeEthqlListener<SemanticAnalyzer> {
+public class SemanticAnalysis extends RootListener {
 
     public SemanticAnalysis(ErrorCollector errorCollector) {
         assert errorCollector != null;
         try {
-            final VariableExistenceAnalyzer varAnalyzer = new VariableExistenceAnalyzer(errorCollector);
+            final VariableExistenceListener varAnalyzer = new VariableExistenceListener(errorCollector);
             this.addListener(new FilterNestingAnalyzer(errorCollector));
             this.addListener(new FilterDefinitionAnalyzer(errorCollector, varAnalyzer));
             this.addListener(new EmitAnalyzer(errorCollector, varAnalyzer));
             this.addListener(new ExpressionStatementAnalyzer(errorCollector, varAnalyzer));
             this.addListener(varAnalyzer);
-        } catch (CompositeListenerException e) {
+        } catch (RootListenerException e) {
             e.printStackTrace();
         }
     }
@@ -33,14 +33,18 @@ public class SemanticAnalysis extends CompositeEthqlListener<SemanticAnalyzer> {
         analyzers.forEach(analyzer -> {
             try {
                 this.addListener(analyzer);
-            } catch (CompositeListenerException e) {
+            } catch (RootListenerException e) {
                 e.printStackTrace();
             }
         });
     }
 
     public void analyze(ParseTree parseTree) {
-        this.listenerStream().forEach(SemanticAnalyzer::clear);
+        for (BcqlBaseListener listener : this.getListeners()) {
+            if (listener instanceof SemanticAnalyzer) {
+                ((SemanticAnalyzer) listener).clear();
+            }
+        }
 
         ParseTreeWalker walker = new ParseTreeWalker();
         walker.walk(this, parseTree);

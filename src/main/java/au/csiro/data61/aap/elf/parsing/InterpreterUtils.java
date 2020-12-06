@@ -81,7 +81,7 @@ public class InterpreterUtils {
         return MethodResult.ofResult(syntacticParser);
     }
 
-    public static String determineType(ValueExpressionContext ctx, VariableExistenceAnalyzer varAnalyzer) {
+    public static String determineType(ValueExpressionContext ctx, VariableExistenceListener varAnalyzer) {
         return ctx.literal() != null ? literalType(ctx.literal()) : varAnalyzer.getVariableType(ctx.variableName().getText());
     }
 

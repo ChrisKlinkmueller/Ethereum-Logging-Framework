@@ -29,10 +29,10 @@ import au.csiro.data61.aap.elf.util.TypeUtils;
  */
 public class FilterDefinitionAnalyzer extends SemanticAnalyzer {
     private static final String TYPE_ERROR_FLAG = "TYPE_ERROR";
-    private final VariableExistenceAnalyzer variableAnalyzer;
+    private final VariableExistenceListener variableAnalyzer;
     private final Stack<String> conditionalTypes;
 
-    public FilterDefinitionAnalyzer(final ErrorCollector errorCollector, final VariableExistenceAnalyzer variableAnalyzer) {
+    public FilterDefinitionAnalyzer(final ErrorCollector errorCollector, final VariableExistenceListener variableAnalyzer) {
         super(errorCollector);
         assert variableAnalyzer != null;
         this.variableAnalyzer = variableAnalyzer;
