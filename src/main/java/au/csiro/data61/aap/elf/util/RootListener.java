@@ -2,8 +2,10 @@ package au.csiro.data61.aap.elf.util;
 
 import java.util.LinkedList;
 import java.util.List;
+import java.util.Map;
 import java.util.function.BiConsumer;
 
+import au.csiro.data61.aap.elf.configuration.BaseBlockchainListener;
 import au.csiro.data61.aap.elf.parsing.BcqlBaseListener;
 import au.csiro.data61.aap.elf.parsing.BcqlListener;
 import au.csiro.data61.aap.elf.parsing.BcqlParser.*;
@@ -21,8 +23,17 @@ import org.antlr.v4.runtime.tree.TerminalNode;
 public class RootListener implements BcqlListener {
     private final List<BcqlBaseListener> listeners;
 
+    private Map<String, BaseBlockchainListener> blockchainListeners;
+
+    public BaseBlockchainListener blockchainListener;
+
     public RootListener() {
         this.listeners = new LinkedList<>();
+    }
+
+    public RootListener(Map<String, BaseBlockchainListener> blockchainListeners) {
+        this.listeners = new LinkedList<>();
+        this.blockchainListeners = blockchainListeners;
     }
 
     public void addListener(BcqlBaseListener listener) throws RootListenerException {
@@ -72,6 +83,23 @@ public class RootListener implements BcqlListener {
 
     @Override
     public void enterBlockchain(BlockchainContext ctx) {
+        if (blockchainListeners == null) {
+            return;
+        }
+
+        String blockchainKey = ctx.literal().STRING_LITERAL().getText().replace("\"", "").toLowerCase();
+
+        BaseBlockchainListener targetBlockchainListener = blockchainListeners.get(blockchainKey);
+
+        if (targetBlockchainListener == null) {
+            // TODO: LOGGER pls -> exit program
+
+            return;
+        }
+
+        this.listeners.add(targetBlockchainListener);
+        blockchainListener = targetBlockchainListener;
+
         this.notifyListener(BcqlListener::enterBlockchain, ctx);
     }
 

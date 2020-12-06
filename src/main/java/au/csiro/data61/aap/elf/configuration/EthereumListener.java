@@ -9,7 +9,6 @@ import au.csiro.data61.aap.elf.core.ProgramState;
 import au.csiro.data61.aap.elf.parsing.*;
 import org.antlr.v4.runtime.ParserRuleContext;
 
-import au.csiro.data61.aap.elf.core.filters.Program;
 import au.csiro.data61.aap.elf.parsing.BcqlParser.*;
 import au.csiro.data61.aap.elf.util.TypeUtils;
 import org.antlr.v4.runtime.tree.ParseTree;
@@ -21,25 +20,11 @@ public class EthereumListener extends BaseBlockchainListener {
     private final VariableExistenceListener variableAnalyzer;
 
     private final Deque<Object> genericFilterPredicates;
-    private BuildException error;
-    private Program program;
 
     public EthereumListener(VariableExistenceListener analyzer) {
         this.composer = new SpecificationComposer();
         this.variableAnalyzer = analyzer;
         this.genericFilterPredicates = new ArrayDeque<>();
-    }
-
-    public boolean containsError() {
-        return this.error != null;
-    }
-
-    public BuildException getError() {
-        return this.error;
-    }
-
-    public Program getProgram() {
-        return this.program;
     }
 
     @Override

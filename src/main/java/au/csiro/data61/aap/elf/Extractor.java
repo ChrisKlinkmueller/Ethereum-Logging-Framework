@@ -1,10 +1,10 @@
 package au.csiro.data61.aap.elf;
 
+import au.csiro.data61.aap.elf.configuration.BaseBlockchainListener;
 import au.csiro.data61.aap.elf.util.RootListenerException;
 import org.antlr.v4.runtime.tree.ParseTree;
 import org.antlr.v4.runtime.tree.ParseTreeWalker;
 
-import au.csiro.data61.aap.elf.configuration.EthereumListener;
 import au.csiro.data61.aap.elf.core.ProgramState;
 import au.csiro.data61.aap.elf.core.filters.Program;
 import au.csiro.data61.aap.elf.parsing.VariableExistenceListener;
@@ -19,22 +19,23 @@ public class Extractor {
 
         final ParseTree parseTree = Validator.createParseTree(bcqlFilepath);
 
-        final RootListener rootListener = new RootListener();
-        final VariableExistenceListener variableExistenceListener = new VariableExistenceListener();
-        final EthereumListener ethereumListener = new EthereumListener(variableExistenceListener);
         final ParseTreeWalker walker = new ParseTreeWalker();
 
+        final VariableExistenceListener variableExistenceListener = new VariableExistenceListener();
+
+        final RootListener rootListener = new RootListener(Constants.getBlockchainMap(variableExistenceListener));
+
         rootListener.addListener(variableExistenceListener);
-        rootListener.addListener(ethereumListener);
 
         walker.walk(rootListener, parseTree);
 
-        if (ethereumListener.containsError()) {
-            throw new BcqlProcessingException("Error when configuring the data extraction.", ethereumListener.getError());
+        BaseBlockchainListener blockchainListener = rootListener.blockchainListener;
+
+        if (blockchainListener.containsError()) {
+            throw new BcqlProcessingException("Error when configuring the data extraction.", blockchainListener.getError());
         }
 
-        final Program program = ethereumListener.getProgram();
-        this.executeProgram(program);
+        this.executeProgram(rootListener.blockchainListener.getProgram());
     }
 
     private void executeProgram(Program program) {
