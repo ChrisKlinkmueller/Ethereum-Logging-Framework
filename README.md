@@ -1,16 +1,30 @@
 # Ethereum Logging Framework
 
+## Capabilities
 
-This framework provides advanced logging capabilities for Ethereum applications on top of Web3J / Ethereum's JSON RPC. It consists of four components:
+This framework provides advanced logging capabilities for Ethereum applications on top of Web3J / Ethereum's JSON RP. It is essentially a lightweight ETL engine for extracting and sharing network and application specific data stored on Ethereum with off-chain components. In its current version the framework supports a broad range of use cases, e.g., extraction of data for business-level analysis of DApps, monitoring of relationships and states of individual smart contracts, or event-based streaming of data to other off-chain components.
 
-- Ethql: a query language for data on Ethereum
-- Validator: a component to check ethql documents for specification erros
-- Extractor: a component to extract, transform and format data based on ethql
-- Generator: a component to create efficient logging functionality that can be embedded into smart contracts
+The main features of the framework include:
+- A query language that abstracts from technical details and hence minimizes configuration effort
+- Syntactic and semantic validation of user-defined queries
+- Extraction of standard attributes (e.g., block hash, gas price, gas used, etc.) from all confirmed blocks and of application specific data including log entry parameters, input parameters for transactions, or smart contract states
+- Definition of arbitrary data filters and basic transformation operations
+- A variety of target data formats: CSV, textual log, and XES files
+- Two export modes: batch, i.e., extracting all data at once, vs. streaming, i.e., extracting data block by block, potentially endlessly
+- Generation of cost efficient Solidity code for logging from user defined queries. The generated code compresses log entry attributes before emitting a log entry and it can be manually integrated into custom smart contract code.
+
+## Architecture
+
+The architecture of the framework consists of four components:
+- [Ethql](./src/main/antlr4/au/csiro/data61/aap/elf/parsing/Ethql.g4): a query language for data on Ethereum
+- [Validator](./src/main/java/au/csiro/data61/aap/elf/Validator.java): a component to check ethql documents for specification erros
+- [Extractor](./src/main/java/au/csiro/data61/aap/elf/Extractor.java): a component to extract, transform and format data based on ethql
+- [Generator](./src/main/java/au/csiro/data61/aap/elf/Generator.java): a component to create efficient logging functionality that can be embedded into smart contracts
 
 ![](framework.png)
 
-Example ethql documents include
+## Example Queries
+
 - [AugurContractRegistry.ethql](./src/main/resources/AugurContractRegistry.ethql)
 - [CryptoKitties.ethql](./src/main/resources/CryptoKitties.ethql)
 - [GeneratorShirtExample.ethql](./src/main/resources/GeneratorGitExample.ethql)
@@ -83,5 +97,3 @@ mvn test
 ## License
 
 This software is released under the CSIRO Open Source Software Licence Agreement. Details can be found [LICENSE.md](LICENSE.md). Moreover the third party components distributed with the software and their licenses are listed in [NOTICE.md](NOTICE.md).
-
-
