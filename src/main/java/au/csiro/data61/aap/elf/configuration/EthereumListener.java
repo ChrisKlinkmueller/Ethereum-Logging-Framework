@@ -29,25 +29,28 @@ public class EthereumListener extends BaseBlockchainListener {
 
     @Override
     public void enterBlockchain(BlockchainContext ctx) {
-        LOGGER.info("Prepare Program Build");
+        LOGGER.info("Prepare program build");
         this.error = null;
         try {
             this.composer.prepareProgramBuild();
         } catch (BuildException e) {
-            LOGGER.severe(String.format("Prepare Program Build failed: %s", e.getMessage()));
+            LOGGER.severe(String.format("Preparation of program build failed: %s", e.getMessage()));
             System.exit(1);
         }
     }
 
     @Override
     public void exitDocument(DocumentContext ctx) {
-        LOGGER.info("Build Program");
+        LOGGER.info("Build program");
         this.handleEthqlElement(ctx, this::buildProgram);
     }
 
-    private void buildProgram(DocumentContext ctx) throws BuildException {
+    private void buildProgram(DocumentContext ctx) {
         try {
             this.program = this.composer.buildProgram();
+        } catch (BuildException e) {
+            LOGGER.severe(String.format("Building program failed: %s", e.getMessage()));
+            System.exit(1);
         } finally {
             this.genericFilterPredicates.clear();
         }
@@ -58,20 +61,26 @@ public class EthereumListener extends BaseBlockchainListener {
         this.handleEthqlElement(ctx, this::buildConnection);
     }
 
-    private void buildConnection(ConnectionContext ctx) throws BuildException {
+    private void buildConnection(ConnectionContext ctx) {
         MethodSpecification webConnectionMethod;
 
-        if (ctx.KEY_IPC() != null) {
-            webConnectionMethod = MethodSpecification.of(ProgramState::connectIpcClient);
-        } else {
-            webConnectionMethod = MethodSpecification.of(ProgramState::connectWebsocketClient);
+        try {
+            if (ctx.KEY_IPC() != null) {
+                webConnectionMethod = MethodSpecification.of(ProgramState::connectIpcClient);
+            } else {
+                webConnectionMethod = MethodSpecification.of(ProgramState::connectWebsocketClient);
+            }
+
+            final List<ValueAccessorSpecification> accessors = new ArrayList<>();
+            accessors.add(this.getLiteral(ctx.literal()));
+
+            final MethodCallSpecification call = MethodCallSpecification.of(webConnectionMethod, accessors);
+            this.composer.addInstruction(call);
+
+        } catch (BuildException e) {
+            LOGGER.severe(String.format("Building connection failed: %s", e.getMessage()));
+            System.exit(1);
         }
-
-        final List<ValueAccessorSpecification> accessors = new ArrayList<>();
-        accessors.add(this.getLiteral(ctx.literal()));
-
-        final MethodCallSpecification call = MethodCallSpecification.of(webConnectionMethod, accessors);
-        this.composer.addInstruction(call);
     }
 
     @Override
@@ -79,7 +88,8 @@ public class EthereumListener extends BaseBlockchainListener {
         this.handleEthqlElement(ctx, this::buildOutputFolder);
     }
 
-    private void buildOutputFolder(OutputFolderContext ctx) throws BuildException {
+    private void buildOutputFolder(OutputFolderContext ctx) {
+        try {
         MethodSpecification outputFolderMethod = MethodSpecification.of(ProgramState::setOutputFolder);
 
         final List<ValueAccessorSpecification> accessors = new ArrayList<>();
@@ -87,6 +97,10 @@ public class EthereumListener extends BaseBlockchainListener {
 
         final MethodCallSpecification call = MethodCallSpecification.of(outputFolderMethod, accessors);
         this.composer.addInstruction(call);
+        } catch (BuildException e) {
+            LOGGER.severe(String.format("Building output folder failed: %s", e.getMessage()));
+            System.exit(1);
+        }
     }
 
     @Override
@@ -94,30 +108,46 @@ public class EthereumListener extends BaseBlockchainListener {
         this.handleEthqlElement(ctx, this::prepareBlockFilterBuild);
     }
 
-    private void prepareBlockFilterBuild(BlockFilterContext ctx) throws BuildException {
-        LOGGER.info("Prepare Block Filter Build");
+    private void prepareBlockFilterBuild(BlockFilterContext ctx) {
+        LOGGER.info("Prepare block filter build");
+        try {
         this.composer.prepareBlockRangeBuild();
+        } catch (BuildException e) {
+            LOGGER.severe(String.format("Preparation of block filter build failed: %s", e.getMessage()));
+            System.exit(1);
+        }
     }
 
-    private void buildBlockFilter(BlockFilterContext ctx) throws BuildException {
-        LOGGER.info("Build Block Filter");
+    private void buildBlockFilter(BlockFilterContext ctx) {
+        LOGGER.info("Build block filter");
+        try {
         BlockNumberSpecification from = this.getBlockNumberSpecification(ctx.from);
         BlockNumberSpecification to = this.getBlockNumberSpecification(ctx.to);
         this.composer.buildBlockRange(from, to);
+        } catch (BuildException e) {
+            LOGGER.severe(String.format("Building block filter failed: %s", e.getMessage()));
+            System.exit(1);
+        }
     }
 
-    private BlockNumberSpecification getBlockNumberSpecification(BlockNumberContext ctx) throws BuildException {
-        if (ctx.valueExpression() != null) {
+    private BlockNumberSpecification getBlockNumberSpecification(BlockNumberContext ctx) {
+        try {
+            if (ctx.valueExpression() != null) {
             ValueAccessorSpecification number = this.getValueAccessor(ctx.valueExpression());
             return BlockNumberSpecification.ofBlockNumber(number);
-        } else if (ctx.KEY_CURRENT() != null) {
+            } else if (ctx.KEY_CURRENT() != null) {
             return BlockNumberSpecification.ofCurrent();
-        } else if (ctx.KEY_EARLIEST() != null) {
+            } else if (ctx.KEY_EARLIEST() != null) {
             return BlockNumberSpecification.ofEarliest();
-        } else if (ctx.KEY_CONTINUOUS() != null) {
+            } else if (ctx.KEY_CONTINUOUS() != null) {
             return BlockNumberSpecification.ofContinuous();
-        } else {
+            } else {
             throw new BuildException("Unsupported variable declaration.");
+            }
+        } catch (BuildException e) {
+            LOGGER.severe(String.format("Block number specification failed: %s", e.getMessage()));
+            System.exit(1);
+            return null;
         }
     }
 
@@ -126,16 +156,26 @@ public class EthereumListener extends BaseBlockchainListener {
         this.handleEthqlElement(ctx, this::prepareTransactionFilterBuild);
     }
 
-    private void prepareTransactionFilterBuild(TransactionFilterContext ctx) throws BuildException {
-        LOGGER.info("Prepare Transaction Filter Build");
+    private void prepareTransactionFilterBuild(TransactionFilterContext ctx) {
+        LOGGER.info("Prepare transaction filter build");
+        try {
         this.composer.prepareTransactionFilterBuild();
+        } catch (BuildException e) {
+            LOGGER.severe(String.format("Preparation of transaction filter build failed: %s", e.getMessage()));
+            System.exit(1);
+        }
     }
 
-    private void buildTransactionFilter(TransactionFilterContext ctx) throws BuildException {
+    private void buildTransactionFilter(TransactionFilterContext ctx) {
         LOGGER.info("Build Transaction Filter");
+        try {
         final AddressListSpecification senders = this.getAddressListSpecification(ctx.senders);
         final AddressListSpecification recipients = this.getAddressListSpecification(ctx.recipients);
         this.composer.buildTransactionFilter(senders, recipients);
+        } catch (BuildException e) {
+            LOGGER.severe(String.format("Building transaction filter failed: %s", e.getMessage()));
+            System.exit(1);
+        }
     }
 
     @Override
@@ -143,16 +183,26 @@ public class EthereumListener extends BaseBlockchainListener {
         this.handleEthqlElement(ctx, this::prepareLogEntryFilterBuild);
     }
 
-    private void prepareLogEntryFilterBuild(LogEntryFilterContext ctx) throws BuildException {
-        LOGGER.info("Prepare Log Entry Filter Build");
+    private void prepareLogEntryFilterBuild(LogEntryFilterContext ctx) {
+        LOGGER.info("Prepare log entry filter build");
+        try {
         this.composer.prepareLogEntryFilterBuild();
+        } catch (BuildException e) {
+            LOGGER.severe(String.format("Preparation of log entry filter build failed: %s", e.getMessage()));
+            System.exit(1);
+        }
     }
 
-    private void buildLogEntryFilter(LogEntryFilterContext ctx) throws BuildException {
-        LOGGER.info("Build Log Entry Filter");
+    private void buildLogEntryFilter(LogEntryFilterContext ctx) {
+        LOGGER.info("Build log entry filter");
+        try {
         final AddressListSpecification contracts = this.getAddressListSpecification(ctx.addressList());
         final LogEntrySignatureSpecification signature = this.getLogEntrySignature(ctx.logEntrySignature());
         this.composer.buildLogEntryFilter(contracts, signature);
+        } catch (BuildException e) {
+            LOGGER.severe(String.format("Building log entry filter failed: %s", e.getMessage()));
+            System.exit(1);
+        }
     }
 
     private AddressListSpecification getAddressListSpecification(AddressListContext ctx) {
@@ -167,15 +217,20 @@ public class EthereumListener extends BaseBlockchainListener {
         }
     }
 
-    private LogEntrySignatureSpecification getLogEntrySignature(LogEntrySignatureContext ctx) throws BuildException {
+    private LogEntrySignatureSpecification getLogEntrySignature(LogEntrySignatureContext ctx) {
         final LinkedList<ParameterSpecification> parameters = new LinkedList<>();
+        try {
         for (LogEntryParameterContext paramCtx : ctx.logEntryParameter()) {
             parameters.add(
                 ParameterSpecification.of(paramCtx.variableName().getText(), paramCtx.solType().getText(), paramCtx.KEY_INDEXED() != null)
             );
         }
-
         return LogEntrySignatureSpecification.of(ctx.methodName.getText(), parameters);
+        } catch (BuildException e) {
+            LOGGER.severe(String.format("Log entry signature specification failed: %s", e.getMessage()));
+            System.exit(1);
+            return null;
+        }
     }
 
     @Override
@@ -183,32 +238,41 @@ public class EthereumListener extends BaseBlockchainListener {
         this.handleEthqlElement(ctx, this::prepareGenericFilterBuild);
     }
 
-    private void prepareGenericFilterBuild(GenericFilterContext ctx) throws BuildException {
-        LOGGER.info("Prepare Generic Filter Build");
+    private void prepareGenericFilterBuild(GenericFilterContext ctx) {
+        LOGGER.info("Prepare generic filter build");
+        try {
         this.composer.prepareGenericFilterBuild();
+        } catch (BuildException e) {
+            LOGGER.severe(String.format("Preparation of generic filter build failed: %s", e.getMessage()));
+            System.exit(1);
+        }
     }
 
-    private void buildGenericFilter() throws BuildException {
-        LOGGER.info("Build Generic Filter");
+    private void buildGenericFilter() {
+        LOGGER.info("Build generic filter");
+        try {
+            if (this.genericFilterPredicates.size() != 1) {
+                throw new BuildException("Error in boolean expression tree.");
+            }
 
-        if (this.genericFilterPredicates.size() != 1) {
-            throw new BuildException("Error in boolean expression tree.");
-        }
-
-        final Object predicate = this.genericFilterPredicates.pop();
-        if (predicate instanceof GenericFilterPredicateSpecification) {
-            this.composer.buildGenericFilter((GenericFilterPredicateSpecification) predicate);
-        } else if (predicate instanceof ValueAccessorSpecification) {
-            final GenericFilterPredicateSpecification filterSpec = GenericFilterPredicateSpecification.ofBooleanAccessor(
-                (ValueAccessorSpecification) predicate
-            );
-            this.composer.buildGenericFilter(filterSpec);
-        } else {
-            final String message = String.format(
-                "Unsupported type for specification of generic filter predicates: %s",
-                predicate.getClass()
-            );
-            throw new BuildException(message);
+            final Object predicate = this.genericFilterPredicates.pop();
+            if (predicate instanceof GenericFilterPredicateSpecification) {
+                this.composer.buildGenericFilter((GenericFilterPredicateSpecification) predicate);
+            } else if (predicate instanceof ValueAccessorSpecification) {
+                final GenericFilterPredicateSpecification filterSpec = GenericFilterPredicateSpecification.ofBooleanAccessor(
+                        (ValueAccessorSpecification) predicate
+                );
+                this.composer.buildGenericFilter(filterSpec);
+            } else {
+                final String message = String.format(
+                    "Unsupported type for specification of generic filter predicates: %s",
+                    predicate.getClass()
+                );
+                throw new BuildException(message);
+            }
+        } catch (BuildException e) {
+            LOGGER.severe(String.format("Building generic filter failed: %s", e.getMessage()));
+            System.exit(1);
         }
     }
 
@@ -217,19 +281,24 @@ public class EthereumListener extends BaseBlockchainListener {
         this.handleEthqlElement(ctx.filter(), this::handleScopeBuild);
     }
 
-    private void handleScopeBuild(FilterContext ctx) throws BuildException {
-        if (ctx.logEntryFilter() != null) {
-            this.buildLogEntryFilter(ctx.logEntryFilter());
-        } else if (ctx.blockFilter() != null) {
-            this.buildBlockFilter(ctx.blockFilter());
-        } else if (ctx.transactionFilter() != null) {
-            this.buildTransactionFilter(ctx.transactionFilter());
-        } else if (ctx.genericFilter() != null) {
-            this.buildGenericFilter();
-        } else if (ctx.smartContractFilter() != null) {
-            this.buildSmartContractFilter(ctx.smartContractFilter());
-        } else {
-            throw new BuildException(String.format("Filter type '%s' not supported.", ctx.getText()));
+    private void handleScopeBuild(FilterContext ctx) {
+        try {
+            if (ctx.logEntryFilter() != null) {
+                this.buildLogEntryFilter(ctx.logEntryFilter());
+            } else if (ctx.blockFilter() != null) {
+                this.buildBlockFilter(ctx.blockFilter());
+            } else if (ctx.transactionFilter() != null) {
+                this.buildTransactionFilter(ctx.transactionFilter());
+            } else if (ctx.genericFilter() != null) {
+                this.buildGenericFilter();
+            } else if (ctx.smartContractFilter() != null) {
+                this.buildSmartContractFilter(ctx.smartContractFilter());
+            } else {
+                throw new BuildException(String.format("Filter type '%s' not supported.", ctx.getText()));
+            }
+        } catch (BuildException e) {
+            LOGGER.severe(String.format("Handling of scope build failed: %s", e.getMessage()));
+            System.exit(1);
         }
     }
 
@@ -238,9 +307,14 @@ public class EthereumListener extends BaseBlockchainListener {
         this.handleEthqlElement(ctx, this::handleConditionalOrExpression);
     }
 
-    private void handleConditionalOrExpression(ConditionalOrExpressionContext ctx) throws BuildException {
-        if (ctx.conditionalOrExpression() != null) {
-            this.createBinaryConditionalExpression(GenericFilterPredicateSpecification::or);
+    private void handleConditionalOrExpression(ConditionalOrExpressionContext ctx) {
+        try {
+            if (ctx.conditionalOrExpression() != null) {
+                this.createBinaryConditionalExpression(GenericFilterPredicateSpecification::or);
+            }
+        } catch (BuildException e) {
+            LOGGER.severe(String.format("Handling of conditional OR expression failed: %s", e.getMessage()));
+            System.exit(1);
         }
     }
 
@@ -249,9 +323,14 @@ public class EthereumListener extends BaseBlockchainListener {
         this.handleEthqlElement(ctx, this::handleConditionalAndExpression);
     }
 
-    private void handleConditionalAndExpression(ConditionalAndExpressionContext ctx) throws BuildException {
-        if (ctx.conditionalAndExpression() != null) {
-            this.createBinaryConditionalExpression(GenericFilterPredicateSpecification::and);
+    private void handleConditionalAndExpression(ConditionalAndExpressionContext ctx) {
+        try {
+            if (ctx.conditionalAndExpression() != null) {
+                this.createBinaryConditionalExpression(GenericFilterPredicateSpecification::and);
+            }
+        } catch (BuildException e) {
+            LOGGER.severe(String.format("Handling of conditional AND expression failed: %s", e.getMessage()));
+            System.exit(1);
         }
     }
 
@@ -281,56 +360,60 @@ public class EthereumListener extends BaseBlockchainListener {
         this.handleEthqlElement(ctx, this::handleConditionalComparisonExpression);
     }
 
-    private void handleConditionalComparisonExpression(ConditionalComparisonExpressionContext ctx) throws BuildException {
-        if (ctx.comparators() == null) {
-            return;
+    private void handleConditionalComparisonExpression(ConditionalComparisonExpressionContext ctx) {
+        try {
+            if (ctx.comparators() == null) {
+                return;
+            }
+
+            if (this.genericFilterPredicates.size() < 2) {
+                throw new BuildException("Parse tree does not contain enough expressions.");
+            }
+
+            final Object value2 = this.genericFilterPredicates.pop();
+            if (!(value2 instanceof ValueAccessorSpecification)) {
+                throw new BuildException("Can only compare values, but not boolean expressions.");
+            }
+
+            final Object value1 = this.genericFilterPredicates.pop();
+            if (!(value1 instanceof ValueAccessorSpecification)) {
+                throw new BuildException("Can only compare values, but not boolean expressions.");
+            }
+
+            final ValueAccessorSpecification spec1 = (ValueAccessorSpecification) value1;
+            final ValueAccessorSpecification spec2 = (ValueAccessorSpecification) value2;
+
+            GenericFilterPredicateSpecification predicate;
+            switch (ctx.comparators().getText().toLowerCase()) {
+                case "==":
+                    predicate = GenericFilterPredicateSpecification.equals(spec1, spec2);
+                    break;
+                case "!=":
+                    predicate = GenericFilterPredicateSpecification.notEquals(spec1, spec2);
+                    break;
+                case ">=":
+                    predicate = GenericFilterPredicateSpecification.greaterThanAndEquals(spec1, spec2);
+                    break;
+                case ">":
+                    predicate = GenericFilterPredicateSpecification.greaterThan(spec1, spec2);
+                    break;
+                case "<":
+                    predicate = GenericFilterPredicateSpecification.smallerThan(spec1, spec2);
+                    break;
+                case "<=":
+                    predicate = GenericFilterPredicateSpecification.smallerThanAndEquals(spec1, spec2);
+                    break;
+                case "in":
+                    predicate = GenericFilterPredicateSpecification.in(spec1, spec2);
+                    break;
+                default:
+                    throw new BuildException(String.format("Comparator %s not supported.", ctx.comparators().getText()));
+            }
+            this.genericFilterPredicates.push(predicate);
+        } catch (BuildException e) {
+            LOGGER.severe(String.format("Handling of conditional comparison expression failed: %s", e.getMessage()));
+            System.exit(1);
         }
-
-        if (this.genericFilterPredicates.size() < 2) {
-            throw new BuildException("Parse tree does not contain enough expressions.");
-        }
-
-        final Object value2 = this.genericFilterPredicates.pop();
-        if (!(value2 instanceof ValueAccessorSpecification)) {
-            throw new BuildException("Can only compare values, but not boolean expressions.");
-        }
-
-        final Object value1 = this.genericFilterPredicates.pop();
-        if (!(value1 instanceof ValueAccessorSpecification)) {
-            throw new BuildException("Can only compare values, but not boolean expressions.");
-        }
-
-        final ValueAccessorSpecification spec1 = (ValueAccessorSpecification) value1;
-        final ValueAccessorSpecification spec2 = (ValueAccessorSpecification) value2;
-
-        GenericFilterPredicateSpecification predicate;
-        switch (ctx.comparators().getText().toLowerCase()) {
-            case "==":
-                predicate = GenericFilterPredicateSpecification.equals(spec1, spec2);
-                break;
-            case "!=":
-                predicate = GenericFilterPredicateSpecification.notEquals(spec1, spec2);
-                break;
-            case ">=":
-                predicate = GenericFilterPredicateSpecification.greaterThanAndEquals(spec1, spec2);
-                break;
-            case ">":
-                predicate = GenericFilterPredicateSpecification.greaterThan(spec1, spec2);
-                break;
-            case "<":
-                predicate = GenericFilterPredicateSpecification.smallerThan(spec1, spec2);
-                break;
-            case "<=":
-                predicate = GenericFilterPredicateSpecification.smallerThanAndEquals(spec1, spec2);
-                break;
-            case "in":
-                predicate = GenericFilterPredicateSpecification.in(spec1, spec2);
-                break;
-            default:
-                throw new BuildException(String.format("Comparator %s not supported.", ctx.comparators().getText()));
-        }
-
-        this.genericFilterPredicates.push(predicate);
     }
 
     @Override
@@ -338,22 +421,27 @@ public class EthereumListener extends BaseBlockchainListener {
         this.handleEthqlElement(ctx, this::handleConditionalNotExpression);
     }
 
-    private void handleConditionalNotExpression(ConditionalNotExpressionContext ctx) throws BuildException {
-        if (ctx.KEY_NOT() == null) {
-            return;
-        }
+    private void handleConditionalNotExpression(ConditionalNotExpressionContext ctx) {
+        try {
+            if (ctx.KEY_NOT() == null) {
+                return;
+            }
 
-        Object valueExpression = this.genericFilterPredicates.pop();
-        if (valueExpression instanceof ValueAccessorSpecification) {
-            valueExpression = GenericFilterPredicateSpecification.ofBooleanAccessor((ValueAccessorSpecification) valueExpression);
-        }
+            Object valueExpression = this.genericFilterPredicates.pop();
+            if (valueExpression instanceof ValueAccessorSpecification) {
+                valueExpression = GenericFilterPredicateSpecification.ofBooleanAccessor((ValueAccessorSpecification) valueExpression);
+            }
 
-        if (!(valueExpression instanceof GenericFilterPredicateSpecification)) {
-            throw new BuildException(
-                String.format("GenericFilterPredicateSpecification required, but was %s.", valueExpression.getClass())
-            );
+            if (!(valueExpression instanceof GenericFilterPredicateSpecification)) {
+                throw new BuildException(
+                    String.format("GenericFilterPredicateSpecification required, but was %s.", valueExpression.getClass())
+                );
+            }
+            this.genericFilterPredicates.push(GenericFilterPredicateSpecification.not((GenericFilterPredicateSpecification) valueExpression));
+        } catch (BuildException e) {
+            LOGGER.severe(String.format("Handling of conditional NOT expression failed: %s", e.getMessage()));
+            System.exit(1);
         }
-        this.genericFilterPredicates.push(GenericFilterPredicateSpecification.not((GenericFilterPredicateSpecification) valueExpression));
     }
 
     @Override
@@ -361,7 +449,7 @@ public class EthereumListener extends BaseBlockchainListener {
         this.handleEthqlElement(ctx, this::handleConditionalPrimaryExpression);
     }
 
-    private void handleConditionalPrimaryExpression(ConditionalPrimaryExpressionContext ctx) throws BuildException {
+    private void handleConditionalPrimaryExpression(ConditionalPrimaryExpressionContext ctx) {
         if (ctx.valueExpression() != null) {
             this.genericFilterPredicates.push(this.getValueAccessor(ctx.valueExpression()));
         }
@@ -372,32 +460,42 @@ public class EthereumListener extends BaseBlockchainListener {
         this.handleEthqlElement(ctx, this::prepareSmartContractFilterBuilder);
     }
 
-    private void prepareSmartContractFilterBuilder(SmartContractFilterContext ctx) throws BuildException {
-        this.composer.prepareSmartContractFilterBuild();
-    }
-
-    private void buildSmartContractFilter(SmartContractFilterContext ctx) throws BuildException {
-        final ValueAccessorSpecification contractAddress = this.getValueAccessor(ctx.valueExpression());
-
-        final List<SmartContractQuerySpecification> queries = new ArrayList<>();
-        for (SmartContractQueryContext scQuery : ctx.smartContractQuery()) {
-            if (scQuery.publicFunctionQuery() != null) {
-                queries.add(this.handlePublicFunctionQuery(scQuery.publicFunctionQuery()));
-            } else if (scQuery.publicVariableQuery() != null) {
-                queries.add(this.handlePublicVariableQuery(scQuery.publicVariableQuery()));
-            } else {
-                throw new UnsupportedOperationException();
-            }
+    private void prepareSmartContractFilterBuilder(SmartContractFilterContext ctx) {
+        try {
+            this.composer.prepareSmartContractFilterBuild();
+        } catch (BuildException e) {
+            LOGGER.severe(String.format("Preparation of smart contract filter build failed: %s", e.getMessage()));
+            System.exit(1);
         }
-
-        this.composer.buildSmartContractFilter(SmartContractFilterSpecification.of(contractAddress, queries));
     }
 
-    private SmartContractQuerySpecification handlePublicFunctionQuery(PublicFunctionQueryContext ctx) throws BuildException {
+    private void buildSmartContractFilter(SmartContractFilterContext ctx) {
+        try {
+            final ValueAccessorSpecification contractAddress = this.getValueAccessor(ctx.valueExpression());
+
+            final List<SmartContractQuerySpecification> queries = new ArrayList<>();
+            for (SmartContractQueryContext scQuery : ctx.smartContractQuery()) {
+                if (scQuery.publicFunctionQuery() != null) {
+                    queries.add(this.handlePublicFunctionQuery(scQuery.publicFunctionQuery()));
+                } else if (scQuery.publicVariableQuery() != null) {
+                    queries.add(this.handlePublicVariableQuery(scQuery.publicVariableQuery()));
+                } else {
+                    throw new UnsupportedOperationException();
+                }
+            }
+
+            this.composer.buildSmartContractFilter(SmartContractFilterSpecification.of(contractAddress, queries));
+        } catch (BuildException e) {
+            LOGGER.severe(String.format("Building smart contract filter failed: %s", e.getMessage()));
+            System.exit(1);
+        }
+    }
+
+    private SmartContractQuerySpecification handlePublicFunctionQuery(PublicFunctionQueryContext ctx) {
         final List<ParameterSpecification> outputParams = ctx.smartContractParameter()
-            .stream()
-            .map(this::createParameterSpecification)
-            .collect(Collectors.toList());
+                .stream()
+                .map(this::createParameterSpecification)
+                .collect(Collectors.toList());
 
         final List<TypedValueAccessorSpecification> inputParameters = new ArrayList<>();
         for (SmartContractQueryParameterContext paramCtx : ctx.smartContractQueryParameter()) {
@@ -407,19 +505,24 @@ public class EthereumListener extends BaseBlockchainListener {
         return SmartContractQuerySpecification.ofMemberFunction(ctx.methodName.getText(), inputParameters, outputParams);
     }
 
-    private TypedValueAccessorSpecification createTypedValueAccessor(SmartContractQueryParameterContext ctx) throws BuildException {
-        if (ctx.variableName() != null) {
-            final String varName = ctx.variableName().getText();
-            return TypedValueAccessorSpecification.of(
-                this.variableAnalyzer.getVariableType(varName),
-                ValueAccessorSpecification.ofVariable(varName)
-            );
-        } else if (ctx.solType() != null) {
-            return TypedValueAccessorSpecification.of(ctx.solType().getText(), this.getLiteral(ctx.literal()));
-        } else {
-            throw new BuildException("Unsupported way of defining typed value accessors.");
+    private TypedValueAccessorSpecification createTypedValueAccessor(SmartContractQueryParameterContext ctx) {
+        try {
+            if (ctx.variableName() != null) {
+                final String varName = ctx.variableName().getText();
+                return TypedValueAccessorSpecification.of(
+                    this.variableAnalyzer.getVariableType(varName),
+                    ValueAccessorSpecification.ofVariable(varName)
+                );
+            } else if (ctx.solType() != null) {
+                return TypedValueAccessorSpecification.of(ctx.solType().getText(), this.getLiteral(ctx.literal()));
+            } else {
+                throw new BuildException("Unsupported way of defining typed value accessors.");
+            }
+        } catch (BuildException e) {
+            LOGGER.severe(String.format("Creation of typed value accessor failed: %s", e.getMessage()));
+            System.exit(1);
+            return null;
         }
-
     }
 
     private SmartContractQuerySpecification handlePublicVariableQuery(PublicVariableQueryContext ctx) {
@@ -435,13 +538,18 @@ public class EthereumListener extends BaseBlockchainListener {
         this.handleEthqlElement(ctx, this::handleEmitStatementLog);
     }
 
-    private void handleEmitStatementLog(EmitStatementLogContext ctx) throws BuildException {
+    private void handleEmitStatementLog(EmitStatementLogContext ctx) {
         final List<ValueAccessorSpecification> accessors = new LinkedList<>();
-        for (ValueExpressionContext valEx : ctx.valueExpression()) {
-            accessors.add(this.getValueAccessor(valEx));
+        try {
+            for (ValueExpressionContext valEx : ctx.valueExpression()) {
+                accessors.add(this.getValueAccessor(valEx));
+            }
+            final LogLineExportSpecification spec = LogLineExportSpecification.ofValues(accessors);
+            this.composer.addInstruction(spec);
+        } catch (BuildException e) {
+            LOGGER.severe(String.format("Handling of emit statement for Log files failed: %s", e.getMessage()));
+            System.exit(1);
         }
-        final LogLineExportSpecification spec = LogLineExportSpecification.ofValues(accessors);
-        this.composer.addInstruction(spec);
     }
 
     @Override
@@ -449,16 +557,21 @@ public class EthereumListener extends BaseBlockchainListener {
         this.handleEthqlElement(ctx, this::handleEmitStatementCsv);
     }
 
-    private void handleEmitStatementCsv(EmitStatementCsvContext ctx) throws BuildException {
+    private void handleEmitStatementCsv(EmitStatementCsvContext ctx) {
         LinkedList<CsvColumnSpecification> columns = new LinkedList<>();
-        for (NamedEmitVariableContext varCtx : ctx.namedEmitVariable()) {
-            final String name = varCtx.valueExpression().variableName() == null
-                ? varCtx.variableName().getText()
-                : varCtx.valueExpression().variableName().getText();
-            final ValueAccessorSpecification accessor = this.getValueAccessor(varCtx.valueExpression());
-            columns.add(CsvColumnSpecification.of(name, accessor));
+        try {
+            for (NamedEmitVariableContext varCtx : ctx.namedEmitVariable()) {
+                final String name = varCtx.valueExpression().variableName() == null
+                    ? varCtx.variableName().getText()
+                    : varCtx.valueExpression().variableName().getText();
+                final ValueAccessorSpecification accessor = this.getValueAccessor(varCtx.valueExpression());
+                columns.add(CsvColumnSpecification.of(name, accessor));
+            }
+            this.composer.addInstruction(CsvExportSpecification.of(this.getValueAccessor(ctx.tableName), columns));
+        } catch (BuildException e) {
+            LOGGER.severe(String.format("Handling of emit statement for CSV files failed: %s", e.getMessage()));
+            System.exit(1);
         }
-        this.composer.addInstruction(CsvExportSpecification.of(this.getValueAccessor(ctx.tableName), columns));
     }
 
     @Override
@@ -466,11 +579,16 @@ public class EthereumListener extends BaseBlockchainListener {
         this.handleEthqlElement(ctx, this::handleEmitStatementXesTrace);
     }
 
-    private void handleEmitStatementXesTrace(EmitStatementXesTraceContext ctx) throws BuildException {
-        final ValueAccessorSpecification pid = this.getXesId(ctx.pid);
-        final ValueAccessorSpecification piid = this.getXesId(ctx.piid);
-        final List<XesParameterSpecification> parameters = this.getXesParameters(ctx.xesEmitVariable());
-        this.composer.addInstruction(XesExportSpecification.ofTraceExport(pid, piid, parameters));
+    private void handleEmitStatementXesTrace(EmitStatementXesTraceContext ctx) {
+        try {
+            final ValueAccessorSpecification pid = this.getXesId(ctx.pid);
+            final ValueAccessorSpecification piid = this.getXesId(ctx.piid);
+            final List<XesParameterSpecification> parameters = this.getXesParameters(ctx.xesEmitVariable());
+            this.composer.addInstruction(XesExportSpecification.ofTraceExport(pid, piid, parameters));
+        } catch (BuildException e) {
+            LOGGER.severe(String.format("Handling of emit statement for XES trace files failed: %s", e.getMessage()));
+            System.exit(1);
+        }
     }
 
     @Override
@@ -478,51 +596,62 @@ public class EthereumListener extends BaseBlockchainListener {
         this.handleEthqlElement(ctx, this::handleEmitStatementXesEvent);
     }
 
-    private void handleEmitStatementXesEvent(EmitStatementXesEventContext ctx) throws BuildException {
-        final ValueAccessorSpecification pid = this.getXesId(ctx.pid);
-        final ValueAccessorSpecification piid = this.getXesId(ctx.piid);
-        final ValueAccessorSpecification eid = this.getXesId(ctx.eid);
-        final List<XesParameterSpecification> parameters = this.getXesParameters(ctx.xesEmitVariable());
-        this.composer.addInstruction(XesExportSpecification.ofEventExport(pid, piid, eid, parameters));
+    private void handleEmitStatementXesEvent(EmitStatementXesEventContext ctx) {
+        try {
+            final ValueAccessorSpecification pid = this.getXesId(ctx.pid);
+            final ValueAccessorSpecification piid = this.getXesId(ctx.piid);
+            final ValueAccessorSpecification eid = this.getXesId(ctx.eid);
+            final List<XesParameterSpecification> parameters = this.getXesParameters(ctx.xesEmitVariable());
+            this.composer.addInstruction(XesExportSpecification.ofEventExport(pid, piid, eid, parameters));
+        } catch (BuildException e) {
+            LOGGER.severe(String.format("Handling of emit statement for XES event files failed: %s", e.getMessage()));
+            System.exit(1);
+        }
     }
 
-    private ValueAccessorSpecification getXesId(ValueExpressionContext ctx) throws BuildException {
+    private ValueAccessorSpecification getXesId(ValueExpressionContext ctx) {
         return ctx == null ? null : this.getValueAccessor(ctx);
     }
 
-    private List<XesParameterSpecification> getXesParameters(List<XesEmitVariableContext> variables) throws BuildException {
+    private List<XesParameterSpecification> getXesParameters(List<XesEmitVariableContext> variables) {
         final LinkedList<XesParameterSpecification> parameters = new LinkedList<>();
-        for (XesEmitVariableContext varCtx : variables) {
-            final String name = varCtx.variableName() == null
-                ? varCtx.valueExpression().variableName().getText()
-                : varCtx.variableName().getText();
-            final ValueAccessorSpecification accessor = this.getValueAccessor(varCtx.valueExpression());
-            LOGGER.info(varCtx.getText());
+        try {
+            for (XesEmitVariableContext varCtx : variables) {
+                final String name = varCtx.variableName() == null
+                    ? varCtx.valueExpression().variableName().getText()
+                    : varCtx.variableName().getText();
+                final ValueAccessorSpecification accessor = this.getValueAccessor(varCtx.valueExpression());
+                LOGGER.info(varCtx.getText());
 
-            XesParameterSpecification parameter;
-            switch (varCtx.xesTypes().getText()) {
-                case "xs:string":
-                    parameter = XesParameterSpecification.ofStringParameter(name, accessor);
-                    break;
-                case "xs:date":
-                    parameter = XesParameterSpecification.ofDateParameter(name, accessor);
-                    break;
-                case "xs:int":
-                    parameter = XesParameterSpecification.ofIntegerParameter(name, accessor);
-                    break;
-                case "xs:float":
-                    parameter = XesParameterSpecification.ofFloatParameter(name, accessor);
-                    break;
-                case "xs:boolean":
-                    parameter = XesParameterSpecification.ofBooleanParameter(name, accessor);
-                    break;
-                default:
-                    throw new BuildException(String.format("Xes type '%s' not supported", varCtx.xesTypes().getText()));
+                XesParameterSpecification parameter;
+                switch (varCtx.xesTypes().getText()) {
+                    case "xs:string":
+                        parameter = XesParameterSpecification.ofStringParameter(name, accessor);
+                        break;
+                    case "xs:date":
+                        parameter = XesParameterSpecification.ofDateParameter(name, accessor);
+                        break;
+                    case "xs:int":
+                        parameter = XesParameterSpecification.ofIntegerParameter(name, accessor);
+                        break;
+                    case "xs:float":
+                        parameter = XesParameterSpecification.ofFloatParameter(name, accessor);
+                        break;
+                    case "xs:boolean":
+                        parameter = XesParameterSpecification.ofBooleanParameter(name, accessor);
+                        break;
+                    default:
+                        throw new BuildException(String.format("Xes type '%s' not supported", varCtx.xesTypes().getText()));
+                }
+                parameters.add(parameter);
             }
-            parameters.add(parameter);
-        }
 
-        return parameters;
+            return parameters;
+        } catch (BuildException e) {
+            LOGGER.severe(String.format("Getter of XES parameters failed: %s", e.getMessage()));
+            System.exit(1);
+            return null;
+        }
     }
 
     @Override
@@ -530,7 +659,7 @@ public class EthereumListener extends BaseBlockchainListener {
         this.handleEthqlElement(ctx, this::handleMethodStatement);
     }
 
-    private void handleMethodStatement(MethodStatementContext ctx) throws BuildException {
+    private void handleMethodStatement(MethodStatementContext ctx) {
         this.addMethodCall(ctx.methodInvocation(), null);
     }
 
@@ -539,7 +668,7 @@ public class EthereumListener extends BaseBlockchainListener {
         this.handleEthqlElement(ctx, this::handleVariableAssignmentStatement);
     }
 
-    private void handleVariableAssignmentStatement(VariableAssignmentStatementContext ctx) throws BuildException {
+    private void handleVariableAssignmentStatement(VariableAssignmentStatementContext ctx) {
         this.addVariableAssignment(ctx.variableName(), ctx.statementExpression());
     }
 
@@ -548,30 +677,41 @@ public class EthereumListener extends BaseBlockchainListener {
         this.handleEthqlElement(ctx, this::handleVariableDeclarationStatement);
     }
 
-    private void handleVariableDeclarationStatement(VariableDeclarationStatementContext ctx) throws BuildException {
+    private void handleVariableDeclarationStatement(VariableDeclarationStatementContext ctx) {
         this.addVariableAssignment(ctx.variableName(), ctx.statementExpression());
     }
 
-    private void addVariableAssignment(VariableNameContext varCtx, StatementExpressionContext stmtCtx) throws BuildException {
-        final ValueMutatorSpecification mutator = ValueMutatorSpecification.ofVariableName(varCtx.getText());
-        if (stmtCtx.valueExpression() != null) {
-            this.addValueAssignment(mutator, stmtCtx.valueExpression());
-        } else if (stmtCtx.methodInvocation() != null) {
-            this.addMethodCall(stmtCtx.methodInvocation(), mutator);
-        } else {
-            throw new UnsupportedOperationException("This type of value definition is not supported.");
+    private void addVariableAssignment(VariableNameContext varCtx, StatementExpressionContext stmtCtx) {
+        try {
+            final ValueMutatorSpecification mutator = ValueMutatorSpecification.ofVariableName(varCtx.getText());
+            if (stmtCtx.valueExpression() != null) {
+                this.addValueAssignment(mutator, stmtCtx.valueExpression());
+            } else if (stmtCtx.methodInvocation() != null) {
+                this.addMethodCall(stmtCtx.methodInvocation(), mutator);
+            } else {
+                throw new UnsupportedOperationException("This type of value definition is not supported.");
+            }
+        } catch (UnsupportedOperationException e) {
+            LOGGER.severe(String.format("Adding variable assignment failed: %s", e.getMessage()));
+            System.exit(1);
         }
     }
 
-    private void addValueAssignment(ValueMutatorSpecification mutator, ValueExpressionContext ctx) throws BuildException {
+    private void addValueAssignment(ValueMutatorSpecification mutator, ValueExpressionContext ctx) {
+        try {
         final ValueAccessorSpecification accessor = this.getValueAccessor(ctx);
         final ValueAssignmentSpecification assignment = ValueAssignmentSpecification.of(mutator, accessor);
         this.composer.addInstruction(assignment);
+        } catch (BuildException e) {
+            LOGGER.severe(String.format("Adding value assignment failed: %s", e.getMessage()));
+            System.exit(1);
+        }
     }
 
-    private void addMethodCall(MethodInvocationContext ctx, ValueMutatorSpecification mutator) throws BuildException {
+    private void addMethodCall(MethodInvocationContext ctx, ValueMutatorSpecification mutator) {
         final List<String> parameterTypes = new ArrayList<>();
         final List<ValueAccessorSpecification> accessors = new ArrayList<>();
+        try {
         for (ValueExpressionContext valCtx : ctx.valueExpression()) {
             parameterTypes.add(InterpreterUtils.determineType(valCtx, this.variableAnalyzer));
             accessors.add(this.getValueAccessor(valCtx));
@@ -580,6 +720,10 @@ public class EthereumListener extends BaseBlockchainListener {
         final MethodSpecification method = MethodSpecification.of(ctx.methodName.getText(), parameterTypes);
         final MethodCallSpecification call = MethodCallSpecification.of(method, mutator, accessors);
         this.composer.addInstruction(call);
+        } catch (BuildException e) {
+            LOGGER.severe(String.format("Adding method call failed: %s", e.getMessage()));
+            System.exit(1);
+        }
     }
 
     // #region Utils
@@ -601,22 +745,29 @@ public class EthereumListener extends BaseBlockchainListener {
         void build(T ctx) throws BuildException;
     }
 
-    private ValueAccessorSpecification getValueAccessor(ValueExpressionContext ctx) throws BuildException {
-        if (ctx.variableName() != null) {
-            return ValueAccessorSpecification.ofVariable(ctx.getText());
-        } else if (ctx.literal() != null) {
-            return this.getLiteral(ctx.literal());
-        } else {
-            throw new UnsupportedOperationException("This value accessor specification is not supported.");
+    private ValueAccessorSpecification getValueAccessor(ValueExpressionContext ctx) {
+        try {
+            if (ctx.variableName() != null) {
+                return ValueAccessorSpecification.ofVariable(ctx.getText());
+            } else if (ctx.literal() != null) {
+                return this.getLiteral(ctx.literal());
+            } else {
+                throw new UnsupportedOperationException("This value accessor specification is not supported.");
+            }
+        } catch (UnsupportedOperationException e) {
+            LOGGER.severe(String.format("Getter of value accessor failed: %s", e.getMessage()));
+            System.exit(1);
+            return null;
         }
     }
 
-    private ValueAccessorSpecification getLiteral(LiteralContext ctx) throws BuildException {
+    private ValueAccessorSpecification getLiteral(LiteralContext ctx) {
         String type = this.determineLiteralType(ctx);
         return this.getLiteral(type, ctx.getText());
     }
 
-    private String determineLiteralType(LiteralContext ctx) throws BuildException {
+    private String determineLiteralType(LiteralContext ctx) {
+        try {
         String type = null;
         if (ctx.BOOLEAN_LITERAL() != null) {
             type = TypeUtils.BOOL_TYPE_KEYWORD;
@@ -642,37 +793,49 @@ public class EthereumListener extends BaseBlockchainListener {
             throw new BuildException(String.format("Cannot determine type for literal %s.", ctx.getText()));
         }
         return type;
+        } catch (BuildException e) {
+            LOGGER.severe(String.format("Determination of literal type failed: %s", e.getMessage()));
+            System.exit(1);
+            return null;
+        }
+
     }
 
-    private ValueAccessorSpecification getLiteral(String type, String literal) throws BuildException {
-        if (TypeUtils.isArrayType(type)) {
-            if (TypeUtils.isArrayType(type, TypeUtils.ADDRESS_TYPE_KEYWORD)) {
-                return ValueAccessorSpecification.addressArrayLiteral(literal);
-            } else if (TypeUtils.isArrayType(type, TypeUtils.BOOL_TYPE_KEYWORD)) {
-                return ValueAccessorSpecification.booleanArrayLiteral(literal);
-            } else if (TypeUtils.isArrayType(type, TypeUtils.BYTES_TYPE_KEYWORD)) {
-                return ValueAccessorSpecification.bytesArrayLiteral(literal);
-            } else if (TypeUtils.isArrayType(type, TypeUtils.INT_TYPE_KEYWORD)) {
-                return ValueAccessorSpecification.integerArrayLiteral(literal);
-            } else if (TypeUtils.isArrayType(type, TypeUtils.STRING_TYPE_KEYWORD)) {
-                return ValueAccessorSpecification.stringArrayLiteral(literal);
+    private ValueAccessorSpecification getLiteral(String type, String literal) {
+        try {
+            if (TypeUtils.isArrayType(type)) {
+                if (TypeUtils.isArrayType(type, TypeUtils.ADDRESS_TYPE_KEYWORD)) {
+                    return ValueAccessorSpecification.addressArrayLiteral(literal);
+                } else if (TypeUtils.isArrayType(type, TypeUtils.BOOL_TYPE_KEYWORD)) {
+                    return ValueAccessorSpecification.booleanArrayLiteral(literal);
+                } else if (TypeUtils.isArrayType(type, TypeUtils.BYTES_TYPE_KEYWORD)) {
+                    return ValueAccessorSpecification.bytesArrayLiteral(literal);
+                } else if (TypeUtils.isArrayType(type, TypeUtils.INT_TYPE_KEYWORD)) {
+                    return ValueAccessorSpecification.integerArrayLiteral(literal);
+                } else if (TypeUtils.isArrayType(type, TypeUtils.STRING_TYPE_KEYWORD)) {
+                    return ValueAccessorSpecification.stringArrayLiteral(literal);
+                } else {
+                    throw new BuildException(String.format("Unsupported type: '%s'.", type));
+                }
             } else {
-                throw new BuildException(String.format("Unsupported type: '%s'.", type));
+                if (TypeUtils.isAddressType(type)) {
+                    return ValueAccessorSpecification.addressLiteral(literal);
+                } else if (TypeUtils.isBooleanType(type)) {
+                    return ValueAccessorSpecification.booleanLiteral(literal);
+                } else if (TypeUtils.isBytesType(type)) {
+                    return ValueAccessorSpecification.bytesLiteral(literal);
+                } else if (TypeUtils.isIntegerType(type)) {
+                    return ValueAccessorSpecification.integerLiteral(literal);
+                } else if (TypeUtils.isStringType(type)) {
+                    return ValueAccessorSpecification.stringLiteral(literal);
+                } else {
+                    throw new BuildException(String.format("Unsupported type: '%s'.", type));
+                }
             }
-        } else {
-            if (TypeUtils.isAddressType(type)) {
-                return ValueAccessorSpecification.addressLiteral(literal);
-            } else if (TypeUtils.isBooleanType(type)) {
-                return ValueAccessorSpecification.booleanLiteral(literal);
-            } else if (TypeUtils.isBytesType(type)) {
-                return ValueAccessorSpecification.bytesLiteral(literal);
-            } else if (TypeUtils.isIntegerType(type)) {
-                return ValueAccessorSpecification.integerLiteral(literal);
-            } else if (TypeUtils.isStringType(type)) {
-                return ValueAccessorSpecification.stringLiteral(literal);
-            } else {
-                throw new BuildException(String.format("Unsupported type: '%s'.", type));
-            }
+        } catch (BuildException e) {
+            LOGGER.severe(String.format("Getter of literal failed: %s", e.getMessage()));
+            System.exit(1);
+            return null;
         }
     }
 
