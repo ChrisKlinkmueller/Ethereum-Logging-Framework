@@ -8,7 +8,7 @@
 
   <groupId>au.csiro.data61.aap</groupId>
 
-  <artifactId>elf</artifactId>
+  <artifactId>blf</artifactId>
 
   <version>0.2.1</version>
 
@@ -208,7 +208,7 @@
         <artifactId>antlr4-maven-plugin</artifactId>
         <version>${antlr4.version}</version>
         <configuration>
-          <libDirectory>${basedir}/src/main/antlr4/au/csiro/data61/aap/elf/parsing</libDirectory>
+          <libDirectory>${basedir}/src/main/antlr4/blf/grammar</libDirectory>
           <arguments>
             <argument>-visitor</argument>
           </arguments>
@@ -289,7 +289,7 @@
               <finalName>elf-cmd</finalName>
               <archive>
                 <manifest>
-                  <mainClass>au.csiro.data61.aap.elf.ElfApp</mainClass>
+                  <mainClass>blf.ElfApp</mainClass>
                 </manifest>
               </archive>
               <descriptorRefs>

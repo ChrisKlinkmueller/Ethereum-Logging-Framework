@@ -34,9 +34,9 @@ Example ethql documents include
   - [Rebesky_Idex3.ethql](./src/main/resources/Rebesky_Idex3.ethql)
 
 Code demonstrating the use of the component scan be found here
-- [Validator](src/main/java/au/csiro/data61/aap/samples/ValidatorTest.java)
-- [Extractor](src/main/java/au/csiro/data61/aap/samples/ExtractorTest.java)
-- [Generator](src/main/java/au/csiro/data61/aap/samples/GeneratorTest.java) (the generated code has been tested with Solidity 0.5.10)
+- [Validator](src/main/java/blf/samples/ValidatorTest.java)
+- [Extractor](src/main/java/blf/samples/ExtractorTest.java)
+- [Generator](src/main/java/blf/samples/GeneratorTest.java) (the generated code has been tested with Solidity 0.5.10)
 
 ## Publications
 
