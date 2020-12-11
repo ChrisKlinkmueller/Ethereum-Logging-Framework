@@ -1,10 +1,9 @@
 // Author: Martin Rebesky
 
-// use connect to specify URL
-connect("ws://localhost:8546/");
+SET BLOCKCHAIN "Ethereum"
 
-// use setOutputFolder to specify Folder
-setOutputFolder("./test_output");
+SET CONNECTION "ws://localhost:8546/"
+SET OUTPUT FOLDER "./test_output"
 
 address chickenContract = 0x1eD3d2c916cab00631cce4b08a7F880d4Badae94;
 

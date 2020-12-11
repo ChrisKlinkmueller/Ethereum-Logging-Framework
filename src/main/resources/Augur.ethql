@@ -1,7 +1,10 @@
 // based on the script Rebesky_Augur.ethql by Martin Rebesky
 
-connectIpc("/data2/geth-archive/chaindata/geth.ipc");
-setOutputFolder("./test_output");
+SET BLOCKCHAIN "Ethereum"
+
+SET IPC CONNECTION "/data2/geth-archive/chaindata/geth.ipc"
+SET OUTPUT FOLDER "./test_output"
+
 address augur = 0x75228DcE4D82566d93068A8D5d49435216551599;
 
 // BLOCKS (5926229) (10193336) {
