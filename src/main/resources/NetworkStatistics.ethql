@@ -1,8 +1,7 @@
-// use connect to specify URL
-connect("ws://localhost:8546/");
+SET BLOCKCHAIN "Ethereum"
 
-// use setOutputFolder to specify Folder
-setOutputFolder("./test_output");
+SET CONNECTION "ws://localhost:8546/"
+SET OUTPUT FOLDER "./test_output"
 
 BLOCKS (6000000) (6010000) {
     int totalCost = 0;

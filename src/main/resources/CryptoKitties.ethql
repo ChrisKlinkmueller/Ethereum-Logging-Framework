@@ -1,5 +1,7 @@
-connect("ws://localhost:8546/");
-setOutputFolder("./test_output");
+SET BLOCKCHAIN "Ethereum"
+
+SET CONNECTION "ws://localhost:8546/"
+SET OUTPUT FOLDER "./test_output"
 
 int[] kitties = newIntArray();
 BLOCKS (6605100) (6615100) {
