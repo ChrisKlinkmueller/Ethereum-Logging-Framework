@@ -1,10 +1,11 @@
-package blf.configuration;
+package blf.blockchains.ethereum;
 
 import java.util.*;
 import java.util.function.BiFunction;
 import java.util.logging.Logger;
 import java.util.stream.Collectors;
 
+import blf.configuration.*;
 import blf.core.ProgramState;
 
 import blf.parsing.InterpreterUtils;
@@ -18,44 +19,8 @@ import org.antlr.v4.runtime.tree.ParseTree;
 public class EthereumListener extends BaseBlockchainListener {
     private static final Logger LOGGER = Logger.getLogger(EthereumListener.class.getName());
 
-    private final SpecificationComposer composer;
-    private final VariableExistenceListener variableAnalyzer;
-
-    private final Deque<Object> genericFilterPredicates;
-
     public EthereumListener(VariableExistenceListener analyzer) {
-        this.composer = new SpecificationComposer();
-        this.variableAnalyzer = analyzer;
-        this.genericFilterPredicates = new ArrayDeque<>();
-    }
-
-    @Override
-    public void enterBlockchain(BcqlParser.BlockchainContext ctx) {
-        LOGGER.info("Prepare program build");
-        this.error = null;
-        try {
-            this.composer.prepareProgramBuild();
-        } catch (BuildException e) {
-            LOGGER.severe(String.format("Preparation of program build failed: %s", e.getMessage()));
-            System.exit(1);
-        }
-    }
-
-    @Override
-    public void exitDocument(BcqlParser.DocumentContext ctx) {
-        LOGGER.info("Build program");
-        this.handleEthqlElement(ctx, this::buildProgram);
-    }
-
-    private void buildProgram(BcqlParser.DocumentContext ctx) {
-        try {
-            this.program = this.composer.buildProgram();
-        } catch (BuildException e) {
-            LOGGER.severe(String.format("Building program failed: %s", e.getMessage()));
-            System.exit(1);
-        } finally {
-            this.genericFilterPredicates.clear();
-        }
+        super(analyzer);
     }
 
     @Override
@@ -81,26 +46,6 @@ public class EthereumListener extends BaseBlockchainListener {
 
         } catch (BuildException e) {
             LOGGER.severe(String.format("Building connection failed: %s", e.getMessage()));
-            System.exit(1);
-        }
-    }
-
-    @Override
-    public void exitOutputFolder(BcqlParser.OutputFolderContext ctx) {
-        this.handleEthqlElement(ctx, this::buildOutputFolder);
-    }
-
-    private void buildOutputFolder(BcqlParser.OutputFolderContext ctx) {
-        try {
-            MethodSpecification outputFolderMethod = MethodSpecification.of(ProgramState::setOutputFolder);
-
-            final List<ValueAccessorSpecification> accessors = new ArrayList<>();
-            accessors.add(this.getLiteral(ctx.literal()));
-
-            final MethodCallSpecification call = MethodCallSpecification.of(outputFolderMethod, accessors);
-            this.composer.addInstruction(call);
-        } catch (BuildException e) {
-            LOGGER.severe(String.format("Building output folder failed: %s", e.getMessage()));
             System.exit(1);
         }
     }

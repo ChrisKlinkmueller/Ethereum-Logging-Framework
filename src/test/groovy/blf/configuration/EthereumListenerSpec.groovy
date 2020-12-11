@@ -5,6 +5,7 @@ import blf.Validator
 import blf.BcqlProcessingException
 import blf.EthqlProcessingResult
 import blf.core.filters.Program
+import blf.blockchains.ethereum.EthereumListener
 import blf.parsing.VariableExistenceListener
 import org.antlr.v4.runtime.tree.ParseTree
 import org.antlr.v4.runtime.tree.ParseTreeWalker

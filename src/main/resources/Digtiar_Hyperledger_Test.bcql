@@ -1,0 +1,12 @@
+// Author: Mykola Digtiar
+
+SET BLOCKCHAIN "Hyperledger"
+
+SET CONNECTION {
+   "hyperledger/connection-org1.yaml",
+   "hyperledger/server.crt",
+   "hyperledger/server.key",
+   "channel"
+}
+
+SET OUTPUT FOLDER "./test_output"
