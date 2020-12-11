@@ -8,21 +8,21 @@ import java.util.function.Function;
 import org.antlr.v4.runtime.ParserRuleContext;
 
 import au.csiro.data61.aap.elf.core.writers.XesWriter;
-import au.csiro.data61.aap.elf.parsing.EthqlParser.EmitStatementCsvContext;
-import au.csiro.data61.aap.elf.parsing.EthqlParser.EmitStatementXesEventContext;
-import au.csiro.data61.aap.elf.parsing.EthqlParser.EmitStatementXesTraceContext;
-import au.csiro.data61.aap.elf.parsing.EthqlParser.ValueExpressionContext;
-import au.csiro.data61.aap.elf.parsing.EthqlParser.VariableNameContext;
-import au.csiro.data61.aap.elf.parsing.EthqlParser.XesEmitVariableContext;
+import au.csiro.data61.aap.elf.parsing.BcqlParser.EmitStatementCsvContext;
+import au.csiro.data61.aap.elf.parsing.BcqlParser.EmitStatementXesEventContext;
+import au.csiro.data61.aap.elf.parsing.BcqlParser.EmitStatementXesTraceContext;
+import au.csiro.data61.aap.elf.parsing.BcqlParser.ValueExpressionContext;
+import au.csiro.data61.aap.elf.parsing.BcqlParser.VariableNameContext;
+import au.csiro.data61.aap.elf.parsing.BcqlParser.XesEmitVariableContext;
 import au.csiro.data61.aap.elf.util.TypeUtils;
 
 /**
  * EmitAnalyzer
  */
 public class EmitAnalyzer extends SemanticAnalyzer {
-    private final VariableExistenceAnalyzer varAnalyzer;
+    private final VariableExistenceListener varAnalyzer;
 
-    public EmitAnalyzer(final ErrorCollector errorCollector, final VariableExistenceAnalyzer varAnalyzer) {
+    public EmitAnalyzer(final ErrorCollector errorCollector, final VariableExistenceListener varAnalyzer) {
         super(errorCollector);
         assert varAnalyzer != null;
         this.varAnalyzer = varAnalyzer;

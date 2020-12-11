@@ -1,40 +1,41 @@
 package au.csiro.data61.aap.elf;
 
-import au.csiro.data61.aap.elf.util.CompositeListenerException;
+import au.csiro.data61.aap.elf.configuration.BaseBlockchainListener;
+import au.csiro.data61.aap.elf.util.RootListenerException;
 import org.antlr.v4.runtime.tree.ParseTree;
 import org.antlr.v4.runtime.tree.ParseTreeWalker;
 
-import au.csiro.data61.aap.elf.configuration.EthqlProgramComposer;
 import au.csiro.data61.aap.elf.core.ProgramState;
 import au.csiro.data61.aap.elf.core.filters.Program;
-import au.csiro.data61.aap.elf.parsing.EthqlListener;
-import au.csiro.data61.aap.elf.parsing.VariableExistenceAnalyzer;
-import au.csiro.data61.aap.elf.util.CompositeEthqlListener;
+import au.csiro.data61.aap.elf.parsing.VariableExistenceListener;
+import au.csiro.data61.aap.elf.util.RootListener;
 
 /**
  * Extractor
  */
 public class Extractor {
 
-    public void extractData(final String ethqlFilepath) throws EthqlProcessingException, CompositeListenerException {
+    public void extractData(final String bcqlFilepath) throws BcqlProcessingException, RootListenerException {
 
-        final ParseTree parseTree = Validator.createParseTree(ethqlFilepath);
-
-        final CompositeEthqlListener<EthqlListener> rootListener = new CompositeEthqlListener<>();
-        final VariableExistenceAnalyzer analyzer = new VariableExistenceAnalyzer();
-        rootListener.addListener(analyzer);
-        final EthqlProgramComposer builder = new EthqlProgramComposer(analyzer);
-        rootListener.addListener(builder);
+        final ParseTree parseTree = Validator.createParseTree(bcqlFilepath);
 
         final ParseTreeWalker walker = new ParseTreeWalker();
+
+        final VariableExistenceListener variableExistenceListener = new VariableExistenceListener();
+
+        final RootListener rootListener = new RootListener(Constants.getBlockchainMap(variableExistenceListener));
+
+        rootListener.addListener(variableExistenceListener);
+
         walker.walk(rootListener, parseTree);
 
-        if (builder.containsError()) {
-            throw new EthqlProcessingException("Error when configuring the data extraction.", builder.getError());
+        BaseBlockchainListener blockchainListener = rootListener.blockchainListener;
+
+        if (blockchainListener.containsError()) {
+            throw new BcqlProcessingException("Error when configuring the data extraction.", blockchainListener.getError());
         }
 
-        final Program program = builder.getProgram();
-        this.executeProgram(program);
+        this.executeProgram(rootListener.blockchainListener.getProgram());
     }
 
     private void executeProgram(Program program) {

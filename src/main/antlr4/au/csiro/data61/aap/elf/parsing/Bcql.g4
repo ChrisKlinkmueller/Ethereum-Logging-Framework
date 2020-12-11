@@ -9,9 +9,9 @@
 //    ANTLR4 introduction by TU Darmstadt in german (https://www.esa.informatik.tu-darmstadt.de/archive/twiki/pub/Lectures/Compiler113De/antlr-v4-handout.pdf)
 
 
-grammar Ethql;
+grammar Bcql;
 
-import Util, BcQLLexer;
+import BcqlUtil, BcqlLexemes;
 
 
 
@@ -21,14 +21,13 @@ import Util, BcQLLexer;
  *  It can include an arbitrary number of statements and the explicit EOF defines that the entire file is parsed. */
 
 document
-    : (connection outputFolder)? statement* EOF
+    : (blockchain connection outputFolder)? statement* EOF
     ;
 
 
-// TODO: add in the above statement
-//blockchainType
-//    : KEY_SET KEY_BLOCKCHAIN STRING_LITERAL
-//    ;
+blockchain
+    : KEY_SET KEY_BLOCKCHAIN literal
+    ;
 
 /** The entry parser rule enters the manifest file, a source and destination directory should be specified.
  *  It can include an arbitrary number of statements and the explicit EOF defines that the entire file is parsed. */

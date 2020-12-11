@@ -26,47 +26,47 @@ public class Validator {
         this.interpreter = new EthqlInterpreter();
     }
 
-    public List<EthqlProcessingError> analyzeScript(String ethqlFile) throws EthqlProcessingException {
+    public List<EthqlProcessingError> analyzeScript(String ethqlFile) throws BcqlProcessingException {
         final EthqlProcessingResult<ParseTree> result = this.parseScript(ethqlFile);
         assert result != null;
         return result.getErrors();
     }
 
-    public List<EthqlProcessingError> analyzeScript(InputStream stream) throws EthqlProcessingException {
+    public List<EthqlProcessingError> analyzeScript(InputStream stream) throws BcqlProcessingException {
         final EthqlProcessingResult<ParseTree> result = this.parseScript(stream);
         return result.getErrors();
     }
 
-    EthqlProcessingResult<ParseTree> parseScript(String ethqlFile) throws EthqlProcessingException {
+    EthqlProcessingResult<ParseTree> parseScript(String ethqlFile) throws BcqlProcessingException {
         assert ethqlFile != null;
         final InputStream fileStream = this.createFileStream(ethqlFile);
         return this.parseScript(fileStream);
     }
 
-    EthqlProcessingResult<ParseTree> parseScript(InputStream stream) throws EthqlProcessingException {
+    EthqlProcessingResult<ParseTree> parseScript(InputStream stream) throws BcqlProcessingException {
         assert stream != null;
         return this.interpreter.parseDocument(stream);
     }
 
-    private InputStream createFileStream(String ethqlFile) throws EthqlProcessingException {
+    private InputStream createFileStream(String ethqlFile) throws BcqlProcessingException {
         if (ethqlFile == null) {
-            throw new EthqlProcessingException("The filepath parameter was null.");
+            throw new BcqlProcessingException("The filepath parameter was null.");
         }
 
         final File file = new File(ethqlFile);
         try {
             return new FileInputStream(file);
         } catch (FileNotFoundException ex) {
-            throw new EthqlProcessingException(String.format("Invalid file path: '%s'.", ethqlFile), ex);
+            throw new BcqlProcessingException(String.format("Invalid file path: '%s'.", ethqlFile), ex);
         }
     }
 
-    public static ParseTree createParseTree(final String ethqlFile) throws EthqlProcessingException {
+    public static ParseTree createParseTree(final String ethqlFile) throws BcqlProcessingException {
         final Validator validator = new Validator();
         final EthqlProcessingResult<ParseTree> validatorResult = validator.parseScript(ethqlFile);
 
         if (!validatorResult.isSuccessful()) {
-            throw new EthqlProcessingException("The ethql script is not valid. For detailed analysis results, run validator.");
+            throw new BcqlProcessingException("The ethql script is not valid. For detailed analysis results, run validator.");
         }
 
         return validatorResult.getResult();

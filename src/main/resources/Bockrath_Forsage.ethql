@@ -1,5 +1,7 @@
 // Author: Hendrik Bockrath
 
+SET BLOCKCHAIN "Ethereum"
+
 SET CONNECTION "ws://localhost:8546/"
 SET OUTPUT FOLDER "./test_output"
 

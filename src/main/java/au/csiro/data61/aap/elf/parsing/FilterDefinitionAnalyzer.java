@@ -8,20 +8,20 @@ import org.antlr.v4.runtime.Token;
 import org.antlr.v4.runtime.tree.TerminalNode;
 
 import au.csiro.data61.aap.elf.parsing.BlockNumber.Type;
-import au.csiro.data61.aap.elf.parsing.EthqlParser.AddressListContext;
-import au.csiro.data61.aap.elf.parsing.EthqlParser.BlockFilterContext;
-import au.csiro.data61.aap.elf.parsing.EthqlParser.BlockNumberContext;
-import au.csiro.data61.aap.elf.parsing.EthqlParser.ComparatorsContext;
-import au.csiro.data61.aap.elf.parsing.EthqlParser.ConditionalAndExpressionContext;
-import au.csiro.data61.aap.elf.parsing.EthqlParser.ConditionalComparisonExpressionContext;
-import au.csiro.data61.aap.elf.parsing.EthqlParser.ConditionalExpressionContext;
-import au.csiro.data61.aap.elf.parsing.EthqlParser.ConditionalNotExpressionContext;
-import au.csiro.data61.aap.elf.parsing.EthqlParser.ConditionalOrExpressionContext;
-import au.csiro.data61.aap.elf.parsing.EthqlParser.ConditionalPrimaryExpressionContext;
-import au.csiro.data61.aap.elf.parsing.EthqlParser.LogEntryFilterContext;
-import au.csiro.data61.aap.elf.parsing.EthqlParser.SmartContractFilterContext;
-import au.csiro.data61.aap.elf.parsing.EthqlParser.SmartContractQueryParameterContext;
-import au.csiro.data61.aap.elf.parsing.EthqlParser.TransactionFilterContext;
+import au.csiro.data61.aap.elf.parsing.BcqlParser.AddressListContext;
+import au.csiro.data61.aap.elf.parsing.BcqlParser.BlockFilterContext;
+import au.csiro.data61.aap.elf.parsing.BcqlParser.BlockNumberContext;
+import au.csiro.data61.aap.elf.parsing.BcqlParser.ComparatorsContext;
+import au.csiro.data61.aap.elf.parsing.BcqlParser.ConditionalAndExpressionContext;
+import au.csiro.data61.aap.elf.parsing.BcqlParser.ConditionalComparisonExpressionContext;
+import au.csiro.data61.aap.elf.parsing.BcqlParser.ConditionalExpressionContext;
+import au.csiro.data61.aap.elf.parsing.BcqlParser.ConditionalNotExpressionContext;
+import au.csiro.data61.aap.elf.parsing.BcqlParser.ConditionalOrExpressionContext;
+import au.csiro.data61.aap.elf.parsing.BcqlParser.ConditionalPrimaryExpressionContext;
+import au.csiro.data61.aap.elf.parsing.BcqlParser.LogEntryFilterContext;
+import au.csiro.data61.aap.elf.parsing.BcqlParser.SmartContractFilterContext;
+import au.csiro.data61.aap.elf.parsing.BcqlParser.SmartContractQueryParameterContext;
+import au.csiro.data61.aap.elf.parsing.BcqlParser.TransactionFilterContext;
 import au.csiro.data61.aap.elf.util.TypeUtils;
 
 /**
@@ -29,10 +29,10 @@ import au.csiro.data61.aap.elf.util.TypeUtils;
  */
 public class FilterDefinitionAnalyzer extends SemanticAnalyzer {
     private static final String TYPE_ERROR_FLAG = "TYPE_ERROR";
-    private final VariableExistenceAnalyzer variableAnalyzer;
+    private final VariableExistenceListener variableAnalyzer;
     private final Stack<String> conditionalTypes;
 
-    public FilterDefinitionAnalyzer(final ErrorCollector errorCollector, final VariableExistenceAnalyzer variableAnalyzer) {
+    public FilterDefinitionAnalyzer(final ErrorCollector errorCollector, final VariableExistenceListener variableAnalyzer) {
         super(errorCollector);
         assert variableAnalyzer != null;
         this.variableAnalyzer = variableAnalyzer;

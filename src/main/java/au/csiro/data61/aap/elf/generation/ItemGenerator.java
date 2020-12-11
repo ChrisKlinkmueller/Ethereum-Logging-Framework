@@ -9,14 +9,14 @@ import java.util.stream.Stream;
 import au.csiro.data61.aap.elf.library.compression.BitMapping;
 import au.csiro.data61.aap.elf.library.compression.ValueDictionary;
 import au.csiro.data61.aap.elf.parsing.InterpreterUtils;
-import au.csiro.data61.aap.elf.parsing.EthqlParser.ArrayLiteralContext;
-import au.csiro.data61.aap.elf.parsing.EthqlParser.ExpressionStatementContext;
-import au.csiro.data61.aap.elf.parsing.EthqlParser.LiteralContext;
-import au.csiro.data61.aap.elf.parsing.EthqlParser.LogEntryFilterContext;
-import au.csiro.data61.aap.elf.parsing.EthqlParser.MethodInvocationContext;
-import au.csiro.data61.aap.elf.parsing.EthqlParser.ScopeContext;
-import au.csiro.data61.aap.elf.parsing.EthqlParser.ValueExpressionContext;
-import au.csiro.data61.aap.elf.parsing.EthqlParser.VariableNameContext;
+import au.csiro.data61.aap.elf.parsing.BcqlParser.ArrayLiteralContext;
+import au.csiro.data61.aap.elf.parsing.BcqlParser.ExpressionStatementContext;
+import au.csiro.data61.aap.elf.parsing.BcqlParser.LiteralContext;
+import au.csiro.data61.aap.elf.parsing.BcqlParser.LogEntryFilterContext;
+import au.csiro.data61.aap.elf.parsing.BcqlParser.MethodInvocationContext;
+import au.csiro.data61.aap.elf.parsing.BcqlParser.ScopeContext;
+import au.csiro.data61.aap.elf.parsing.BcqlParser.ValueExpressionContext;
+import au.csiro.data61.aap.elf.parsing.BcqlParser.VariableNameContext;
 import au.csiro.data61.aap.elf.util.TypeUtils;
 
 /**

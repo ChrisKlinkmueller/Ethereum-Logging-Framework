@@ -7,11 +7,11 @@ import java.util.function.Function;
 import java.util.stream.Collectors;
 import java.util.stream.IntStream;
 
-import au.csiro.data61.aap.elf.util.CompositeListenerException;
+import au.csiro.data61.aap.elf.util.RootListenerException;
 import org.antlr.v4.runtime.tree.ParseTree;
 import org.antlr.v4.runtime.tree.ParseTreeWalker;
 
-import au.csiro.data61.aap.elf.util.CompositeEthqlListener;
+import au.csiro.data61.aap.elf.util.RootListener;
 
 /**
  * SolidityCodeGenerator
@@ -19,11 +19,11 @@ import au.csiro.data61.aap.elf.util.CompositeEthqlListener;
 public class SolidityCodeGeneration {
     public static final String CODE_GAP = IntStream.range(0, 3).mapToObj(i -> System.lineSeparator()).collect(Collectors.joining());
 
-    private final CompositeEthqlListener<BaseGenerator> listener;
+    private final RootListener listener;
     private final CodeCollector codeCollector;
 
     public SolidityCodeGeneration() {
-        this.listener = new CompositeEthqlListener<>();
+        this.listener = new RootListener();
         this.codeCollector = new CodeCollector();
         this.init(Arrays.asList(new ItemGenerator(this.codeCollector)));
     }
@@ -31,7 +31,7 @@ public class SolidityCodeGeneration {
     public SolidityCodeGeneration(List<Function<CodeCollector, BaseGenerator>> generatorConstructors) {
         assert generatorConstructors.stream().allMatch(Objects::nonNull);
         this.codeCollector = new CodeCollector();
-        this.listener = new CompositeEthqlListener<>();
+        this.listener = new RootListener();
         this.init(generatorConstructors.stream().map(c -> c.apply(this.codeCollector)).collect(Collectors.toList()));
     }
 
@@ -39,7 +39,7 @@ public class SolidityCodeGeneration {
         generators.forEach(gen -> {
             try {
                 this.listener.addListener(gen);
-            } catch (CompositeListenerException e) {
+            } catch (RootListenerException e) {
                 e.printStackTrace();
             }
         });

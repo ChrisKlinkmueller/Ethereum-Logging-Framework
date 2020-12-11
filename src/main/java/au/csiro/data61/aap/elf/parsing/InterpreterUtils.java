@@ -11,8 +11,8 @@ import org.antlr.v4.runtime.CharStream;
 import org.antlr.v4.runtime.CharStreams;
 import org.antlr.v4.runtime.CommonTokenStream;
 
-import au.csiro.data61.aap.elf.parsing.EthqlParser.LiteralContext;
-import au.csiro.data61.aap.elf.parsing.EthqlParser.ValueExpressionContext;
+import au.csiro.data61.aap.elf.parsing.BcqlParser.LiteralContext;
+import au.csiro.data61.aap.elf.parsing.BcqlParser.ValueExpressionContext;
 import au.csiro.data61.aap.elf.util.MethodResult;
 import au.csiro.data61.aap.elf.util.TypeUtils;
 
@@ -51,25 +51,25 @@ public class InterpreterUtils {
         }
     }
 
-    static MethodResult<EthqlParser> createParser(InputStream is, ErrorCollector errorCollector) {
+    static MethodResult<BcqlParser> createParser(InputStream is, ErrorCollector errorCollector) {
         final MethodResult<CharStream> charstreamResult = charStreamfromInputStream(is);
         return createParser(charstreamResult, errorCollector);
     }
 
-    static MethodResult<EthqlParser> createParser(String string, ErrorCollector errorCollector) {
+    static MethodResult<BcqlParser> createParser(String string, ErrorCollector errorCollector) {
         final MethodResult<CharStream> charstreamResult = charStreamfromString(string);
         return createParser(charstreamResult, errorCollector);
     }
 
-    private static MethodResult<EthqlParser> createParser(MethodResult<CharStream> charstreamResult, ErrorCollector errorCollector) {
+    private static MethodResult<BcqlParser> createParser(MethodResult<CharStream> charstreamResult, ErrorCollector errorCollector) {
         if (!charstreamResult.isSuccessful()) {
             return MethodResult.ofError(charstreamResult);
         }
 
         final CharStream charStream = charstreamResult.getResult();
-        final EthqlLexer lexer = new EthqlLexer(charStream);
+        final BcqlLexer lexer = new BcqlLexer(charStream);
         final CommonTokenStream tokens = new CommonTokenStream(lexer);
-        final EthqlParser syntacticParser = new EthqlParser(tokens);
+        final BcqlParser syntacticParser = new BcqlParser(tokens);
 
         if (charStream != null) {
             lexer.removeErrorListeners();
@@ -81,7 +81,7 @@ public class InterpreterUtils {
         return MethodResult.ofResult(syntacticParser);
     }
 
-    public static String determineType(ValueExpressionContext ctx, VariableExistenceAnalyzer varAnalyzer) {
+    public static String determineType(ValueExpressionContext ctx, VariableExistenceListener varAnalyzer) {
         return ctx.literal() != null ? literalType(ctx.literal()) : varAnalyzer.getVariableType(ctx.variableName().getText());
     }
 

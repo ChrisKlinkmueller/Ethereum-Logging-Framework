@@ -30,10 +30,10 @@ public class EthqlInterpreter {
     }
 
     public EthqlProcessingResult<ParseTree> parseDocument(InputStream is) {
-        return this.parse(is, EthqlParser::document);
+        return this.parse(is, BcqlParser::document);
     }
 
-    protected EthqlProcessingResult<ParseTree> parse(InputStream is, Function<EthqlParser, ParseTree> rule) {
+    protected EthqlProcessingResult<ParseTree> parse(InputStream is, Function<BcqlParser, ParseTree> rule) {
         if (is == null) {
             return EthqlProcessingResult.ofError("The 'is' parameter was null.");
         }
@@ -43,12 +43,12 @@ public class EthqlInterpreter {
             return EthqlProcessingResult.ofUnsuccessfulMethodResult(charStreamResult);
         }
 
-        final EthqlLexer lexer = new EthqlLexer(charStreamResult.getResult());
+        final BcqlLexer lexer = new BcqlLexer(charStreamResult.getResult());
         lexer.removeErrorListeners();
         lexer.addErrorListener(this.errorCollector);
 
         final CommonTokenStream tokens = new CommonTokenStream(lexer);
-        final EthqlParser syntacticParser = new EthqlParser(tokens);
+        final BcqlParser syntacticParser = new BcqlParser(tokens);
         syntacticParser.removeErrorListeners();
         syntacticParser.addErrorListener(this.errorCollector);
 
