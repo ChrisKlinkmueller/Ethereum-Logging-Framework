@@ -32,17 +32,18 @@ public class HyperledgerListener extends BaseBlockchainListener {
 
         final List<String> hyperledgerConnectionParams = TypeUtils.parseStringArrayLiteral(literalText);
 
-        if (hyperledgerConnectionParams.size() != 4) {
-            LOGGER.severe("Hyperledger SET CONNECTION parameter should be a String array of length 4");
+        if (hyperledgerConnectionParams.size() != 5) {
+            LOGGER.severe("Hyperledger SET CONNECTION parameter should be a String array of length 5");
         }
 
         state.gateway = HyperledgerConnection.getGateway(
             hyperledgerConnectionParams.get(0),
             hyperledgerConnectionParams.get(1),
-            hyperledgerConnectionParams.get(2)
+            hyperledgerConnectionParams.get(2),
+            hyperledgerConnectionParams.get(3)
         );
 
-        state.network = HyperledgerConnection.getNetwork(state.gateway, hyperledgerConnectionParams.get(3));
+        state.network = HyperledgerConnection.getNetwork(state.gateway, hyperledgerConnectionParams.get(4));
 
     }
 }
