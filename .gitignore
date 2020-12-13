@@ -132,3 +132,7 @@ CsvTransform.java
 *.docx
 /test_app
 /target/
+
+# Project specific
+
+hyperledger/
