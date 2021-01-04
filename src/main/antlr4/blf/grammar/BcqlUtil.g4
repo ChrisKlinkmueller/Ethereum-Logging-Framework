@@ -128,7 +128,7 @@ expressionStatement
     ;
 
 methodStatement
-    : methodInvocation
+    : methodInvocation ';'
     ;
 
 methodInvocation
