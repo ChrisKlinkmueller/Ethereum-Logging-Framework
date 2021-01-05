@@ -10,11 +10,16 @@ function redecho() {
 
 function main() {
 	if [ -d 'extracted' ]; then
-		echo "folder 'extracted' already exists! do you want to delete it and start again? (y/n)"
-		read confirm
-		if [ ! "$confirm" = "y" ]; then
-			echo "aborting!"
-			exit 1
+		if [ ! "$1" = "--auto" ]; then
+			echo "folder 'extracted' already exists! do you want to delete it and start again? (y/n)"
+			read confirm
+			if [ ! "$confirm" = "y" ]; then
+				echo "aborting!"
+				exit 1
+			else
+				colorecho "Cleaning up old test environment"
+				rm -rf extracted
+			fi
 		else
 			colorecho "Cleaning up old test environment"
 			rm -rf extracted
@@ -100,19 +105,24 @@ function main() {
 
 	colorecho "All tests completed successfully"
 	cd ..
-	echo "Remove the generated data? (y/n)"
-	read confirm
-	if [ "$confirm" = "y" ]; then
+	if [ ! "$1" = "--auto" ]; then
+		echo "Remove the generated data? (y/n)"
+		read confirm
+		if [ "$confirm" = "y" ]; then
+			echo "Deleting generated data"
+			rm -rf extracted
+		fi
+		echo "Run mvn clean? (y/n)"
+		read confirm
+		if [ "$confirm" = "y" ]; then
+			echo "mvn clean"
+			cd $WD
+			mvn clean
+			cd $LWD
+		fi
+	else
 		echo "Deleting generated data"
 		rm -rf extracted
-	fi
-	echo "Run mvn clean? (y/n)"
-	read confirm
-	if [ "$confirm" = "y" ]; then
-		echo "mvn clean"
-		cd $WD
-		mvn clean
-		cd $LWD
 	fi
 
 	colorecho "Goodbye"
@@ -6600,4 +6610,4 @@ block.number,tx.input,tx.status
 EOF
 )
 
-main
+main "$@"
