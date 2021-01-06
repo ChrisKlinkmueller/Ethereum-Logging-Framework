@@ -17,7 +17,6 @@ public class MethodCall implements Instruction {
     private final ValueMutator resultStorer;
 
     public MethodCall(@NonNull Method method, @NonNull List<ValueAccessor> parameterAccessors, ValueMutator resultStorer) {
-        assert parameterAccessors.stream().allMatch(Objects::nonNull);
         this.parameterAccessors = parameterAccessors;
         this.method = method;
         this.resultStorer = resultStorer;

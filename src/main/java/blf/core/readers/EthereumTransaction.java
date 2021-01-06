@@ -44,7 +44,6 @@ public abstract class EthereumTransaction {
     }
 
     public EthereumLogEntry getLog(int index) {
-        assert 0 <= index && index < this.logs.size();
         return this.logs.get(index);
     }
 

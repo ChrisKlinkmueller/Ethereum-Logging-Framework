@@ -8,12 +8,13 @@ import java.util.stream.Collectors;
 import blf.core.exceptions.ProgramException;
 import blf.core.filters.FilterPredicate;
 import blf.core.values.ValueAccessor;
+import io.reactivex.annotations.NonNull;
 
 /**
  * AddressListSpecification
  */
 public class AddressListSpecification {
-    private FilterPredicate<String> addressCheck;
+    private final FilterPredicate<String> addressCheck;
 
     private AddressListSpecification(FilterPredicate<String> addressCheck) {
         this.addressCheck = addressCheck;
@@ -23,15 +24,12 @@ public class AddressListSpecification {
         return this.addressCheck;
     }
 
-    public static AddressListSpecification ofAddress(String expectedAddress) {
-        assert expectedAddress != null;
-        final String lowerCaseAddress = expectedAddress.toLowerCase();
-        return new AddressListSpecification((state, address) -> address != null && lowerCaseAddress.equals(address.toLowerCase()));
+    public static AddressListSpecification ofAddress(@NonNull String expectedAddress) {
+        return new AddressListSpecification((state, address) -> expectedAddress.equalsIgnoreCase(address));
     }
 
-    public static AddressListSpecification ofAddresses(List<String> expectedAddresses) {
-        assert expectedAddresses != null && expectedAddresses.stream().allMatch(Objects::nonNull);
-        final List<String> lowerCaseAddresses = expectedAddresses.stream().map(ad -> ad.toLowerCase()).collect(Collectors.toList());
+    public static AddressListSpecification ofAddresses(@NonNull List<String> expectedAddresses) {
+        final List<String> lowerCaseAddresses = expectedAddresses.stream().map(String::toLowerCase).collect(Collectors.toList());
         return new AddressListSpecification((state, address) -> address != null && lowerCaseAddresses.contains(address.toLowerCase()));
     }
 
@@ -48,19 +46,18 @@ public class AddressListSpecification {
     }
 
     @SuppressWarnings("unchecked")
-    public static AddressListSpecification ofVariableName(String name) {
-        assert name != null;
+    public static AddressListSpecification ofVariableName(@NonNull String name) {
         final ValueAccessor accessor = ValueAccessor.createVariableAccessor(name);
         return new AddressListSpecification((state, address) -> {
             final Object value = accessor.getValue(state);
             if (value == null) {
                 return address == null;
             } else if (value instanceof String) {
-                return address.equals((String) value);
+                return address.equals(value);
             } else if (List.class.isAssignableFrom(value.getClass())) {
                 try {
                     return ((List<String>) value).contains(address);
-                } catch (Throwable cause) {
+                } catch (Exception cause) {
                     throw new ProgramException("Address list is not a string list.", cause);
                 }
             } else {

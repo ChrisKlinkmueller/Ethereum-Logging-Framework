@@ -8,7 +8,6 @@ import java.util.Date;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
-import java.util.Objects;
 import java.util.Set;
 import java.util.Map.Entry;
 import java.util.function.BiFunction;
@@ -111,7 +110,6 @@ public class XesWriter extends DataWriter {
     }
 
     public void addBooleanList(@NonNull String key, @NonNull List<Boolean> values) {
-        assert values.stream().allMatch(Objects::nonNull);
         this.addListAttribute(key, values, XAttributeBooleanImpl::new);
         LOGGER.info(String.format("Boolean list attribute %s added.", key));
     }
@@ -122,7 +120,6 @@ public class XesWriter extends DataWriter {
     }
 
     public void addFloatList(@NonNull String key, @NonNull List<BigInteger> values) {
-        assert values.stream().allMatch(Objects::nonNull);
         final List<Double> list = values.stream().map(BigInteger::doubleValue).collect(Collectors.toList());
         this.addListAttribute(key, list, XAttributeContinuousImpl::new);
         LOGGER.info(String.format("Float list attribute %s added.", key));
@@ -134,7 +131,6 @@ public class XesWriter extends DataWriter {
     }
 
     public void addIntList(@NonNull String key, @NonNull List<BigInteger> values) {
-        assert values.stream().allMatch(Objects::nonNull);
         final List<Long> list = values.stream().map(BigInteger::longValue).collect(Collectors.toList());
         this.addListAttribute(key, list, XAttributeContinuousImpl::new);
         LOGGER.info(String.format("Int list attribute %s added.", key));
@@ -147,7 +143,6 @@ public class XesWriter extends DataWriter {
     }
 
     public void addDateList(@NonNull String key, @NonNull List<BigInteger> values) {
-        assert values.stream().allMatch(Objects::nonNull);
         final List<Date> list = values.stream().map(BigInteger::longValue).map(Date::new).collect(Collectors.toList());
         this.addListAttribute(key, list, XAttributeTimestampImpl::new);
         LOGGER.info(String.format("Date list attribute %s added.", key));
@@ -159,7 +154,6 @@ public class XesWriter extends DataWriter {
     }
 
     public void addStringList(@NonNull String key, @NonNull List<String> values) {
-        assert values.stream().allMatch(Objects::nonNull);
         this.addListAttribute(key, values, XAttributeLiteralImpl::new);
         LOGGER.info(String.format("String list attribute %s added.", key));
     }

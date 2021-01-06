@@ -1,6 +1,7 @@
 package blf.configuration;
 
 import blf.core.VariableAssignment;
+import io.reactivex.annotations.NonNull;
 
 /**
  * ValueAssignmentSpecification
@@ -11,9 +12,7 @@ public class ValueAssignmentSpecification extends InstructionSpecification<Varia
         super(assignment);
     }
 
-    public static ValueAssignmentSpecification of(ValueMutatorSpecification mutator, ValueAccessorSpecification accessor) {
-        assert mutator != null;
-        assert accessor != null;
+    public static ValueAssignmentSpecification of(@NonNull ValueMutatorSpecification mutator, @NonNull ValueAccessorSpecification accessor) {
         return new ValueAssignmentSpecification(new VariableAssignment(mutator.getMutator(), accessor.getValueAccessor()));
     }
 

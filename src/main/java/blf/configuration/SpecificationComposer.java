@@ -15,6 +15,7 @@ import blf.core.filters.SmartContractFilter;
 import blf.core.filters.TransactionFilter;
 import blf.core.values.ValueAccessor;
 import blf.core.values.ValueMutator;
+import io.reactivex.annotations.NonNull;
 
 /**
  * SpecificationComposer
@@ -72,7 +73,7 @@ public class SpecificationComposer {
                         "A %s cannot be added to %s, but only to: %s.",
                         newState,
                         this.states.peek(),
-                        Arrays.stream(possibleCurrentStates).map(state -> state.toString()).collect(Collectors.joining(", "))
+                        Arrays.stream(possibleCurrentStates).map(FactoryState::toString).collect(Collectors.joining(", "))
                     )
             );
         }
@@ -108,9 +109,7 @@ public class SpecificationComposer {
         this.closeScope(blockRange);
     }
 
-    public void buildTransactionFilter(AddressListSpecification senders, AddressListSpecification recipients) throws BuildException {
-        assert senders != null;
-        assert recipients != null;
+    public void buildTransactionFilter(@NonNull AddressListSpecification senders, @NonNull AddressListSpecification recipients) throws BuildException {
 
         if (this.states.peek() != FactoryState.TRANSACTION_FILTER) {
             throw new BuildException(
@@ -127,9 +126,7 @@ public class SpecificationComposer {
         this.closeScope(filter);
     }
 
-    public void buildLogEntryFilter(AddressListSpecification contracts, LogEntrySignatureSpecification signature) throws BuildException {
-        assert contracts != null;
-        assert signature != null;
+    public void buildLogEntryFilter(@NonNull AddressListSpecification contracts, @NonNull LogEntrySignatureSpecification signature) throws BuildException {
 
         if (this.states.peek() != FactoryState.LOG_ENTRY_FILTER) {
             throw new BuildException(
@@ -141,8 +138,7 @@ public class SpecificationComposer {
         this.closeScope(filter);
     }
 
-    public void buildGenericFilter(GenericFilterPredicateSpecification predicate) throws BuildException {
-        assert predicate != null;
+    public void buildGenericFilter(@NonNull GenericFilterPredicateSpecification predicate) throws BuildException {
 
         if (this.states.peek() != FactoryState.GENERIC_FILTER) {
             throw new BuildException(
@@ -154,8 +150,7 @@ public class SpecificationComposer {
         this.closeScope(filter);
     }
 
-    public void buildSmartContractFilter(SmartContractFilterSpecification specification) throws BuildException {
-        assert specification != null;
+    public void buildSmartContractFilter(@NonNull SmartContractFilterSpecification specification) throws BuildException {
 
         if (this.states.peek() != FactoryState.SMART_CONTRACT_FILTER) {
             throw new BuildException(
@@ -198,7 +193,7 @@ public class SpecificationComposer {
         };
     }
 
-    private static enum FactoryState {
+    private enum FactoryState {
         PROGRAM,
         BLOCK_RANGE_FILTER,
         TRANSACTION_FILTER,

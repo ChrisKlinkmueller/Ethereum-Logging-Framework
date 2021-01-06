@@ -1,6 +1,7 @@
 package blf.configuration;
 
 import blf.core.filters.Parameter;
+import io.reactivex.annotations.NonNull;
 
 /**
  * LogEntryParameterSpecification
@@ -36,9 +37,7 @@ public class ParameterSpecification {
         return new ParameterSpecification(paramName, paramType, false);
     }
 
-    public static ParameterSpecification of(String paramName, String paramType, boolean isIndexed) {
-        assert paramName != null;
-        assert paramType != null;
+    public static ParameterSpecification of(@NonNull String paramName, @NonNull String paramType, boolean isIndexed) {
         return new ParameterSpecification(paramName, paramType, isIndexed);
     }
 

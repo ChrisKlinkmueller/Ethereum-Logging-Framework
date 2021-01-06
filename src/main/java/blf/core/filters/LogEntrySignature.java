@@ -3,7 +3,6 @@ package blf.core.filters;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
-import java.util.Objects;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
@@ -31,7 +30,6 @@ public class LogEntrySignature {
     }
 
     public LogEntrySignature(@NonNull final String name, @NonNull final List<Parameter> parameters) {
-        assert parameters.stream().allMatch(Objects::nonNull);
         this.name = name;
         this.parameters = new ArrayList<>(parameters);
         this.event = new Event(this.name, parameters.stream().map(Parameter::getType).collect(Collectors.toList()));
@@ -47,7 +45,6 @@ public class LogEntrySignature {
     }
 
     public Parameter getParameter(final int index) {
-        assert 0 <= index && index <= this.parameterCount();
         return this.parameters.get(index);
     }
 

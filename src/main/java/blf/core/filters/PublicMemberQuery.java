@@ -29,8 +29,6 @@ public class PublicMemberQuery implements SmartContractQuery {
         @NonNull List<SmartContractParameter> inputParameters,
         @NonNull List<Parameter> outputParameters
     ) {
-        assert inputParameters.stream().allMatch(Objects::nonNull);
-        assert outputParameters.stream().allMatch(Objects::nonNull);
         this.inputParameters = new ArrayList<>(inputParameters);
         this.outputParameters = new ArrayList<>(outputParameters);
         this.memberName = memberName;

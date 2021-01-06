@@ -49,9 +49,11 @@ public class DataReader {
     }
 
     public Stream<EthereumLogEntry> logEntryStream() {
-        return this.currentTransaction == null
-            ? (this.currentBlock == null ? Stream.empty() : this.currentBlock.transactionStream().flatMap(EthereumTransaction::logStream))
-            : this.currentTransaction.logStream();
+        if (this.currentTransaction == null) {
+            return this.currentBlock == null ? Stream.empty() : this.currentBlock.transactionStream().flatMap(EthereumTransaction::logStream);
+        } else {
+            return this.currentTransaction.logStream();
+        }
     }
 
     public void connect(@NonNull String url) throws ProgramException {

@@ -35,7 +35,7 @@ public class SmartContractFilterSpecification {
     public static SmartContractFilterSpecification of(
         ValueAccessorSpecification contractAddress,
         List<SmartContractQuerySpecification> querySpecs
-    ) throws BuildException {
+    ) {
         final ArrayList<SmartContractQuery> queries = new ArrayList<>();
         for (SmartContractQuerySpecification querySpec : querySpecs) {
             queries.add(querySpec.getQuery());

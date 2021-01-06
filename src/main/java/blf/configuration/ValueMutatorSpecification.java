@@ -2,6 +2,7 @@ package blf.configuration;
 
 import blf.core.values.ValueMutator;
 import blf.core.values.Variables;
+import io.reactivex.annotations.NonNull;
 
 /**
  * ValueMutatorSpecification
@@ -17,8 +18,7 @@ public class ValueMutatorSpecification {
         return mutator;
     }
 
-    public static ValueMutatorSpecification ofVariableName(String name) {
-        assert name != null && !name.isBlank();
+    public static ValueMutatorSpecification ofVariableName(@NonNull String name) {
         ValueMutator mutator = Variables.createValueMutator(name);
         return new ValueMutatorSpecification(mutator);
     }

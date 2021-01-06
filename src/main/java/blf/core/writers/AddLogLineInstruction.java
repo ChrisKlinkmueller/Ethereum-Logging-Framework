@@ -22,7 +22,6 @@ public class AddLogLineInstruction implements Instruction {
     }
 
     public AddLogLineInstruction(@NonNull List<ValueAccessor> valueAccessors) {
-        assert valueAccessors.stream().allMatch(Objects::nonNull);
         this.valueAccessors = new LinkedList<>(valueAccessors);
     }
 

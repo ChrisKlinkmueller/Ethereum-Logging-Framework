@@ -18,7 +18,6 @@ public class AddCsvRowInstruction implements Instruction {
     private final ValueAccessor tableName;
 
     public AddCsvRowInstruction(@NonNull ValueAccessor tableName, @NonNull List<CsvColumn> columns) {
-        assert columns.stream().allMatch(Objects::nonNull);
         this.columns = new ArrayList<>(columns);
         this.tableName = tableName;
     }

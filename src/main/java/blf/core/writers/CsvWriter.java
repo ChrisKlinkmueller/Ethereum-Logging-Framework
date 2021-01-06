@@ -46,7 +46,6 @@ public class CsvWriter extends DataWriter {
     }
 
     public void addCell(@NonNull String tableName, @NonNull String attribute, Object value) {
-        assert this.tables.containsKey(tableName);
         final ArrayList<Object> column = this.createNewColumnIfAbsent(tableName, attribute);
         column.add(value);
 
@@ -69,7 +68,6 @@ public class CsvWriter extends DataWriter {
     }
 
     public void endRow(@NonNull String tableName) {
-        assert this.tables.containsKey(tableName);
         final int rowCount = this.rowCounts.compute(tableName, (k, v) -> v + 1);
         this.tables.get(tableName).values().stream().filter(column -> column.size() != rowCount).forEach(column -> column.add(null));
     }

@@ -63,7 +63,6 @@ public abstract class EthereumBlock implements Iterable<EthereumTransaction> {
     }
 
     public EthereumTransaction getTransaction(int index) {
-        assert 0 <= index && index < this.transactionCount();
         return this.transactions.get(index);
     }
 
