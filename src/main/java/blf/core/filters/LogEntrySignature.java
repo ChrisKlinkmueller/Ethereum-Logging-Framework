@@ -15,6 +15,7 @@ import org.web3j.abi.TypeDecoder;
 import org.web3j.abi.datatypes.Event;
 
 import blf.core.ProgramState;
+import org.web3j.abi.datatypes.Type;
 
 /**
  * LogEntrySignature
@@ -77,7 +78,7 @@ public class LogEntrySignature {
         final List<Parameter> dataVariables = this.getEntryParameters(false);
         final List<Object> results = FunctionReturnDecoder.decode(logEntry.getData(), this.event.getNonIndexedParameters())
             .stream()
-            .map(type -> type.getValue())
+            .map(Type::getValue)
             .collect(Collectors.toList());
         assert dataVariables.size() == results.size();
         for (int i = 0; i < dataVariables.size(); i++) {

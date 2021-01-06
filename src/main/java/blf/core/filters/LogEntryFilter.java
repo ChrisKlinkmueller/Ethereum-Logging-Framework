@@ -48,7 +48,7 @@ public class LogEntryFilter extends Filter {
                 this.signature.addLogEntryValues(state, logEntry);
                 this.executeInstructions(state);
             }
-        } catch (Throwable cause) {
+        } catch (Exception cause) {
             final String message = String.format(
                 "Error mapping log entry '%s' in transaction '%s 'in block '%s'.",
                 logEntry.getLogIndex(),

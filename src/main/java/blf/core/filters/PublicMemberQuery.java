@@ -65,7 +65,7 @@ public class PublicMemberQuery implements SmartContractQuery {
     }
 
     private List<TypeReference<?>> createReturnTypes() {
-        return this.outputParameters.stream().map(param -> param.getType()).collect(Collectors.toList());
+        return this.outputParameters.stream().map(Parameter::getType).collect(Collectors.toList());
     }
 
     @SuppressWarnings("all")

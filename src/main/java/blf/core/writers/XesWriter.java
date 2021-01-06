@@ -18,6 +18,7 @@ import java.util.stream.Stream;
 
 import blf.core.exceptions.ProgramException;
 import blf.util.TypeUtils;
+import io.reactivex.annotations.NonNull;
 import org.deckfour.xes.model.XAttributable;
 import org.deckfour.xes.model.XAttribute;
 import org.deckfour.xes.model.XEvent;
@@ -46,7 +47,7 @@ public class XesWriter extends DataWriter {
     private static final String DEFAULT_PID = "pid0";
     private static final String DEFAULT_PIID = "piid0";
     private static final String DEFAULT_EID = "eid";
-    private static long EID = 0;
+    private static long eid = 0;
 
     private final Map<String, Map<String, XTrace>> traces;
     private final Map<String, Map<String, Map<String, XEvent>>> events;
@@ -77,13 +78,12 @@ public class XesWriter extends DataWriter {
 
         this.traces.putIfAbsent(pid, new LinkedHashMap<>());
         this.traces.get(pid).put(piid, trace);
-        return;
     }
 
     public static void startEvent(XesWriter writer, String inputPid, String inputPiid, String inputEid) {
         final String pid = inputPid == null ? DEFAULT_PID : inputPid;
         final String piid = inputPiid == null ? DEFAULT_PIID : inputPiid;
-        final String eid = inputEid == null ? String.format("%s%s", DEFAULT_EID, Long.toString(EID++)) : inputEid;
+        final String eid = inputEid == null ? String.format("%s%s", DEFAULT_EID, Long.toString(XesWriter.eid++)) : inputEid;
         LOGGER.info(String.format("Event %s in trace %s in log %s started.", eid, piid, pid));
 
         writer.findOrCreateTrace(pid, piid);
@@ -105,66 +105,61 @@ public class XesWriter extends DataWriter {
         this.events.get(pid).get(piid).put(eid, event);
     }
 
-    public void addBooleanValue(String key, boolean value) {
-        assert key != null;
+    public void addBooleanValue(@NonNull String key, boolean value) {
         this.addAttribute(key, value, XAttributeBooleanImpl::new);
         LOGGER.info(String.format("Boolean attribute %s added.", key));
     }
 
-    public void addBooleanList(String key, List<Boolean> values) {
-        assert key != null && values != null && values.stream().allMatch(Objects::nonNull);
+    public void addBooleanList(@NonNull String key, @NonNull List<Boolean> values) {
+        assert values.stream().allMatch(Objects::nonNull);
         this.addListAttribute(key, values, XAttributeBooleanImpl::new);
         LOGGER.info(String.format("Boolean list attribute %s added.", key));
     }
 
-    public void addFloatValue(String key, BigInteger value) {
-        assert key != null && value != null;
+    public void addFloatValue(@NonNull String key, @NonNull BigInteger value) {
         this.addAttribute(key, value.doubleValue(), XAttributeContinuousImpl::new);
         LOGGER.info(String.format("Float attribute %s added.", key));
     }
 
-    public void addFloatList(String key, List<BigInteger> values) {
-        assert key != null && values != null && values.stream().allMatch(Objects::nonNull);
+    public void addFloatList(@NonNull String key, @NonNull List<BigInteger> values) {
+        assert values.stream().allMatch(Objects::nonNull);
         final List<Double> list = values.stream().map(BigInteger::doubleValue).collect(Collectors.toList());
         this.addListAttribute(key, list, XAttributeContinuousImpl::new);
         LOGGER.info(String.format("Float list attribute %s added.", key));
     }
 
-    public void addIntValue(String key, BigInteger value) {
-        assert key != null && value != null;
+    public void addIntValue(@NonNull String key, @NonNull BigInteger value) {
         this.addAttribute(key, value.longValue(), XAttributeDiscreteImpl::new);
         LOGGER.info(String.format("Int attribute %s added.", key));
     }
 
-    public void addIntList(String key, List<BigInteger> values) {
-        assert key != null && values != null && values.stream().allMatch(Objects::nonNull);
+    public void addIntList(@NonNull String key, @NonNull List<BigInteger> values) {
+        assert values.stream().allMatch(Objects::nonNull);
         final List<Long> list = values.stream().map(BigInteger::longValue).collect(Collectors.toList());
         this.addListAttribute(key, list, XAttributeContinuousImpl::new);
         LOGGER.info(String.format("Int list attribute %s added.", key));
     }
 
-    public void addDateValue(String key, BigInteger value) {
-        assert key != null && value != null;
+    public void addDateValue(@NonNull String key, @NonNull BigInteger value) {
         final Date date = new Date(value.longValue());
         this.addAttribute(key, date, XAttributeTimestampImpl::new);
         LOGGER.info(String.format("Date attribute %s added.", key));
     }
 
-    public void addDateList(String key, List<BigInteger> values) {
-        assert key != null && values != null && values.stream().allMatch(Objects::nonNull);
+    public void addDateList(@NonNull String key, @NonNull List<BigInteger> values) {
+        assert values.stream().allMatch(Objects::nonNull);
         final List<Date> list = values.stream().map(BigInteger::longValue).map(Date::new).collect(Collectors.toList());
         this.addListAttribute(key, list, XAttributeTimestampImpl::new);
         LOGGER.info(String.format("Date list attribute %s added.", key));
     }
 
-    public void addStringValue(String key, String value) {
-        assert key != null && value != null;
+    public void addStringValue(@NonNull String key, @NonNull String value) {
         this.addAttribute(key, value, XAttributeLiteralImpl::new);
         LOGGER.info(String.format("String attribute %s = %s added.", key, value));
     }
 
-    public void addStringList(String key, List<String> values) {
-        assert key != null && values != null && values.stream().allMatch(Objects::nonNull);
+    public void addStringList(@NonNull String key, @NonNull List<String> values) {
+        assert values.stream().allMatch(Objects::nonNull);
         this.addListAttribute(key, values, XAttributeLiteralImpl::new);
         LOGGER.info(String.format("String list attribute %s added.", key));
     }
@@ -198,7 +193,7 @@ public class XesWriter extends DataWriter {
                     serializer.serialize(entry.getValue(), outputStream);
                 }
             }
-        } catch (Throwable t) {
+        } catch (Exception t) {
             LOGGER.info("Xes export finished unsuccessfully.");
             final String message = "Error exporting data to XES.";
             throw new ProgramException(message, t);
@@ -213,7 +208,7 @@ public class XesWriter extends DataWriter {
     private Map<String, XLog> getLogs() {
         return Stream.concat(this.traces.keySet().stream(), this.events.keySet().stream())
             .distinct()
-            .collect(Collectors.toMap(pid -> pid, pid -> createLog(pid)));
+            .collect(Collectors.toMap(pid -> pid, this::createLog));
     }
 
     private XLog createLog(String pid) {
@@ -244,7 +239,7 @@ public class XesWriter extends DataWriter {
     public static final String FLOAT_TYPE = "xs:float";
     public static final String INT_TYPE = "xs:int";
     public static final String STRING_TYPE = "xs:string";
-    private static Map<String, Set<String>> SUPPORTED_SOL_TO_XES_CASTS = Map.of(
+    private static final Map<String, Set<String>> SUPPORTED_SOL_TO_XES_CASTS = Map.of(
         TypeUtils.ADDRESS_TYPE_KEYWORD,
         Set.of(STRING_TYPE),
         TypeUtils.BYTES_TYPE_KEYWORD,

@@ -52,7 +52,7 @@ public abstract class DataWriter {
         }
 
         if (Collection.class.isAssignableFrom(object.getClass())) {
-            String value = ((Collection<Object>) object).stream().map(obj -> asString(obj)).collect(Collectors.joining(", "));
+            String value = ((Collection<Object>) object).stream().map(this::asString).collect(Collectors.joining(", "));
             return String.format("{%s}", value);
         }
 

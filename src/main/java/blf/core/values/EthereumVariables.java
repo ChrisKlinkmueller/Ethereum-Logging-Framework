@@ -73,7 +73,7 @@ public class EthereumVariables {
     }
 
     private static <T> T findVariable(final String name, final Function<EthereumVariable, T> mapper) {
-        return variableStream().filter(variable -> variable.hasName(name)).map(variable -> mapper.apply(variable)).findFirst().orElse(null);
+        return variableStream().filter(variable -> variable.hasName(name)).map(mapper::apply).findFirst().orElse(null);
     }
 
     private static Stream<EthereumVariable> variableStream() {

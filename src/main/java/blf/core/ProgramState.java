@@ -50,7 +50,7 @@ public class ProgramState {
         try {
             this.exceptionHandler.setOutputFolder(outputFolder);
             this.writers.setOutputFolder(outputFolder);
-        } catch (Throwable cause) {
+        } catch (Exception cause) {
             throw new ProgramException("Error when setting the output folder.", cause);
         }
     }
