@@ -6,6 +6,7 @@ import java.util.Stack;
 
 import blf.grammar.BcqlParser;
 import blf.util.TypeUtils;
+import io.reactivex.annotations.NonNull;
 import org.antlr.v4.runtime.Token;
 import org.antlr.v4.runtime.tree.TerminalNode;
 
@@ -19,9 +20,11 @@ public class FilterDefinitionAnalyzer extends SemanticAnalyzer {
     private final VariableExistenceListener variableAnalyzer;
     private final Stack<String> conditionalTypes;
 
-    public FilterDefinitionAnalyzer(final ErrorCollector errorCollector, final VariableExistenceListener variableAnalyzer) {
+    public FilterDefinitionAnalyzer(
+        @NonNull final ErrorCollector errorCollector,
+        @NonNull final VariableExistenceListener variableAnalyzer
+    ) {
         super(errorCollector);
-        assert variableAnalyzer != null;
         this.variableAnalyzer = variableAnalyzer;
         this.conditionalTypes = new Stack<>();
     }

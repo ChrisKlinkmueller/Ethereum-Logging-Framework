@@ -1,6 +1,7 @@
 package blf.parsing;
 
 import blf.grammar.BcqlBaseListener;
+import io.reactivex.annotations.NonNull;
 import org.antlr.v4.runtime.Token;
 
 /**
@@ -9,8 +10,7 @@ import org.antlr.v4.runtime.Token;
 public abstract class SemanticAnalyzer extends BcqlBaseListener {
     protected final ErrorCollector errorCollector;
 
-    public SemanticAnalyzer(ErrorCollector errorCollector) {
-        assert errorCollector != null;
+    protected SemanticAnalyzer(@NonNull ErrorCollector errorCollector) {
         this.errorCollector = errorCollector;
     }
 

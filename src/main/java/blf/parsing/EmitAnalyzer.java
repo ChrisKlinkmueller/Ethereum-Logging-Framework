@@ -8,6 +8,7 @@ import java.util.function.Function;
 import blf.core.writers.XesWriter;
 import blf.grammar.BcqlParser;
 import blf.util.TypeUtils;
+import io.reactivex.annotations.NonNull;
 import org.antlr.v4.runtime.ParserRuleContext;
 
 /**
@@ -16,9 +17,8 @@ import org.antlr.v4.runtime.ParserRuleContext;
 public class EmitAnalyzer extends SemanticAnalyzer {
     private final VariableExistenceListener varAnalyzer;
 
-    public EmitAnalyzer(final ErrorCollector errorCollector, final VariableExistenceListener varAnalyzer) {
+    public EmitAnalyzer(final ErrorCollector errorCollector, @NonNull final VariableExistenceListener varAnalyzer) {
         super(errorCollector);
-        assert varAnalyzer != null;
         this.varAnalyzer = varAnalyzer;
     }
 
@@ -94,12 +94,12 @@ public class EmitAnalyzer extends SemanticAnalyzer {
 
     private void verifyUniquenessOfName(final BcqlParser.VariableNameContext ctx, final Set<String> varNames) {
         if (varNames.contains(ctx.getText())) {
-            this.addError(ctx.start, String.format("Column name already specified."));
+            this.addError(ctx.start, "Column name already specified.");
         }
     }
 
     private void verifyXesTypeCompatibility(List<BcqlParser.XesEmitVariableContext> variables) {
-        variables.forEach(ctx -> this.verifyXesTypeCompatibility(ctx));
+        variables.forEach(this::verifyXesTypeCompatibility);
     }
 
     private void verifyXesTypeCompatibility(BcqlParser.XesEmitVariableContext ctx) {
