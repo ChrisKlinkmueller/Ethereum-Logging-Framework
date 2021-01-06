@@ -42,7 +42,7 @@ public class BitMapping {
         int length = (int) Math.pow(2, exponent);
 
         BigInteger rest = value.shiftRight(from);
-        int index = rest.and(BigInteger.valueOf(length - 1)).intValue();
+        int index = rest.and(BigInteger.valueOf(length - (long) 1)).intValue();
         return values.get(index);
     }
 }
