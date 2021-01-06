@@ -1,5 +1,7 @@
 package blf.core.values;
 
+import io.reactivex.annotations.NonNull;
+
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -8,30 +10,26 @@ import java.util.Map;
  * ValueStore
  */
 public class ValueStore {
-    private Map<String, Object> values;
+    private final Map<String, Object> values;
 
     public ValueStore() {
         this.values = new HashMap<>();
     }
 
-    public void setValue(String name, Object value) {
-        assert name != null;
+    public void setValue(@NonNull String name, Object value) {
         this.values.put(name, value);
     }
 
-    public Object getValue(String name) {
-        assert name != null;
+    public Object getValue(@NonNull String name) {
         return this.values.get(name);
     }
 
-    public void removeValue(String name) {
-        assert name != null;
+    public void removeValue(@NonNull String name) {
         this.values.remove(name);
     }
 
-    public void removeValues(List<String> names) {
-        assert names != null;
-        names.stream().forEach(name -> this.removeValue(name));
+    public void removeValues(@NonNull List<String> names) {
+        names.stream().forEach(this::removeValue);
     }
 
     public boolean containsName(String name) {

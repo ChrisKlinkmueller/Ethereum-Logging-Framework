@@ -6,6 +6,7 @@ import java.util.List;
 import java.util.stream.Stream;
 
 import blf.core.exceptions.ProgramException;
+import io.reactivex.annotations.NonNull;
 
 /**
  * EthereumTransaction
@@ -14,7 +15,7 @@ public abstract class EthereumTransaction {
     private EthereumBlock block;
     private final List<EthereumLogEntry> logs;
 
-    public EthereumTransaction() {
+    protected EthereumTransaction() {
         this.logs = new ArrayList<>();
     }
 
@@ -34,8 +35,7 @@ public abstract class EthereumTransaction {
         return this.block.getNumber();
     }
 
-    public void addLog(EthereumLogEntry log) {
-        assert log != null;
+    public void addLog(@NonNull EthereumLogEntry log) {
         this.logs.add(log);
     }
 

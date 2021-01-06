@@ -1,5 +1,7 @@
 package blf.core.writers;
 
+import io.reactivex.annotations.NonNull;
+
 import java.math.BigInteger;
 import java.nio.file.Path;
 import java.util.Arrays;
@@ -33,8 +35,7 @@ public class DataWriters {
         return this.csvWriter;
     }
 
-    public void setOutputFolder(Path folderPath) throws Throwable {
-        assert folderPath != null;
+    public void setOutputFolder(@NonNull Path folderPath) {
         Arrays.stream(this.writers).forEach(e -> e.setOutputFolder(folderPath));
     }
 

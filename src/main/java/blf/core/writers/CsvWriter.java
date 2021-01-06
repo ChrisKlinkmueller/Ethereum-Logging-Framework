@@ -1,5 +1,7 @@
 package blf.core.writers;
 
+import io.reactivex.annotations.NonNull;
+
 import java.io.BufferedWriter;
 import java.io.FileWriter;
 import java.nio.file.Path;
@@ -32,8 +34,7 @@ public class CsvWriter extends DataWriter {
         this.columnNames = new HashMap<>();
     }
 
-    public void setDelimiter(String delimiter) {
-        assert delimiter != null;
+    public void setDelimiter(@NonNull String delimiter) {
         this.delimiter = delimiter;
     }
 
@@ -44,15 +45,14 @@ public class CsvWriter extends DataWriter {
         this.columnNames.putIfAbsent(tableName, new ArrayList<>());
     }
 
-    public void addCell(String tableName, String attribute, Object value) {
-        assert tableName != null && this.tables.containsKey(tableName);
-        assert attribute != null;
+    public void addCell(@NonNull String tableName, @NonNull String attribute, Object value) {
+        assert this.tables.containsKey(tableName);
         final ArrayList<Object> column = this.createNewColumnIfAbsent(tableName, attribute);
         column.add(value);
 
-        final List<String> columnNames = this.columnNames.get(tableName);
-        if (!columnNames.contains(attribute)) {
-            columnNames.add(attribute);
+        final List<String> colNames = this.columnNames.get(tableName);
+        if (!colNames.contains(attribute)) {
+            colNames.add(attribute);
         }
     }
 
@@ -68,8 +68,8 @@ public class CsvWriter extends DataWriter {
         return newColumn;
     }
 
-    public void endRow(String tableName) {
-        assert tableName != null && this.tables.containsKey(tableName);
+    public void endRow(@NonNull String tableName) {
+        assert this.tables.containsKey(tableName);
         final int rowCount = this.rowCounts.compute(tableName, (k, v) -> v + 1);
         this.tables.get(tableName).values().stream().filter(column -> column.size() != rowCount).forEach(column -> column.add(null));
     }
@@ -82,7 +82,7 @@ public class CsvWriter extends DataWriter {
         }
     }
 
-    protected void writeTable(String filenameSuffix, String tableName) throws Throwable {
+    protected void writeTable(String filenameSuffix, String tableName) throws Exception {
         LOGGER.info(String.format("Export of CSV table %s started.", tableName));
         final Path path = Paths.get(this.getOutputFolder().toString(), String.format("%s_%s.csv", tableName, filenameSuffix));
 
@@ -98,7 +98,7 @@ public class CsvWriter extends DataWriter {
                 final int index = i;
                 final String row = columns.stream()
                     .map(column -> table.get(column).get(index))
-                    .map(value -> this.asString(value))
+                    .map(this::asString)
                     .collect(Collectors.joining(this.delimiter));
                 writer.write(row);
                 writer.newLine();

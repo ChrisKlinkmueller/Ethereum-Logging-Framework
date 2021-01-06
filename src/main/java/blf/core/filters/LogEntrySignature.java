@@ -8,6 +8,7 @@ import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
 import blf.core.readers.EthereumLogEntry;
+import io.reactivex.annotations.NonNull;
 import org.web3j.abi.EventEncoder;
 import org.web3j.abi.FunctionReturnDecoder;
 import org.web3j.abi.TypeDecoder;
@@ -28,9 +29,8 @@ public class LogEntrySignature {
         this(name, Arrays.asList(parameters));
     }
 
-    public LogEntrySignature(final String name, final List<Parameter> parameters) {
-        assert name != null;
-        assert parameters != null && parameters.stream().allMatch(Objects::nonNull);
+    public LogEntrySignature(@NonNull final String name, @NonNull final List<Parameter> parameters) {
+        assert parameters.stream().allMatch(Objects::nonNull);
         this.name = name;
         this.parameters = new ArrayList<>(parameters);
         this.event = new Event(this.name, parameters.stream().map(Parameter::getType).collect(Collectors.toList()));
@@ -58,12 +58,12 @@ public class LogEntrySignature {
         return !logEntry.getTopics().isEmpty() && logEntry.getTopics().get(0).equals(this.encodedSignature);
     }
 
-    public void addLogEntryValues(ProgramState state, EthereumLogEntry logEntry) throws Throwable {
+    public void addLogEntryValues(ProgramState state, EthereumLogEntry logEntry) throws Exception {
         this.addTopics(state, logEntry);
         this.addData(state, logEntry);
     }
 
-    private void addTopics(ProgramState state, EthereumLogEntry logEntry) throws Throwable {
+    private void addTopics(ProgramState state, EthereumLogEntry logEntry) throws Exception {
         final List<Parameter> topicParameters = this.getEntryParameters(true);
         assert logEntry.getTopics().size() == topicParameters.size() + 1;
         for (int i = 0; i < topicParameters.size(); i++) {
@@ -73,7 +73,7 @@ public class LogEntrySignature {
         }
     }
 
-    private void addData(ProgramState state, EthereumLogEntry logEntry) throws Throwable {
+    private void addData(ProgramState state, EthereumLogEntry logEntry) {
         final List<Parameter> dataVariables = this.getEntryParameters(false);
         final List<Object> results = FunctionReturnDecoder.decode(logEntry.getData(), this.event.getNonIndexedParameters())
             .stream()
@@ -81,9 +81,9 @@ public class LogEntrySignature {
             .collect(Collectors.toList());
         assert dataVariables.size() == results.size();
         for (int i = 0; i < dataVariables.size(); i++) {
-            String name = dataVariables.get(i).getName();
+            String nameOfVariable = dataVariables.get(i).getName();
             Object value = results.get(i);
-            state.getValueStore().setValue(name, value);
+            state.getValueStore().setValue(nameOfVariable, value);
         }
     }
 

@@ -46,7 +46,7 @@ public class EthereumVariables {
     }
 
     private static Map<String, String> getVariableNamesAndType(Set<EthereumVariable> variables) {
-        return variables.stream().collect(Collectors.toMap(v -> v.getName(), v -> v.getType()));
+        return variables.stream().collect(Collectors.toMap(EthereumVariable::getName, EthereumVariable::getType));
     }
 
     public static boolean isBlockVariable(String name) {

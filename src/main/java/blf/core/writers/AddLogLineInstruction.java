@@ -9,6 +9,7 @@ import blf.core.Instruction;
 import blf.core.ProgramState;
 import blf.core.exceptions.ProgramException;
 import blf.core.values.ValueAccessor;
+import io.reactivex.annotations.NonNull;
 
 /**
  * AddLogLineInstruction
@@ -20,8 +21,8 @@ public class AddLogLineInstruction implements Instruction {
         this(Arrays.asList(valueAccessors));
     }
 
-    public AddLogLineInstruction(List<ValueAccessor> valueAccessors) {
-        assert valueAccessors != null && valueAccessors.stream().allMatch(Objects::nonNull);
+    public AddLogLineInstruction(@NonNull List<ValueAccessor> valueAccessors) {
+        assert valueAccessors.stream().allMatch(Objects::nonNull);
         this.valueAccessors = new LinkedList<>(valueAccessors);
     }
 

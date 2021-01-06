@@ -9,6 +9,7 @@ import java.util.stream.IntStream;
 
 import blf.core.exceptions.ProgramException;
 import blf.core.readers.EthereumClient;
+import io.reactivex.annotations.NonNull;
 import org.web3j.abi.TypeDecoder;
 import org.web3j.abi.TypeReference;
 import org.web3j.abi.datatypes.Type;
@@ -23,10 +24,13 @@ public class PublicMemberQuery implements SmartContractQuery {
     private final List<SmartContractParameter> inputParameters;
     private final List<Parameter> outputParameters;
 
-    public PublicMemberQuery(String memberName, List<SmartContractParameter> inputParameters, List<Parameter> outputParameters) {
-        assert memberName != null;
-        assert inputParameters != null && inputParameters.stream().allMatch(Objects::nonNull);
-        assert outputParameters != null && outputParameters.stream().allMatch(Objects::nonNull);
+    public PublicMemberQuery(
+        @NonNull String memberName,
+        @NonNull List<SmartContractParameter> inputParameters,
+        @NonNull List<Parameter> outputParameters
+    ) {
+        assert inputParameters.stream().allMatch(Objects::nonNull);
+        assert outputParameters.stream().allMatch(Objects::nonNull);
         this.inputParameters = new ArrayList<>(inputParameters);
         this.outputParameters = new ArrayList<>(outputParameters);
         this.memberName = memberName;

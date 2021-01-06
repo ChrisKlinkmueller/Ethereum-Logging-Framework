@@ -23,9 +23,9 @@ public class BlockFilter extends Filter {
     private final FilterPredicate<BigInteger> stopCriteria;
 
     public BlockFilter(
-            @NonNull final ValueAccessor fromBlock,
-            @NonNull FilterPredicate<BigInteger> stopCriteria,
-            @NonNull List<Instruction> instructions
+        @NonNull final ValueAccessor fromBlock,
+        @NonNull FilterPredicate<BigInteger> stopCriteria,
+        @NonNull List<Instruction> instructions
     ) {
         super(instructions);
         this.fromBlock = fromBlock;
@@ -100,8 +100,8 @@ public class BlockFilter extends Filter {
                     // TODO (by Mykola Digtiar): the exception should be handled in queryBlockNumber() method
 
                     final String queryBlockNumberErrorMessage = String.format(
-                            "An error occurred while querying the block with number '%s'",
-                            expectedBlockNumber.toString()
+                        "An error occurred while querying the block with number '%s'",
+                        expectedBlockNumber.toString()
                     );
 
                     state.getExceptionHandler().handleExceptionAndDecideOnAbort(queryBlockNumberErrorMessage, throwable);

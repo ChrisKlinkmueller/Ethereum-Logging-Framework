@@ -12,6 +12,7 @@ import java.util.logging.Level;
 import java.util.logging.Logger;
 import java.util.stream.Collectors;
 
+import io.reactivex.annotations.NonNull;
 import org.web3j.abi.FunctionEncoder;
 import org.web3j.abi.FunctionReturnDecoder;
 import org.web3j.abi.TypeReference;
@@ -39,7 +40,7 @@ import org.web3j.protocol.websocket.WebSocketService;
  * Web3jClient
  */
 public class Web3jClient implements EthereumClient {
-    private static final Logger LOGGER = Logger.getLogger(EthereumClient.class.getName());
+    private static final Logger LOGGER = Logger.getLogger(Web3jClient.class.getName());
     private static final String URL = "ws://localhost:8546/";
 
     private final Service service;
@@ -62,8 +63,7 @@ public class Web3jClient implements EthereumClient {
         return connectWebsocket(URL);
     }
 
-    public static Web3jClient connectWebsocket(String url) throws URISyntaxException, ConnectException {
-        assert url != null && !url.isBlank();
+    public static Web3jClient connectWebsocket(@NonNull String url) throws URISyntaxException, ConnectException {
 
         try {
             final WebSocketClient wsClient = new WebSocketClient(new URI(url));
@@ -77,8 +77,7 @@ public class Web3jClient implements EthereumClient {
         }
     }
 
-    public static Web3jClient connectIpc(String path) throws ConnectException {
-        assert path != null && !path.isBlank();
+    public static Web3jClient connectIpc(@NonNull String path) throws ConnectException {
 
         final Service service = createIpcService(path);
 
@@ -222,13 +221,13 @@ public class Web3jClient implements EthereumClient {
         }
     }
 
-    private void addLog(EthereumBlock ethBlock, Log log) {
+    private void addLog(EthereumBlock ethBlock, @NonNull Log log) {
         final EthereumTransaction tx = ethBlock.transactionStream()
             .filter(t -> t.getHash().equals(log.getTransactionHash()))
             .findAny()
             .orElse(null);
         if (tx == null) {
-            LOGGER.log(Level.WARNING, String.format("Couldn't find transaction with hash '%s'.", log.getTransactionHash()));
+            LOGGER.log(Level.WARNING, "Could not find transaction with hash {0}.", log.getTransactionHash());
             return;
         }
 

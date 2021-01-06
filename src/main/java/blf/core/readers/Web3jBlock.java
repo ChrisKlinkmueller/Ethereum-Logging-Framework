@@ -3,6 +3,7 @@ package blf.core.readers;
 import java.math.BigInteger;
 import java.util.List;
 
+import io.reactivex.annotations.NonNull;
 import org.web3j.protocol.core.methods.response.EthBlock.Block;
 
 /**
@@ -11,8 +12,7 @@ import org.web3j.protocol.core.methods.response.EthBlock.Block;
 class Web3jBlock extends EthereumBlock {
     private final Block block;
 
-    public Web3jBlock(Block block) {
-        assert block != null;
+    public Web3jBlock(@NonNull Block block) {
         this.block = block;
     }
 
