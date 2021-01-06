@@ -9,7 +9,7 @@ import java.util.logging.Logger;
 import java.util.logging.SimpleFormatter;
 
 /**
- * ExceptionHandler		 * This class is responsible for handling all of the exceptions that happen during runtime.
+ * This class is responsible for handling all of the exceptions that happen during runtime.
  * The exception handler is instantiated in the ProgramState and
  * its reference should be used to handle every possible exception.
  *
@@ -17,7 +17,7 @@ import java.util.logging.SimpleFormatter;
  */
 public class ExceptionHandler {
     private static final Logger LOGGER = Logger.getLogger(ExceptionHandler.class.getName());
-    private Logger errorLogger;
+    private final Logger errorLogger;
     private boolean abortOnException;
 
     public static final String ERROR_LOG_FILENAME = "error.log";
@@ -27,7 +27,7 @@ public class ExceptionHandler {
     }
 
     public void setAbortOnException(boolean abortOnException) {
-        this.errorLogger = Logger.getLogger(ERROR_LOG_FILENAME);
+        this.abortOnException = abortOnException;
     }
 
     public void setOutputFolder(Path outputFolder) {
