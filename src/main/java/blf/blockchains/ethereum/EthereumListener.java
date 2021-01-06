@@ -166,22 +166,12 @@ public class EthereumListener extends BaseBlockchainListener {
 
     private LogEntrySignatureSpecification getLogEntrySignature(BcqlParser.LogEntrySignatureContext ctx) {
         final LinkedList<ParameterSpecification> parameters = new LinkedList<>();
-        try {
-            for (BcqlParser.LogEntryParameterContext paramCtx : ctx.logEntryParameter()) {
-                parameters.add(
-                    ParameterSpecification.of(
-                        paramCtx.variableName().getText(),
-                        paramCtx.solType().getText(),
-                        paramCtx.KEY_INDEXED() != null
-                    )
-                );
-            }
-            return LogEntrySignatureSpecification.of(ctx.methodName.getText(), parameters);
-        } catch (BuildException e) {
-            LOGGER.severe(String.format("Log entry signature specification failed: %s", e.getMessage()));
-            System.exit(1);
-            return null;
+        for (BcqlParser.LogEntryParameterContext paramCtx : ctx.logEntryParameter()) {
+            parameters.add(
+                ParameterSpecification.of(paramCtx.variableName().getText(), paramCtx.solType().getText(), paramCtx.KEY_INDEXED() != null)
+            );
         }
+        return LogEntrySignatureSpecification.of(ctx.methodName.getText(), parameters);
     }
 
     @Override

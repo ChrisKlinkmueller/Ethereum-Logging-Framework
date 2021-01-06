@@ -109,7 +109,8 @@ public class SpecificationComposer {
         this.closeScope(blockRange);
     }
 
-    public void buildTransactionFilter(@NonNull AddressListSpecification senders, @NonNull AddressListSpecification recipients) throws BuildException {
+    public void buildTransactionFilter(@NonNull AddressListSpecification senders, @NonNull AddressListSpecification recipients)
+        throws BuildException {
 
         if (this.states.peek() != FactoryState.TRANSACTION_FILTER) {
             throw new BuildException(
@@ -126,7 +127,8 @@ public class SpecificationComposer {
         this.closeScope(filter);
     }
 
-    public void buildLogEntryFilter(@NonNull AddressListSpecification contracts, @NonNull LogEntrySignatureSpecification signature) throws BuildException {
+    public void buildLogEntryFilter(@NonNull AddressListSpecification contracts, @NonNull LogEntrySignatureSpecification signature)
+        throws BuildException {
 
         if (this.states.peek() != FactoryState.LOG_ENTRY_FILTER) {
             throw new BuildException(

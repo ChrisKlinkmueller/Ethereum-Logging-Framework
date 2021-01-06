@@ -50,7 +50,9 @@ public class DataReader {
 
     public Stream<EthereumLogEntry> logEntryStream() {
         if (this.currentTransaction == null) {
-            return this.currentBlock == null ? Stream.empty() : this.currentBlock.transactionStream().flatMap(EthereumTransaction::logStream);
+            return this.currentBlock == null
+                ? Stream.empty()
+                : this.currentBlock.transactionStream().flatMap(EthereumTransaction::logStream);
         } else {
             return this.currentTransaction.logStream();
         }

@@ -18,7 +18,10 @@ public class CsvExportSpecification extends InstructionSpecification<AddCsvRowIn
     public static CsvExportSpecification of(@NonNull ValueAccessorSpecification tableName, @NonNull List<CsvColumnSpecification> columns) {
 
         return new CsvExportSpecification(
-            new AddCsvRowInstruction(tableName.getValueAccessor(), columns.stream().map(CsvColumnSpecification::getColumn).collect(Collectors.toList()))
+            new AddCsvRowInstruction(
+                tableName.getValueAccessor(),
+                columns.stream().map(CsvColumnSpecification::getColumn).collect(Collectors.toList())
+            )
         );
     }
 }

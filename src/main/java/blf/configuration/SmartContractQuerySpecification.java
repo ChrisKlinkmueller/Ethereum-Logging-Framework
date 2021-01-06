@@ -29,7 +29,7 @@ public class SmartContractQuerySpecification {
         final SmartContractQuery query = new PublicMemberQuery(
             variable.getParameter().getName(),
             Collections.emptyList(),
-                Collections.singletonList(variable.getParameter())
+            Collections.singletonList(variable.getParameter())
         );
         return new SmartContractQuerySpecification(query);
     }
