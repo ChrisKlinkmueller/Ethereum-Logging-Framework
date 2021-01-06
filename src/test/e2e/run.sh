@@ -55,7 +55,7 @@ function main() {
 	WD=${PWD%%/Blockchain-Logging-Framework*}
 	WD="$WD/Blockchain-Logging-Framework"
 	cd $WD
-	mvn package
+	mvn package || { redecho "Bulding the BLF failed!"; exit 2; }
 	cd $LWD
 	# JAR=$(find $WD -iname "blf-*.jar" | grep -v "javadoc")
 	JAR="$WD/target/elf-cmd.jar"
