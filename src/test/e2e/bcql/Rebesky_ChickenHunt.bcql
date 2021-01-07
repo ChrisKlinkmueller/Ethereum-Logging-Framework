@@ -1,0 +1,57 @@
+// Author: Martin Rebesky
+
+SET BLOCKCHAIN "Ethereum"
+
+SET CONNECTION "ws://localhost:8546/"
+SET OUTPUT FOLDER "./Rebesky_ChickenHunt"
+
+address chickenContract = 0x1eD3d2c916cab00631cce4b08a7F880d4Badae94;
+
+BLOCKS (5851000) (5852000) {
+
+	LOG ENTRIES (0x1eD3d2c916cab00631cce4b08a7F880d4Badae94) (Join(address user)){
+        EMIT XES EVENT ()(user)()("Jäger tritt bei" as xs:string concept:name);
+    }
+
+    LOG ENTRIES (0x1eD3d2c916cab00631cce4b08a7F880d4Badae94) (UpgradeHunter(address indexed user, string attribute, uint256 to)){
+        EMIT XES EVENT ()(user)()("Jäger verbessern" as xs:string concept:name);
+
+        if(attribute == "strength"){
+        	EMIT XES EVENT ()(user)()("Waffenstärke verbessern" as xs:string concept:name);
+        }
+        if(attribute == "dexterity"){
+        	EMIT XES EVENT ()(user)()("Waffengeschick verbessern" as xs:string concept:name);
+        }
+        if(attribute == "constitution"){
+        	EMIT XES EVENT ()(user)()("Festungszustand verbessern" as xs:string concept:name);
+        }
+        if(attribute == "resistance"){
+        	EMIT XES EVENT ()(user)()("Festungsresistenz verbessern" as xs:string concept:name);
+        }
+
+    }
+
+    LOG ENTRIES (0x1eD3d2c916cab00631cce4b08a7F880d4Badae94) (UpgradeDepot(address indexed user, uint256 to)){
+        EMIT XES EVENT ()(user)()("Depot verbessern" as xs:string concept:name);
+    }
+
+    LOG ENTRIES (0x1eD3d2c916cab00631cce4b08a7F880d4Badae94) (UpgradePet(address indexed user, uint256 id, uint256 to)){
+        EMIT XES EVENT ()(user)()("Haustier verbessern" as xs:string concept:name);
+    }
+
+    LOG ENTRIES (0x1eD3d2c916cab00631cce4b08a7F880d4Badae94) (BuyItem(address indexed from, address indexed to, uint256 indexed id, uint256 cost)){
+        EMIT XES EVENT ()(to)()("Item kaufen" as xs:string concept:name);
+    }
+
+    LOG ENTRIES (0x1eD3d2c916cab00631cce4b08a7F880d4Badae94) (Attack(address indexed attacker,address indexed defender,uint256 booty)){
+        EMIT XES EVENT ()(attacker)()("anderen Jäger angreifen" as xs:string concept:name);
+    }
+
+    LOG ENTRIES (0x1eD3d2c916cab00631cce4b08a7F880d4Badae94) (ChickenToAltar(address indexed user, uint256 id, uint256 chicken)){
+        EMIT XES EVENT ()(user)()("Hühnchen zum Altar senden" as xs:string concept:name);
+    }
+
+    LOG ENTRIES (0x1eD3d2c916cab00631cce4b08a7F880d4Badae94) (EthereumFromAltar(address indexed user, uint256 id, uint256 ethereum)){
+        EMIT XES EVENT ()(user)()("Ether vom Altar erhalten" as xs:string concept:name);
+    }
+}
