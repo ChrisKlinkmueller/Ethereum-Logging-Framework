@@ -7,12 +7,12 @@ import java.util.Stack;
 import java.util.stream.Collectors;
 
 import blf.core.Instruction;
-import blf.core.filters.BlockFilter;
-import blf.core.filters.GenericFilter;
-import blf.core.filters.LogEntryFilter;
+import blf.core.filters.EthereumBlockFilterInstruction;
+import blf.core.filters.GenericFilterInstruction;
+import blf.core.filters.EthereumLogEntryFilterInstruction;
 import blf.core.filters.Program;
-import blf.core.filters.SmartContractFilter;
-import blf.core.filters.TransactionFilter;
+import blf.core.filters.EthereumSmartContractFilterInstruction;
+import blf.core.filters.EthereumTransactionFilterInstruction;
 import blf.core.values.ValueAccessor;
 import blf.core.values.ValueMutator;
 import io.reactivex.annotations.NonNull;
@@ -22,10 +22,10 @@ import io.reactivex.annotations.NonNull;
  */
 public class SpecificationComposer {
     private final Stack<FactoryState> states;
-    private final Stack<List<Instruction>> instructions;
+    public final Stack<List<Instruction>> instructionListsStack;
 
     public SpecificationComposer() {
-        this.instructions = new Stack<>();
+        this.instructionListsStack = new Stack<>();
         this.states = new Stack<>();
     }
 
@@ -79,7 +79,7 @@ public class SpecificationComposer {
         }
 
         this.states.push(newState);
-        this.instructions.add(new LinkedList<>());
+        this.instructionListsStack.add(new LinkedList<>());
     }
 
     public Program buildProgram() throws BuildException {
@@ -89,7 +89,7 @@ public class SpecificationComposer {
             );
         }
 
-        final Program program = new Program(this.instructions.peek());
+        final Program program = new Program(this.instructionListsStack.peek());
         this.closeScope(program);
         return program;
     }
@@ -104,7 +104,11 @@ public class SpecificationComposer {
             );
         }
 
-        final BlockFilter blockRange = new BlockFilter(fromBlock.getValueAccessor(), toBlock.getStopCriterion(), this.instructions.peek());
+        final EthereumBlockFilterInstruction blockRange = new EthereumBlockFilterInstruction(
+            fromBlock.getValueAccessor(),
+            toBlock.getStopCriterion(),
+            this.instructionListsStack.peek()
+        );
 
         this.closeScope(blockRange);
     }
@@ -118,10 +122,10 @@ public class SpecificationComposer {
             );
         }
 
-        final TransactionFilter filter = new TransactionFilter(
+        final EthereumTransactionFilterInstruction filter = new EthereumTransactionFilterInstruction(
             senders.getAddressCheck(),
             recipients.getAddressCheck(),
-            this.instructions.peek()
+            this.instructionListsStack.peek()
         );
 
         this.closeScope(filter);
@@ -136,7 +140,11 @@ public class SpecificationComposer {
             );
         }
 
-        final LogEntryFilter filter = new LogEntryFilter(contracts.getAddressCheck(), signature.getSignature(), this.instructions.peek());
+        final EthereumLogEntryFilterInstruction filter = new EthereumLogEntryFilterInstruction(
+            contracts.getAddressCheck(),
+            signature.getSignature(),
+            this.instructionListsStack.peek()
+        );
         this.closeScope(filter);
     }
 
@@ -148,7 +156,7 @@ public class SpecificationComposer {
             );
         }
 
-        final GenericFilter filter = new GenericFilter(predicate.getPredicate(), this.instructions.peek());
+        final GenericFilterInstruction filter = new GenericFilterInstruction(predicate.getPredicate(), this.instructionListsStack.peek());
         this.closeScope(filter);
     }
 
@@ -160,18 +168,18 @@ public class SpecificationComposer {
             );
         }
 
-        final SmartContractFilter filter = new SmartContractFilter(
+        final EthereumSmartContractFilterInstruction filter = new EthereumSmartContractFilterInstruction(
             specification.getContractAddress(),
             specification.getQueries(),
-            this.instructions.peek()
+            this.instructionListsStack.peek()
         );
         this.closeScope(filter);
     }
 
     private void closeScope(Instruction instruction) {
-        this.instructions.pop();
-        if (!this.instructions.isEmpty()) {
-            this.instructions.peek().add(instruction);
+        this.instructionListsStack.pop();
+        if (!this.instructionListsStack.isEmpty()) {
+            this.instructionListsStack.peek().add(instruction);
         }
         this.states.pop();
     }
@@ -180,12 +188,12 @@ public class SpecificationComposer {
         if (instruction == null) {
             throw new BuildException(String.format("Parameter instruction is null."));
         }
-        this.instructions.peek().add(instruction.getInstruction());
+        this.instructionListsStack.peek().add(instruction.getInstruction());
     }
 
     public void addVariableAssignment(ValueMutatorSpecification variable, ValueAccessorSpecification value) {
         final Instruction variableAssignment = this.createVariableAssignment(variable.getMutator(), value.getValueAccessor());
-        this.instructions.peek().add(variableAssignment);
+        this.instructionListsStack.peek().add(variableAssignment);
     }
 
     private Instruction createVariableAssignment(ValueMutator variable, ValueAccessor valueAccessor) {

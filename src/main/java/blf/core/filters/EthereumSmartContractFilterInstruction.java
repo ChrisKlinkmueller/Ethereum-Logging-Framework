@@ -3,6 +3,7 @@ package blf.core.filters;
 import java.util.ArrayList;
 import java.util.List;
 
+import blf.blockchains.ethereum.state.EthereumProgramState;
 import blf.core.Instruction;
 import blf.core.ProgramState;
 import blf.core.exceptions.ProgramException;
@@ -12,13 +13,13 @@ import io.reactivex.annotations.NonNull;
 /**
  * SmartContractFilter
  */
-public class SmartContractFilter extends Filter {
-    private final List<SmartContractQuery> queries;
+public class EthereumSmartContractFilterInstruction extends FilterInstruction {
+    private final List<EthereumSmartContractQuery> queries;
     private final ValueAccessor contractAddress;
 
-    public SmartContractFilter(
+    public EthereumSmartContractFilterInstruction(
         @NonNull ValueAccessor contractAddress,
-        @NonNull List<SmartContractQuery> queries,
+        @NonNull List<EthereumSmartContractQuery> queries,
         List<Instruction> instructions
     ) {
         super(instructions);
@@ -28,10 +29,13 @@ public class SmartContractFilter extends Filter {
 
     @Override
     public void execute(ProgramState state) throws ProgramException {
+        final EthereumProgramState ethereumProgramState = (EthereumProgramState) state;
+
         final String address = (String) this.contractAddress.getValue(state);
-        for (SmartContractQuery query : this.queries) {
-            query.query(address, state);
+        for (EthereumSmartContractQuery query : this.queries) {
+            query.query(address, ethereumProgramState);
         }
+
         this.executeInstructions(state);
     }
 

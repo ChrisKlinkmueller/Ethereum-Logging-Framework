@@ -7,5 +7,5 @@ import blf.core.exceptions.ProgramException;
  */
 @FunctionalInterface
 public interface Instruction {
-    public void execute(ProgramState state) throws ProgramException;
+    void execute(ProgramState state) throws ProgramException;
 }

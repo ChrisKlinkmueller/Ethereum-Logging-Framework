@@ -5,12 +5,13 @@ import java.util.HashSet;
 import java.util.Set;
 import java.util.function.Function;
 
-import blf.core.readers.EthereumBlock;
+import blf.blockchains.ethereum.reader.EthereumBlock;
+import blf.blockchains.ethereum.state.EthereumProgramState;
 
 /**
  * BlockVariables
  */
-public class BlockVariables {
+public class EthereumBlockVariables {
     static final Set<EthereumVariable> BLOCK_VARIABLES;
 
     public static final String BLOCK_NUMBER = "block.number";
@@ -58,6 +59,12 @@ public class BlockVariables {
     }
 
     private static void addBlockVariable(String name, String type, Function<EthereumBlock, Object> blockValueExtractor) {
-        EthereumVariable.addVariable(BLOCK_VARIABLES, name, type, state -> blockValueExtractor.apply(state.getReader().getCurrentBlock()));
+
+        EthereumVariable.addVariable(
+            BLOCK_VARIABLES,
+            name,
+            type,
+            state -> blockValueExtractor.apply(((EthereumProgramState) state).getReader().getCurrentBlock())
+        );
     }
 }

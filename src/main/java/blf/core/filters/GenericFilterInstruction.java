@@ -10,10 +10,10 @@ import io.reactivex.annotations.NonNull;
 /**
  * GenericFilter
  */
-public class GenericFilter extends Filter {
+public class GenericFilterInstruction extends FilterInstruction {
     private final GenericFilterPredicate predicate;
 
-    public GenericFilter(@NonNull GenericFilterPredicate predicate, List<Instruction> instructions) {
+    public GenericFilterInstruction(@NonNull GenericFilterPredicate predicate, List<Instruction> instructions) {
         super(instructions);
         this.predicate = predicate;
     }

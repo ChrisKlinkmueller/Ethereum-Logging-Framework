@@ -1,7 +1,8 @@
 package blf.blockchains.hyperledger;
 
+import blf.blockchains.hyperledger.state.HyperledgerProgramState;
+import org.hyperledger.fabric.gateway.Gateway;
 import blf.blockchains.hyperledger.connection.HyperledgerConnection;
-import blf.blockchains.hyperledger.state.HyperledgerState;
 import blf.configuration.*;
 import blf.grammar.BcqlParser;
 import blf.parsing.VariableExistenceListener;
@@ -14,10 +15,9 @@ public class HyperledgerListener extends BaseBlockchainListener {
 
     private static final Logger LOGGER = Logger.getLogger(HyperledgerListener.class.getName());
 
-    public final HyperledgerState state = new HyperledgerState();
-
     public HyperledgerListener(VariableExistenceListener analyzer) {
         super(analyzer);
+        this.state = new HyperledgerProgramState();
     }
 
     @Override
@@ -36,14 +36,14 @@ public class HyperledgerListener extends BaseBlockchainListener {
             LOGGER.severe("Hyperledger SET CONNECTION parameter should be a String array of length 5");
         }
 
-        state.gateway = HyperledgerConnection.getGateway(
+        Gateway gateway = HyperledgerConnection.getGateway(
             hyperledgerConnectionParams.get(0),
             hyperledgerConnectionParams.get(1),
             hyperledgerConnectionParams.get(2),
             hyperledgerConnectionParams.get(3)
         );
 
-        state.network = HyperledgerConnection.getNetwork(state.gateway, hyperledgerConnectionParams.get(4));
+        HyperledgerConnection.getNetwork(gateway, hyperledgerConnectionParams.get(4));
 
     }
 }

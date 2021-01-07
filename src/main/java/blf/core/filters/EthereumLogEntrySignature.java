@@ -6,7 +6,7 @@ import java.util.List;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
-import blf.core.readers.EthereumLogEntry;
+import blf.blockchains.ethereum.reader.EthereumLogEntry;
 import io.reactivex.annotations.NonNull;
 import org.web3j.abi.EventEncoder;
 import org.web3j.abi.FunctionReturnDecoder;
@@ -19,17 +19,17 @@ import org.web3j.abi.datatypes.Type;
 /**
  * LogEntrySignature
  */
-public class LogEntrySignature {
+public class EthereumLogEntrySignature {
     private final String name;
     private final List<Parameter> parameters;
     private final Event event;
     private final String encodedSignature;
 
-    public LogEntrySignature(final String name, final Parameter... parameters) {
+    public EthereumLogEntrySignature(final String name, final Parameter... parameters) {
         this(name, Arrays.asList(parameters));
     }
 
-    public LogEntrySignature(@NonNull final String name, @NonNull final List<Parameter> parameters) {
+    public EthereumLogEntrySignature(@NonNull final String name, @NonNull final List<Parameter> parameters) {
         this.name = name;
         this.parameters = new ArrayList<>(parameters);
         this.event = new Event(this.name, parameters.stream().map(Parameter::getType).collect(Collectors.toList()));

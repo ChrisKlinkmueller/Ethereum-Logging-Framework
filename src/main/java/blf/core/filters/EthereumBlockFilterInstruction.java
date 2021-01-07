@@ -4,25 +4,26 @@ import java.math.BigInteger;
 import java.util.*;
 import java.util.logging.Logger;
 
+import blf.blockchains.ethereum.state.EthereumProgramState;
 import blf.core.exceptions.ProgramException;
 import blf.core.Instruction;
 import blf.core.ProgramState;
 import blf.core.values.ValueAccessor;
-import blf.core.readers.EthereumBlock;
+import blf.blockchains.ethereum.reader.EthereumBlock;
 import io.reactivex.annotations.NonNull;
 
 /**
  * This class handles the `BLOCKS (fromBlock) (toBlock)` filter of the .bcql file.
  */
-public class BlockFilter extends Filter {
-    private static final Logger LOGGER = Logger.getLogger(BlockFilter.class.getName());
+public class EthereumBlockFilterInstruction extends FilterInstruction {
+    private static final Logger LOGGER = Logger.getLogger(EthereumBlockFilterInstruction.class.getName());
     // TODO (by Mykola Digtiar): move this constant into Constants.java
     private static final int BLOCK_QUERY_DELAY_MILLISECONDS = 3000;
 
     private final ValueAccessor fromBlock;
     private final FilterPredicate<BigInteger> stopCriteria;
 
-    public BlockFilter(
+    public EthereumBlockFilterInstruction(
         @NonNull final ValueAccessor fromBlock,
         @NonNull FilterPredicate<BigInteger> stopCriteria,
         @NonNull List<Instruction> instructions
@@ -35,7 +36,7 @@ public class BlockFilter extends Filter {
     /**
      * This method iterates through the blocks in the specified range and
      * also waits for the block
-     * (by calling the {@link #waitUntilBlockExists(ProgramState, BigInteger) waitForBlockExistence} method)
+     * (by calling the {@link #waitUntilBlockExists(EthereumProgramState, BigInteger) waitForBlockExistence} method)
      * in case that the specified block number in the range is not on the Blockchain yet.
      * To retrieve the block numbers on the blockchain the {@link ProgramState ProgramState} readers and writers are used.
      *
@@ -44,33 +45,34 @@ public class BlockFilter extends Filter {
      * @see ProgramState
      */
     public void execute(final ProgramState state) throws ProgramException {
+        final EthereumProgramState ethereumProgramState = (EthereumProgramState) state;
 
-        BigInteger currentBlock = (BigInteger) fromBlock.getValue(state);
+        BigInteger currentBlock = (BigInteger) fromBlock.getValue(ethereumProgramState);
 
-        while (!this.stopCriteria.test(state, currentBlock)) {
+        while (!this.stopCriteria.test(ethereumProgramState, currentBlock)) {
             try {
-                this.waitUntilBlockExists(state, currentBlock);
+                this.waitUntilBlockExists(ethereumProgramState, currentBlock);
 
-                final EthereumBlock block = state.getReader().getClient().queryBlockData(currentBlock);
+                final EthereumBlock block = ethereumProgramState.getReader().getClient().queryBlockData(currentBlock);
 
                 final String blockProcessingStartMessage = String.format("Processing of block %s started", currentBlock);
                 final String blockProcessingFinishMessage = String.format("Processing of block %s finished", currentBlock);
 
                 LOGGER.info(blockProcessingStartMessage);
-                state.getWriters().startNewBlock(currentBlock);
+                ethereumProgramState.getWriters().startNewBlock(currentBlock);
 
-                state.getReader().setCurrentBlock(block);
-                this.executeInstructions(state);
+                ethereumProgramState.getReader().setCurrentBlock(block);
+                this.executeInstructions(ethereumProgramState);
 
-                state.getWriters().writeBlock();
+                ethereumProgramState.getWriters().writeBlock();
                 LOGGER.info(blockProcessingFinishMessage);
 
             } catch (final Throwable throwable) {
                 // TODO (by Mykola Digtiar): handle this exception inside the method that throws it
                 final String message = String.format("Error when processing block number '%s'", currentBlock.toString());
-                state.getExceptionHandler().handleExceptionAndDecideOnAbort(message, throwable);
+                ethereumProgramState.getExceptionHandler().handleExceptionAndDecideOnAbort(message, throwable);
             } finally {
-                state.getReader().setCurrentBlock(null);
+                ethereumProgramState.getReader().setCurrentBlock(null);
             }
 
             currentBlock = currentBlock.add(BigInteger.ONE);
@@ -82,10 +84,10 @@ public class BlockFilter extends Filter {
      * This methods queries the most actual block number of the blockchain
      * and waits until the up-to-date block number is >= then the {@param expectedBlockNumber}.
      *
-     * @param state current {@link ProgramState state of the program}
+     * @param ethereumProgramState current {@link EthereumProgramState ethereumProgramState of the program}
      * @param expectedBlockNumber number of the block to be waited for
      */
-    private void waitUntilBlockExists(final ProgramState state, final BigInteger expectedBlockNumber) {
+    private void waitUntilBlockExists(final EthereumProgramState ethereumProgramState, final BigInteger expectedBlockNumber) {
 
         Timer timer = new Timer();
         // Poll for the up-to-date block number and stop timer if up-to-date block number >= expectedBlockNumber
@@ -95,7 +97,7 @@ public class BlockFilter extends Filter {
                 boolean newBlockAvailable = false;
                 try {
                     // queryBlockNumber().compareTo(expectedBlockNumber) is >= 0 iff queryBlockNumber() >= expectedBlockNumber
-                    newBlockAvailable = state.getReader().getClient().queryBlockNumber().compareTo(expectedBlockNumber) >= 0;
+                    newBlockAvailable = ethereumProgramState.getReader().getClient().queryBlockNumber().compareTo(expectedBlockNumber) >= 0;
                 } catch (Throwable throwable) {
                     // TODO (by Mykola Digtiar): the exception should be handled in queryBlockNumber() method
 
@@ -104,7 +106,7 @@ public class BlockFilter extends Filter {
                         expectedBlockNumber.toString()
                     );
 
-                    state.getExceptionHandler().handleExceptionAndDecideOnAbort(queryBlockNumberErrorMessage, throwable);
+                    ethereumProgramState.getExceptionHandler().handleExceptionAndDecideOnAbort(queryBlockNumberErrorMessage, throwable);
                 }
 
                 if (newBlockAvailable) {

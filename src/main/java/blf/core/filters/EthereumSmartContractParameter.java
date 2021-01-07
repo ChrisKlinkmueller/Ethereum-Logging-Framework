@@ -6,10 +6,10 @@ import io.reactivex.annotations.NonNull;
 /**
  * SmartContractParameter
  */
-public class SmartContractParameter extends Parameter {
+public class EthereumSmartContractParameter extends Parameter {
     private final ValueAccessor accessor;
 
-    public SmartContractParameter(String solType, String name, @NonNull ValueAccessor accessor) {
+    public EthereumSmartContractParameter(String solType, String name, @NonNull ValueAccessor accessor) {
         super(solType, name);
         this.accessor = accessor;
     }

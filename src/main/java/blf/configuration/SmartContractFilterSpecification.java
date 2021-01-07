@@ -4,17 +4,17 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 
-import blf.core.filters.SmartContractQuery;
+import blf.core.filters.EthereumSmartContractQuery;
 import blf.core.values.ValueAccessor;
 
 /**
  * SmartContractFilterSpecification
  */
 public class SmartContractFilterSpecification {
-    private final List<SmartContractQuery> queries;
+    private final List<EthereumSmartContractQuery> queries;
     private final ValueAccessor contractAddress;
 
-    private SmartContractFilterSpecification(ValueAccessor contractAddress, List<SmartContractQuery> queries) {
+    private SmartContractFilterSpecification(ValueAccessor contractAddress, List<EthereumSmartContractQuery> queries) {
         this.contractAddress = contractAddress;
         this.queries = queries;
     }
@@ -23,7 +23,7 @@ public class SmartContractFilterSpecification {
         return this.contractAddress;
     }
 
-    List<SmartContractQuery> getQueries() {
+    List<EthereumSmartContractQuery> getQueries() {
         return this.queries;
     }
 
@@ -36,7 +36,7 @@ public class SmartContractFilterSpecification {
         ValueAccessorSpecification contractAddress,
         List<SmartContractQuerySpecification> querySpecs
     ) {
-        final ArrayList<SmartContractQuery> queries = new ArrayList<>();
+        final ArrayList<EthereumSmartContractQuery> queries = new ArrayList<>();
         for (SmartContractQuerySpecification querySpec : querySpecs) {
             queries.add(querySpec.getQuery());
         }

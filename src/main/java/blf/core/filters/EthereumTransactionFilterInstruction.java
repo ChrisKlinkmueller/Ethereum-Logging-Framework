@@ -3,42 +3,48 @@ package blf.core.filters;
 import java.util.Arrays;
 import java.util.List;
 
-import blf.core.Instruction;
+import blf.blockchains.ethereum.reader.EthereumDataReader;
+import blf.blockchains.ethereum.state.EthereumProgramState;
 import blf.core.ProgramState;
+import blf.core.Instruction;
 import blf.core.exceptions.ProgramException;
-import blf.core.readers.EthereumTransaction;
+import blf.blockchains.ethereum.reader.EthereumTransaction;
 import io.reactivex.annotations.NonNull;
 
 /**
  * TransactionScope
  */
-public class TransactionFilter extends Filter {
+public class EthereumTransactionFilterInstruction extends FilterInstruction {
     private final FilterPredicate<String> senderCriterion;
-    private final FilterPredicate<String> recipientCiterion;
+    private final FilterPredicate<String> recipientCriterion;
 
-    public TransactionFilter(
+    public EthereumTransactionFilterInstruction(
         FilterPredicate<String> senderCriterion,
-        FilterPredicate<String> recipientCiterion,
+        FilterPredicate<String> recipientCriterion,
         Instruction... instructions
     ) {
-        this(senderCriterion, recipientCiterion, Arrays.asList(instructions));
+        this(senderCriterion, recipientCriterion, Arrays.asList(instructions));
     }
 
-    public TransactionFilter(
+    public EthereumTransactionFilterInstruction(
         @NonNull FilterPredicate<String> senderCriterion,
-        @NonNull FilterPredicate<String> recipientCiterion,
+        @NonNull FilterPredicate<String> recipientCriterion,
         List<Instruction> instructions
     ) {
         super(instructions);
-        this.recipientCiterion = recipientCiterion;
+        this.recipientCriterion = recipientCriterion;
         this.senderCriterion = senderCriterion;
     }
 
+    @Override
     public void execute(ProgramState state) throws ProgramException {
-        for (EthereumTransaction tx : state.getReader().getCurrentBlock()) {
-            if (this.senderCriterion.test(state, tx.getFrom()) && this.recipientCiterion.test(state, tx.getTo())) {
+        final EthereumProgramState ethereumProgramState = (EthereumProgramState) state;
+        final EthereumDataReader ethereumReader = ethereumProgramState.getReader();
+
+        for (EthereumTransaction tx : ethereumReader.getCurrentBlock()) {
+            if (this.senderCriterion.test(state, tx.getFrom()) && this.recipientCriterion.test(state, tx.getTo())) {
                 try {
-                    state.getReader().setCurrentTransaction(tx);
+                    ethereumReader.setCurrentTransaction(tx);
                     this.executeInstructions(state);
                 } catch (Exception cause) {
                     final String message = String.format(
@@ -51,7 +57,7 @@ public class TransactionFilter extends Filter {
                         throw new ProgramException(message, cause);
                     }
                 } finally {
-                    state.getReader().setCurrentTransaction(null);
+                    ethereumReader.setCurrentTransaction(null);
                 }
             }
         }

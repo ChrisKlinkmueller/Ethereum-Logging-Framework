@@ -3,30 +3,28 @@ package blf.core.filters;
 import java.math.BigInteger;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Objects;
 import java.util.stream.Collectors;
 import java.util.stream.IntStream;
 
+import blf.blockchains.ethereum.state.EthereumProgramState;
 import blf.core.exceptions.ProgramException;
-import blf.core.readers.EthereumClient;
+import blf.blockchains.ethereum.reader.EthereumClient;
 import io.reactivex.annotations.NonNull;
 import org.web3j.abi.TypeDecoder;
 import org.web3j.abi.TypeReference;
 import org.web3j.abi.datatypes.Type;
 
-import blf.core.ProgramState;
-
 /**
  * PublicMemberQuery
  */
-public class PublicMemberQuery implements SmartContractQuery {
+public class EthereumPublicMemberQueryEthereum implements EthereumSmartContractQuery {
     private final String memberName;
-    private final List<SmartContractParameter> inputParameters;
+    private final List<EthereumSmartContractParameter> inputParameters;
     private final List<Parameter> outputParameters;
 
-    public PublicMemberQuery(
+    public EthereumPublicMemberQueryEthereum(
         @NonNull String memberName,
-        @NonNull List<SmartContractParameter> inputParameters,
+        @NonNull List<EthereumSmartContractParameter> inputParameters,
         @NonNull List<Parameter> outputParameters
     ) {
         this.inputParameters = new ArrayList<>(inputParameters);
@@ -36,7 +34,7 @@ public class PublicMemberQuery implements SmartContractQuery {
 
     @Override
     @SuppressWarnings("all")
-    public void query(String contract, ProgramState state) throws ProgramException {
+    public void query(String contract, EthereumProgramState state) throws ProgramException {
         assert contract != null;
         assert state != null;
 
@@ -53,9 +51,9 @@ public class PublicMemberQuery implements SmartContractQuery {
     }
 
     @SuppressWarnings("all")
-    private List<Type> createInputTypes(ProgramState state) throws Exception {
+    private List<Type> createInputTypes(EthereumProgramState state) throws Exception {
         final ArrayList<Type> types = new ArrayList<>();
-        for (SmartContractParameter param : this.inputParameters) {
+        for (EthereumSmartContractParameter param : this.inputParameters) {
             final Object value = param.getAccessor().getValue(state);
             types.add(TypeDecoder.instantiateType(param.getType(), value));
         }
@@ -67,7 +65,7 @@ public class PublicMemberQuery implements SmartContractQuery {
     }
 
     @SuppressWarnings("all")
-    private void setValues(List<Type> values, ProgramState state) {
+    private void setValues(List<Type> values, EthereumProgramState state) {
         if (!this.matchOutputParameters(values)) {
             throw new IllegalArgumentException("Output parameters not compatible with return values.");
         }

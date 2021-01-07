@@ -3,13 +3,16 @@ package blf.core.values;
 import java.util.HashSet;
 import java.util.Set;
 
+import blf.blockchains.ethereum.reader.EthereumDataReader;
+import blf.blockchains.ethereum.reader.EthereumLogEntry;
+import blf.blockchains.ethereum.state.EthereumProgramState;
 import blf.core.exceptions.ProgramException;
-import blf.core.readers.EthereumTransaction;
+import blf.blockchains.ethereum.reader.EthereumTransaction;
 
 /**
  * TransactionVariables
  */
-public class TransactionVariables {
+public class EthereumTransactionVariables {
     static final Set<EthereumVariable> TRANSACTION_VARIABLES;
 
     public static final String TX_BLOCKNUMBER = "tx.blockNumber";
@@ -63,9 +66,13 @@ public class TransactionVariables {
 
     private static void addTransactionVariable(String name, String type, ValueExtractor<EthereumTransaction> transactionValueExtractor) {
         EthereumVariable.addVariable(TRANSACTION_VARIABLES, name, type, state -> {
-            final EthereumTransaction tx = state.getReader().getCurrentTransaction() == null
-                ? state.getReader().getCurrentLogEntry().getTransaction()
-                : state.getReader().getCurrentTransaction();
+            final EthereumProgramState ethereumProgramState = (EthereumProgramState) state;
+            final EthereumDataReader ethereumReader = ethereumProgramState.getReader();
+
+            final EthereumTransaction tx = ethereumReader.getCurrentTransaction() == null
+                ? ethereumReader.getCurrentLogEntry().getTransaction()
+                : ethereumReader.getCurrentTransaction();
+
             return transactionValueExtractor.extractValue(tx);
         });
     }

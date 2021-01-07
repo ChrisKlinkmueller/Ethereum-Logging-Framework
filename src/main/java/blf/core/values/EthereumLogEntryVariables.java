@@ -4,12 +4,13 @@ import java.util.HashSet;
 import java.util.Set;
 import java.util.function.Function;
 
-import blf.core.readers.EthereumLogEntry;
+import blf.blockchains.ethereum.reader.EthereumLogEntry;
+import blf.blockchains.ethereum.state.EthereumProgramState;
 
 /**
  * LogEntryVariables
  */
-public class LogEntryVariables {
+public abstract class EthereumLogEntryVariables {
     static final Set<EthereumVariable> LOG_ENTRY_VARIABLES;
 
     public static final String LOG_REMOVED = "log.removed";
@@ -23,12 +24,14 @@ public class LogEntryVariables {
         addLogEntryVariable(LOG_ADDRESS, "address", EthereumLogEntry::getAddress);
     }
 
+    private EthereumLogEntryVariables() {}
+
     private static void addLogEntryVariable(String name, String type, Function<EthereumLogEntry, Object> blockValueExtractor) {
         EthereumVariable.addVariable(
             LOG_ENTRY_VARIABLES,
             name,
             type,
-            state -> blockValueExtractor.apply(state.getReader().getCurrentLogEntry())
+            state -> blockValueExtractor.apply(((EthereumProgramState) state).getReader().getCurrentLogEntry())
         );
     }
 }

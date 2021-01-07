@@ -1,4 +1,4 @@
-package blf.core.readers;
+package blf.blockchains.ethereum.reader;
 
 import io.reactivex.annotations.NonNull;
 

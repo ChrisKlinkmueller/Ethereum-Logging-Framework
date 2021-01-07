@@ -2,7 +2,6 @@ package blf;
 
 import blf.configuration.BaseBlockchainListener;
 import blf.util.RootListenerException;
-import blf.core.ProgramState;
 import blf.core.filters.Program;
 import blf.parsing.VariableExistenceListener;
 import blf.util.RootListener;
@@ -34,11 +33,8 @@ public class Extractor {
             throw new BcqlProcessingException("Error when configuring the data extraction.", blockchainListener.getError());
         }
 
-        this.executeProgram(rootListener.blockchainListener.getProgram());
-    }
+        Program program = rootListener.blockchainListener.getProgram();
 
-    private void executeProgram(Program program) {
-        final ProgramState state = new ProgramState();
-        program.execute(state);
+        program.execute(blockchainListener.getState());
     }
 }

@@ -1,4 +1,4 @@
-package blf.core.readers;
+package blf.blockchains.ethereum.reader;
 
 import java.math.BigInteger;
 import java.util.ArrayList;

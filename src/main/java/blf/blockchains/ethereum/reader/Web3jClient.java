@@ -1,4 +1,4 @@
-package blf.core.readers;
+package blf.blockchains.ethereum.reader;
 
 import java.io.IOException;
 import java.math.BigInteger;

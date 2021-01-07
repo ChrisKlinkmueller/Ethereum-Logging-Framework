@@ -2,7 +2,6 @@ package blf.core.writers;
 
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Objects;
 
 import blf.core.exceptions.ProgramException;
 import blf.core.values.ValueAccessor;

@@ -9,9 +9,9 @@ import blf.core.ProgramState;
 /**
  * Program
  */
-public class Program extends Filter {
+public class Program extends FilterInstruction {
 
-    public Program(Program... instructions) {
+    public Program(FilterInstruction... instructions) {
         this(Arrays.asList(instructions));
     }
 
@@ -26,9 +26,10 @@ public class Program extends Filter {
         } catch (final Throwable ex) {
             final String message = "Error when executing the program.";
             state.getExceptionHandler().handleExceptionAndDecideOnAbort(message, ex);
-        } finally {
-            state.close();
         }
+        // finally {
+        // state.close();
+        // }
     }
 
 }

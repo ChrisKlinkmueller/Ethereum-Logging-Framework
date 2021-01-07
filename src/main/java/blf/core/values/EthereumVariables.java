@@ -6,6 +6,7 @@ import java.util.function.Function;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
+import blf.blockchains.ethereum.state.EthereumProgramState;
 import blf.core.exceptions.ProgramException;
 
 /**
@@ -16,7 +17,7 @@ public class EthereumVariables {
     public static ValueAccessor currentBlockNumberAccessor() {
         return state -> {
             try {
-                return state.getReader().getClient().queryBlockNumber();
+                return ((EthereumProgramState) state).getReader().getClient().queryBlockNumber();
             } catch (final Throwable error) {
                 throw new ProgramException("Error when retrieving the current block number.", error);
             }
@@ -27,22 +28,25 @@ public class EthereumVariables {
         return existsVariable(
             name,
             Stream.concat(
-                BlockVariables.BLOCK_VARIABLES.stream(),
-                Stream.concat(TransactionVariables.TRANSACTION_VARIABLES.stream(), LogEntryVariables.LOG_ENTRY_VARIABLES.stream())
+                EthereumBlockVariables.BLOCK_VARIABLES.stream(),
+                Stream.concat(
+                    EthereumTransactionVariables.TRANSACTION_VARIABLES.stream(),
+                    EthereumLogEntryVariables.LOG_ENTRY_VARIABLES.stream()
+                )
             )
         );
     }
 
     public static Map<String, String> getBlockVariableNamesAndTypes() {
-        return getVariableNamesAndType(BlockVariables.BLOCK_VARIABLES);
+        return getVariableNamesAndType(EthereumBlockVariables.BLOCK_VARIABLES);
     }
 
     public static Map<String, String> getTransactionVariableNamesAndTypes() {
-        return getVariableNamesAndType(TransactionVariables.TRANSACTION_VARIABLES);
+        return getVariableNamesAndType(EthereumTransactionVariables.TRANSACTION_VARIABLES);
     }
 
     public static Map<String, String> getLogEntryVariableNamesAndTypes() {
-        return getVariableNamesAndType(LogEntryVariables.LOG_ENTRY_VARIABLES);
+        return getVariableNamesAndType(EthereumLogEntryVariables.LOG_ENTRY_VARIABLES);
     }
 
     private static Map<String, String> getVariableNamesAndType(Set<EthereumVariable> variables) {
@@ -50,13 +54,13 @@ public class EthereumVariables {
     }
 
     public static boolean isBlockVariable(String name) {
-        return existsVariable(name, BlockVariables.BLOCK_VARIABLES.stream());
+        return existsVariable(name, EthereumBlockVariables.BLOCK_VARIABLES.stream());
     }
 
     public static boolean isTransactionVariable(String name) {
         return existsVariable(
             name,
-            Stream.concat(BlockVariables.BLOCK_VARIABLES.stream(), TransactionVariables.TRANSACTION_VARIABLES.stream())
+            Stream.concat(EthereumBlockVariables.BLOCK_VARIABLES.stream(), EthereumTransactionVariables.TRANSACTION_VARIABLES.stream())
         );
     }
 
@@ -78,8 +82,11 @@ public class EthereumVariables {
 
     private static Stream<EthereumVariable> variableStream() {
         return Stream.concat(
-            BlockVariables.BLOCK_VARIABLES.stream(),
-            Stream.concat(TransactionVariables.TRANSACTION_VARIABLES.stream(), LogEntryVariables.LOG_ENTRY_VARIABLES.stream())
+            EthereumBlockVariables.BLOCK_VARIABLES.stream(),
+            Stream.concat(
+                EthereumTransactionVariables.TRANSACTION_VARIABLES.stream(),
+                EthereumLogEntryVariables.LOG_ENTRY_VARIABLES.stream()
+            )
         );
     }
 
