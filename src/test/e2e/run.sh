@@ -9,6 +9,7 @@ function redecho() {
 }
 
 function main() {
+	LWD=$PWD
 	if [ -d "$ED" ]; then
 		if [ ! "$1" = "$AUTO_PARAM" ] && [ ! "$2" = "$AUTO_PARAM" ] && [ ! "$3" = "$AUTO_PARAM" ]; then
 			echo "folder 'extracted' already exists! do you want to delete it and start again? (y/n)"
@@ -54,6 +55,7 @@ function main() {
 	  colorecho "Building the BLF"
     cd "$WD" || { redecho "Cannot cd into '$WD'. Probably the specified directory does not exist..." ; exit 2; }
     mvn package || { redecho "Bulding the BLF failed!"; exit 2; }
+	cd "$LWD"
   fi
 
 	cd "$ED" || { redecho "Cannot cd into '$ED'. Probably the specified directory does not exist..." ; exit 2; }
@@ -121,7 +123,7 @@ function main() {
 	colorecho "Test successful"
 
 	colorecho "All tests completed successfully"
-	cd "$WD" || { redecho "Cannot cd into '$WD'. Probably the specified directory does not exist..." ; exit 2; }
+	cd "$LWD"
 	if [ ! "$1" = "$AUTO_PARAM" ] && [ ! "$2" = "$AUTO_PARAM" ] && [ ! "$3" = "$AUTO_PARAM" ]; then
 		echo "Remove the generated data? (y/n)"
 		read -r confirm
@@ -132,6 +134,7 @@ function main() {
 		echo "Run mvn clean? (y/n)"
 		read -r confirm
 		if [ "$confirm" = "y" ]; then
+			cd "$WD" || { redecho "Cannot cd into '$WD'. Probably the specified directory does not exist..." ; exit 2; }
 			echo "mvn clean"
 			mvn clean
 		fi
@@ -144,12 +147,12 @@ function main() {
 }
 
 AUTO_PARAM="--auto"
-SKIP_BUILD_PARAM="--auto"
+SKIP_BUILD_PARAM="--skip-build"
 SILENT_PARAM="--silent"
 
 SCRIPT_DIR="$( cd "$( dirname "${BASH_SOURCE[0]}" )" >/dev/null 2>&1 && pwd )"
 WD="$SCRIPT_DIR"/../../..
-ED="$WD"/extracted
+ED="./extracted"
 JAR="$WD"/target/elf-cmd.jar
 
 # BCQL scripts
