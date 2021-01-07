@@ -1,5 +1,7 @@
 package blf.core.writers;
 
+import io.reactivex.annotations.NonNull;
+
 import java.math.BigInteger;
 import java.nio.file.Path;
 import java.util.Collection;
@@ -13,8 +15,7 @@ public abstract class DataWriter {
     private boolean streaming;
     private BigInteger currentBlock;
 
-    public void setOutputFolder(Path outputFolder) {
-        assert outputFolder != null;
+    public void setOutputFolder(@NonNull Path outputFolder) {
         this.outputFolder = outputFolder;
     }
 
@@ -51,7 +52,7 @@ public abstract class DataWriter {
         }
 
         if (Collection.class.isAssignableFrom(object.getClass())) {
-            String value = ((Collection<Object>) object).stream().map(obj -> asString(obj)).collect(Collectors.joining(", "));
+            String value = ((Collection<Object>) object).stream().map(this::asString).collect(Collectors.joining(", "));
             return String.format("{%s}", value);
         }
 

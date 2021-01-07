@@ -9,6 +9,7 @@ import blf.core.exceptions.ProgramException;
 import blf.core.filters.GenericFilterPredicate;
 import blf.core.values.ValueAccessor;
 import blf.library.types.ListOperations;
+import io.reactivex.annotations.NonNull;
 
 /**
  * GenericFilterSpecification
@@ -47,8 +48,7 @@ public class GenericFilterPredicateSpecification {
         return new GenericFilterPredicateSpecification(state -> !predicate1.test(state));
     }
 
-    public static GenericFilterPredicateSpecification ofBooleanAccessor(ValueAccessorSpecification valueSpecification) {
-        assert valueSpecification != null;
+    public static GenericFilterPredicateSpecification ofBooleanAccessor(@NonNull ValueAccessorSpecification valueSpecification) {
         final ValueAccessor accessor = valueSpecification.getValueAccessor();
         return new GenericFilterPredicateSpecification(state -> (Boolean) accessor.getValue(state));
     }

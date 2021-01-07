@@ -1,5 +1,6 @@
 package blf.core.filters;
 
+import io.reactivex.annotations.NonNull;
 import org.web3j.abi.TypeReference;
 
 /**
@@ -13,13 +14,12 @@ public class Parameter {
         this(solType, name, false);
     }
 
-    public Parameter(String solType, String name, boolean isIndexed) {
-        assert name != null;
+    public Parameter(String solType, @NonNull String name, boolean isIndexed) {
 
-        TypeReference<?> type = this.createType(solType, isIndexed);
-        assert type != null;
+        TypeReference<?> typeOfParameter = this.createType(solType, isIndexed);
+        assert typeOfParameter != null;
 
-        this.type = type;
+        this.type = typeOfParameter;
         this.name = name;
     }
 

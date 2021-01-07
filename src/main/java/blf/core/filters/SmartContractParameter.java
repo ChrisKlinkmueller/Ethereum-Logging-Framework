@@ -1,6 +1,7 @@
 package blf.core.filters;
 
 import blf.core.values.ValueAccessor;
+import io.reactivex.annotations.NonNull;
 
 /**
  * SmartContractParameter
@@ -8,9 +9,8 @@ import blf.core.values.ValueAccessor;
 public class SmartContractParameter extends Parameter {
     private final ValueAccessor accessor;
 
-    public SmartContractParameter(String solType, String name, ValueAccessor accessor) {
+    public SmartContractParameter(String solType, String name, @NonNull ValueAccessor accessor) {
         super(solType, name);
-        assert accessor != null;
         this.accessor = accessor;
     }
 

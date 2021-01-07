@@ -4,6 +4,7 @@ import java.math.BigInteger;
 import java.util.function.Function;
 
 import blf.core.exceptions.ProgramException;
+import io.reactivex.annotations.NonNull;
 import org.web3j.protocol.core.methods.response.Transaction;
 import org.web3j.protocol.core.methods.response.TransactionReceipt;
 
@@ -15,10 +16,7 @@ class Web3jTransaction extends EthereumTransaction {
     private TransactionReceipt receipt;
     private final Web3jClient client;
 
-    public Web3jTransaction(final Web3jClient client, final EthereumBlock block, final Transaction tx) {
-        assert block != null;
-        assert tx != null;
-        assert client != null;
+    public Web3jTransaction(@NonNull final Web3jClient client, @NonNull final EthereumBlock block, @NonNull final Transaction tx) {
         this.tx = tx;
         this.setBlock(block);
         this.client = client;
@@ -118,7 +116,7 @@ class Web3jTransaction extends EthereumTransaction {
         if (this.receipt == null) {
             try {
                 this.receipt = this.client.queryTransactionReceipt(this.getHash());
-            } catch (Throwable cause) {
+            } catch (Exception cause) {
                 throw new ProgramException(String.format("Error loading attributes for transaction '%s'.", this.getHash()), cause);
             }
         }

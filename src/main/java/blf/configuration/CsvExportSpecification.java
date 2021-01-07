@@ -1,10 +1,10 @@
 package blf.configuration;
 
 import java.util.List;
-import java.util.Objects;
 import java.util.stream.Collectors;
 
 import blf.core.writers.AddCsvRowInstruction;
+import io.reactivex.annotations.NonNull;
 
 /**
  * CsvExportSpecification
@@ -15,12 +15,13 @@ public class CsvExportSpecification extends InstructionSpecification<AddCsvRowIn
         super(instruction);
     }
 
-    public static CsvExportSpecification of(ValueAccessorSpecification tableName, List<CsvColumnSpecification> columns) {
-        assert tableName != null;
-        assert columns != null && columns.stream().allMatch(Objects::nonNull);
+    public static CsvExportSpecification of(@NonNull ValueAccessorSpecification tableName, @NonNull List<CsvColumnSpecification> columns) {
 
         return new CsvExportSpecification(
-            new AddCsvRowInstruction(tableName.getValueAccessor(), columns.stream().map(c -> c.getColumn()).collect(Collectors.toList()))
+            new AddCsvRowInstruction(
+                tableName.getValueAccessor(),
+                columns.stream().map(CsvColumnSpecification::getColumn).collect(Collectors.toList())
+            )
         );
     }
 }

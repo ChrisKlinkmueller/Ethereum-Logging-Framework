@@ -1,6 +1,7 @@
 package blf.configuration;
 
 import blf.core.values.ValueAccessor;
+import io.reactivex.annotations.NonNull;
 
 /**
  * TypedValueAccessorSpecification
@@ -22,9 +23,7 @@ public class TypedValueAccessorSpecification {
         return type;
     }
 
-    public static TypedValueAccessorSpecification of(String type, ValueAccessorSpecification accessor) throws BuildException {
-        assert type != null;
-        assert accessor != null;
+    public static TypedValueAccessorSpecification of(@NonNull String type, @NonNull ValueAccessorSpecification accessor) {
         return new TypedValueAccessorSpecification(type, accessor.getValueAccessor());
     }
 }

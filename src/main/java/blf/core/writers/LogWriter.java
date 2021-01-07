@@ -1,5 +1,7 @@
 package blf.core.writers;
 
+import io.reactivex.annotations.NonNull;
+
 import java.io.BufferedWriter;
 import java.io.FileWriter;
 import java.nio.file.Path;
@@ -15,13 +17,12 @@ public class LogWriter extends DataWriter {
     private final List<String> lines;
 
     public LogWriter() {
-        this.lines = new LinkedList<String>();
+        this.lines = new LinkedList<>();
     }
 
-    public void addLogLine(List<Object> itemParts) {
-        assert itemParts != null;
+    public void addLogLine(@NonNull List<Object> itemParts) {
 
-        this.lines.add(itemParts.stream().map(obj -> this.asString(obj)).collect(Collectors.joining()));
+        this.lines.add(itemParts.stream().map(this::asString).collect(Collectors.joining()));
     }
 
     @Override

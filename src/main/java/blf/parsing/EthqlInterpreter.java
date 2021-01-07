@@ -7,6 +7,7 @@ import blf.EthqlProcessingResult;
 import blf.grammar.BcqlLexer;
 import blf.grammar.BcqlParser;
 import blf.util.MethodResult;
+import io.reactivex.annotations.NonNull;
 import org.antlr.v4.runtime.CharStream;
 import org.antlr.v4.runtime.CommonTokenStream;
 import org.antlr.v4.runtime.tree.ParseTree;
@@ -18,9 +19,7 @@ public class EthqlInterpreter {
     private final ErrorCollector errorCollector;
     private final SemanticAnalysis semanticAnalysis;
 
-    public EthqlInterpreter(ErrorCollector errorCollector, SemanticAnalysis analysis) {
-        assert errorCollector != null;
-        assert analysis != null;
+    public EthqlInterpreter(@NonNull ErrorCollector errorCollector, @NonNull SemanticAnalysis analysis) {
         this.errorCollector = errorCollector;
         this.semanticAnalysis = analysis;
     }

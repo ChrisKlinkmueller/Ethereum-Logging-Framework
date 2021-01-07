@@ -1,11 +1,11 @@
 package blf.parsing;
 
 import java.util.List;
-import java.util.Objects;
 
 import blf.grammar.BcqlBaseListener;
 import blf.util.RootListenerException;
 import blf.util.RootListener;
+import io.reactivex.annotations.NonNull;
 import org.antlr.v4.runtime.tree.ParseTree;
 import org.antlr.v4.runtime.tree.ParseTreeWalker;
 
@@ -14,8 +14,7 @@ import org.antlr.v4.runtime.tree.ParseTreeWalker;
  */
 public class SemanticAnalysis extends RootListener {
 
-    public SemanticAnalysis(ErrorCollector errorCollector) {
-        assert errorCollector != null;
+    public SemanticAnalysis(@NonNull ErrorCollector errorCollector) {
         try {
             final VariableExistenceListener varAnalyzer = new VariableExistenceListener(errorCollector);
             this.addListener(new FilterNestingAnalyzer(errorCollector));
@@ -28,8 +27,7 @@ public class SemanticAnalysis extends RootListener {
         }
     }
 
-    public SemanticAnalysis(List<SemanticAnalyzer> analyzers) {
-        assert analyzers != null && analyzers.stream().allMatch(Objects::nonNull);
+    public SemanticAnalysis(@NonNull List<SemanticAnalyzer> analyzers) {
         analyzers.forEach(analyzer -> {
             try {
                 this.addListener(analyzer);

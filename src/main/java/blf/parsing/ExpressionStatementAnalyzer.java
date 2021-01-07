@@ -8,6 +8,7 @@ import blf.grammar.BcqlParser;
 import blf.library.Library;
 import blf.library.MethodSignature;
 import blf.util.TypeUtils;
+import io.reactivex.annotations.NonNull;
 import org.antlr.v4.runtime.Token;
 
 /**
@@ -16,9 +17,8 @@ import org.antlr.v4.runtime.Token;
 public class ExpressionStatementAnalyzer extends SemanticAnalyzer {
     private final VariableExistenceListener varAnalyzer;
 
-    public ExpressionStatementAnalyzer(ErrorCollector errorCollector, VariableExistenceListener variableAnalyzer) {
+    public ExpressionStatementAnalyzer(@NonNull ErrorCollector errorCollector, @NonNull VariableExistenceListener variableAnalyzer) {
         super(errorCollector);
-        assert variableAnalyzer != null;
         this.varAnalyzer = variableAnalyzer;
     }
 

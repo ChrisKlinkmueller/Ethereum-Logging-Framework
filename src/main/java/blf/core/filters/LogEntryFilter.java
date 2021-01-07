@@ -9,6 +9,7 @@ import blf.core.readers.EthereumLogEntry;
 import blf.core.readers.EthereumTransaction;
 import blf.core.Instruction;
 import blf.core.ProgramState;
+import io.reactivex.annotations.NonNull;
 
 /**
  * LogEntryFilter To understand how to decode event data and topics, see:
@@ -22,10 +23,12 @@ public class LogEntryFilter extends Filter {
         this(contractCriterion, signature, Arrays.asList(instructions));
     }
 
-    public LogEntryFilter(FilterPredicate<String> contractCriterion, LogEntrySignature signature, List<Instruction> instructions) {
+    public LogEntryFilter(
+        FilterPredicate<String> contractCriterion,
+        @NonNull LogEntrySignature signature,
+        @NonNull List<Instruction> instructions
+    ) {
         super(instructions);
-        assert signature != null;
-        assert instructions != null;
         this.contractCriterion = contractCriterion;
         this.signature = signature;
     }
@@ -45,7 +48,7 @@ public class LogEntryFilter extends Filter {
                 this.signature.addLogEntryValues(state, logEntry);
                 this.executeInstructions(state);
             }
-        } catch (Throwable cause) {
+        } catch (Exception cause) {
             final String message = String.format(
                 "Error mapping log entry '%s' in transaction '%s 'in block '%s'.",
                 logEntry.getLogIndex(),

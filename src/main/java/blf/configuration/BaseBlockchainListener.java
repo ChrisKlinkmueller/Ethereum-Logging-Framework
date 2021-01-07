@@ -5,7 +5,6 @@ import blf.core.filters.Program;
 import blf.grammar.BcqlBaseListener;
 import blf.grammar.BcqlParser;
 import blf.parsing.VariableExistenceListener;
-import blf.util.TypeUtils;
 
 import java.util.ArrayDeque;
 import java.util.ArrayList;

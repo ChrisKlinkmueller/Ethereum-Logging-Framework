@@ -7,6 +7,7 @@ import blf.core.filters.FilterPredicate;
 import blf.core.values.EthereumVariables;
 import blf.core.values.ValueAccessor;
 import blf.core.values.Variables;
+import io.reactivex.annotations.NonNull;
 
 /**
  * BlockNumberSpecification
@@ -34,14 +35,12 @@ public class BlockNumberSpecification {
         return this.type;
     }
 
-    public static BlockNumberSpecification ofVariableName(String name) {
-        assert name != null;
+    public static BlockNumberSpecification ofVariableName(@NonNull String name) {
         final ValueAccessor accessor = Variables.createValueAccessor(name);
         return new BlockNumberSpecification(accessor, createStopCriterion(accessor), Type.VARIABLE);
     }
 
-    public static BlockNumberSpecification ofBlockNumber(ValueAccessorSpecification number) {
-        assert number != null;
+    public static BlockNumberSpecification ofBlockNumber(@NonNull ValueAccessorSpecification number) {
         final ValueAccessor accessor = number.getValueAccessor();
         return new BlockNumberSpecification(accessor, createStopCriterion(accessor), Type.NUMBER);
     }
@@ -51,7 +50,7 @@ public class BlockNumberSpecification {
         return new BlockNumberSpecification(accessor, createStopCriterion(accessor), Type.CURRENT);
     }
 
-    private static final FilterPredicate<BigInteger> createStopCriterion(ValueAccessor accessor) {
+    private static FilterPredicate<BigInteger> createStopCriterion(ValueAccessor accessor) {
         final Value endValue = new Value();
         return (state, blockNumber) -> {
             if (endValue.blockNumber == null) {
@@ -80,7 +79,7 @@ public class BlockNumberSpecification {
         return new BlockNumberSpecification(null, (state, blockNumber) -> false, Type.CONTINUOUS);
     }
 
-    static enum Type {
+    enum Type {
         CONTINUOUS,
         CURRENT,
         EARLIEST,

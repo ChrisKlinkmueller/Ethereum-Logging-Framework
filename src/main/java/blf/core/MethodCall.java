@@ -6,6 +6,7 @@ import java.util.Objects;
 import blf.core.exceptions.ProgramException;
 import blf.core.values.ValueAccessor;
 import blf.core.values.ValueMutator;
+import io.reactivex.annotations.NonNull;
 
 /**
  * MethodCall
@@ -15,9 +16,7 @@ public class MethodCall implements Instruction {
     private final Method method;
     private final ValueMutator resultStorer;
 
-    public MethodCall(Method method, List<ValueAccessor> parameterAccessors, ValueMutator resultStorer) {
-        assert parameterAccessors != null && parameterAccessors.stream().allMatch(Objects::nonNull);
-        assert method != null;
+    public MethodCall(@NonNull Method method, @NonNull List<ValueAccessor> parameterAccessors, ValueMutator resultStorer) {
         this.parameterAccessors = parameterAccessors;
         this.method = method;
         this.resultStorer = resultStorer;

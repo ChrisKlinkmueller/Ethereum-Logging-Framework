@@ -5,6 +5,7 @@ import java.net.URISyntaxException;
 import java.util.stream.Stream;
 
 import blf.core.exceptions.ProgramException;
+import io.reactivex.annotations.NonNull;
 
 /**
  * EthereumSources
@@ -48,13 +49,16 @@ public class DataReader {
     }
 
     public Stream<EthereumLogEntry> logEntryStream() {
-        return this.currentTransaction == null
-            ? (this.currentBlock == null ? Stream.empty() : this.currentBlock.transactionStream().flatMap(EthereumTransaction::logStream))
-            : this.currentTransaction.logStream();
+        if (this.currentTransaction == null) {
+            return this.currentBlock == null
+                ? Stream.empty()
+                : this.currentBlock.transactionStream().flatMap(EthereumTransaction::logStream);
+        } else {
+            return this.currentTransaction.logStream();
+        }
     }
 
-    public void connect(String url) throws ProgramException {
-        assert url != null;
+    public void connect(@NonNull String url) throws ProgramException {
         if (this.client != null) {
             throw new ProgramException("Already connected to Ethereum node.");
         }
@@ -66,8 +70,7 @@ public class DataReader {
         }
     }
 
-    public void connectIpc(String path) throws ProgramException {
-        assert path != null;
+    public void connectIpc(@NonNull String path) throws ProgramException {
         if (this.client != null) {
             throw new ProgramException("Already connected to Ethereum node.");
         }
@@ -75,7 +78,7 @@ public class DataReader {
         try {
             this.client = Web3jClient.connectIpc(path);
         } catch (ConnectException e) {
-            throw new ProgramException(String.format("Error when connecting to Ethereum node via ipc.", path), e);
+            throw new ProgramException("Error when connecting to Ethereum node via ipc.", e);
         }
     }
 

@@ -20,8 +20,8 @@ public class AddXesEventInstruction extends AddXesElementInstruction {
 
     @Override
     protected void startElement(XesWriter writer, ProgramState state, String pid, String piid) throws ProgramException {
-        final String eid = this.getId(state, this.eid);
-        XesWriter.startEvent(writer, pid, piid, eid);
+        final String eId = this.getId(state, this.eid);
+        XesWriter.startEvent(writer, pid, piid, eId);
     }
 
 }

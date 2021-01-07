@@ -7,6 +7,7 @@ import blf.core.Instruction;
 import blf.core.ProgramState;
 import blf.core.exceptions.ProgramException;
 import blf.core.values.ValueAccessor;
+import io.reactivex.annotations.NonNull;
 
 /**
  * SmartContractFilter
@@ -15,10 +16,12 @@ public class SmartContractFilter extends Filter {
     private final List<SmartContractQuery> queries;
     private final ValueAccessor contractAddress;
 
-    public SmartContractFilter(ValueAccessor contractAddress, List<SmartContractQuery> queries, List<Instruction> instructions) {
+    public SmartContractFilter(
+        @NonNull ValueAccessor contractAddress,
+        @NonNull List<SmartContractQuery> queries,
+        List<Instruction> instructions
+    ) {
         super(instructions);
-        assert contractAddress != null;
-        assert queries != null;
         this.queries = new ArrayList<>(queries);
         this.contractAddress = contractAddress;
     }
