@@ -184,6 +184,14 @@ public class SpecificationComposer {
         this.states.pop();
     }
 
+    public void addInstruction(@NonNull Instruction instruction) {
+        if (this.instructionListsStack.isEmpty()) {
+            return;
+        }
+
+        this.instructionListsStack.peek().add(instruction);
+    }
+
     public void addInstruction(InstructionSpecification<?> instruction) throws BuildException {
         if (instruction == null) {
             throw new BuildException(String.format("Parameter instruction is null."));

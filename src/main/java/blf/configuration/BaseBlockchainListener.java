@@ -69,7 +69,7 @@ public abstract class BaseBlockchainListener extends BcqlBaseListener {
 
         this.state.outputFolderPath = TypeUtils.parseStringLiteral(literalText);
 
-        this.composer.instructionListsStack.peek().add(new SetOutputFolderInstruction());
+        this.composer.addInstruction(new SetOutputFolderInstruction());
     }
 
     @Override
