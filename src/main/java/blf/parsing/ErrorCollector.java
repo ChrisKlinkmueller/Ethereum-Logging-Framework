@@ -10,13 +10,13 @@ import org.antlr.v4.runtime.RecognitionException;
 import org.antlr.v4.runtime.Recognizer;
 import org.antlr.v4.runtime.Token;
 
-import blf.EthqlProcessingError;
+import blf.BcqlProcessingError;
 
 /**
  * ErrorCollector
  */
 public class ErrorCollector extends BaseErrorListener {
-    private final List<EthqlProcessingError> errors;
+    private final List<BcqlProcessingError> errors;
 
     public ErrorCollector() {
         this.errors = new ArrayList<>();
@@ -30,12 +30,12 @@ public class ErrorCollector extends BaseErrorListener {
         return !this.errors.isEmpty();
     }
 
-    public Stream<EthqlProcessingError> errorStream() {
+    public Stream<BcqlProcessingError> errorStream() {
         return this.errors.stream();
     }
 
     public void addSemanticError(@NonNull Token token, @NonNull String errorMessage) {
-        this.errors.add(new EthqlProcessingError(token, errorMessage));
+        this.errors.add(new BcqlProcessingError(token, errorMessage));
     }
 
     public void clear() {
@@ -51,7 +51,7 @@ public class ErrorCollector extends BaseErrorListener {
         String msg,
         RecognitionException e
     ) {
-        final EthqlProcessingError error = new EthqlProcessingError(line, charPositionInLine, msg, e);
+        final BcqlProcessingError error = new BcqlProcessingError(line, charPositionInLine, msg, e);
         this.errors.add(error);
     }
 }

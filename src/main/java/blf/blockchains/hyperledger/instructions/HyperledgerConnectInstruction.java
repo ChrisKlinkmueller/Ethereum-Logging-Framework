@@ -1,8 +1,8 @@
 package blf.blockchains.hyperledger.instructions;
 
 import blf.blockchains.hyperledger.state.HyperledgerProgramState;
-import blf.core.Instruction;
-import blf.core.ProgramState;
+import blf.core.interfaces.Instruction;
+import blf.core.state.ProgramState;
 import blf.core.exceptions.ExceptionHandler;
 import blf.core.exceptions.ProgramException;
 import io.reactivex.annotations.NonNull;

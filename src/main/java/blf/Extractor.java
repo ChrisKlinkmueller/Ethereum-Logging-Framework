@@ -2,7 +2,7 @@ package blf;
 
 import blf.configuration.BaseBlockchainListener;
 import blf.util.RootListenerException;
-import blf.core.filters.Program;
+import blf.core.Program;
 import blf.parsing.VariableExistenceListener;
 import blf.util.RootListener;
 import org.antlr.v4.runtime.tree.ParseTree;

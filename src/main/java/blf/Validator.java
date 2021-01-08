@@ -25,24 +25,24 @@ public class Validator {
         this.interpreter = new EthqlInterpreter();
     }
 
-    public List<EthqlProcessingError> analyzeScript(String ethqlFile) throws BcqlProcessingException {
-        final EthqlProcessingResult<ParseTree> result = this.parseScript(ethqlFile);
+    public List<BcqlProcessingError> analyzeScript(String ethqlFile) throws BcqlProcessingException {
+        final BcqllProcessingResult<ParseTree> result = this.parseScript(ethqlFile);
         assert result != null;
         return result.getErrors();
     }
 
-    public List<EthqlProcessingError> analyzeScript(InputStream stream) throws BcqlProcessingException {
-        final EthqlProcessingResult<ParseTree> result = this.parseScript(stream);
+    public List<BcqlProcessingError> analyzeScript(InputStream stream) throws BcqlProcessingException {
+        final BcqllProcessingResult<ParseTree> result = this.parseScript(stream);
         return result.getErrors();
     }
 
-    EthqlProcessingResult<ParseTree> parseScript(String ethqlFile) throws BcqlProcessingException {
+    BcqllProcessingResult<ParseTree> parseScript(String ethqlFile) throws BcqlProcessingException {
         assert ethqlFile != null;
         final InputStream fileStream = this.createFileStream(ethqlFile);
         return this.parseScript(fileStream);
     }
 
-    EthqlProcessingResult<ParseTree> parseScript(InputStream stream) throws BcqlProcessingException {
+    BcqllProcessingResult<ParseTree> parseScript(InputStream stream) throws BcqlProcessingException {
         assert stream != null;
         return this.interpreter.parseDocument(stream);
     }
@@ -62,7 +62,7 @@ public class Validator {
 
     public static ParseTree createParseTree(final String ethqlFile) throws BcqlProcessingException {
         final Validator validator = new Validator();
-        final EthqlProcessingResult<ParseTree> validatorResult = validator.parseScript(ethqlFile);
+        final BcqllProcessingResult<ParseTree> validatorResult = validator.parseScript(ethqlFile);
 
         if (!validatorResult.isSuccessful()) {
             throw new BcqlProcessingException("The ethql script is not valid. For detailed analysis results, run validator.");

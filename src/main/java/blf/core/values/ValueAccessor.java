@@ -1,6 +1,6 @@
 package blf.core.values;
 
-import blf.core.ProgramState;
+import blf.core.state.ProgramState;
 import blf.core.exceptions.ProgramException;
 import io.reactivex.annotations.NonNull;
 

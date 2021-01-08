@@ -4,9 +4,9 @@ import java.math.BigInteger;
 import java.util.function.BiPredicate;
 import java.util.function.IntPredicate;
 
-import blf.core.Method;
+import blf.core.interfaces.Method;
 import blf.core.exceptions.ProgramException;
-import blf.core.filters.GenericFilterPredicate;
+import blf.core.interfaces.GenericFilterPredicate;
 import blf.core.values.ValueAccessor;
 import blf.library.types.ListOperations;
 import io.reactivex.annotations.NonNull;

@@ -4,7 +4,7 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 
-import blf.core.filters.EthereumSmartContractQuery;
+import blf.blockchains.hyperledger.classes.EthereumSmartContractQuery;
 import blf.core.values.ValueAccessor;
 
 /**

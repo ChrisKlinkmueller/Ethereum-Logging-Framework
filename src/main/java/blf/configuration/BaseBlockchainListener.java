@@ -1,7 +1,7 @@
 package blf.configuration;
 
-import blf.core.ProgramState;
-import blf.core.filters.Program;
+import blf.core.state.ProgramState;
+import blf.core.Program;
 import blf.core.instructions.SetOutputFolderInstruction;
 import blf.grammar.BcqlBaseListener;
 import blf.grammar.BcqlParser;

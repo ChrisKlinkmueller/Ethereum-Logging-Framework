@@ -1,10 +1,9 @@
 package blf.blockchains.ethereum.instructions;
 
 import blf.blockchains.ethereum.state.EthereumProgramState;
-import blf.core.Instruction;
-import blf.core.ProgramState;
+import blf.core.interfaces.Instruction;
+import blf.core.state.ProgramState;
 import blf.core.exceptions.ProgramException;
-import io.reactivex.annotations.NonNull;
 
 public class EthereumConnectIpcInstruction implements Instruction {
     @Override

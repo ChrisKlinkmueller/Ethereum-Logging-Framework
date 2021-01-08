@@ -1,7 +1,7 @@
 package blf.blockchains.ethereum.state;
 
 import blf.blockchains.ethereum.reader.*;
-import blf.core.ProgramState;
+import blf.core.state.ProgramState;
 
 import java.util.logging.Logger;
 

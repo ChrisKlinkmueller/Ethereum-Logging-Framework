@@ -1,6 +1,6 @@
 package blf.configuration;
 
-import blf.core.writers.XesParameter;
+import blf.core.parameters.XesParameter;
 import io.reactivex.annotations.NonNull;
 
 /**

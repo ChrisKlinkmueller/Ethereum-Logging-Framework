@@ -4,7 +4,7 @@ import java.util.Arrays;
 import java.util.List;
 import java.util.stream.Collectors;
 
-import blf.core.filters.EthereumLogEntrySignature;
+import blf.blockchains.hyperledger.classes.EthereumLogEntrySignature;
 import io.reactivex.annotations.NonNull;
 
 /**

@@ -1,7 +1,7 @@
 package blf.blockchains.hyperledger.state;
 
 import blf.blockchains.hyperledger.reader.HyperledgerDataReader;
-import blf.core.ProgramState;
+import blf.core.state.ProgramState;
 import org.hyperledger.fabric.gateway.Gateway;
 import org.hyperledger.fabric.gateway.Network;
 

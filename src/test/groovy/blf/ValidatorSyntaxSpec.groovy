@@ -14,7 +14,7 @@ class ValidatorSyntaxSpec extends Specification {
     }
     EthqlInterpreter interpreter = new EthqlInterpreter(new ErrorCollector(), noOpAnalyser)
 
-    static List<EthqlProcessingError> validateSyntax(String script, EthqlInterpreter interpreter) {
+    static List<BcqlProcessingError> validateSyntax(String script, EthqlInterpreter interpreter) {
         interpreter.parseDocument(new ByteArrayInputStream(script.getBytes())).getErrors()
     }
 

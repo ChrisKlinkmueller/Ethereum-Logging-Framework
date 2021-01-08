@@ -3,7 +3,7 @@ package blf.parsing;
 import java.io.InputStream;
 import java.util.function.Function;
 
-import blf.EthqlProcessingResult;
+import blf.BcqllProcessingResult;
 import blf.grammar.BcqlLexer;
 import blf.grammar.BcqlParser;
 import blf.util.MethodResult;
@@ -29,18 +29,18 @@ public class EthqlInterpreter {
         semanticAnalysis = new SemanticAnalysis(this.errorCollector);
     }
 
-    public EthqlProcessingResult<ParseTree> parseDocument(InputStream is) {
+    public BcqllProcessingResult<ParseTree> parseDocument(InputStream is) {
         return this.parse(is, BcqlParser::document);
     }
 
-    protected EthqlProcessingResult<ParseTree> parse(InputStream is, Function<BcqlParser, ParseTree> rule) {
+    protected BcqllProcessingResult<ParseTree> parse(InputStream is, Function<BcqlParser, ParseTree> rule) {
         if (is == null) {
-            return EthqlProcessingResult.ofError("The 'is' parameter was null.");
+            return BcqllProcessingResult.ofError("The 'is' parameter was null.");
         }
 
         final MethodResult<CharStream> charStreamResult = InterpreterUtils.charStreamfromInputStream(is);
         if (!charStreamResult.isSuccessful()) {
-            return EthqlProcessingResult.ofUnsuccessfulMethodResult(charStreamResult);
+            return BcqllProcessingResult.ofUnsuccessfulMethodResult(charStreamResult);
         }
 
         final BcqlLexer lexer = new BcqlLexer(charStreamResult.getResult());
@@ -63,11 +63,11 @@ public class EthqlInterpreter {
             return this.createErrorResultAndCleanUp();
         }
 
-        return EthqlProcessingResult.ofResult(tree);
+        return BcqllProcessingResult.ofResult(tree);
     }
 
-    private EthqlProcessingResult<ParseTree> createErrorResultAndCleanUp() {
-        final EthqlProcessingResult<ParseTree> result = EthqlProcessingResult.ofErrors(this.errorCollector.errorStream());
+    private BcqllProcessingResult<ParseTree> createErrorResultAndCleanUp() {
+        final BcqllProcessingResult<ParseTree> result = BcqllProcessingResult.ofErrors(this.errorCollector.errorStream());
         this.errorCollector.clear();
         return result;
     }

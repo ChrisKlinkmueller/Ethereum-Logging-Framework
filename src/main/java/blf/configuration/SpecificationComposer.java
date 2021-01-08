@@ -6,13 +6,13 @@ import java.util.List;
 import java.util.Stack;
 import java.util.stream.Collectors;
 
-import blf.core.Instruction;
-import blf.core.filters.EthereumBlockFilterInstruction;
-import blf.core.filters.GenericFilterInstruction;
-import blf.core.filters.EthereumLogEntryFilterInstruction;
-import blf.core.filters.Program;
-import blf.core.filters.EthereumSmartContractFilterInstruction;
-import blf.core.filters.EthereumTransactionFilterInstruction;
+import blf.core.interfaces.Instruction;
+import blf.blockchains.ethereum.instructions.EthereumBlockFilterInstruction;
+import blf.core.instructions.GenericFilterInstruction;
+import blf.blockchains.ethereum.instructions.EthereumLogEntryFilterInstruction;
+import blf.core.Program;
+import blf.blockchains.ethereum.instructions.EthereumSmartContractFilterInstruction;
+import blf.blockchains.ethereum.instructions.EthereumTransactionFilterInstruction;
 import blf.core.values.ValueAccessor;
 import blf.core.values.ValueMutator;
 import io.reactivex.annotations.NonNull;
@@ -89,9 +89,7 @@ public class SpecificationComposer {
             );
         }
 
-        final Program program = new Program(this.instructionListsStack.peek());
-        this.closeScope(program);
-        return program;
+        return new Program(this.instructionListsStack.peek());
     }
 
     public void buildBlockRange(BlockNumberSpecification fromBlock, BlockNumberSpecification toBlock) throws BuildException {

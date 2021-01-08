@@ -3,8 +3,8 @@ package blf.configuration;
 import java.math.BigInteger;
 
 import blf.core.exceptions.ProgramException;
-import blf.core.filters.FilterPredicate;
-import blf.core.values.EthereumVariables;
+import blf.core.interfaces.FilterPredicate;
+import blf.blockchains.ethereum.variables.EthereumVariables;
 import blf.core.values.ValueAccessor;
 import blf.core.values.Variables;
 import io.reactivex.annotations.NonNull;

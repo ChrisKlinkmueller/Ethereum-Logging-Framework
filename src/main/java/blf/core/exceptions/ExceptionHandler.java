@@ -1,5 +1,7 @@
 package blf.core.exceptions;
 
+import blf.core.state.ProgramState;
+
 import java.io.IOException;
 import java.nio.file.Path;
 import java.nio.file.Paths;
@@ -13,7 +15,7 @@ import java.util.logging.SimpleFormatter;
  * The exception handler is instantiated in the ProgramState and
  * its reference should be used to handle every possible exception.
  *
- * @see blf.core.ProgramState
+ * @see ProgramState
  */
 public class ExceptionHandler {
     private static final Logger LOGGER = Logger.getLogger(ExceptionHandler.class.getName());

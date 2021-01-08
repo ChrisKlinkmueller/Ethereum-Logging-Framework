@@ -3,7 +3,7 @@ package blf.configuration;
 import java.util.List;
 import java.util.stream.Collectors;
 
-import blf.core.writers.AddCsvRowInstruction;
+import blf.core.instructions.AddCsvRowInstruction;
 import io.reactivex.annotations.NonNull;
 
 /**

@@ -1,5 +1,6 @@
 package blf.core.values;
 
+import blf.blockchains.ethereum.variables.EthereumVariables;
 import blf.core.exceptions.ProgramException;
 import io.reactivex.annotations.NonNull;
 

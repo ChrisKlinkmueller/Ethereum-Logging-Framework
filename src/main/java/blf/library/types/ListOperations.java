@@ -3,7 +3,7 @@ package blf.library.types;
 import java.util.ArrayList;
 import java.util.List;
 
-import blf.core.ProgramState;
+import blf.core.state.ProgramState;
 import blf.core.exceptions.ProgramException;
 import io.reactivex.functions.BiFunction;
 

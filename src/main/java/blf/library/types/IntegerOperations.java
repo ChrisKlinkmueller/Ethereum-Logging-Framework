@@ -3,7 +3,7 @@ package blf.library.types;
 import java.math.BigInteger;
 import java.util.function.BiFunction;
 
-import blf.core.ProgramState;
+import blf.core.state.ProgramState;
 
 /**
  * IntegerOperations, serves mostly as a wrapper around {@link java.math.BigInteger} operations.

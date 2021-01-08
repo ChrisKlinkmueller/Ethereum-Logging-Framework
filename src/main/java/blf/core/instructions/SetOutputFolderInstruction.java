@@ -1,7 +1,7 @@
 package blf.core.instructions;
 
-import blf.core.Instruction;
-import blf.core.ProgramState;
+import blf.core.interfaces.Instruction;
+import blf.core.state.ProgramState;
 import blf.core.exceptions.ProgramException;
 
 import java.nio.file.Path;

@@ -5,7 +5,7 @@ import java.util.List;
 import java.util.stream.Collectors;
 
 import blf.core.exceptions.ProgramException;
-import blf.core.filters.FilterPredicate;
+import blf.core.interfaces.FilterPredicate;
 import blf.core.values.ValueAccessor;
 import io.reactivex.annotations.NonNull;
 

@@ -3,8 +3,8 @@ package blf.configuration
 
 import blf.Validator
 import blf.BcqlProcessingException
-import blf.EthqlProcessingResult
-import blf.core.filters.Program
+import blf.BcqllProcessingResult
+import blf.core.Program
 import blf.blockchains.ethereum.EthereumListener
 import blf.parsing.VariableExistenceListener
 import org.antlr.v4.runtime.tree.ParseTree
@@ -51,7 +51,7 @@ class EthereumListenerSpec extends Specification {
 
     static Program program(String script, EthereumListener composer) {
         Validator validator = new Validator()
-        EthqlProcessingResult<ParseTree> result = validator.parseScript(new ByteArrayInputStream(script.getBytes()))
+        BcqllProcessingResult<ParseTree> result = validator.parseScript(new ByteArrayInputStream(script.getBytes()))
         assert result.isSuccessful()
 
         ParseTree tree = result.getResult()

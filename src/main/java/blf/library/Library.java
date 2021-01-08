@@ -10,7 +10,7 @@ import java.util.function.Function;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
-import blf.core.Method;
+import blf.core.interfaces.Method;
 import blf.library.compression.BitMapping;
 import blf.library.compression.ValueDictionary;
 import blf.library.types.IntegerOperations;

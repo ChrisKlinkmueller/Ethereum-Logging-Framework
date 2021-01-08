@@ -3,7 +3,7 @@ package blf.parsing;
 import java.util.*;
 import java.util.stream.Stream;
 
-import blf.core.values.EthereumVariables;
+import blf.blockchains.ethereum.variables.EthereumVariables;
 import org.antlr.v4.runtime.Token;
 
 import blf.grammar.BcqlParser.*;
