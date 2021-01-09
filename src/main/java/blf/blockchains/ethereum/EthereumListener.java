@@ -5,6 +5,7 @@ import java.util.function.BiFunction;
 import java.util.logging.Logger;
 import java.util.stream.Collectors;
 
+import blf.blockchains.ethereum.instructions.EthereumBlockFilterInstruction;
 import blf.blockchains.ethereum.instructions.EthereumConnectInstruction;
 import blf.blockchains.ethereum.instructions.EthereumConnectIpcInstruction;
 import blf.blockchains.ethereum.state.EthereumProgramState;
@@ -73,7 +74,28 @@ public class EthereumListener extends BaseBlockchainListener {
         try {
             BlockNumberSpecification from = this.getBlockNumberSpecification(ctx.from);
             BlockNumberSpecification to = this.getBlockNumberSpecification(ctx.to);
-            this.composer.buildBlockRange(from, to);
+
+            if (this.composer.states.peek() != SpecificationComposer.FactoryState.BLOCK_RANGE_FILTER) {
+                throw new BuildException(
+                    String.format(
+                        "Cannot build a block filter, when construction of %s has not been finished.",
+                        this.composer.states.peek()
+                    )
+                );
+            }
+
+            final EthereumBlockFilterInstruction blockRange = new EthereumBlockFilterInstruction(
+                from.getValueAccessor(),
+                to.getStopCriterion(),
+                this.composer.instructionListsStack.peek()
+            );
+
+            this.composer.instructionListsStack.pop();
+            if (!this.composer.instructionListsStack.isEmpty()) {
+                this.composer.instructionListsStack.peek().add(blockRange);
+            }
+            this.composer.states.pop();
+
         } catch (BuildException e) {
             LOGGER.severe(String.format("Building block filter failed: %s", e.getMessage()));
             System.exit(1);

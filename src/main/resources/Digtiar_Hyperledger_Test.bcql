@@ -11,3 +11,6 @@ SET CONNECTION {
 }
 
 SET OUTPUT FOLDER "./test_output"
+
+BLOCKS (5926229) (10193336) {
+}

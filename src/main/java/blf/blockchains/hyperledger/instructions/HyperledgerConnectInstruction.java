@@ -5,7 +5,6 @@ import blf.core.interfaces.Instruction;
 import blf.core.state.ProgramState;
 import blf.core.exceptions.ExceptionHandler;
 import blf.core.exceptions.ProgramException;
-import io.reactivex.annotations.NonNull;
 
 import java.io.FileInputStream;
 import java.io.FileNotFoundException;
@@ -13,6 +12,7 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.nio.charset.Charset;
 import java.nio.file.Files;
+import java.nio.file.NoSuchFileException;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.security.KeyFactory;
@@ -31,14 +31,32 @@ import org.hyperledger.fabric.gateway.Network;
 import org.apache.commons.codec.binary.Base64;
 
 /**
- * This class provides functionality to connect to a hyperledger blockchain node.
+ * This class provides functionality to connect to a Hyperledger blockchain node.
  */
 public class HyperledgerConnectInstruction implements Instruction {
 
     private final Logger logger;
     private final ExceptionHandler exceptionHandler;
 
-    public HyperledgerConnectInstruction() {
+    private final String networkConfigFilePath;
+    private final String serverKeyFilePath;
+    private final String serverCrtFilePath;
+    private final String mspName;
+    private final String channel;
+    
+    public HyperledgerConnectInstruction(
+            final String networkConfigFilePath,
+            final String serverKeyFilePath,
+            final String serverCrtFilePath,
+            final String mspName,
+            final String channel
+    ) {
+        this.networkConfigFilePath = networkConfigFilePath;
+        this.serverKeyFilePath = serverKeyFilePath;
+        this.serverCrtFilePath = serverCrtFilePath;
+        this.mspName = mspName;
+        this.channel = channel;
+        
         this.logger = Logger.getLogger(HyperledgerConnectInstruction.class.getName());
         this.exceptionHandler = new ExceptionHandler();
     }
@@ -48,13 +66,13 @@ public class HyperledgerConnectInstruction implements Instruction {
         HyperledgerProgramState hyperledgerProgramState = (HyperledgerProgramState) state;
 
         final Gateway gateway = this.buildGateway(
-            hyperledgerProgramState.getNetworkConfigFilePath(),
-            hyperledgerProgramState.getServerKeyFilePath(),
-            hyperledgerProgramState.getServerCrtFilePath(),
-            hyperledgerProgramState.getMspName()
+                this.networkConfigFilePath,
+                this.serverKeyFilePath,
+                this.serverCrtFilePath,
+                this.mspName
         );
 
-        final Network network = this.buildNetwork(gateway, hyperledgerProgramState.getChannel());
+        final Network network = this.buildNetwork(gateway, channel);
 
         hyperledgerProgramState.setGateway(gateway);
         hyperledgerProgramState.setNetwork(network);
@@ -73,17 +91,17 @@ public class HyperledgerConnectInstruction implements Instruction {
      * @return - new {@link Gateway Gateway} object for the configuration provided
      */
     private Gateway buildGateway(
-        @NonNull String networkConfigFilePath,
-        @NonNull String serverKeyFilePath,
-        @NonNull String serverCrtFilePath,
-        @NonNull String mspName
+            String networkConfigFilePath,
+            String serverKeyFilePath,
+            String serverCrtFilePath,
+            String mspName
     ) {
 
         final String infoMsg = String.format(
-            "Hyperledger { networkConfigFilePath: %s,  serverKeyFilePath: %s, serverCrtFilePath: %s }",
-            networkConfigFilePath,
-            serverKeyFilePath,
-            serverCrtFilePath
+                "Hyperledger { networkConfigFilePath: %s,  serverKeyFilePath: %s, serverCrtFilePath: %s }",
+                networkConfigFilePath,
+                serverKeyFilePath,
+                serverCrtFilePath
         );
 
         logger.info(infoMsg);
@@ -98,18 +116,18 @@ public class HyperledgerConnectInstruction implements Instruction {
             certificate = (X509Certificate) CertificateFactory.getInstance("X509").generateCertificate(inStream);
         } catch (FileNotFoundException e) {
             exceptionHandler.handleExceptionAndDecideOnAbort(
-                String.format("Unable to read certificate from provided file %s", networkConfigFilePath),
-                e
+                    String.format("Unable to read certificate from provided file %s", networkConfigFilePath),
+                    e
             );
         } catch (CertificateException e) {
             exceptionHandler.handleExceptionAndDecideOnAbort(
-                String.format("No correct certificate provided at path: %s.", serverCrtFilePath),
-                e
+                    String.format("No correct certificate provided at path: %s.", serverCrtFilePath),
+                    e
             );
         } catch (IOException e) {
             exceptionHandler.handleExceptionAndDecideOnAbort(
-                String.format("Input error when trying to read from certificate file %s", serverCrtFilePath),
-                e
+                    String.format("Input error when trying to read from certificate file %s", serverCrtFilePath),
+                    e
             );
         }
 
@@ -117,37 +135,73 @@ public class HyperledgerConnectInstruction implements Instruction {
         PrivateKey privateKey = null;
         try {
             Path serverKeyPath = Paths.get(serverKeyFilePath);
+
             byte[] serverKeyBytes = Files.readAllBytes(serverKeyPath);
+
             String key = new String(serverKeyBytes, Charset.defaultCharset());
+
             String privateKeyPEM = key.replace("-----BEGIN PRIVATE KEY-----", "")
-                .replaceAll(System.lineSeparator(), "")
-                .replace("-----END PRIVATE KEY-----", "");
+                    .replaceAll(System.lineSeparator(), "")
+                    .replace("-----END PRIVATE KEY-----", "");
+
             byte[] base64EncodedPrivateKey = Base64.decodeBase64(privateKeyPEM);
+
             KeyFactory keyFactory = KeyFactory.getInstance("EC");
+
             PKCS8EncodedKeySpec keySpec = new PKCS8EncodedKeySpec(base64EncodedPrivateKey);
+
             privateKey = keyFactory.generatePrivate(keySpec);
+        } catch (NoSuchFileException e) {
+            exceptionHandler.handleExceptionAndDecideOnAbort(
+                    String.format("Private key file does not exist on path '%s'", serverKeyFilePath),
+                    e
+            );
         } catch (IOException e) {
             exceptionHandler.handleExceptionAndDecideOnAbort(
-                String.format("Input error when trying to read from private key file: %s", serverCrtFilePath),
-                e
+                    String.format("Input error when trying to read from private key file: %s.", serverKeyFilePath),
+                    e
             );
         } catch (NoSuchAlgorithmException e) {
             exceptionHandler.handleExceptionAndDecideOnAbort("Provided algorithm not found.", e);
         } catch (InvalidKeySpecException e) {
             exceptionHandler.handleExceptionAndDecideOnAbort("Provided key spec is invalid.", e);
+        } catch (Exception e) {
+            exceptionHandler.handleExceptionAndDecideOnAbort("Unhandled exception has occurred.", e);
+        }
+
+        if (certificate == null) {
+            exceptionHandler.handleExceptionAndDecideOnAbort(
+                    "Variable 'certificate' is null.",
+                    new NullPointerException()
+            );
+
+            return null;
+        }
+
+        if (privateKey == null) {
+            exceptionHandler.handleExceptionAndDecideOnAbort(
+                    "Variable 'privateKey' is null.",
+                    new NullPointerException()
+            );
+
+            return null;
         }
 
         // Configure the gateway connection used to access the network.
         Gateway.Builder builder = null;
         try {
             builder = Gateway.createBuilder()
-                .identity(Identities.newX509Identity(mspName, certificate, privateKey))
-                .networkConfig(networkConfigFile);
+                    .identity(Identities.newX509Identity(mspName, certificate, privateKey))
+                    .networkConfig(networkConfigFile);
         } catch (IOException e) {
             exceptionHandler.handleExceptionAndDecideOnAbort(
-                String.format("Unable to read network config from file %s", networkConfigFile),
-                e
+                    String.format("Unable to read network config from file %s", networkConfigFile),
+                    e
             );
+        }
+
+        if (builder == null) {
+            return null;
         }
 
         // connect to the network.
@@ -162,11 +216,29 @@ public class HyperledgerConnectInstruction implements Instruction {
      * @param channel - provided channel name
      * @return - new {@link Network Network} object
      */
-    public Network buildNetwork(@NonNull Gateway gateway, @NonNull String channel) {
+    public Network buildNetwork(Gateway gateway, String channel) {
 
         final String infoMsg = String.format("Hyperledger { gateway: %s,  channel: %s }", gateway, channel);
 
         logger.info(infoMsg);
+
+        if (gateway == null) {
+            exceptionHandler.handleExceptionAndDecideOnAbort(
+                    "Variable 'gateway' is null.",
+                    new NullPointerException()
+            );
+
+            return null;
+        }
+
+        if (channel == null) {
+            exceptionHandler.handleExceptionAndDecideOnAbort(
+                    "Variable 'channel' is null.",
+                    new NullPointerException()
+            );
+
+            return null;
+        }
 
         return gateway.getNetwork(channel);
     }

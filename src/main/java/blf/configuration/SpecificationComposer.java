@@ -21,7 +21,7 @@ import io.reactivex.annotations.NonNull;
  * SpecificationComposer
  */
 public class SpecificationComposer {
-    private final Stack<FactoryState> states;
+    public final Stack<FactoryState> states;
     public final Stack<List<Instruction>> instructionListsStack;
 
     public SpecificationComposer() {
@@ -108,7 +108,11 @@ public class SpecificationComposer {
             this.instructionListsStack.peek()
         );
 
-        this.closeScope(blockRange);
+        this.instructionListsStack.pop();
+        if (!this.instructionListsStack.isEmpty()) {
+            this.instructionListsStack.peek().add(blockRange);
+        }
+        this.states.pop();
     }
 
     public void buildTransactionFilter(@NonNull AddressListSpecification senders, @NonNull AddressListSpecification recipients)
@@ -209,7 +213,7 @@ public class SpecificationComposer {
         };
     }
 
-    private enum FactoryState {
+    public enum FactoryState {
         PROGRAM,
         BLOCK_RANGE_FILTER,
         TRANSACTION_FILTER,

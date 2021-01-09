@@ -23,11 +23,11 @@ public class BlockNumberSpecification {
         this.type = type;
     }
 
-    ValueAccessor getValueAccessor() {
+    public ValueAccessor getValueAccessor() {
         return this.accessor;
     }
 
-    FilterPredicate<BigInteger> getStopCriterion() {
+    public FilterPredicate<BigInteger> getStopCriterion() {
         return this.stopCriterion;
     }
 

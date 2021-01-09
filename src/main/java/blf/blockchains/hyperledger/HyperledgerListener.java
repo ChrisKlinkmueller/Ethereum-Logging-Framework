@@ -1,5 +1,6 @@
 package blf.blockchains.hyperledger;
 
+import blf.blockchains.hyperledger.instructions.HyperledgerBlockFilterInstruction;
 import blf.blockchains.hyperledger.instructions.HyperledgerConnectInstruction;
 import blf.blockchains.hyperledger.state.HyperledgerProgramState;
 import blf.configuration.*;
@@ -7,6 +8,7 @@ import blf.grammar.BcqlParser;
 import blf.parsing.VariableExistenceListener;
 import blf.util.TypeUtils;
 
+import java.math.BigInteger;
 import java.util.List;
 import java.util.logging.Logger;
 
@@ -40,12 +42,57 @@ public class HyperledgerListener extends BaseBlockchainListener {
             logger.severe("Hyperledger SET CONNECTION parameter should be a String array of length 5");
         }
 
-        hyperledgerProgramState.setNetworkConfigFilePath(hyperledgerConnectionParams.get(0));
-        hyperledgerProgramState.setServerKeyFilePath(hyperledgerConnectionParams.get(1));
-        hyperledgerProgramState.setServerCrtFilePath(hyperledgerConnectionParams.get(2));
-        hyperledgerProgramState.setMspName(hyperledgerConnectionParams.get(3));
-        hyperledgerProgramState.setChannel(hyperledgerConnectionParams.get(4));
+        final String networkConfigFilePath = hyperledgerConnectionParams.get(0);
+        final String serverKeyFilePath = hyperledgerConnectionParams.get(1);
+        final String serverCrtFilePath = hyperledgerConnectionParams.get(2);
+        final String mspName = hyperledgerConnectionParams.get(3);
+        final String channelName = hyperledgerConnectionParams.get(4);
 
-        this.composer.addInstruction(new HyperledgerConnectInstruction());
+        final HyperledgerConnectInstruction hyperledgerConnectInstruction = new HyperledgerConnectInstruction(
+                networkConfigFilePath,
+                serverKeyFilePath,
+                serverCrtFilePath,
+                mspName,
+                channelName
+        );
+
+        this.composer.addInstruction(hyperledgerConnectInstruction);
     }
+
+    @Override
+    public void exitScope(BcqlParser.ScopeContext ctx) {
+        final BcqlParser.BlockFilterContext blockFilterCtx = ctx.filter().blockFilter();
+        if (blockFilterCtx != null) {
+            exitBlockFilterScope(blockFilterCtx);
+        }
+    }
+
+
+    private void exitBlockFilterScope(BcqlParser.BlockFilterContext ctx) {
+        final BcqlParser.LiteralContext fromLiteral = ctx.from.valueExpression().literal();
+        final BcqlParser.LiteralContext toLiteral = ctx.to.valueExpression().literal();
+
+        if (fromLiteral.INT_LITERAL() == null) {
+            logger.severe("Hyperledger BLOCKS (`from`)() parameter should be an Integer");
+            System.exit(1);
+        }
+
+        if (toLiteral.INT_LITERAL() == null) {
+            logger.severe("Hyperledger BLOCKS ()(`to`) parameter should be an Integer");
+            System.exit(1);
+        }
+
+        final String fromNumberString = ctx.from.valueExpression().literal().getText();
+        final String toNumberString = ctx.to.valueExpression().literal().getText();
+
+        final BigInteger fromNumber = new BigInteger(fromNumberString);
+        final BigInteger toNumber = new BigInteger(toNumberString);
+
+        this.composer.addInstruction(
+                new HyperledgerBlockFilterInstruction(
+                        fromNumber, toNumber, this.composer.instructionListsStack.peek()
+                )
+        );
+    }
+
 }

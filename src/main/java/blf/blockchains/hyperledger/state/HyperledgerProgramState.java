@@ -5,6 +5,8 @@ import blf.core.state.ProgramState;
 import org.hyperledger.fabric.gateway.Gateway;
 import org.hyperledger.fabric.gateway.Network;
 
+import java.math.BigInteger;
+
 public class HyperledgerProgramState extends ProgramState {
 
     public HyperledgerProgramState() {
@@ -16,62 +18,18 @@ public class HyperledgerProgramState extends ProgramState {
         this.getReader().close();
     }
 
+    // ======= reader =======
     private final HyperledgerDataReader reader;
 
     public HyperledgerDataReader getReader() {
         return this.reader;
     }
 
-    private String networkConfigFilePath;
+    // ****************************************************
+    // HyperledgerConnectInstruction
+    // ****************************************************
 
-    public String getNetworkConfigFilePath() {
-        return networkConfigFilePath;
-    }
-
-    public void setNetworkConfigFilePath(String networkConfigFilePath) {
-        this.networkConfigFilePath = networkConfigFilePath;
-    }
-
-    private String serverKeyFilePath;
-
-    public String getServerKeyFilePath() {
-        return serverKeyFilePath;
-    }
-
-    public void setServerKeyFilePath(String serverKeyFilePath) {
-        this.serverKeyFilePath = serverKeyFilePath;
-    }
-
-    private String serverCrtFilePath;
-
-    public String getServerCrtFilePath() {
-        return serverCrtFilePath;
-    }
-
-    public void setServerCrtFilePath(String serverCrtFilePath) {
-        this.serverCrtFilePath = serverCrtFilePath;
-    }
-
-    private String mspName;
-
-    public String getMspName() {
-        return mspName;
-    }
-
-    public void setMspName(String mspName) {
-        this.mspName = mspName;
-    }
-
-    private String channel;
-
-    public String getChannel() {
-        return channel;
-    }
-
-    public void setChannel(String channel) {
-        this.channel = channel;
-    }
-
+    // ======= gateway =======
     private Gateway gateway;
 
     public Gateway getGateway() {
@@ -82,6 +40,7 @@ public class HyperledgerProgramState extends ProgramState {
         this.gateway = gateway;
     }
 
+    // ======= network =======
     private Network network;
 
     public Network getNetwork() {
@@ -92,4 +51,29 @@ public class HyperledgerProgramState extends ProgramState {
         this.network = network;
     }
 
+    // ****************************************************
+    // HyperledgerBlockFilterInstruction
+    // ****************************************************
+
+    // ======= currentBlockNumber =======
+    private BigInteger currentBlockNumber;
+
+    public BigInteger getCurrentBlockNumber() {
+        return currentBlockNumber;
+    }
+
+    public void setCurrentBlockNumber(BigInteger currentBlockNumber) {
+        this.currentBlockNumber = currentBlockNumber;
+    }
+
+    // ======= currentBlock =======
+    private Object currentBlock;
+
+    public Object getCurrentBlock() {
+        return currentBlock;
+    }
+
+    public void setCurrentBlock(Object currentBlock) {
+        this.currentBlock = currentBlock;
+    }
 }
