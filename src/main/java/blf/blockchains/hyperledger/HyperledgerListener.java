@@ -59,11 +59,11 @@ public class HyperledgerListener extends BaseBlockchainListener {
         final String channelName = hyperledgerConnectionParams.get(4);
 
         final HyperledgerConnectInstruction hyperledgerConnectInstruction = new HyperledgerConnectInstruction(
-                networkConfigFilePath,
-                serverKeyFilePath,
-                serverCrtFilePath,
-                mspName,
-                channelName
+            networkConfigFilePath,
+            serverKeyFilePath,
+            serverCrtFilePath,
+            mspName,
+            channelName
         );
 
         this.composer.addInstruction(hyperledgerConnectInstruction);
@@ -95,13 +95,12 @@ public class HyperledgerListener extends BaseBlockchainListener {
         final List<TerminalNode> stringLiteral = addressListCtx.STRING_LITERAL();
         final BcqlParser.VariableNameContext variableNameCtx = addressListCtx.variableName();
 
-        List<BcqlParser.LogEntryParameterContext> logEntryParameterContextList =
-                logEntrySignatureCtx.logEntryParameter();
+        List<BcqlParser.LogEntryParameterContext> logEntryParameterContextList = logEntrySignatureCtx.logEntryParameter();
 
         if (logEntryParameterContextList == null) {
             this.exceptionHandler.handleExceptionAndDecideOnAbort(
-                    "Variable 'logEntryParameterContextList' is null or empty",
-                    new NullPointerException()
+                "Variable 'logEntryParameterContextList' is null or empty",
+                new NullPointerException()
             );
 
             logEntryParameterContextList = new LinkedList<>();
@@ -112,12 +111,7 @@ public class HyperledgerListener extends BaseBlockchainListener {
         final List<Pair<String, String>> entryParameters = new LinkedList<>();
 
         for (BcqlParser.LogEntryParameterContext logEntryParameterCtx : logEntryParameterContextList) {
-            entryParameters.add(
-                    new Pair<>(
-                            logEntryParameterCtx.solType().getText(),
-                            logEntryParameterCtx.variableName().getText()
-                    )
-            );
+            entryParameters.add(new Pair<>(logEntryParameterCtx.solType().getText(), logEntryParameterCtx.variableName().getText()));
         }
 
         List<String> addressNames = null;
@@ -128,10 +122,7 @@ public class HyperledgerListener extends BaseBlockchainListener {
             try {
                 value = (String) accessor.getValue(this.hyperledgerProgramState);
             } catch (ClassCastException e) {
-                String errorMsg = String.format(
-                        "Variable '%s' in manifest file is not an instance of String.",
-                        variableNameCtx.getText()
-                );
+                String errorMsg = String.format("Variable '%s' in manifest file is not an instance of String.", variableNameCtx.getText());
 
                 this.exceptionHandler.handleExceptionAndDecideOnAbort(errorMsg, e);
             } catch (ProgramException e) {
@@ -142,13 +133,14 @@ public class HyperledgerListener extends BaseBlockchainListener {
         }
 
         if (stringLiteral != null && !stringLiteral.isEmpty()) {
-            addressNames = stringLiteral.stream()
-                    .map(ParseTree::getText)
-                    .collect(Collectors.toList());
+            addressNames = stringLiteral.stream().map(ParseTree::getText).collect(Collectors.toList());
         }
 
-        final HyperledgerLogEntryFilterInstruction logEntryFilterInstruction =
-                new HyperledgerLogEntryFilterInstruction(addressNames, eventName, entryParameters);
+        final HyperledgerLogEntryFilterInstruction logEntryFilterInstruction = new HyperledgerLogEntryFilterInstruction(
+            addressNames,
+            eventName,
+            entryParameters
+        );
 
         this.composer.addInstruction(logEntryFilterInstruction);
     }
@@ -159,15 +151,15 @@ public class HyperledgerListener extends BaseBlockchainListener {
 
         if (fromLiteral.INT_LITERAL() == null) {
             this.exceptionHandler.handleExceptionAndDecideOnAbort(
-                    "Hyperledger BLOCKS (`from`)() parameter should be an Integer",
-                    new NullPointerException()
+                "Hyperledger BLOCKS (`from`)() parameter should be an Integer",
+                new NullPointerException()
             );
         }
 
         if (toLiteral.INT_LITERAL() == null) {
             this.exceptionHandler.handleExceptionAndDecideOnAbort(
-                    "Hyperledger BLOCKS ()(`to`) parameter should be an Integer",
-                    new NullPointerException()
+                "Hyperledger BLOCKS ()(`to`) parameter should be an Integer",
+                new NullPointerException()
             );
         }
 
@@ -177,12 +169,11 @@ public class HyperledgerListener extends BaseBlockchainListener {
         final BigInteger fromBlockNumber = new BigInteger(fromBlockNumberString);
         final BigInteger toBlockNumber = new BigInteger(toBlockNumberString);
 
-        final HyperledgerBlockFilterInstruction hyperledgerBlockFilterInstruction =
-                new HyperledgerBlockFilterInstruction(
-                        fromBlockNumber,
-                        toBlockNumber,
-                        this.composer.instructionListsStack.pop()
-                );
+        final HyperledgerBlockFilterInstruction hyperledgerBlockFilterInstruction = new HyperledgerBlockFilterInstruction(
+            fromBlockNumber,
+            toBlockNumber,
+            this.composer.instructionListsStack.pop()
+        );
 
         this.composer.addInstruction(hyperledgerBlockFilterInstruction);
     }

@@ -45,9 +45,9 @@ public class HyperledgerLogEntryFilterInstruction implements Instruction {
     private final List<Pair<String, String>> entryParameters;
 
     public HyperledgerLogEntryFilterInstruction(
-            final List<String> addressNames,
-            String eventName,
-            List<Pair<String, String>> entryParameters
+        final List<String> addressNames,
+        String eventName,
+        List<Pair<String, String>> entryParameters
     ) {
         this.addressNames = addressNames;
         this.eventName = eventName;
@@ -62,11 +62,11 @@ public class HyperledgerLogEntryFilterInstruction implements Instruction {
         HyperledgerProgramState hyperledgerProgramState = (HyperledgerProgramState) state;
 
         final String infoMsg = String.format(
-                "Executing HyperledgerLogEntryFilterInstruction(addressNames -> %s | eventName -> %s | entryParameters -> %s) for the block %s",
-                this.addressNames.toString(),
-                this.eventName,
-                this.entryParameters.toString(),
-                hyperledgerProgramState.getCurrentBlockNumber().toString()
+            "Executing HyperledgerLogEntryFilterInstruction(addressNames -> %s | eventName -> %s | entryParameters -> %s) for the block %s",
+            this.addressNames.toString(),
+            this.eventName,
+            this.entryParameters.toString(),
+            hyperledgerProgramState.getCurrentBlockNumber().toString()
         );
 
         logger.info(infoMsg);
