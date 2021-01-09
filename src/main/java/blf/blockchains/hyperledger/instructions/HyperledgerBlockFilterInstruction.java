@@ -23,9 +23,9 @@ public class HyperledgerBlockFilterInstruction extends FilterInstruction {
     private final BigInteger toBlockNumber;
 
     public HyperledgerBlockFilterInstruction(
-            final BigInteger fromBlockNumber,
-            final BigInteger toBlockNumber,
-            List<Instruction> nestedInstructions
+        final BigInteger fromBlockNumber,
+        final BigInteger toBlockNumber,
+        List<Instruction> nestedInstructions
     ) {
         // here the list of nested instructions is created
         super(nestedInstructions);
@@ -77,37 +77,28 @@ public class HyperledgerBlockFilterInstruction extends FilterInstruction {
 
     private boolean executeParametersAreValid(BigInteger fromBlockNumber, BigInteger toBlockNumber, ProgramState state) {
         if (state == null) {
-            exceptionHandler.handleExceptionAndDecideOnAbort(
-                    "Variable 'state' is null.",
-                    new NullPointerException()
-            );
+            exceptionHandler.handleExceptionAndDecideOnAbort("Variable 'state' is null.", new NullPointerException());
 
             return false;
         }
 
         if (!(state instanceof HyperledgerProgramState)) {
             exceptionHandler.handleExceptionAndDecideOnAbort(
-                    "Variable 'state' is not an instance of 'HyperledgerProgramState'.",
-                    new ClassCastException()
+                "Variable 'state' is not an instance of 'HyperledgerProgramState'.",
+                new ClassCastException()
             );
 
             return false;
         }
 
         if (fromBlockNumber == null) {
-            exceptionHandler.handleExceptionAndDecideOnAbort(
-                    "Variable 'fromBlockNumber' is null.",
-                    new NullPointerException()
-            );
+            exceptionHandler.handleExceptionAndDecideOnAbort("Variable 'fromBlockNumber' is null.", new NullPointerException());
 
             return false;
         }
 
         if (toBlockNumber == null) {
-            exceptionHandler.handleExceptionAndDecideOnAbort(
-                    "Variable 'toBlockNumber' is null.",
-                    new NullPointerException()
-            );
+            exceptionHandler.handleExceptionAndDecideOnAbort("Variable 'toBlockNumber' is null.", new NullPointerException());
 
             return false;
         }
@@ -115,12 +106,12 @@ public class HyperledgerBlockFilterInstruction extends FilterInstruction {
         // fromBlockNumber.compareTo(toBlockNumber) > 0 means fromBlockNumber > toBlockNumber
         if (fromBlockNumber.compareTo(toBlockNumber) > 0) {
             exceptionHandler.handleExceptionAndDecideOnAbort(
-                    String.format(
-                            "In BLOCKS statement the 'fromBlockNumber'(%s) parameter is bigger then 'toBlockNumber'(%s) parameter.",
-                            fromBlockNumber.toString(),
-                            toBlockNumber.toString()
-                    ),
-                    new Exception()
+                String.format(
+                    "In BLOCKS statement the 'fromBlockNumber'(%s) parameter is bigger then 'toBlockNumber'(%s) parameter.",
+                    fromBlockNumber.toString(),
+                    toBlockNumber.toString()
+                ),
+                new Exception()
             );
 
             return false;

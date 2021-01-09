@@ -32,6 +32,8 @@ addressList
     : BYTES_LITERAL (',' BYTES_LITERAL)*
     | KEY_ANY
     | variableName
+    // This is needed to be used in Hyperledger
+    | STRING_LITERAL (',' STRING_LITERAL)*
     ;
 
 

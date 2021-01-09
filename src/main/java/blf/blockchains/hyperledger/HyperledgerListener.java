@@ -2,20 +2,28 @@ package blf.blockchains.hyperledger;
 
 import blf.blockchains.hyperledger.instructions.HyperledgerBlockFilterInstruction;
 import blf.blockchains.hyperledger.instructions.HyperledgerConnectInstruction;
+import blf.blockchains.hyperledger.instructions.HyperledgerLogEntryFilterInstruction;
 import blf.blockchains.hyperledger.state.HyperledgerProgramState;
 import blf.configuration.*;
+import blf.core.exceptions.ExceptionHandler;
+import blf.core.exceptions.ProgramException;
+import blf.core.values.ValueAccessor;
 import blf.grammar.BcqlParser;
 import blf.parsing.VariableExistenceListener;
 import blf.util.TypeUtils;
+import org.antlr.v4.runtime.misc.Pair;
+import org.antlr.v4.runtime.tree.ParseTree;
+import org.antlr.v4.runtime.tree.TerminalNode;
 
 import java.math.BigInteger;
-import java.util.LinkedList;
-import java.util.List;
+import java.util.*;
 import java.util.logging.Logger;
+import java.util.stream.Collectors;
 
 public class HyperledgerListener extends BaseBlockchainListener {
 
     private final Logger logger;
+    private final ExceptionHandler exceptionHandler;
     private final HyperledgerProgramState hyperledgerProgramState;
 
     public HyperledgerListener(VariableExistenceListener analyzer) {
@@ -25,6 +33,7 @@ public class HyperledgerListener extends BaseBlockchainListener {
 
         hyperledgerProgramState = (HyperledgerProgramState) this.state;
         logger = Logger.getLogger(HyperledgerListener.class.getName());
+        exceptionHandler = new ExceptionHandler();
     }
 
     @Override
@@ -80,23 +89,86 @@ public class HyperledgerListener extends BaseBlockchainListener {
     }
 
     private void handleLogEntryScopeExit(BcqlParser.LogEntryFilterContext logEntryCtx) {
-        // TODO: add new HyperledgerLogEntryInstruction via this.composer
+        final BcqlParser.AddressListContext addressListCtx = logEntryCtx.addressList();
+        final BcqlParser.LogEntrySignatureContext logEntrySignatureCtx = logEntryCtx.logEntrySignature();
+
+        final List<TerminalNode> stringLiteral = addressListCtx.STRING_LITERAL();
+        final BcqlParser.VariableNameContext variableNameCtx = addressListCtx.variableName();
+
+        List<BcqlParser.LogEntryParameterContext> logEntryParameterContextList =
+                logEntrySignatureCtx.logEntryParameter();
+
+        if (logEntryParameterContextList == null) {
+            this.exceptionHandler.handleExceptionAndDecideOnAbort(
+                    "Variable 'logEntryParameterContextList' is null or empty",
+                    new NullPointerException()
+            );
+
+            logEntryParameterContextList = new LinkedList<>();
+        }
+
+        final String eventName = logEntrySignatureCtx.methodName.getText();
+
+        final List<Pair<String, String>> entryParameters = new LinkedList<>();
+
+        for (BcqlParser.LogEntryParameterContext logEntryParameterCtx : logEntryParameterContextList) {
+            entryParameters.add(
+                    new Pair<>(
+                            logEntryParameterCtx.solType().getText(),
+                            logEntryParameterCtx.variableName().getText()
+                    )
+            );
+        }
+
+        List<String> addressNames = null;
+
+        if (variableNameCtx != null) {
+            final ValueAccessor accessor = ValueAccessor.createVariableAccessor(variableNameCtx.getText());
+            String value = "";
+            try {
+                value = (String) accessor.getValue(this.hyperledgerProgramState);
+            } catch (ClassCastException e) {
+                String errorMsg = String.format(
+                        "Variable '%s' in manifest file is not an instance of String.",
+                        variableNameCtx.getText()
+                );
+
+                this.exceptionHandler.handleExceptionAndDecideOnAbort(errorMsg, e);
+            } catch (ProgramException e) {
+                this.exceptionHandler.handleExceptionAndDecideOnAbort("Unexpected exception occurred!", e);
+            }
+
+            addressNames = new LinkedList<>(Collections.singletonList(value));
+        }
+
+        if (stringLiteral != null && !stringLiteral.isEmpty()) {
+            addressNames = stringLiteral.stream()
+                    .map(ParseTree::getText)
+                    .collect(Collectors.toList());
+        }
+
+        final HyperledgerLogEntryFilterInstruction logEntryFilterInstruction =
+                new HyperledgerLogEntryFilterInstruction(addressNames, eventName, entryParameters);
+
+        this.composer.addInstruction(logEntryFilterInstruction);
     }
 
     private void handleBlockFilterScopeExit(BcqlParser.BlockFilterContext ctx) {
         final BcqlParser.LiteralContext fromLiteral = ctx.from.valueExpression().literal();
         final BcqlParser.LiteralContext toLiteral = ctx.to.valueExpression().literal();
 
-        // TODO: handle exceptions via exceptionHandler
         if (fromLiteral.INT_LITERAL() == null) {
-            logger.severe("Hyperledger BLOCKS (`from`)() parameter should be an Integer");
-            System.exit(1);
+            this.exceptionHandler.handleExceptionAndDecideOnAbort(
+                    "Hyperledger BLOCKS (`from`)() parameter should be an Integer",
+                    new NullPointerException()
+            );
         }
 
-        // TODO: handle exceptions via exceptionHandler
         if (toLiteral.INT_LITERAL() == null) {
-            logger.severe("Hyperledger BLOCKS ()(`to`) parameter should be an Integer");
-            System.exit(1);
+            this.exceptionHandler.handleExceptionAndDecideOnAbort(
+                    "Hyperledger BLOCKS ()(`to`) parameter should be an Integer",
+                    new NullPointerException()
+            );
         }
 
         final String fromBlockNumberString = ctx.from.valueExpression().literal().getText();
@@ -105,13 +177,14 @@ public class HyperledgerListener extends BaseBlockchainListener {
         final BigInteger fromBlockNumber = new BigInteger(fromBlockNumberString);
         final BigInteger toBlockNumber = new BigInteger(toBlockNumberString);
 
-        this.composer.addInstruction(
+        final HyperledgerBlockFilterInstruction hyperledgerBlockFilterInstruction =
                 new HyperledgerBlockFilterInstruction(
                         fromBlockNumber,
                         toBlockNumber,
                         this.composer.instructionListsStack.pop()
-                )
-        );
+                );
+
+        this.composer.addInstruction(hyperledgerBlockFilterInstruction);
     }
 
 }

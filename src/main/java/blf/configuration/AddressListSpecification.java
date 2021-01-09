@@ -13,6 +13,7 @@ import io.reactivex.annotations.NonNull;
  * AddressListSpecification
  */
 public class AddressListSpecification {
+
     private final FilterPredicate<String> addressCheck;
 
     private AddressListSpecification(FilterPredicate<String> addressCheck) {
@@ -44,7 +45,6 @@ public class AddressListSpecification {
         return new AddressListSpecification((state, address) -> address == null);
     }
 
-    @SuppressWarnings("unchecked")
     public static AddressListSpecification ofVariableName(@NonNull String name) {
         final ValueAccessor accessor = ValueAccessor.createVariableAccessor(name);
         return new AddressListSpecification((state, address) -> {

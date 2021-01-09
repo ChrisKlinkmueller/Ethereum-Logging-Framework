@@ -183,7 +183,7 @@ public class EthereumListener extends BaseBlockchainListener {
         } else if (ctx.KEY_ANY() != null) {
             return AddressListSpecification.ofAny();
         } else if (ctx.variableName() != null) {
-            return AddressListSpecification.ofAddress(ctx.variableName().getText());
+            return AddressListSpecification.ofVariableName(ctx.variableName().getText());
         } else {
             return AddressListSpecification.ofEmpty();
         }
