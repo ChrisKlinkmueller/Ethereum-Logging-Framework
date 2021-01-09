@@ -1,0 +1,89 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!-- This file has been generated with the OpenXES library. It conforms -->
+<!-- to the XML serialization of the XES standard for log storage and -->
+<!-- management. -->
+<!-- XES standard version: 1.0 -->
+<!-- OpenXES library version: 1.0RC7 -->
+<!-- OpenXES is available from http://www.openxes.org/ -->
+<log xes.version="1.0" xes.features="nested-attributes" openxes.version="1.0RC7">
+	<string key="ident:pid" value="pid0"/>
+	<trace>
+		<string key="ident:piid" value="0x2de4dcd751f3b0b3dbcfe65c1fcb476f4e067537"/>
+		<event>
+			<string key="concept:name" value="Markt erstellt"/>
+			<string key="ident:eid" value="eid0"/>
+		</event>
+		<event>
+			<string key="concept:name" value="Ja-Nein Markt"/>
+			<string key="ident:eid" value="eid1"/>
+		</event>
+	</trace>
+	<trace>
+		<string key="ident:piid" value="0x15f48138d2b65e56d5af3e05f08967cd8d56c687"/>
+		<event>
+			<string key="concept:name" value="Markt erstellt"/>
+			<string key="ident:eid" value="eid2"/>
+		</event>
+		<event>
+			<string key="concept:name" value="Ja-Nein Markt"/>
+			<string key="ident:eid" value="eid3"/>
+		</event>
+	</trace>
+	<trace>
+		<string key="ident:piid" value="0x1d96d2e931ccdfa08672c2fe12e2b5df34861f46"/>
+		<event>
+			<string key="concept:name" value="Markt erstellt"/>
+			<string key="ident:eid" value="eid4"/>
+		</event>
+		<event>
+			<string key="concept:name" value="Ja-Nein Markt"/>
+			<string key="ident:eid" value="eid5"/>
+		</event>
+	</trace>
+	<trace>
+		<string key="ident:piid" value="0x12a00b0854227715c483fd58ebe23867a88a3f67"/>
+		<event>
+			<string key="concept:name" value="Markt erstellt"/>
+			<string key="ident:eid" value="eid6"/>
+		</event>
+		<event>
+			<string key="concept:name" value="Ja-Nein Markt"/>
+			<string key="ident:eid" value="eid7"/>
+		</event>
+	</trace>
+	<trace>
+		<string key="ident:piid" value="0x27cf87ada2380cd11551b28d03582bbea9d2b25b"/>
+		<event>
+			<string key="concept:name" value="Erlös beanspruchen"/>
+			<string key="ident:eid" value="eid8"/>
+		</event>
+	</trace>
+	<trace>
+		<string key="ident:piid" value="0x4ff1bc5ba741c268284cdb041a4378dc1d1ef029"/>
+		<event>
+			<string key="concept:name" value="Streitrunde beilegen"/>
+			<string key="ident:eid" value="eid9"/>
+		</event>
+	</trace>
+	<trace>
+		<string key="ident:piid" value="0xed88cd7f3905899ffa0b31e8b3a3320d8f1fa202"/>
+		<event>
+			<string key="concept:name" value="Erlös beanspruchen"/>
+			<string key="ident:eid" value="eid10"/>
+		</event>
+	</trace>
+	<trace>
+		<string key="ident:piid" value="0x517b83f24d021f1a18fc28e59b9fd57d6ed0cc1f"/>
+		<event>
+			<string key="concept:name" value="Streitrunde beilegen"/>
+			<string key="ident:eid" value="eid11"/>
+		</event>
+	</trace>
+	<trace>
+		<string key="ident:piid" value="0x7f59ad2f772f1bd471cf5e13fb3eab03ea108030"/>
+		<event>
+			<string key="concept:name" value="Streitrunde beilegen"/>
+			<string key="ident:eid" value="eid12"/>
+		</event>
+	</trace>
+</log>
