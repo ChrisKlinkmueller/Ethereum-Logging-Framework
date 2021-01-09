@@ -4,10 +4,11 @@ import blf.blockchains.hyperledger.state.HyperledgerProgramState;
 import blf.core.exceptions.ExceptionHandler;
 import blf.core.exceptions.ProgramException;
 import blf.core.instructions.FilterInstruction;
+import blf.core.interfaces.Instruction;
 import blf.core.state.ProgramState;
 
 import java.math.BigInteger;
-import java.util.LinkedList;
+import java.util.List;
 import java.util.logging.Logger;
 
 /**
@@ -23,10 +24,11 @@ public class HyperledgerBlockFilterInstruction extends FilterInstruction {
 
     public HyperledgerBlockFilterInstruction(
             final BigInteger fromBlockNumber,
-            final BigInteger toBlockNumber
+            final BigInteger toBlockNumber,
+            List<Instruction> nestedInstructions
     ) {
         // here the list of nested instructions is created
-        super(new LinkedList<>());
+        super(nestedInstructions);
 
         this.fromBlockNumber = fromBlockNumber;
         this.toBlockNumber = toBlockNumber;
@@ -52,6 +54,7 @@ public class HyperledgerBlockFilterInstruction extends FilterInstruction {
 
         // currentBlockNumber.compareTo(toBlock) < 1 means currentBlockNumber <= toBlock
         while (currentBlockNumber.compareTo(toBlockNumber) < 1) {
+
             hyperledgerProgramState.setCurrentBlockNumber(currentBlockNumber);
 
             // TODO: Retrieve Hyperledger block based on the currentBlockNumber parameter.

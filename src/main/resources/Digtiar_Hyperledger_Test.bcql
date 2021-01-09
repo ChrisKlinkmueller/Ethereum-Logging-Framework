@@ -12,9 +12,19 @@ SET CONNECTION {
 
 SET OUTPUT FOLDER "./test_output"
 
-BLOCKS (5926229) (5926329) {
+BLOCKS (1) (5) {
+   LOG ENTRIES (0xb1690c08e213a35ed9bab7b318de14420fb57d8c) (AuctionCancelled(uint256 tokenId)) {
+   }
+   LOG ENTRIES (0xb1690c08e213a35ed9bab7b318de14420fb57d8c) (AuctionCancelled(uint256 tokenId)) {
+   }
 }
 
 
-BLOCKS (5926429) (5926529) {
+BLOCKS (3) (6) {
+   LOG ENTRIES (0xb1690c08e213a35ed9bab7b318de14420fb57d8c) (AuctionCancelled(uint256 tokenId)) {
+   }
+   LOG ENTRIES (0xb1690c08e213a35ed9bab7b318de14420fb57d8c) (AuctionCancelled(uint256 tokenId)) {
+   }
+   LOG ENTRIES (0xb1690c08e213a35ed9bab7b318de14420fb57d8c) (AuctionCancelled(uint256 tokenId)) {
+   }
 }

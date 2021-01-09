@@ -9,6 +9,7 @@ import blf.parsing.VariableExistenceListener;
 import blf.util.TypeUtils;
 
 import java.math.BigInteger;
+import java.util.LinkedList;
 import java.util.List;
 import java.util.logging.Logger;
 
@@ -60,36 +61,56 @@ public class HyperledgerListener extends BaseBlockchainListener {
     }
 
     @Override
+    public void exitBlockFilter(BcqlParser.BlockFilterContext ctx) {
+        this.composer.instructionListsStack.add(new LinkedList<>());
+    }
+
+    @Override
     public void exitScope(BcqlParser.ScopeContext ctx) {
         final BcqlParser.BlockFilterContext blockFilterCtx = ctx.filter().blockFilter();
+        final BcqlParser.LogEntryFilterContext logEntryCtx = ctx.filter().logEntryFilter();
+
         if (blockFilterCtx != null) {
             handleBlockFilterScopeExit(blockFilterCtx);
         }
+
+        if (logEntryCtx != null) {
+            handleLogEntryScopeExit(logEntryCtx);
+        }
     }
 
+    private void handleLogEntryScopeExit(BcqlParser.LogEntryFilterContext logEntryCtx) {
+        // TODO: add new HyperledgerLogEntryInstruction via this.composer
+    }
 
     private void handleBlockFilterScopeExit(BcqlParser.BlockFilterContext ctx) {
         final BcqlParser.LiteralContext fromLiteral = ctx.from.valueExpression().literal();
         final BcqlParser.LiteralContext toLiteral = ctx.to.valueExpression().literal();
 
+        // TODO: handle exceptions via exceptionHandler
         if (fromLiteral.INT_LITERAL() == null) {
             logger.severe("Hyperledger BLOCKS (`from`)() parameter should be an Integer");
             System.exit(1);
         }
 
+        // TODO: handle exceptions via exceptionHandler
         if (toLiteral.INT_LITERAL() == null) {
             logger.severe("Hyperledger BLOCKS ()(`to`) parameter should be an Integer");
             System.exit(1);
         }
 
-        final String fromNumberString = ctx.from.valueExpression().literal().getText();
-        final String toNumberString = ctx.to.valueExpression().literal().getText();
+        final String fromBlockNumberString = ctx.from.valueExpression().literal().getText();
+        final String toBlockNumberString = ctx.to.valueExpression().literal().getText();
 
-        final BigInteger fromNumber = new BigInteger(fromNumberString);
-        final BigInteger toNumber = new BigInteger(toNumberString);
+        final BigInteger fromBlockNumber = new BigInteger(fromBlockNumberString);
+        final BigInteger toBlockNumber = new BigInteger(toBlockNumberString);
 
         this.composer.addInstruction(
-                new HyperledgerBlockFilterInstruction(fromNumber, toNumber)
+                new HyperledgerBlockFilterInstruction(
+                        fromBlockNumber,
+                        toBlockNumber,
+                        this.composer.instructionListsStack.pop()
+                )
         );
     }
 
