@@ -4,11 +4,10 @@ import blf.blockchains.hyperledger.state.HyperledgerProgramState;
 import blf.core.exceptions.ExceptionHandler;
 import blf.core.exceptions.ProgramException;
 import blf.core.instructions.FilterInstruction;
-import blf.core.interfaces.Instruction;
 import blf.core.state.ProgramState;
 
 import java.math.BigInteger;
-import java.util.List;
+import java.util.LinkedList;
 import java.util.logging.Logger;
 
 /**
@@ -24,10 +23,10 @@ public class HyperledgerBlockFilterInstruction extends FilterInstruction {
 
     public HyperledgerBlockFilterInstruction(
             final BigInteger fromBlockNumber,
-            final BigInteger toBlockNumber,
-            List<Instruction> instructionsInBlockFilterScope
+            final BigInteger toBlockNumber
     ) {
-        super(instructionsInBlockFilterScope);
+        // here the list of nested instructions is created
+        super(new LinkedList<>());
 
         this.fromBlockNumber = fromBlockNumber;
         this.toBlockNumber = toBlockNumber;
@@ -67,7 +66,7 @@ public class HyperledgerBlockFilterInstruction extends FilterInstruction {
             // TODO: in this case execution should wait until the currentBlockNumber is available on the chain.
             hyperledgerProgramState.setCurrentBlock(null);
 
-            // this.executeInstructions(hyperledgerProgramState);
+            this.executeInstructions(hyperledgerProgramState);
 
             currentBlockNumber = currentBlockNumber.add(BigInteger.ONE);
         }

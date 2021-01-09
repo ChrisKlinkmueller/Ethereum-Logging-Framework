@@ -9,7 +9,9 @@ import blf.parsing.VariableExistenceListener;
 import blf.util.TypeUtils;
 
 import java.math.BigInteger;
+import java.util.LinkedList;
 import java.util.List;
+import java.util.Stack;
 import java.util.logging.Logger;
 
 public class HyperledgerListener extends BaseBlockchainListener {
@@ -89,9 +91,7 @@ public class HyperledgerListener extends BaseBlockchainListener {
         final BigInteger toNumber = new BigInteger(toNumberString);
 
         this.composer.addInstruction(
-                new HyperledgerBlockFilterInstruction(
-                        fromNumber, toNumber, this.composer.instructionListsStack.peek()
-                )
+                new HyperledgerBlockFilterInstruction(fromNumber, toNumber)
         );
     }
 
