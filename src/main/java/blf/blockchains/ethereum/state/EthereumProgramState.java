@@ -23,6 +23,7 @@ public class EthereumProgramState extends ProgramState {
         return this.reader;
     }
 
+    @Override
     public void close() {
         this.getReader().close();
     }

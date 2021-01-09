@@ -23,8 +23,11 @@ public class Program {
     }
 
     public Program(List<Instruction> instructions) {
-        assert instructions.stream().allMatch(Objects::nonNull);
-        this.instructions = new LinkedList<>(instructions);
+        if (instructions == null) {
+            this.instructions = new LinkedList<>();
+        } else {
+            this.instructions = new LinkedList<>(instructions);
+        }
     }
 
     public void execute(ProgramState state) {
@@ -35,9 +38,8 @@ public class Program {
             final String message = "Error when executing the program.";
             state.getExceptionHandler().handleExceptionAndDecideOnAbort(message, ex);
         }
-        // finally {
-        // state.close();
-        // }
+
+        state.close();
     }
 
     protected void executeInstructions(ProgramState state) throws ProgramException {

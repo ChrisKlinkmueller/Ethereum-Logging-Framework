@@ -14,6 +14,7 @@ public class HyperledgerProgramState extends ProgramState {
         this.reader = new HyperledgerDataReader();
     }
 
+    @Override
     public void close() {
         this.getReader().close();
     }

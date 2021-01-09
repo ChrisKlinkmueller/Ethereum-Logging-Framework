@@ -35,4 +35,6 @@ public abstract class ProgramState {
         return this.writers;
     }
 
+    public void close() {}
+
 }
