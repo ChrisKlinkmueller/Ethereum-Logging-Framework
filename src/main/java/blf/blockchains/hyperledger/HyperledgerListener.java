@@ -9,9 +9,7 @@ import blf.parsing.VariableExistenceListener;
 import blf.util.TypeUtils;
 
 import java.math.BigInteger;
-import java.util.LinkedList;
 import java.util.List;
-import java.util.Stack;
 import java.util.logging.Logger;
 
 public class HyperledgerListener extends BaseBlockchainListener {
@@ -65,12 +63,12 @@ public class HyperledgerListener extends BaseBlockchainListener {
     public void exitScope(BcqlParser.ScopeContext ctx) {
         final BcqlParser.BlockFilterContext blockFilterCtx = ctx.filter().blockFilter();
         if (blockFilterCtx != null) {
-            exitBlockFilterScope(blockFilterCtx);
+            handleBlockFilterScopeExit(blockFilterCtx);
         }
     }
 
 
-    private void exitBlockFilterScope(BcqlParser.BlockFilterContext ctx) {
+    private void handleBlockFilterScopeExit(BcqlParser.BlockFilterContext ctx) {
         final BcqlParser.LiteralContext fromLiteral = ctx.from.valueExpression().literal();
         final BcqlParser.LiteralContext toLiteral = ctx.to.valueExpression().literal();
 
