@@ -1,5 +1,7 @@
 package blf.core.values;
 
+import io.reactivex.annotations.NonNull;
+
 import java.util.Set;
 
 /**
@@ -10,10 +12,7 @@ class EthereumVariable {
     private final String type;
     private final ValueAccessor valueAccessor;
 
-    public EthereumVariable(final String name, final String type, final ValueAccessor valueAccessor) {
-        assert name != null;
-        assert type != null;
-        assert valueAccessor != null;
+    public EthereumVariable(@NonNull final String name, @NonNull final String type, @NonNull final ValueAccessor valueAccessor) {
         this.name = name;
         this.type = type;
         this.valueAccessor = valueAccessor;
@@ -35,10 +34,10 @@ class EthereumVariable {
         return this.valueAccessor;
     }
 
-    static <T> void addVariable(Set<EthereumVariable> variables, String name, String type, ValueAccessor valueAccessor) {
+    static void addVariable(Set<EthereumVariable> variables, String name, String type, ValueAccessor valueAccessor) {
         try {
             variables.add(new EthereumVariable(name, type, valueAccessor));
-        } catch (Throwable error) {
+        } catch (Exception error) {
             error.printStackTrace();
         }
     }

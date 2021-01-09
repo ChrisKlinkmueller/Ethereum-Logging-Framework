@@ -17,7 +17,7 @@ public class FilterNestingAnalyzer extends SemanticAnalyzer {
 
     public FilterNestingAnalyzer(ErrorCollector errorCollector) {
         super(errorCollector);
-        this.filterStack = new Stack<String>();
+        this.filterStack = new Stack<>();
 
     }
 
@@ -53,7 +53,7 @@ public class FilterNestingAnalyzer extends SemanticAnalyzer {
             return;
         }
 
-        this.addError(token, String.format("Invalid nesting of filters."));
+        this.addError(token, "Invalid nesting of filters.");
     }
 
     private boolean verifyEnclosingType(String filterType) {

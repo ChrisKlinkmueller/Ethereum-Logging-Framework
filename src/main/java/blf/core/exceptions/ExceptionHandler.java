@@ -1,5 +1,6 @@
 package blf.core.exceptions;
 
+import java.io.IOException;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.util.logging.FileHandler;
@@ -8,37 +9,53 @@ import java.util.logging.Logger;
 import java.util.logging.SimpleFormatter;
 
 /**
- * ExceptionHandler
+ * This class is responsible for handling all of the exceptions that happen during runtime.
+ * The exception handler is instantiated in the ProgramState and
+ * its reference should be used to handle every possible exception.
+ *
+ * @see blf.core.ProgramState
  */
 public class ExceptionHandler {
-    private static final String FILENAME = "error.log";
-    private final Logger logger;
+    private static final Logger LOGGER = Logger.getLogger(ExceptionHandler.class.getName());
+    private final Logger errorLogger;
     private boolean abortOnException;
 
+    public static final String ERROR_LOG_FILENAME = "error.log";
+
     public ExceptionHandler() {
-        this.logger = Logger.getLogger(FILENAME);
+        this.errorLogger = Logger.getLogger(ERROR_LOG_FILENAME);
     }
 
     public void setAbortOnException(boolean abortOnException) {
         this.abortOnException = abortOnException;
     }
 
-    public void setOutputFolder(Path outputFolder) throws Throwable {
-        final Path filepath = Paths.get(outputFolder.toFile().getAbsolutePath(), FILENAME);
-        final FileHandler fileHandler = new FileHandler(filepath.toString());
-        this.logger.addHandler(fileHandler);
-
+    public void setOutputFolder(Path outputFolder) {
+        final Path errorLogFilePath = Paths.get(outputFolder.toFile().getAbsolutePath(), ERROR_LOG_FILENAME);
         final SimpleFormatter formatter = new SimpleFormatter();
-        fileHandler.setFormatter(formatter);
+        final FileHandler errorLogFileHandler;
+
+        try {
+            errorLogFileHandler = new FileHandler(errorLogFilePath.toString());
+        } catch (IOException e) {
+            LOGGER.severe(String.format("Setting the output folder for ExceptionHandler failed: %s", e.getMessage()));
+            System.exit(1);
+            return;
+        }
+
+        this.errorLogger.addHandler(errorLogFileHandler);
+
+        errorLogFileHandler.setFormatter(formatter);
     }
 
     public boolean handleExceptionAndDecideOnAbort(String message) {
-        this.logger.log(Level.SEVERE, message);
+        this.errorLogger.log(Level.SEVERE, message);
         return this.abortOnException;
     }
 
     public boolean handleExceptionAndDecideOnAbort(String message, Throwable cause) {
-        this.logger.log(Level.SEVERE, message, cause);
+        // TODO (by Mykola Digtiar): the program abortion should be handled here
+        this.errorLogger.log(Level.SEVERE, message, cause);
         return this.abortOnException;
     }
 

@@ -7,6 +7,7 @@ import java.util.Objects;
 import blf.core.exceptions.ProgramException;
 import blf.core.Instruction;
 import blf.core.ProgramState;
+import io.reactivex.annotations.NonNull;
 
 /**
  * Scope
@@ -14,8 +15,8 @@ import blf.core.ProgramState;
 public abstract class Filter implements Instruction {
     private final List<Instruction> instructions;
 
-    public Filter(List<Instruction> instructions) {
-        assert instructions != null && instructions.stream().allMatch(Objects::nonNull);
+    protected Filter(@NonNull List<Instruction> instructions) {
+        assert instructions.stream().allMatch(Objects::nonNull);
         this.instructions = new LinkedList<>(instructions);
     }
 

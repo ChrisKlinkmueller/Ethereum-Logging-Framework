@@ -12,9 +12,9 @@ import blf.core.readers.EthereumLogEntry;
 public class LogEntryVariables {
     static final Set<EthereumVariable> LOG_ENTRY_VARIABLES;
 
-    public static String LOG_REMOVED = "log.removed";
-    public static String LOG_INDEX = "log.logIndex";
-    public static String LOG_ADDRESS = "log.address";
+    public static final String LOG_REMOVED = "log.removed";
+    public static final String LOG_INDEX = "log.logIndex";
+    public static final String LOG_ADDRESS = "log.address";
 
     static {
         LOG_ENTRY_VARIABLES = new HashSet<>();

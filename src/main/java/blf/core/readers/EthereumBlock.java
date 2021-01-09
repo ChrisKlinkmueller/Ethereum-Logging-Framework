@@ -1,5 +1,7 @@
 package blf.core.readers;
 
+import io.reactivex.annotations.NonNull;
+
 import java.math.BigInteger;
 import java.util.ArrayList;
 import java.util.Iterator;
@@ -52,8 +54,7 @@ public abstract class EthereumBlock implements Iterable<EthereumTransaction> {
 
     public abstract List<String> getUncles();
 
-    public void addTransaction(EthereumTransaction tx) {
-        assert tx != null;
+    public void addTransaction(@NonNull EthereumTransaction tx) {
         this.transactions.add(tx);
     }
 
@@ -62,7 +63,6 @@ public abstract class EthereumBlock implements Iterable<EthereumTransaction> {
     }
 
     public EthereumTransaction getTransaction(int index) {
-        assert 0 <= index && index < this.transactionCount();
         return this.transactions.get(index);
     }
 

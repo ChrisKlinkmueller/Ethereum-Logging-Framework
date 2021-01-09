@@ -118,9 +118,9 @@ public class ItemGenerator extends BaseGenerator {
     }
 
     private void generateEnumsAndMaps() {
-        this.itemStream(BitMappingItem.class).forEach(item -> this.generateBitMappingEnum(item));
+        this.itemStream(BitMappingItem.class).forEach(this::generateBitMappingEnum);
 
-        this.itemStream(ValueDictionaryItem.class).forEach(item -> this.generateMapping(item));
+        this.itemStream(ValueDictionaryItem.class).forEach(this::generateMapping);
     }
 
     private void generateMapping(ValueDictionaryItem item) {
@@ -135,7 +135,7 @@ public class ItemGenerator extends BaseGenerator {
 
         this.codeCollector.addCodeLine("constructor() public {");
 
-        this.itemStream(ValueDictionaryItem.class).forEach(item -> this.generateMappingInitialization(item));
+        this.itemStream(ValueDictionaryItem.class).forEach(this::generateMappingInitialization);
 
         this.codeCollector.addCodeLine("}");
         this.codeCollector.addEmptyLine();
@@ -161,9 +161,7 @@ public class ItemGenerator extends BaseGenerator {
     }
 
     private void openLoggingMethod() {
-        final String parameters = this.logEntry.parameterStream()
-            .map(param -> this.getLogParameter(param))
-            .collect(Collectors.joining(", "));
+        final String parameters = this.logEntry.parameterStream().map(this::getLogParameter).collect(Collectors.joining(", "));
 
         final String code = String.format("function log%s(%s) internal {", this.logEntry.getEventName(), parameters);
         this.codeCollector.addCodeLine(code);
@@ -208,7 +206,7 @@ public class ItemGenerator extends BaseGenerator {
 
     private void generateBitMaps() {
         final List<String> encodedVariables = this.itemStream(BitMappingItem.class)
-            .map(item -> item.getEncodedAttribute())
+            .map(BitMappingItem::getEncodedAttribute)
             .distinct()
             .collect(Collectors.toList());
 
@@ -218,7 +216,7 @@ public class ItemGenerator extends BaseGenerator {
             final String code = String.format(
                 "\tuint256 %s = %s;",
                 encodedVariable,
-                this.bitMappingItemStream(encodedVariable).map(item -> this.createMaskVariable(item)).collect(Collectors.joining(" | "))
+                this.bitMappingItemStream(encodedVariable).map(this::createMaskVariable).collect(Collectors.joining(" | "))
             );
             this.codeCollector.addCodeLine(code);
         }
@@ -257,7 +255,7 @@ public class ItemGenerator extends BaseGenerator {
         final String code = String.format(
             "\temit %s(%s);",
             this.logEntry.getEventName(),
-            this.logEntry.parameterStream().map(par -> par.getName()).collect(Collectors.joining(", "))
+            this.logEntry.parameterStream().map(LogEntryParameter::getName).collect(Collectors.joining(", "))
         );
         this.codeCollector.addCodeLine(code);
     }
@@ -411,7 +409,7 @@ public class ItemGenerator extends BaseGenerator {
 
         return this.logEntry.parameterStream()
             .filter(par -> par.getName().equals(val.variableName().getText()))
-            .map(par -> par.getType())
+            .map(LogEntryParameter::getType)
             .findFirst()
             .orElse(null);
     }
@@ -529,7 +527,7 @@ public class ItemGenerator extends BaseGenerator {
 
         final String type = this.logEntry.parameterStream()
             .filter(param -> param.getName().equals(variableName))
-            .map(param -> param.getType())
+            .map(LogEntryParameter::getType)
             .findFirst()
             .orElse(null);
         if (!TypeUtils.isIntegerType(type)) {

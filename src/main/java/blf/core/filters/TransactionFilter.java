@@ -7,13 +7,14 @@ import blf.core.Instruction;
 import blf.core.ProgramState;
 import blf.core.exceptions.ProgramException;
 import blf.core.readers.EthereumTransaction;
+import io.reactivex.annotations.NonNull;
 
 /**
  * TransactionScope
  */
 public class TransactionFilter extends Filter {
-    private FilterPredicate<String> senderCriterion;
-    private FilterPredicate<String> recipientCiterion;
+    private final FilterPredicate<String> senderCriterion;
+    private final FilterPredicate<String> recipientCiterion;
 
     public TransactionFilter(
         FilterPredicate<String> senderCriterion,
@@ -24,13 +25,11 @@ public class TransactionFilter extends Filter {
     }
 
     public TransactionFilter(
-        FilterPredicate<String> senderCriterion,
-        FilterPredicate<String> recipientCiterion,
+        @NonNull FilterPredicate<String> senderCriterion,
+        @NonNull FilterPredicate<String> recipientCiterion,
         List<Instruction> instructions
     ) {
         super(instructions);
-        assert senderCriterion != null;
-        assert recipientCiterion != null;
         this.recipientCiterion = recipientCiterion;
         this.senderCriterion = senderCriterion;
     }
@@ -41,7 +40,7 @@ public class TransactionFilter extends Filter {
                 try {
                     state.getReader().setCurrentTransaction(tx);
                     this.executeInstructions(state);
-                } catch (Throwable cause) {
+                } catch (Exception cause) {
                     final String message = String.format(
                         "Error mapping transaction '%s' in block '%s'.",
                         tx.getTransactionIndex(),

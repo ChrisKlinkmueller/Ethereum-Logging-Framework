@@ -1,9 +1,6 @@
 package blf.parsing;
 
-import java.util.LinkedList;
-import java.util.List;
-import java.util.Map;
-import java.util.Stack;
+import java.util.*;
 import java.util.stream.Stream;
 
 import blf.core.values.EthereumVariables;
@@ -41,7 +38,7 @@ public class VariableExistenceListener extends SemanticAnalyzer {
     }
 
     private boolean isFilterConstant(String name) {
-        return this.variableStream(name).map(variable -> variable.isConstant()).findFirst().orElse(false);
+        return this.variableStream(name).map(Variable::isConstant).findFirst().orElse(false);
     }
 
     public boolean isVariableDefined(String name) {
@@ -49,7 +46,7 @@ public class VariableExistenceListener extends SemanticAnalyzer {
     }
 
     public String getVariableType(String name) {
-        return this.variableStream(name).map(variable -> variable.getType()).findFirst().orElse(null);
+        return this.variableStream(name).map(Variable::getType).findFirst().orElse(null);
     }
 
     private Stream<Variable> variableStream(String name) {
@@ -57,7 +54,7 @@ public class VariableExistenceListener extends SemanticAnalyzer {
     }
 
     private Stream<Variable> variableStream() {
-        return this.visibleVariables.stream().flatMap(varList -> varList.stream());
+        return this.visibleVariables.stream().flatMap(Collection::stream);
     }
 
     // #region variable existence

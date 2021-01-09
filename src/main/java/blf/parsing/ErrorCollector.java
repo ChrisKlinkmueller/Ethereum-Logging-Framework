@@ -4,6 +4,7 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.stream.Stream;
 
+import io.reactivex.annotations.NonNull;
 import org.antlr.v4.runtime.BaseErrorListener;
 import org.antlr.v4.runtime.RecognitionException;
 import org.antlr.v4.runtime.Recognizer;
@@ -33,8 +34,7 @@ public class ErrorCollector extends BaseErrorListener {
         return this.errors.stream();
     }
 
-    public void addSemanticError(Token token, String errorMessage) {
-        assert token != null && errorMessage != null;
+    public void addSemanticError(@NonNull Token token, @NonNull String errorMessage) {
         this.errors.add(new EthqlProcessingError(token, errorMessage));
     }
 

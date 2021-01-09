@@ -6,6 +6,7 @@ import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
 import blf.util.MethodResult;
+import io.reactivex.annotations.NonNull;
 
 /**
  * SpecificationParserResult
@@ -17,7 +18,6 @@ public class EthqlProcessingResult<T> {
     private final EthqlProcessingError[] errors;
 
     private EthqlProcessingResult(T result, EthqlProcessingError[] errors) {
-        assert errors == null ? true : 0 <= errors.length && Arrays.stream(errors).allMatch(error -> error != null);
         this.result = result;
         this.errors = errors == null ? new EthqlProcessingError[0] : Arrays.copyOf(errors, errors.length);
     }
@@ -35,11 +35,10 @@ public class EthqlProcessingResult<T> {
     }
 
     public String getErrorMessage() {
-        return this.errorStream().map(error -> error.getErrorMessage()).collect(Collectors.joining(ERROR_MESSAGE_JOIN));
+        return this.errorStream().map(EthqlProcessingError::getErrorMessage).collect(Collectors.joining(ERROR_MESSAGE_JOIN));
     }
 
     public EthqlProcessingError getError(int index) {
-        assert 0 <= index && index < this.errorCount();
         return this.errors[index];
     }
 
@@ -55,25 +54,22 @@ public class EthqlProcessingResult<T> {
         return ofError(message, null);
     }
 
-    public static <T> EthqlProcessingResult<T> ofUnsuccessfulMethodResult(MethodResult<?> result) {
-        assert result != null && !result.isSuccessful();
+    public static <T> EthqlProcessingResult<T> ofUnsuccessfulMethodResult(@NonNull MethodResult<?> result) {
         return ofError(result.getErrorMessage(), result.getErrorCause());
     }
 
-    public static <T> EthqlProcessingResult<T> ofError(String message, Throwable cause) {
-        assert message != null && !message.trim().isEmpty();
+    public static <T> EthqlProcessingResult<T> ofError(@NonNull String message, Throwable cause) {
         final EthqlProcessingError[] errors = new EthqlProcessingError[1];
         errors[0] = new EthqlProcessingError(0, 0, message, cause);
-        return new EthqlProcessingResult<T>(null, errors);
+        return new EthqlProcessingResult<>(null, errors);
     }
 
-    public static <T> EthqlProcessingResult<T> ofErrors(Stream<EthqlProcessingError> errorStream) {
-        assert errorStream != null;
+    public static <T> EthqlProcessingResult<T> ofErrors(@NonNull Stream<EthqlProcessingError> errorStream) {
 
         final EthqlProcessingError[] errors = errorStream.toArray(EthqlProcessingError[]::new);
         assert 0 < errors.length;
 
-        return new EthqlProcessingResult<T>(null, errors);
+        return new EthqlProcessingResult<>(null, errors);
     }
 
     public static <T> EthqlProcessingResult<T> ofResult(T result) {

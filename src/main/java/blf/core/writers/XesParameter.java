@@ -3,6 +3,7 @@ package blf.core.writers;
 import blf.core.ProgramState;
 import blf.core.exceptions.ProgramException;
 import blf.core.values.ValueAccessor;
+import io.reactivex.annotations.NonNull;
 
 /**
  * XesParameter
@@ -18,53 +19,43 @@ public class XesParameter {
         this.attributeExporter.exportValue(state, writer);
     }
 
-    public static XesParameter boolParameter(String name, ValueAccessor accessor) {
-        assert name != null && accessor != null;
+    public static XesParameter boolParameter(@NonNull String name, @NonNull ValueAccessor accessor) {
         return new XesParameter(exportValue(name, accessor, XesWriter::addBooleanValue));
     }
 
-    public static XesParameter boolListParameter(String name, ValueAccessor accessor) {
-        assert name != null && accessor != null;
+    public static XesParameter boolListParameter(@NonNull String name, @NonNull ValueAccessor accessor) {
         return new XesParameter(exportValue(name, accessor, XesWriter::addBooleanList));
     }
 
-    public static XesParameter dateParameter(String name, ValueAccessor accessor) {
-        assert name != null && accessor != null;
+    public static XesParameter dateParameter(@NonNull String name, @NonNull ValueAccessor accessor) {
         return new XesParameter(exportValue(name, accessor, XesWriter::addDateValue));
     }
 
-    public static XesParameter dateListParameter(String name, ValueAccessor accessor) {
-        assert name != null && accessor != null;
+    public static XesParameter dateListParameter(@NonNull String name, @NonNull ValueAccessor accessor) {
         return new XesParameter(exportValue(name, accessor, XesWriter::addDateList));
     }
 
-    public static XesParameter floatParameter(String name, ValueAccessor accessor) {
-        assert name != null && accessor != null;
+    public static XesParameter floatParameter(@NonNull String name, @NonNull ValueAccessor accessor) {
         return new XesParameter(exportValue(name, accessor, XesWriter::addFloatValue));
     }
 
-    public static XesParameter floatListParameter(String name, ValueAccessor accessor) {
-        assert name != null && accessor != null;
+    public static XesParameter floatListParameter(@NonNull String name, @NonNull ValueAccessor accessor) {
         return new XesParameter(exportValue(name, accessor, XesWriter::addFloatList));
     }
 
-    public static XesParameter integerParameter(String name, ValueAccessor accessor) {
-        assert name != null && accessor != null;
+    public static XesParameter integerParameter(@NonNull String name, @NonNull ValueAccessor accessor) {
         return new XesParameter(exportValue(name, accessor, XesWriter::addIntValue));
     }
 
-    public static XesParameter integerListParameter(String name, ValueAccessor accessor) {
-        assert name != null && accessor != null;
+    public static XesParameter integerListParameter(@NonNull String name, @NonNull ValueAccessor accessor) {
         return new XesParameter(exportValue(name, accessor, XesWriter::addIntList));
     }
 
-    public static XesParameter stringParameter(String name, ValueAccessor accessor) {
-        assert name != null && accessor != null;
+    public static XesParameter stringParameter(@NonNull String name, @NonNull ValueAccessor accessor) {
         return new XesParameter(exportValue(name, accessor, XesWriter::addStringValue));
     }
 
-    public static XesParameter stringListParameter(String name, ValueAccessor accessor) {
-        assert name != null && accessor != null;
+    public static XesParameter stringListParameter(@NonNull String name, @NonNull ValueAccessor accessor) {
         return new XesParameter(exportValue(name, accessor, XesWriter::addStringList));
     }
 
@@ -74,7 +65,7 @@ public class XesParameter {
             try {
                 final T value = (T) accessor.getValue(state);
                 writerMethod.export(writer, name, value);
-            } catch (Throwable cause) {
+            } catch (Exception cause) {
                 throw new ProgramException(String.format("Error exporting xes attribute '%s'.", name), cause);
             }
         };

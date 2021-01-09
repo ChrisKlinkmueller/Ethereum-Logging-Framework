@@ -1,10 +1,7 @@
 package blf.core.filters;
 
 import java.math.BigInteger;
-import java.util.Arrays;
-import java.util.LinkedList;
-import java.util.List;
-import java.util.Objects;
+import java.util.*;
 import java.util.logging.Logger;
 
 import blf.core.exceptions.ProgramException;
@@ -12,57 +9,66 @@ import blf.core.Instruction;
 import blf.core.ProgramState;
 import blf.core.values.ValueAccessor;
 import blf.core.readers.EthereumBlock;
+import io.reactivex.annotations.NonNull;
 
 /**
- * BlockRange
+ * This class handles the `BLOCKS (fromBlock) (toBlock)` filter of the .bcql file.
  */
 public class BlockFilter extends Filter {
-    private final Logger LOGGER = Logger.getLogger(BlockFilter.class.getName());
-    private static final int KNOWN_BLOCKS_LENGTH = 30;
+    private static final Logger LOGGER = Logger.getLogger(BlockFilter.class.getName());
+    // TODO (by Mykola Digtiar): move this constant into Constants.java
+    private static final int BLOCK_QUERY_DELAY_MILLISECONDS = 3000;
+
     private final ValueAccessor fromBlock;
     private final FilterPredicate<BigInteger> stopCriteria;
 
-    public BlockFilter(final ValueAccessor fromBlock, FilterPredicate<BigInteger> stopCriteria, Instruction... instructions) {
-        this(fromBlock, stopCriteria, Arrays.asList(instructions));
-    }
-
-    public BlockFilter(final ValueAccessor fromBlock, FilterPredicate<BigInteger> stopCriteria, List<Instruction> instructions) {
+    public BlockFilter(
+        @NonNull final ValueAccessor fromBlock,
+        @NonNull FilterPredicate<BigInteger> stopCriteria,
+        @NonNull List<Instruction> instructions
+    ) {
         super(instructions);
-        assert fromBlock != null;
-        assert stopCriteria != null;
-        assert instructions != null && instructions.stream().allMatch(Objects::nonNull);
         this.fromBlock = fromBlock;
         this.stopCriteria = stopCriteria;
     }
 
+    /**
+     * This method iterates through the blocks in the specified range and
+     * also waits for the block
+     * (by calling the {@link #waitUntilBlockExists(ProgramState, BigInteger) waitForBlockExistence} method)
+     * in case that the specified block number in the range is not on the Blockchain yet.
+     * To retrieve the block numbers on the blockchain the {@link ProgramState ProgramState} readers and writers are used.
+     *
+     * @param state the current state of the program
+     * @throws ProgramException this exception seems to be never thrown and should be removed
+     * @see ProgramState
+     */
     public void execute(final ProgramState state) throws ProgramException {
-        final LinkedList<EthereumBlock> knownBlocks = new LinkedList<>();
-        final BigInteger startBlock = (BigInteger) fromBlock.getValue(state);
-        BigInteger currentBlock = startBlock;
+
+        BigInteger currentBlock = (BigInteger) fromBlock.getValue(state);
+
         while (!this.stopCriteria.test(state, currentBlock)) {
             try {
-                this.waitForBlockExistence(state, currentBlock);
+                this.waitUntilBlockExists(state, currentBlock);
 
-                final EthereumBlock block = queryConfirmedBlock(state, currentBlock, knownBlocks);
-                if (!block.getNumber().equals(currentBlock)) {
-                    currentBlock = block.getNumber();
-                }
-                LOGGER.info(String.format("Processing of block %s started.", currentBlock));
+                final EthereumBlock block = state.getReader().getClient().queryBlockData(currentBlock);
 
+                final String blockProcessingStartMessage = String.format("Processing of block %s started", currentBlock);
+                final String blockProcessingFinishMessage = String.format("Processing of block %s finished", currentBlock);
+
+                LOGGER.info(blockProcessingStartMessage);
                 state.getWriters().startNewBlock(currentBlock);
+
                 state.getReader().setCurrentBlock(block);
-
                 this.executeInstructions(state);
-                state.getWriters().writeBlock();
 
-                LOGGER.info(String.format("Processing of block %s finished.", currentBlock));
+                state.getWriters().writeBlock();
+                LOGGER.info(blockProcessingFinishMessage);
 
             } catch (final Throwable throwable) {
-                final String message = String.format("Error when processing block number '%s'.", currentBlock.toString());
-                final boolean abort = state.getExceptionHandler().handleExceptionAndDecideOnAbort(message, throwable);
-                if (abort) {
-                    return;
-                }
+                // TODO (by Mykola Digtiar): handle this exception inside the method that throws it
+                final String message = String.format("Error when processing block number '%s'", currentBlock.toString());
+                state.getExceptionHandler().handleExceptionAndDecideOnAbort(message, throwable);
             } finally {
                 state.getReader().setCurrentBlock(null);
             }
@@ -71,34 +77,41 @@ public class BlockFilter extends Filter {
         }
     }
 
-    private void waitForBlockExistence(final ProgramState state, final BigInteger currentBlock) throws Throwable, InterruptedException {
-        while (state.getReader().getClient().queryBlockNumber().compareTo(currentBlock) < 0) {
-            Thread.sleep(3000);
-        }
-    }
+    /**
+     *
+     * This methods queries the most actual block number of the blockchain
+     * and waits until the up-to-date block number is >= then the {@param expectedBlockNumber}.
+     *
+     * @param state current {@link ProgramState state of the program}
+     * @param expectedBlockNumber number of the block to be waited for
+     */
+    private void waitUntilBlockExists(final ProgramState state, final BigInteger expectedBlockNumber) {
 
-    private static EthereumBlock queryConfirmedBlock(
-        final ProgramState state,
-        final BigInteger currentBlock,
-        final LinkedList<EthereumBlock> knownBlocks
-    ) throws Throwable {
-        BigInteger queryBlockNumber = currentBlock;
-        do {
-            final EthereumBlock block = state.getReader().getClient().queryBlockData(queryBlockNumber);
-            if (knownBlocks.isEmpty() || knownBlocks.getLast().getHash().equals(block.getParentHash())) {
-                appendBlock(knownBlocks, block);
-                return block;
+        Timer timer = new Timer();
+        // Poll for the up-to-date block number and stop timer if up-to-date block number >= expectedBlockNumber
+        timer.scheduleAtFixedRate(new TimerTask() {
+            @Override
+            public void run() {
+                boolean newBlockAvailable = false;
+                try {
+                    // queryBlockNumber().compareTo(expectedBlockNumber) is >= 0 iff queryBlockNumber() >= expectedBlockNumber
+                    newBlockAvailable = state.getReader().getClient().queryBlockNumber().compareTo(expectedBlockNumber) >= 0;
+                } catch (Throwable throwable) {
+                    // TODO (by Mykola Digtiar): the exception should be handled in queryBlockNumber() method
+
+                    final String queryBlockNumberErrorMessage = String.format(
+                        "An error occurred while querying the block with number '%s'",
+                        expectedBlockNumber.toString()
+                    );
+
+                    state.getExceptionHandler().handleExceptionAndDecideOnAbort(queryBlockNumberErrorMessage, throwable);
+                }
+
+                if (newBlockAvailable) {
+                    timer.cancel();
+                }
             }
-
-            queryBlockNumber = queryBlockNumber.subtract(BigInteger.ONE);
-            knownBlocks.removeLast();
-        } while (true);
+        }, 0, BLOCK_QUERY_DELAY_MILLISECONDS);
     }
 
-    public static void appendBlock(final LinkedList<EthereumBlock> knownBlocks, final EthereumBlock block) {
-        knownBlocks.addLast(block);
-        if (KNOWN_BLOCKS_LENGTH < knownBlocks.size()) {
-            knownBlocks.removeFirst();
-        }
-    }
 }

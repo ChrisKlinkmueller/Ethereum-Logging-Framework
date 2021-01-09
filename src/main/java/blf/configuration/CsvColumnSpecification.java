@@ -1,6 +1,7 @@
 package blf.configuration;
 
 import blf.core.writers.CsvColumn;
+import io.reactivex.annotations.NonNull;
 
 /**
  * CsvCellSpecification
@@ -16,9 +17,7 @@ public class CsvColumnSpecification {
         return this.column;
     }
 
-    public static CsvColumnSpecification of(String name, ValueAccessorSpecification accessor) {
-        assert name != null;
-        assert accessor != null;
+    public static CsvColumnSpecification of(@NonNull String name, @NonNull ValueAccessorSpecification accessor) {
         return new CsvColumnSpecification(new CsvColumn(name, accessor.getValueAccessor()));
     }
 }

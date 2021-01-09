@@ -1,5 +1,7 @@
 package blf.parsing;
 
+import io.reactivex.annotations.NonNull;
+
 import java.math.BigInteger;
 
 class BlockNumber {
@@ -43,8 +45,7 @@ class BlockNumber {
         return new BlockNumber(Type.VARIABLE, null);
     }
 
-    public static BlockNumber ofLiteral(BigInteger value) {
-        assert value != null;
+    public static BlockNumber ofLiteral(@NonNull BigInteger value) {
         return new BlockNumber(Type.LITERAL, value);
     }
 

@@ -2,10 +2,10 @@ package blf.configuration;
 
 import java.util.Arrays;
 import java.util.List;
-import java.util.Objects;
 import java.util.stream.Collectors;
 
 import blf.core.filters.LogEntrySignature;
+import io.reactivex.annotations.NonNull;
 
 /**
  * LogEntrySignatureSpecification
@@ -21,16 +21,14 @@ public class LogEntrySignatureSpecification {
         return this.signature;
     }
 
-    public static LogEntrySignatureSpecification of(String eventName, ParameterSpecification... parameters) throws BuildException {
+    public static LogEntrySignatureSpecification of(String eventName, ParameterSpecification... parameters) {
         return of(eventName, Arrays.asList(parameters));
     }
 
-    public static LogEntrySignatureSpecification of(String eventName, List<ParameterSpecification> parameters) throws BuildException {
-        assert eventName != null;
-        assert parameters != null && parameters.stream().allMatch(Objects::nonNull);
+    public static LogEntrySignatureSpecification of(@NonNull String eventName, @NonNull List<ParameterSpecification> parameters) {
 
         return new LogEntrySignatureSpecification(
-            new LogEntrySignature(eventName, parameters.stream().map(p -> p.getParameter()).collect(Collectors.toList()))
+            new LogEntrySignature(eventName, parameters.stream().map(ParameterSpecification::getParameter).collect(Collectors.toList()))
         );
     }
 

@@ -2,12 +2,12 @@ package blf.configuration;
 
 import java.util.Arrays;
 import java.util.List;
-import java.util.Objects;
 import java.util.stream.Collectors;
 
 import blf.core.writers.AddXesElementInstruction;
 import blf.core.writers.AddXesEventInstruction;
 import blf.core.writers.AddXesTraceInstruction;
+import io.reactivex.annotations.NonNull;
 
 /**
  * XesExportSpecification
@@ -31,9 +31,8 @@ public class XesExportSpecification extends InstructionSpecification<AddXesEleme
         ValueAccessorSpecification pid,
         ValueAccessorSpecification piid,
         ValueAccessorSpecification eid,
-        List<XesParameterSpecification> parameters
+        @NonNull List<XesParameterSpecification> parameters
     ) {
-        assert parameters != null && parameters.stream().allMatch(Objects::nonNull);
         final AddXesEventInstruction instruction = new AddXesEventInstruction(
             pid == null ? null : pid.getValueAccessor(),
             piid == null ? null : piid.getValueAccessor(),
@@ -54,9 +53,8 @@ public class XesExportSpecification extends InstructionSpecification<AddXesEleme
     public static XesExportSpecification ofTraceExport(
         ValueAccessorSpecification pid,
         ValueAccessorSpecification piid,
-        List<XesParameterSpecification> parameters
+        @NonNull List<XesParameterSpecification> parameters
     ) {
-        assert parameters != null && parameters.stream().allMatch(Objects::nonNull);
         final AddXesTraceInstruction instruction = new AddXesTraceInstruction(
             pid == null ? null : pid.getValueAccessor(),
             piid == null ? null : piid.getValueAccessor(),

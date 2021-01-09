@@ -1,14 +1,14 @@
 package blf.core.values;
 
 import blf.core.exceptions.ProgramException;
+import io.reactivex.annotations.NonNull;
 
 /**
  * Variables
  */
 public class Variables {
 
-    public static ValueAccessor createValueAccessor(String name) {
-        assert name != null;
+    public static ValueAccessor createValueAccessor(@NonNull String name) {
         final ValueAccessor accessor = EthereumVariables.getValueAccessor(name);
         if (accessor != null) {
             return accessor;
@@ -22,8 +22,7 @@ public class Variables {
         };
     }
 
-    public static ValueMutator createValueMutator(String name) {
-        assert name != null;
+    public static ValueMutator createValueMutator(@NonNull String name) {
         return (value, state) -> state.getValueStore().setValue(name, value);
     }
 }

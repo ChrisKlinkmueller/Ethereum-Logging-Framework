@@ -5,6 +5,7 @@ import java.util.List;
 import blf.core.Instruction;
 import blf.core.ProgramState;
 import blf.core.exceptions.ProgramException;
+import io.reactivex.annotations.NonNull;
 
 /**
  * GenericFilter
@@ -12,9 +13,8 @@ import blf.core.exceptions.ProgramException;
 public class GenericFilter extends Filter {
     private final GenericFilterPredicate predicate;
 
-    public GenericFilter(GenericFilterPredicate predicate, List<Instruction> instructions) {
+    public GenericFilter(@NonNull GenericFilterPredicate predicate, List<Instruction> instructions) {
         super(instructions);
-        assert predicate != null;
         this.predicate = predicate;
     }
 
