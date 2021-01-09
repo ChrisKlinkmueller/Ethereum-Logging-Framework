@@ -11,7 +11,7 @@ import java.util.LinkedList;
 import java.util.logging.Logger;
 
 /**
- * This class handles the `BLOCKS (fromBlock) (toBlock)` filter of the .bcql file.
+ * This class handles the 'BLOCKS (fromBlock) (toBlock)' filter of the .bcql file.
  */
 public class HyperledgerBlockFilterInstruction extends FilterInstruction {
 
