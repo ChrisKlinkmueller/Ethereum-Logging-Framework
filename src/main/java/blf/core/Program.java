@@ -32,7 +32,9 @@ public class Program {
 
     public void execute(ProgramState state) {
         try {
-            this.executeInstructions(state);
+            for (Instruction instruction : this.instructions) {
+                instruction.execute(state);
+            }
             state.getWriters().writeAllData();
         } catch (final Throwable ex) {
             final String message = "Error when executing the program.";
@@ -40,12 +42,6 @@ public class Program {
         }
 
         state.close();
-    }
-
-    protected void executeInstructions(ProgramState state) throws ProgramException {
-        for (Instruction instruction : this.instructions) {
-            instruction.execute(state);
-        }
     }
 
 }
