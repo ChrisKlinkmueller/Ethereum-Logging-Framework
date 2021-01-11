@@ -121,18 +121,29 @@ public class HyperledgerLogEntryFilterInstruction implements Instruction {
         String payloadString,
         byte[] payload
     ) {
-        // TODO check for exceptions
         if (parameterType.contains("int")) {
-            BigInteger data = new BigInteger(payloadString);
-            hyperledgerProgramState.getValueStore().setValue(parameterName, data);
+            try {
+                BigInteger data = new BigInteger(payloadString);
+                hyperledgerProgramState.getValueStore().setValue(parameterName, data);
+            } catch (NumberFormatException e) {
+                this.exceptionHandler.handleExceptionAndDecideOnAbort("Could not parse payload to BigInteger", e);
+            }
         } else if (parameterType.contains("string")) {
             hyperledgerProgramState.getValueStore().setValue(parameterName, payloadString);
         } else if (parameterType.contains("bool")) {
-            boolean data = payload[0] == 1;
-            hyperledgerProgramState.getValueStore().setValue(parameterName, data);
+            try {
+                boolean data = payload[0] != 0;
+                hyperledgerProgramState.getValueStore().setValue(parameterName, data);
+            } catch (ArrayIndexOutOfBoundsException e) {
+                this.exceptionHandler.handleExceptionAndDecideOnAbort("Could not convert empty payload to bool", e);
+            }
         } else if (parameterType.equals("byte")) {
-            byte data = payload[0];
-            hyperledgerProgramState.getValueStore().setValue(parameterName, data);
+            try {
+                byte data = payload[0];
+                hyperledgerProgramState.getValueStore().setValue(parameterName, data);
+            } catch (ArrayIndexOutOfBoundsException e) {
+                this.exceptionHandler.handleExceptionAndDecideOnAbort("Could not access byte in empty payload", e);
+            }
         } else if (parameterType.contains("bytes")) {
             hyperledgerProgramState.getValueStore().setValue(parameterName, payload);
         }
@@ -144,18 +155,21 @@ public class HyperledgerLogEntryFilterInstruction implements Instruction {
         String parameterType,
         JSONObject obj
     ) {
-        // TODO check for exceptions
         if (obj.has(parameterName)) {
-            if (parameterType.contains("int")) {
-                BigInteger data = obj.getBigInteger(parameterName);
-                hyperledgerProgramState.getValueStore().setValue(parameterName, data);
-            } else if (parameterType.contains("bool")) {
-                boolean data = obj.getBoolean(parameterName);
-                hyperledgerProgramState.getValueStore().setValue(parameterName, data);
-            } else if (parameterType.contains("string") || parameterType.equals("byte") || parameterType.contains("bytes")) {
-                // TODO maybe something else is better suited here for byte and bytes?
-                String data = obj.getString(parameterName);
-                hyperledgerProgramState.getValueStore().setValue(parameterName, data);
+            try {
+                if (parameterType.contains("int")) {
+                    BigInteger data = obj.getBigInteger(parameterName);
+                    hyperledgerProgramState.getValueStore().setValue(parameterName, data);
+                } else if (parameterType.contains("bool")) {
+                    boolean data = obj.getBoolean(parameterName);
+                    hyperledgerProgramState.getValueStore().setValue(parameterName, data);
+                } else if (parameterType.contains("string") || parameterType.equals("byte") || parameterType.contains("bytes")) {
+                    // TODO maybe something else is better suited here for byte and bytes?
+                    String data = obj.getString(parameterName);
+                    hyperledgerProgramState.getValueStore().setValue(parameterName, data);
+                }
+            } catch (JSONException e) {
+                this.exceptionHandler.handleExceptionAndDecideOnAbort("Wrong type: " + parameterType, e);
             }
         } else {
             String message = "JSON object does not contain key: " + parameterName;
