@@ -13,14 +13,12 @@ import org.json.*;
 
 import java.math.BigInteger;
 import java.util.List;
-import java.util.logging.Logger;
 
 /**
  *
  */
 public class HyperledgerLogEntryFilterInstruction implements Instruction {
 
-    private final Logger logger;
     private final ExceptionHandler exceptionHandler;
 
     private final List<String> addressNames;
@@ -36,7 +34,6 @@ public class HyperledgerLogEntryFilterInstruction implements Instruction {
         this.eventName = eventName;
         this.entryParameters = entryParameters;
 
-        this.logger = Logger.getLogger(HyperledgerLogEntryFilterInstruction.class.getName());
         this.exceptionHandler = new ExceptionHandler();
     }
 
@@ -54,6 +51,11 @@ public class HyperledgerLogEntryFilterInstruction implements Instruction {
 
         for (BlockEvent.TransactionEvent te : be.getTransactionEvents()) {
             for (BlockInfo.TransactionEnvelopeInfo.TransactionActionInfo ti : te.getTransactionActionInfos()) {
+                // if current transaction does not belong to requested chaincode addresses
+                if (!addressNames.contains(ti.getChaincodeIDName())) {
+                    continue;
+                }
+
                 ChaincodeEvent ce = ti.getEvent();
                 if (ce != null) {
                     // first try parse json
@@ -102,16 +104,6 @@ public class HyperledgerLogEntryFilterInstruction implements Instruction {
                 }
             }
         }
-
-        final String infoMsg = String.format(
-            "Executing HyperledgerLogEntryFilterInstruction(addressNames -> %s | eventName -> %s | entryParameters -> %s) for the block %s",
-            this.addressNames.toString(),
-            this.eventName,
-            this.entryParameters.toString(),
-            hyperledgerProgramState.getCurrentBlockNumber().toString()
-        );
-
-        logger.info(infoMsg);
     }
 
     private void setStateValue(
