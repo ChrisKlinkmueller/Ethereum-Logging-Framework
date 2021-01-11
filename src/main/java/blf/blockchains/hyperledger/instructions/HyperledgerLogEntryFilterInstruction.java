@@ -6,29 +6,12 @@ import blf.core.exceptions.ProgramException;
 import blf.core.interfaces.Instruction;
 import blf.core.state.ProgramState;
 import org.antlr.v4.runtime.misc.Pair;
-import org.apache.commons.codec.binary.Base64;
-import org.hyperledger.fabric.gateway.Gateway;
-import org.hyperledger.fabric.gateway.Identities;
-import org.hyperledger.fabric.gateway.Network;
+import org.hyperledger.fabric.sdk.BlockEvent;
+import org.hyperledger.fabric.sdk.BlockInfo;
+import org.hyperledger.fabric.sdk.ChaincodeEvent;
+import org.json.*;
 
-import java.io.FileInputStream;
-import java.io.FileNotFoundException;
-import java.io.IOException;
-import java.io.InputStream;
-import java.nio.charset.Charset;
-import java.nio.file.Files;
-import java.nio.file.NoSuchFileException;
-import java.nio.file.Path;
-import java.nio.file.Paths;
-import java.security.KeyFactory;
-import java.security.NoSuchAlgorithmException;
-import java.security.PrivateKey;
-import java.security.cert.CertificateException;
-import java.security.cert.CertificateFactory;
-import java.security.cert.X509Certificate;
-import java.security.spec.InvalidKeySpecException;
-import java.security.spec.PKCS8EncodedKeySpec;
-import java.util.LinkedList;
+import java.math.BigInteger;
 import java.util.List;
 import java.util.logging.Logger;
 
@@ -61,6 +44,65 @@ public class HyperledgerLogEntryFilterInstruction implements Instruction {
     public void execute(ProgramState state) throws ProgramException {
         HyperledgerProgramState hyperledgerProgramState = (HyperledgerProgramState) state;
 
+        // get current block
+        BlockEvent be = hyperledgerProgramState.getCurrentBlock();
+        if (be == null) {
+            this.exceptionHandler.handleExceptionAndDecideOnAbort("Expected block, received null", new NullPointerException());
+
+            return;
+        }
+
+        for (BlockEvent.TransactionEvent te : be.getTransactionEvents()) {
+            for (BlockInfo.TransactionEnvelopeInfo.TransactionActionInfo ti : te.getTransactionActionInfos()) {
+                ChaincodeEvent ce = ti.getEvent();
+                if (ce != null) {
+                    // first try parse json
+                    String payloadString = new String(ce.getPayload());
+                    try {
+                        JSONObject obj = new JSONObject(payloadString);
+
+                        // if json is nested, search for eventName as index in the nested object
+                        try {
+                            JSONObject eventObj = obj.getJSONObject(ce.getEventName());
+                            for (Pair<String, String> parameter : this.entryParameters) {
+                                String parameterType = parameter.a;
+                                String parameterName = parameter.b;
+
+                                setStateValue(hyperledgerProgramState, parameterName, parameterType, eventObj);
+                            }
+                        } catch (JSONException e) {
+                            // payload does not contain a nested json object with the given eventName
+                            // if json is flat, check if the eventName is the event name of the Event
+                            if (this.eventName.equals(ce.getEventName())) {
+                                for (Pair<String, String> parameter : this.entryParameters) {
+                                    String parameterType = parameter.a;
+                                    String parameterName = parameter.b;
+
+                                    setStateValue(hyperledgerProgramState, parameterName, parameterType, obj);
+                                }
+                            }
+                        }
+                    } catch (JSONException e) {
+                        // there is no valid json in the payload
+                        // if json parsing fails completely, also check the eventName and try to parse the byte array as single value
+                        if (this.eventName.equals(ce.getEventName())) {
+                            if (this.entryParameters.size() == 1) {
+                                // parse the one unstructured parameter
+                                String parameterType = this.entryParameters.get(0).a;
+                                String parameterName = this.entryParameters.get(0).b;
+                                setStateValue(hyperledgerProgramState, parameterName, parameterType, payloadString, ce.getPayload());
+                            } else {
+                                this.exceptionHandler.handleExceptionAndDecideOnAbort(
+                                    "We expect exactly one parameter when extracting unstructured data",
+                                    e
+                                );
+                            }
+                        }
+                    }
+                }
+            }
+        }
+
         final String infoMsg = String.format(
             "Executing HyperledgerLogEntryFilterInstruction(addressNames -> %s | eventName -> %s | entryParameters -> %s) for the block %s",
             this.addressNames.toString(),
@@ -72,4 +114,52 @@ public class HyperledgerLogEntryFilterInstruction implements Instruction {
         logger.info(infoMsg);
     }
 
+    private void setStateValue(
+        HyperledgerProgramState hyperledgerProgramState,
+        String parameterName,
+        String parameterType,
+        String payloadString,
+        byte[] payload
+    ) {
+        // TODO check for exceptions
+        if (parameterType.contains("int")) {
+            BigInteger data = new BigInteger(payloadString);
+            hyperledgerProgramState.getValueStore().setValue(parameterName, data);
+        } else if (parameterType.contains("string")) {
+            hyperledgerProgramState.getValueStore().setValue(parameterName, payloadString);
+        } else if (parameterType.contains("bool")) {
+            boolean data = payload[0] == 1;
+            hyperledgerProgramState.getValueStore().setValue(parameterName, data);
+        } else if (parameterType.equals("byte")) {
+            byte data = payload[0];
+            hyperledgerProgramState.getValueStore().setValue(parameterName, data);
+        } else if (parameterType.contains("bytes")) {
+            hyperledgerProgramState.getValueStore().setValue(parameterName, payload);
+        }
+    }
+
+    private void setStateValue(
+        HyperledgerProgramState hyperledgerProgramState,
+        String parameterName,
+        String parameterType,
+        JSONObject obj
+    ) {
+        // TODO check for exceptions
+        if (obj.has(parameterName)) {
+            if (parameterType.contains("int")) {
+                BigInteger data = obj.getBigInteger(parameterName);
+                hyperledgerProgramState.getValueStore().setValue(parameterName, data);
+            } else if (parameterType.contains("bool")) {
+                boolean data = obj.getBoolean(parameterName);
+                hyperledgerProgramState.getValueStore().setValue(parameterName, data);
+            } else if (parameterType.contains("string") || parameterType.equals("byte") || parameterType.contains("bytes")) {
+                // TODO maybe something else is better suited here for byte and bytes?
+                String data = obj.getString(parameterName);
+                hyperledgerProgramState.getValueStore().setValue(parameterName, data);
+            }
+        } else {
+            String message = "JSON object does not contain key: " + parameterName;
+            this.exceptionHandler.handleExceptionAndDecideOnAbort(message, new JSONException(message));
+        }
+    }
 }
