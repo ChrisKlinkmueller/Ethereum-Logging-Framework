@@ -84,7 +84,7 @@ public class EthereumBlockFilterInstruction extends FilterInstruction {
     /**
      *
      * This methods queries the most actual block number of the blockchain
-     * and waits until the up-to-date block number is >= then the {@param expectedBlockNumber}.
+     * and waits until the up-to-date block number is &gt;= then the {@code expectedBlockNumber}.
      *
      * @param ethereumProgramState current {@link EthereumProgramState ethereumProgramState of the program}
      * @param expectedBlockNumber number of the block to be waited for
