@@ -58,50 +58,75 @@ public class HyperledgerLogEntryFilterInstruction implements Instruction {
 
                 ChaincodeEvent ce = ti.getEvent();
                 if (ce != null) {
-                    // first try parse json
-                    String payloadString = new String(ce.getPayload());
-                    try {
-                        JSONObject obj = new JSONObject(payloadString);
-
-                        // if json is nested, search for eventName as index in the nested object
-                        try {
-                            JSONObject eventObj = obj.getJSONObject(ce.getEventName());
-                            for (Pair<String, String> parameter : this.entryParameters) {
-                                String parameterType = parameter.a;
-                                String parameterName = parameter.b;
-
-                                setStateValue(hyperledgerProgramState, parameterName, parameterType, eventObj);
-                            }
-                        } catch (JSONException e) {
-                            // payload does not contain a nested json object with the given eventName
-                            // if json is flat, check if the eventName is the event name of the Event
-                            if (this.eventName.equals(ce.getEventName())) {
-                                for (Pair<String, String> parameter : this.entryParameters) {
-                                    String parameterType = parameter.a;
-                                    String parameterName = parameter.b;
-
-                                    setStateValue(hyperledgerProgramState, parameterName, parameterType, obj);
-                                }
-                            }
-                        }
-                    } catch (JSONException e) {
-                        // there is no valid json in the payload
-                        // if json parsing fails completely, also check the eventName and try to parse the byte array as single value
-                        if (this.eventName.equals(ce.getEventName())) {
-                            if (this.entryParameters.size() == 1) {
-                                // parse the one unstructured parameter
-                                String parameterType = this.entryParameters.get(0).a;
-                                String parameterName = this.entryParameters.get(0).b;
-                                setStateValue(hyperledgerProgramState, parameterName, parameterType, payloadString, ce.getPayload());
-                            } else {
-                                this.exceptionHandler.handleExceptionAndDecideOnAbort(
-                                    "We expect exactly one parameter when extracting unstructured data",
-                                    e
-                                );
-                            }
-                        }
-                    }
+                    parseChaincodeEvent(hyperledgerProgramState, ce);
                 }
+            }
+        }
+    }
+
+    private void parseChaincodeEvent(HyperledgerProgramState hyperledgerProgramState, ChaincodeEvent ce) {
+        // first try parse json
+        String payloadString = new String(ce.getPayload());
+        try {
+            JSONObject obj = new JSONObject(payloadString);
+
+            // if string could be parsed as JSON object handle it as such
+            parseNestedJsonPayload(hyperledgerProgramState, ce, obj);
+        } catch (JSONException e) {
+            // there is no valid json in the payload
+            parseNonStructuredPayload(hyperledgerProgramState, ce, payloadString, e);
+        }
+    }
+
+    private void parseNestedJsonPayload(HyperledgerProgramState hyperledgerProgramState, ChaincodeEvent ce, JSONObject obj) {
+        try {
+            // if json is nested, search for eventName as index in the nested object
+            JSONObject eventObj = obj.getJSONObject(ce.getEventName());
+
+            // search for every requested parameter and set it to the program state
+            for (Pair<String, String> parameter : this.entryParameters) {
+                String parameterType = parameter.a;
+                String parameterName = parameter.b;
+
+                setStateValue(hyperledgerProgramState, parameterName, parameterType, eventObj);
+            }
+        } catch (JSONException e) {
+            // payload does not contain a nested json object with the given eventName
+            parseFlatJsonPayload(hyperledgerProgramState, ce, obj);
+        }
+    }
+
+    private void parseFlatJsonPayload(HyperledgerProgramState hyperledgerProgramState, ChaincodeEvent ce, JSONObject obj) {
+        // if json is flat, check if the eventName is the event name of the Event
+        if (this.eventName.equals(ce.getEventName())) {
+            // search for every requested parameter and set it to the program state
+            for (Pair<String, String> parameter : this.entryParameters) {
+                String parameterType = parameter.a;
+                String parameterName = parameter.b;
+
+                setStateValue(hyperledgerProgramState, parameterName, parameterType, obj);
+            }
+        }
+    }
+
+    private void parseNonStructuredPayload(
+        HyperledgerProgramState hyperledgerProgramState,
+        ChaincodeEvent ce,
+        String payloadString,
+        JSONException jsonException
+    ) {
+        // if json parsing fails completely, also check the eventName and try to parse the byte array as single value
+        if (this.eventName.equals(ce.getEventName())) {
+            if (this.entryParameters.size() == 1) {
+                // parse the one unstructured parameter
+                String parameterType = this.entryParameters.get(0).a;
+                String parameterName = this.entryParameters.get(0).b;
+                setStateValue(hyperledgerProgramState, parameterName, parameterType, payloadString, ce.getPayload());
+            } else {
+                this.exceptionHandler.handleExceptionAndDecideOnAbort(
+                    "We expect exactly one parameter when extracting unstructured data",
+                    jsonException
+                );
             }
         }
     }
