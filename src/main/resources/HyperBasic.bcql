@@ -1,0 +1,19 @@
+// Author: Tobias Petrich
+
+SET BLOCKCHAIN "Hyperledger"
+
+SET CONNECTION {
+   "hyperledger/connection-org1.yaml",
+   "hyperledger/server.key",
+   "hyperledger/server.crt",
+   "Org1MSP",
+   "mychannel"
+}
+
+SET OUTPUT FOLDER "./test_output"
+
+BLOCKS (12) (20) {
+   LOG ENTRIES ("basic") (basicTestEvent(string payload)) {
+        EMIT LOG LINE ("payload: '", payload, "' .");
+   }
+}
