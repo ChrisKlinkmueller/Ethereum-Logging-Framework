@@ -1,0 +1,13 @@
+SET BLOCKCHAIN "Ethereum"
+
+SET CONNECTION "ws://localhost:8546/"
+SET OUTPUT FOLDER "./NetworkStatistics"
+
+BLOCKS (6000000) (6001000) {
+    int totalCost = 0;
+    TRANSACTIONS (ANY) (ANY) {
+        int cost = multiply(tx.gasPrice, tx.gasUsed);
+        totalCost = add(cost, totalCost);
+    }
+    EMIT CSV ROW ("NetworkStatistics") (block.number, totalCost, block.transactionCount);
+}

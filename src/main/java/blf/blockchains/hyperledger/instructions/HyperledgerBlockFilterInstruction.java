@@ -7,9 +7,13 @@ import blf.core.instructions.FilterInstruction;
 import blf.core.interfaces.Instruction;
 import blf.core.state.ProgramState;
 
+import org.hyperledger.fabric.sdk.BlockEvent;
+import org.hyperledger.fabric.gateway.Network;
+
 import java.math.BigInteger;
 import java.util.List;
 import java.util.logging.Logger;
+import java.lang.InterruptedException;
 
 /**
  * This class handles the 'BLOCKS (fromBlock) (toBlock)' filter of the .bcql file.
@@ -50,28 +54,36 @@ public class HyperledgerBlockFilterInstruction extends FilterInstruction {
 
         final HyperledgerProgramState hyperledgerProgramState = (HyperledgerProgramState) state;
 
-        BigInteger currentBlockNumber = fromBlockNumber;
+        Network network = hyperledgerProgramState.getNetwork();
 
-        // currentBlockNumber.compareTo(toBlock) < 1 means currentBlockNumber <= toBlock
-        while (currentBlockNumber.compareTo(toBlockNumber) < 1) {
+        network.addBlockListener(fromBlockNumber.longValue(), (BlockEvent blockEvent) -> {
+            BigInteger currentBlockNumber = BigInteger.valueOf(blockEvent.getBlockNumber());
+            if (currentBlockNumber.compareTo(toBlockNumber) < 1) {
+                synchronized (network) {
+                    network.notifyAll();
+                }
+            } else {
+                hyperledgerProgramState.setCurrentBlockNumber(currentBlockNumber);
 
-            hyperledgerProgramState.setCurrentBlockNumber(currentBlockNumber);
+                String infoMsg = currentBlockNumber.toString();
+                this.logger.info("Extracting block number: " + infoMsg);
+                hyperledgerProgramState.setCurrentBlock(blockEvent);
 
-            // TODO: Retrieve Hyperledger block based on the currentBlockNumber parameter.
-            // TODO: Please handle all exception via exceptionHandler.handleExceptionAndDecideOnAbort() method.
-
-            String infoMsg = currentBlockNumber.toString();
-            this.logger.info(infoMsg);
-
-            // TODO: Change the type of currentBlock from Object to the type of the retrieved currentBlock.
-
-            // TODO: It might be the case that currentBlockNumber refer to the block which does not exist still
-            // TODO: in this case execution should wait until the currentBlockNumber is available on the chain.
-            hyperledgerProgramState.setCurrentBlock(null);
-
-            this.executeInstructions(hyperledgerProgramState);
-
-            currentBlockNumber = currentBlockNumber.add(BigInteger.ONE);
+                try {
+                    this.executeInstructions(hyperledgerProgramState);
+                } catch (ProgramException err) {
+                    String errorMsg = String.format("Unable to execute instructions");
+                    exceptionHandler.handleExceptionAndDecideOnAbort(errorMsg, err);
+                }
+            }
+        });
+        synchronized (network) {
+            try {
+                network.wait();
+            } catch (InterruptedException err) {
+                String errorMsg = String.format("Failed when iterating over blocks.");
+                exceptionHandler.handleExceptionAndDecideOnAbort(errorMsg, err);
+            }
         }
     }
 
