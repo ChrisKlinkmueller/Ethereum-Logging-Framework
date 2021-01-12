@@ -338,6 +338,7 @@
                 ]]>
               </bottom>
               <additionalJOption>--allow-script-in-comments</additionalJOption>
+              <show>private</show>
             </configuration>
           </execution>
         </executions>
