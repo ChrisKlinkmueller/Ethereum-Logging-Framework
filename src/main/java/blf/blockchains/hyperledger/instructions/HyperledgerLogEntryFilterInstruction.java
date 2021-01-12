@@ -116,7 +116,7 @@ public class HyperledgerLogEntryFilterInstruction implements Instruction {
     private void parseNestedJsonPayload(HyperledgerProgramState hyperledgerProgramState, ChaincodeEvent ce, JSONObject obj) {
         try {
             // if json is nested, search for eventName as index in the nested object
-            JSONObject eventObj = obj.getJSONObject(ce.getEventName());
+            JSONObject eventObj = obj.getJSONObject(this.eventName);
 
             // search for every requested parameter and set it to the program state
             for (Pair<String, String> parameter : this.entryParameters) {
