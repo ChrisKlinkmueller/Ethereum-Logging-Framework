@@ -4,7 +4,6 @@ import blf.blockchains.hyperledger.reader.HyperledgerDataReader;
 import blf.core.state.ProgramState;
 import org.hyperledger.fabric.gateway.Gateway;
 import org.hyperledger.fabric.gateway.Network;
-import org.hyperledger.fabric.gateway.Network;
 import org.hyperledger.fabric.sdk.BlockEvent;
 
 import java.math.BigInteger;
