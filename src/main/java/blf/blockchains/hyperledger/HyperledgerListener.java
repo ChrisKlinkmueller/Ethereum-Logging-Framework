@@ -136,6 +136,13 @@ public class HyperledgerListener extends BaseBlockchainListener {
             addressNames = stringLiteral.stream().map(ParseTree::getText).collect(Collectors.toList());
         }
 
+        // remove leading and closing " from all addresses
+        for (int i = 0; i < addressNames.size(); i++) {
+            if (addressNames.get(i).charAt(0) == '\"') {
+                addressNames.set(i, addressNames.get(i).substring(1, addressNames.get(i).length() - 1));
+            }
+        }
+
         final HyperledgerLogEntryFilterInstruction logEntryFilterInstruction = new HyperledgerLogEntryFilterInstruction(
             addressNames,
             eventName,
