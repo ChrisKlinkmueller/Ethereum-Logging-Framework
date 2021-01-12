@@ -11,3 +11,8 @@ SET CONNECTION {
 }
 
 SET OUTPUT FOLDER "./test_output"
+
+BLOCKS (1) (5) {
+   LOG ENTRIES ("smartContractName") (eventName(int inId, string stringId)) {
+   }
+}

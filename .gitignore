@@ -130,10 +130,7 @@ block_data.json
 /lib/org
 CsvTransform.java
 *.docx
-/test_app
-/target/
-
-# Project specific
-
-hyperledger/
+test_app/
+target/
 extracted/
+gen/

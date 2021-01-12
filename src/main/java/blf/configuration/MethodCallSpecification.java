@@ -4,15 +4,15 @@ import java.util.Arrays;
 import java.util.List;
 import java.util.stream.Collectors;
 
-import blf.core.MethodCall;
+import blf.core.instructions.MethodCallInstruction;
 import io.reactivex.annotations.NonNull;
 
 /**
  * MethodCallSpecification
  */
-public class MethodCallSpecification extends InstructionSpecification<MethodCall> {
+public class MethodCallSpecification extends InstructionSpecification<MethodCallInstruction> {
 
-    private MethodCallSpecification(MethodCall call) {
+    private MethodCallSpecification(MethodCallInstruction call) {
         super(call);
     }
 
@@ -38,7 +38,7 @@ public class MethodCallSpecification extends InstructionSpecification<MethodCall
         @NonNull List<ValueAccessorSpecification> accessors
     ) {
         return new MethodCallSpecification(
-            new MethodCall(
+            new MethodCallInstruction(
                 specification.getMethod(),
                 accessors.stream().map(ValueAccessorSpecification::getValueAccessor).collect(Collectors.toList()),
                 mutator == null ? null : mutator.getMutator()

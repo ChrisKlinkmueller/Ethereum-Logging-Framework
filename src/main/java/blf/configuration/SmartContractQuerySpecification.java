@@ -4,29 +4,29 @@ import java.util.Collections;
 import java.util.List;
 import java.util.stream.Collectors;
 
-import blf.core.filters.Parameter;
-import blf.core.filters.PublicMemberQuery;
-import blf.core.filters.SmartContractParameter;
-import blf.core.filters.SmartContractQuery;
+import blf.core.parameters.Parameter;
+import blf.blockchains.hyperledger.classes.EthereumPublicMemberQueryEthereum;
+import blf.blockchains.hyperledger.classes.EthereumSmartContractParameter;
+import blf.blockchains.hyperledger.classes.EthereumSmartContractQuery;
 import io.reactivex.annotations.NonNull;
 
 /**
  * SmartContractFilter
  */
 public class SmartContractQuerySpecification {
-    private final SmartContractQuery query;
+    private final EthereumSmartContractQuery query;
 
-    private SmartContractQuerySpecification(SmartContractQuery query) {
+    private SmartContractQuerySpecification(EthereumSmartContractQuery query) {
         assert query != null;
         this.query = query;
     }
 
-    public SmartContractQuery getQuery() {
+    public EthereumSmartContractQuery getQuery() {
         return this.query;
     }
 
     public static SmartContractQuerySpecification ofMemberVariable(@NonNull ParameterSpecification variable) {
-        final SmartContractQuery query = new PublicMemberQuery(
+        final EthereumSmartContractQuery query = new EthereumPublicMemberQueryEthereum(
             variable.getParameter().getName(),
             Collections.emptyList(),
             Collections.singletonList(variable.getParameter())
@@ -40,18 +40,18 @@ public class SmartContractQuerySpecification {
         @NonNull List<ParameterSpecification> outputParameters
     ) {
 
-        final List<SmartContractParameter> inputs = inputParameters.stream()
+        final List<EthereumSmartContractParameter> inputs = inputParameters.stream()
             .map(SmartContractQuerySpecification::createSmartContractParameter)
             .collect(Collectors.toList());
 
         final List<Parameter> outputs = outputParameters.stream().map(ParameterSpecification::getParameter).collect(Collectors.toList());
 
-        return new SmartContractQuerySpecification(new PublicMemberQuery(functionName, inputs, outputs));
+        return new SmartContractQuerySpecification(new EthereumPublicMemberQueryEthereum(functionName, inputs, outputs));
     }
 
-    private static SmartContractParameter createSmartContractParameter(TypedValueAccessorSpecification param) {
+    private static EthereumSmartContractParameter createSmartContractParameter(TypedValueAccessorSpecification param) {
         final String name = createParameterName();
-        return new SmartContractParameter(param.getType(), name, param.getAccessor());
+        return new EthereumSmartContractParameter(param.getType(), name, param.getAccessor());
     }
 
     private static long counter = 0;

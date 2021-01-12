@@ -3,7 +3,7 @@ package blf.configuration;
 import java.util.Arrays;
 import java.util.List;
 
-import blf.core.Method;
+import blf.core.interfaces.Method;
 import blf.library.Library;
 
 /**

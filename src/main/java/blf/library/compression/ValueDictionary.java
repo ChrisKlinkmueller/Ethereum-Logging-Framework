@@ -3,7 +3,7 @@ package blf.library.compression;
 import java.math.BigInteger;
 import java.util.List;
 
-import blf.core.ProgramState;
+import blf.core.state.ProgramState;
 import blf.core.exceptions.ProgramException;
 
 /**

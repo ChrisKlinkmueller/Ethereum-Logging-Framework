@@ -6,7 +6,7 @@
 
   <modelVersion>4.0.0</modelVersion>
 
-  <groupId>au.csiro.data61.aap</groupId>
+  <groupId>tu.berlin.adsp</groupId>
 
   <artifactId>blf</artifactId>
 
@@ -296,7 +296,7 @@
               <finalName>elf-cmd</finalName>
               <archive>
                 <manifest>
-                  <mainClass>blf.ElfApp</mainClass>
+                  <mainClass>blf.BlfApp</mainClass>
                 </manifest>
               </archive>
               <descriptorRefs>

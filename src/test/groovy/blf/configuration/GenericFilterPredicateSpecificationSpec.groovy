@@ -1,6 +1,6 @@
 package blf.configuration
 
-import blf.core.ProgramState
+import blf.core.state.ProgramState
 import spock.lang.Specification
 
 class GenericFilterPredicateSpecificationSpec extends Specification {

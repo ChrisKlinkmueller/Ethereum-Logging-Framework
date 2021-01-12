@@ -1,14 +1,14 @@
 package blf.configuration;
 
-import blf.core.VariableAssignment;
+import blf.core.instructions.VariableAssignmentInstruction;
 import io.reactivex.annotations.NonNull;
 
 /**
  * ValueAssignmentSpecification
  */
-public class ValueAssignmentSpecification extends InstructionSpecification<VariableAssignment> {
+public class ValueAssignmentSpecification extends InstructionSpecification<VariableAssignmentInstruction> {
 
-    private ValueAssignmentSpecification(VariableAssignment assignment) {
+    private ValueAssignmentSpecification(VariableAssignmentInstruction assignment) {
         super(assignment);
     }
 
@@ -16,7 +16,7 @@ public class ValueAssignmentSpecification extends InstructionSpecification<Varia
         @NonNull ValueMutatorSpecification mutator,
         @NonNull ValueAccessorSpecification accessor
     ) {
-        return new ValueAssignmentSpecification(new VariableAssignment(mutator.getMutator(), accessor.getValueAccessor()));
+        return new ValueAssignmentSpecification(new VariableAssignmentInstruction(mutator.getMutator(), accessor.getValueAccessor()));
     }
 
 }

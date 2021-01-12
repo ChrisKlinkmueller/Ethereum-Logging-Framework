@@ -5,8 +5,11 @@ import java.util.function.BiFunction;
 import java.util.logging.Logger;
 import java.util.stream.Collectors;
 
+import blf.blockchains.ethereum.instructions.EthereumBlockFilterInstruction;
+import blf.blockchains.ethereum.instructions.EthereumConnectInstruction;
+import blf.blockchains.ethereum.instructions.EthereumConnectIpcInstruction;
+import blf.blockchains.ethereum.state.EthereumProgramState;
 import blf.configuration.*;
-import blf.core.ProgramState;
 
 import blf.parsing.InterpreterUtils;
 import blf.parsing.VariableExistenceListener;
@@ -21,6 +24,8 @@ public class EthereumListener extends BaseBlockchainListener {
 
     public EthereumListener(VariableExistenceListener analyzer) {
         super(analyzer);
+
+        this.state = new EthereumProgramState();
     }
 
     @Override
@@ -29,24 +34,23 @@ public class EthereumListener extends BaseBlockchainListener {
     }
 
     private void buildConnection(BcqlParser.ConnectionContext ctx) {
-        MethodSpecification webConnectionMethod;
+        final EthereumProgramState ethereumProgramState = (EthereumProgramState) state;
+        final BcqlParser.LiteralContext literal = ctx.literal();
+        final String literalText = ctx.literal().getText();
 
-        try {
-            if (ctx.KEY_IPC() != null) {
-                webConnectionMethod = MethodSpecification.of(ProgramState::connectIpcClient);
-            } else {
-                webConnectionMethod = MethodSpecification.of(ProgramState::connectWebsocketClient);
-            }
-
-            final List<ValueAccessorSpecification> accessors = new ArrayList<>();
-            accessors.add(this.getLiteral(ctx.literal()));
-
-            final MethodCallSpecification call = MethodCallSpecification.of(webConnectionMethod, accessors);
-            this.composer.addInstruction(call);
-
-        } catch (BuildException e) {
-            LOGGER.severe(String.format("Building connection failed: %s", e.getMessage()));
+        if (literal.STRING_LITERAL() == null) {
+            LOGGER.severe("Ethereum SET CONNECTION parameter should be a String");
             System.exit(1);
+        }
+
+        final String connectionInputParameter = TypeUtils.parseStringLiteral(literalText);
+
+        if (ctx.KEY_IPC() != null) {
+            ethereumProgramState.connectionIpcPath = connectionInputParameter;
+            this.composer.instructionListsStack.peek().add(new EthereumConnectIpcInstruction());
+        } else {
+            ethereumProgramState.connectionUrl = connectionInputParameter;
+            this.composer.instructionListsStack.peek().add(new EthereumConnectInstruction());
         }
     }
 
@@ -70,7 +74,28 @@ public class EthereumListener extends BaseBlockchainListener {
         try {
             BlockNumberSpecification from = this.getBlockNumberSpecification(ctx.from);
             BlockNumberSpecification to = this.getBlockNumberSpecification(ctx.to);
-            this.composer.buildBlockRange(from, to);
+
+            if (this.composer.states.peek() != SpecificationComposer.FactoryState.BLOCK_RANGE_FILTER) {
+                throw new BuildException(
+                    String.format(
+                        "Cannot build a block filter, when construction of %s has not been finished.",
+                        this.composer.states.peek()
+                    )
+                );
+            }
+
+            final EthereumBlockFilterInstruction blockRange = new EthereumBlockFilterInstruction(
+                from.getValueAccessor(),
+                to.getStopCriterion(),
+                this.composer.instructionListsStack.peek()
+            );
+
+            this.composer.instructionListsStack.pop();
+            if (!this.composer.instructionListsStack.isEmpty()) {
+                this.composer.instructionListsStack.peek().add(blockRange);
+            }
+            this.composer.states.pop();
+
         } catch (BuildException e) {
             LOGGER.severe(String.format("Building block filter failed: %s", e.getMessage()));
             System.exit(1);
@@ -158,7 +183,7 @@ public class EthereumListener extends BaseBlockchainListener {
         } else if (ctx.KEY_ANY() != null) {
             return AddressListSpecification.ofAny();
         } else if (ctx.variableName() != null) {
-            return AddressListSpecification.ofAddress(ctx.variableName().getText());
+            return AddressListSpecification.ofVariableName(ctx.variableName().getText());
         } else {
             return AddressListSpecification.ofEmpty();
         }

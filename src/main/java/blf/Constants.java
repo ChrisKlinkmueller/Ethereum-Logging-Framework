@@ -10,8 +10,8 @@ import java.util.Map;
 
 public class Constants {
 
-    static final String ETHEREUM_BLOCKCHAIN_KEY = "ethereum";
-    static final String HYPERLEDGER_BLOCKCHAIN_KEY = "hyperledger";
+    public static final String ETHEREUM_BLOCKCHAIN_KEY = "ethereum";
+    public static final String HYPERLEDGER_BLOCKCHAIN_KEY = "hyperledger";
 
     private static final Map<String, BaseBlockchainListener> blockchainMap = new HashMap<>();
 

@@ -4,20 +4,20 @@ import java.util.Arrays;
 import java.util.List;
 import java.util.stream.Collectors;
 
-import blf.core.filters.LogEntrySignature;
+import blf.blockchains.hyperledger.classes.EthereumLogEntrySignature;
 import io.reactivex.annotations.NonNull;
 
 /**
  * LogEntrySignatureSpecification
  */
 public class LogEntrySignatureSpecification {
-    private final LogEntrySignature signature;
+    private final EthereumLogEntrySignature signature;
 
-    private LogEntrySignatureSpecification(LogEntrySignature signature) {
+    private LogEntrySignatureSpecification(EthereumLogEntrySignature signature) {
         this.signature = signature;
     }
 
-    public LogEntrySignature getSignature() {
+    public EthereumLogEntrySignature getSignature() {
         return this.signature;
     }
 
@@ -28,7 +28,10 @@ public class LogEntrySignatureSpecification {
     public static LogEntrySignatureSpecification of(@NonNull String eventName, @NonNull List<ParameterSpecification> parameters) {
 
         return new LogEntrySignatureSpecification(
-            new LogEntrySignature(eventName, parameters.stream().map(ParameterSpecification::getParameter).collect(Collectors.toList()))
+            new EthereumLogEntrySignature(
+                eventName,
+                parameters.stream().map(ParameterSpecification::getParameter).collect(Collectors.toList())
+            )
         );
     }
 

@@ -1,6 +1,6 @@
 package blf.configuration;
 
-import blf.core.filters.Parameter;
+import blf.core.parameters.Parameter;
 import io.reactivex.annotations.NonNull;
 
 /**

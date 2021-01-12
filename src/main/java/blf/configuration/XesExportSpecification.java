@@ -4,9 +4,9 @@ import java.util.Arrays;
 import java.util.List;
 import java.util.stream.Collectors;
 
-import blf.core.writers.AddXesElementInstruction;
-import blf.core.writers.AddXesEventInstruction;
-import blf.core.writers.AddXesTraceInstruction;
+import blf.core.instructions.AddXesElementInstruction;
+import blf.core.instructions.AddXesEventInstruction;
+import blf.core.instructions.AddXesTraceInstruction;
 import io.reactivex.annotations.NonNull;
 
 /**

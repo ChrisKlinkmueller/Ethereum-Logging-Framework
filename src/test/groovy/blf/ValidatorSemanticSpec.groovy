@@ -6,7 +6,7 @@ import spock.lang.Unroll
 class ValidatorSemanticSpec extends Specification {
     Validator validator = new Validator()
 
-    static List<EthqlProcessingError> validate(String script, Validator validator) {
+    static List<BcqlProcessingError> validate(String script, Validator validator) {
         validator.analyzeScript(new ByteArrayInputStream(script.getBytes()))
     }
 
@@ -31,7 +31,7 @@ class ValidatorSemanticSpec extends Specification {
     @Unroll
     def "transaction filter #script"() {
         expect:
-        List<EthqlProcessingError> errors = validate(script, validator)
+        List<BcqlProcessingError> errors = validate(script, validator)
         errors*.getErrorMessage() == expectedErr
 
         where:
@@ -61,7 +61,7 @@ class ValidatorSemanticSpec extends Specification {
     @Unroll
     def "generic filter #script"() {
         expect:
-        List<EthqlProcessingError> errors = validate(script, validator)
+        List<BcqlProcessingError> errors = validate(script, validator)
         errors*.getErrorMessage() == expectedErr
 
         where:
@@ -136,7 +136,7 @@ class ValidatorSemanticSpec extends Specification {
 
     def "log entries filter"() {
         expect:
-        List<EthqlProcessingError> errors = validate(script, validator)
+        List<BcqlProcessingError> errors = validate(script, validator)
         errors*.getErrorMessage() == expectedErr
 
         where:

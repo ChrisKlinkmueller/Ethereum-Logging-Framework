@@ -6,13 +6,13 @@ import java.util.List;
 import java.util.Stack;
 import java.util.stream.Collectors;
 
-import blf.core.Instruction;
-import blf.core.filters.BlockFilter;
-import blf.core.filters.GenericFilter;
-import blf.core.filters.LogEntryFilter;
-import blf.core.filters.Program;
-import blf.core.filters.SmartContractFilter;
-import blf.core.filters.TransactionFilter;
+import blf.core.interfaces.Instruction;
+import blf.blockchains.ethereum.instructions.EthereumBlockFilterInstruction;
+import blf.core.instructions.GenericFilterInstruction;
+import blf.blockchains.ethereum.instructions.EthereumLogEntryFilterInstruction;
+import blf.core.Program;
+import blf.blockchains.ethereum.instructions.EthereumSmartContractFilterInstruction;
+import blf.blockchains.ethereum.instructions.EthereumTransactionFilterInstruction;
 import blf.core.values.ValueAccessor;
 import blf.core.values.ValueMutator;
 import io.reactivex.annotations.NonNull;
@@ -21,11 +21,11 @@ import io.reactivex.annotations.NonNull;
  * SpecificationComposer
  */
 public class SpecificationComposer {
-    private final Stack<FactoryState> states;
-    private final Stack<List<Instruction>> instructions;
+    public final Stack<FactoryState> states;
+    public final Stack<List<Instruction>> instructionListsStack;
 
     public SpecificationComposer() {
-        this.instructions = new Stack<>();
+        this.instructionListsStack = new Stack<>();
         this.states = new Stack<>();
     }
 
@@ -79,7 +79,7 @@ public class SpecificationComposer {
         }
 
         this.states.push(newState);
-        this.instructions.add(new LinkedList<>());
+        this.instructionListsStack.add(new LinkedList<>());
     }
 
     public Program buildProgram() throws BuildException {
@@ -89,9 +89,7 @@ public class SpecificationComposer {
             );
         }
 
-        final Program program = new Program(this.instructions.peek());
-        this.closeScope(program);
-        return program;
+        return new Program(this.instructionListsStack.peek());
     }
 
     public void buildBlockRange(BlockNumberSpecification fromBlock, BlockNumberSpecification toBlock) throws BuildException {
@@ -104,9 +102,17 @@ public class SpecificationComposer {
             );
         }
 
-        final BlockFilter blockRange = new BlockFilter(fromBlock.getValueAccessor(), toBlock.getStopCriterion(), this.instructions.peek());
+        final EthereumBlockFilterInstruction blockRange = new EthereumBlockFilterInstruction(
+            fromBlock.getValueAccessor(),
+            toBlock.getStopCriterion(),
+            this.instructionListsStack.peek()
+        );
 
-        this.closeScope(blockRange);
+        this.instructionListsStack.pop();
+        if (!this.instructionListsStack.isEmpty()) {
+            this.instructionListsStack.peek().add(blockRange);
+        }
+        this.states.pop();
     }
 
     public void buildTransactionFilter(@NonNull AddressListSpecification senders, @NonNull AddressListSpecification recipients)
@@ -118,10 +124,10 @@ public class SpecificationComposer {
             );
         }
 
-        final TransactionFilter filter = new TransactionFilter(
+        final EthereumTransactionFilterInstruction filter = new EthereumTransactionFilterInstruction(
             senders.getAddressCheck(),
             recipients.getAddressCheck(),
-            this.instructions.peek()
+            this.instructionListsStack.peek()
         );
 
         this.closeScope(filter);
@@ -136,7 +142,11 @@ public class SpecificationComposer {
             );
         }
 
-        final LogEntryFilter filter = new LogEntryFilter(contracts.getAddressCheck(), signature.getSignature(), this.instructions.peek());
+        final EthereumLogEntryFilterInstruction filter = new EthereumLogEntryFilterInstruction(
+            contracts.getAddressCheck(),
+            signature.getSignature(),
+            this.instructionListsStack.peek()
+        );
         this.closeScope(filter);
     }
 
@@ -148,7 +158,7 @@ public class SpecificationComposer {
             );
         }
 
-        final GenericFilter filter = new GenericFilter(predicate.getPredicate(), this.instructions.peek());
+        final GenericFilterInstruction filter = new GenericFilterInstruction(predicate.getPredicate(), this.instructionListsStack.peek());
         this.closeScope(filter);
     }
 
@@ -160,32 +170,40 @@ public class SpecificationComposer {
             );
         }
 
-        final SmartContractFilter filter = new SmartContractFilter(
+        final EthereumSmartContractFilterInstruction filter = new EthereumSmartContractFilterInstruction(
             specification.getContractAddress(),
             specification.getQueries(),
-            this.instructions.peek()
+            this.instructionListsStack.peek()
         );
         this.closeScope(filter);
     }
 
     private void closeScope(Instruction instruction) {
-        this.instructions.pop();
-        if (!this.instructions.isEmpty()) {
-            this.instructions.peek().add(instruction);
+        this.instructionListsStack.pop();
+        if (!this.instructionListsStack.isEmpty()) {
+            this.instructionListsStack.peek().add(instruction);
         }
         this.states.pop();
+    }
+
+    public void addInstruction(@NonNull Instruction instruction) {
+        if (this.instructionListsStack.isEmpty()) {
+            return;
+        }
+
+        this.instructionListsStack.peek().add(instruction);
     }
 
     public void addInstruction(InstructionSpecification<?> instruction) throws BuildException {
         if (instruction == null) {
             throw new BuildException(String.format("Parameter instruction is null."));
         }
-        this.instructions.peek().add(instruction.getInstruction());
+        this.instructionListsStack.peek().add(instruction.getInstruction());
     }
 
     public void addVariableAssignment(ValueMutatorSpecification variable, ValueAccessorSpecification value) {
         final Instruction variableAssignment = this.createVariableAssignment(variable.getMutator(), value.getValueAccessor());
-        this.instructions.peek().add(variableAssignment);
+        this.instructionListsStack.peek().add(variableAssignment);
     }
 
     private Instruction createVariableAssignment(ValueMutator variable, ValueAccessor valueAccessor) {
@@ -195,7 +213,7 @@ public class SpecificationComposer {
         };
     }
 
-    private enum FactoryState {
+    public enum FactoryState {
         PROGRAM,
         BLOCK_RANGE_FILTER,
         TRANSACTION_FILTER,
