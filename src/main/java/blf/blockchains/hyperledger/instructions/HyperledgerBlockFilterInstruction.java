@@ -58,7 +58,8 @@ public class HyperledgerBlockFilterInstruction extends FilterInstruction {
 
         network.addBlockListener(fromBlockNumber.longValue(), (BlockEvent blockEvent) -> {
             BigInteger currentBlockNumber = BigInteger.valueOf(blockEvent.getBlockNumber());
-            if (currentBlockNumber.compareTo(toBlockNumber) < 1) {
+            // If the currentBlockNumber is greater than the toBlockNumber, we want to stop
+            if (currentBlockNumber.compareTo(toBlockNumber) > 0) {
                 synchronized (network) {
                     network.notifyAll();
                 }
