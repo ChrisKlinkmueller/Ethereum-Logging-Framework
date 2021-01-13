@@ -105,10 +105,6 @@ public class HyperledgerListener extends BaseBlockchainListener {
         if (blockFilterCtx != null) {
             handleBlockFilterScopeExit(blockFilterCtx);
         }
-
-        if (logEntryCtx != null) {
-            handleLogEntryScopeExit(logEntryCtx);
-        }
     }
 
     /**
@@ -120,7 +116,8 @@ public class HyperledgerListener extends BaseBlockchainListener {
      * @param logEntryCtx - logEntryFilter context
      */
 
-    private void handleLogEntryScopeExit(BcqlParser.LogEntryFilterContext logEntryCtx) {
+    @Override
+    public void enterLogEntryFilter(BcqlParser.LogEntryFilterContext logEntryCtx) {
         final BcqlParser.AddressListContext addressListCtx = logEntryCtx.addressList();
         final BcqlParser.LogEntrySignatureContext logEntrySignatureCtx = logEntryCtx.logEntrySignature();
 
