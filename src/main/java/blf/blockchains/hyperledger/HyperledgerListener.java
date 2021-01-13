@@ -20,6 +20,14 @@ import java.util.*;
 import java.util.logging.Logger;
 import java.util.stream.Collectors;
 
+/**
+ * The HyperledgerListener class implements blockchain specific callback functions for Hyperledger, which are triggered
+ * when a parse tree walker enters or exits corresponding parse tree nodes. These callback functions handle how the
+ * program should process the input of the manifest file.
+ *
+ * It extends the abstract BcqlBaseListener class, which already implements blockchain unspecific callback functions.
+ */
+
 public class HyperledgerListener extends BaseBlockchainListener {
 
     private final Logger logger;
@@ -35,6 +43,14 @@ public class HyperledgerListener extends BaseBlockchainListener {
         logger = Logger.getLogger(HyperledgerListener.class.getName());
         exceptionHandler = new ExceptionHandler();
     }
+
+    /**
+     * When entering the connection parse tree node, the listener reads the parameters which are stated after the
+     * SET CONNECTION keywords in the manifest file to build a connection to hyperledger. Subsequently it checks if the
+     * parameters are specified in a semantically correct way and added to the list of instructions.
+     *
+     * @param ctx - local connection context
+     */
 
     @Override
     public void enterConnection(BcqlParser.ConnectionContext ctx) {
@@ -74,6 +90,13 @@ public class HyperledgerListener extends BaseBlockchainListener {
         this.composer.instructionListsStack.add(new LinkedList<>());
     }
 
+    /**
+     * When exiting a scope parse tree node, the listener identifies which filter was specified in the local scope
+     * context and calls the corresponding handler method accordingly.
+     *
+     * @param ctx - local scope context
+     */
+
     @Override
     public void exitScope(BcqlParser.ScopeContext ctx) {
         final BcqlParser.BlockFilterContext blockFilterCtx = ctx.filter().blockFilter();
@@ -82,13 +105,19 @@ public class HyperledgerListener extends BaseBlockchainListener {
         if (blockFilterCtx != null) {
             handleBlockFilterScopeExit(blockFilterCtx);
         }
-
-        if (logEntryCtx != null) {
-            handleLogEntryScopeExit(logEntryCtx);
-        }
     }
 
-    private void handleLogEntryScopeExit(BcqlParser.LogEntryFilterContext logEntryCtx) {
+    /**
+     * This is the handler method in case a logEntryFilter was identified in the manifest file. It reads the
+     * parameters 'addressList' and 'logEntrySignature' from the logEntryFilter context and it checks if they are
+     * specified in a semantically correct way. Subsequently it instantiates a logEntryFilterInstruction, which includes
+     * the extracted parameters, and adds this wrapper instruction to the list of instructions.
+     *
+     * @param logEntryCtx - logEntryFilter context
+     */
+
+    @Override
+    public void enterLogEntryFilter(BcqlParser.LogEntryFilterContext logEntryCtx) {
         final BcqlParser.AddressListContext addressListCtx = logEntryCtx.addressList();
         final BcqlParser.LogEntrySignatureContext logEntrySignatureCtx = logEntryCtx.logEntrySignature();
 
@@ -152,9 +181,20 @@ public class HyperledgerListener extends BaseBlockchainListener {
         this.composer.addInstruction(logEntryFilterInstruction);
     }
 
-    private void handleBlockFilterScopeExit(BcqlParser.BlockFilterContext ctx) {
-        final BcqlParser.LiteralContext fromLiteral = ctx.from.valueExpression().literal();
-        final BcqlParser.LiteralContext toLiteral = ctx.to.valueExpression().literal();
+    /**
+     * This is the handler method in case a blockFilter was identified in the manifest file. It reads the parameters
+     * 'from' and 'to' from the blockFilter context and it checks if they are specified in a semantically correct way.
+     * Subsequently it instantiates a hyperledgerBlockFilterInstruction, which includes the 'from' and 'to' block
+     * numbers and the statements included inside the scope as nested instructions, and adds this wrapper instruction to
+     * the list of instructions.
+     *
+     *
+     * @param blockCtx - blockFilter context
+     */
+
+    private void handleBlockFilterScopeExit(BcqlParser.BlockFilterContext blockCtx) {
+        final BcqlParser.LiteralContext fromLiteral = blockCtx.from.valueExpression().literal();
+        final BcqlParser.LiteralContext toLiteral = blockCtx.to.valueExpression().literal();
 
         if (fromLiteral.INT_LITERAL() == null) {
             this.exceptionHandler.handleExceptionAndDecideOnAbort(
@@ -170,8 +210,8 @@ public class HyperledgerListener extends BaseBlockchainListener {
             );
         }
 
-        final String fromBlockNumberString = ctx.from.valueExpression().literal().getText();
-        final String toBlockNumberString = ctx.to.valueExpression().literal().getText();
+        final String fromBlockNumberString = blockCtx.from.valueExpression().literal().getText();
+        final String toBlockNumberString = blockCtx.to.valueExpression().literal().getText();
 
         final BigInteger fromBlockNumber = new BigInteger(fromBlockNumberString);
         final BigInteger toBlockNumber = new BigInteger(toBlockNumberString);

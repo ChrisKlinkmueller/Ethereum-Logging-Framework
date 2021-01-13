@@ -13,6 +13,7 @@ import org.json.*;
 
 import java.math.BigInteger;
 import java.util.List;
+import java.util.logging.Logger;
 
 /**
  * HyperledgerLogEntryFilterInstruction is an Instruction for the Hyperledger log extraction mode of the Blockchain
@@ -22,7 +23,7 @@ import java.util.List;
 public class HyperledgerLogEntryFilterInstruction implements Instruction {
 
     private final ExceptionHandler exceptionHandler;
-
+    private final Logger logger;
     private final List<String> addressNames;
     private final String eventName;
     private final List<Pair<String, String>> entryParameters;
@@ -42,7 +43,7 @@ public class HyperledgerLogEntryFilterInstruction implements Instruction {
         this.addressNames = addressNames;
         this.eventName = eventName;
         this.entryParameters = entryParameters;
-
+        this.logger = Logger.getLogger(HyperledgerBlockFilterInstruction.class.getName());
         this.exceptionHandler = new ExceptionHandler();
     }
 
@@ -56,7 +57,6 @@ public class HyperledgerLogEntryFilterInstruction implements Instruction {
     @Override
     public void execute(ProgramState state) throws ProgramException {
         HyperledgerProgramState hyperledgerProgramState = (HyperledgerProgramState) state;
-
         // get current block
         BlockEvent be = hyperledgerProgramState.getCurrentBlock();
         if (be == null) {
