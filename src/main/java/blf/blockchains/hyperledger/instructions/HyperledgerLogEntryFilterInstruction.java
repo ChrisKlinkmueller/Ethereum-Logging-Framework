@@ -74,7 +74,6 @@ public class HyperledgerLogEntryFilterInstruction implements Instruction {
 
                 ChaincodeEvent ce = ti.getEvent();
                 if (ce != null) {
-                    String.format(ce.toString());
                     parseChaincodeEvent(hyperledgerProgramState, ce);
                 }
             }
@@ -93,7 +92,6 @@ public class HyperledgerLogEntryFilterInstruction implements Instruction {
     private void parseChaincodeEvent(HyperledgerProgramState hyperledgerProgramState, ChaincodeEvent ce) {
         // first try parse json
         String payloadString = new String(ce.getPayload());
-        String.format(payloadString);
         try {
             JSONObject obj = new JSONObject(payloadString);
 
@@ -177,9 +175,6 @@ public class HyperledgerLogEntryFilterInstruction implements Instruction {
                 // parse the one unstructured parameter
                 String parameterType = this.entryParameters.get(0).a;
                 String parameterName = this.entryParameters.get(0).b;
-                this.logger.info(
-                    String.format("parametertype: %s parameterName: %s, payload: %s", parameterType, parameterName, payloadString)
-                );
                 setStateValue(hyperledgerProgramState, parameterName, parameterType, payloadString, ce.getPayload());
             } else {
                 this.exceptionHandler.handleExceptionAndDecideOnAbort(
