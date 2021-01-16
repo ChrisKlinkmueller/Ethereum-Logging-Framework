@@ -76,6 +76,12 @@ public class HyperledgerBlockFilterInstruction extends FilterInstruction {
                     String errorMsg = String.format("Unable to execute instructions");
                     exceptionHandler.handleExceptionAndDecideOnAbort(errorMsg, err);
                 }
+
+                if (currentBlockNumber.compareTo(toBlockNumber) == 0) {
+                    synchronized (network) {
+                        network.notifyAll();
+                    }
+                }
             }
         });
         synchronized (network) {
