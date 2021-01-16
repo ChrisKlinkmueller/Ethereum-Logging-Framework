@@ -1,0 +1,33 @@
+// Author: Tobias Petrich
+
+SET BLOCKCHAIN "Hyperledger"
+
+SET CONNECTION {
+   "hyperledger/connection-org1.yaml",
+   "hyperledger/server.key",
+   "hyperledger/server.crt",
+   "Org1MSP",
+   "mychannel"
+}
+
+SET OUTPUT FOLDER "./test_output"
+
+BLOCKS (32) (91) {
+   LOG ENTRIES ("kitties") (Birth(string owner, int newKittenID, int matronID, int sireID, int genes)) {
+        EMIT LOG LINE ("Birth: '", owner, " ", newKittenID, " ", genes, "'.");
+        EMIT CSV ROW ("Birth") (owner, newKittenID, matronID, sireID, genes);
+        EMIT XES EVENT ("Birth")()()(owner as xs:string owner, newKittenID as xs:int newKittenID, matronID as xs:int matronID, sireID as xs:int sireID, genes as xs:int genes);
+   }
+
+   LOG ENTRIES ("kitties") (Transfer(string from, string to, int kittyID)) {
+        EMIT LOG LINE ("Transfer: '", from, " ", to, " ", kittyID, "'.");
+        EMIT CSV ROW ("Transfer")(from, to, kittyID);
+        EMIT XES EVENT ("Transfer")()()(from as xs:string from, to as xs:string to, kittyID as xs:int kittyID);
+   }
+
+   LOG ENTRIES ("kitties") (Pregnant(string owner, int matronID, int sireID, string matronCooldown)) {
+        EMIT LOG LINE ("Pregnant: '", owner, " ", matronID, " ", sireID, " ", matronCooldown, "'.");
+        EMIT CSV ROW ("Pregnant")(owner, matronID, sireID, matronCooldown);
+        EMIT XES EVENT ("Pregnant")()()(owner as xs:string owner, matronID as xs:int matronID, sireID as xs:int sireID, matronCooldown as xs:string matronCooldown);
+   }
+}
