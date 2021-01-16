@@ -105,7 +105,6 @@ public class HyperledgerListener extends BaseBlockchainListener {
     @Override
     public void exitScope(BcqlParser.ScopeContext ctx) {
         final BcqlParser.BlockFilterContext blockFilterCtx = ctx.filter().blockFilter();
-        final BcqlParser.LogEntryFilterContext logEntryCtx = ctx.filter().logEntryFilter();
 
         if (blockFilterCtx != null) {
             handleBlockFilterScopeExit(blockFilterCtx);
@@ -169,14 +168,7 @@ public class HyperledgerListener extends BaseBlockchainListener {
         }
 
         if (stringLiteral != null && !stringLiteral.isEmpty()) {
-            addressNames = stringLiteral.stream().map(ParseTree::getText).collect(Collectors.toList());
-        }
-
-        // remove leading and closing " from all addresses
-        for (int i = 0; i < addressNames.size(); i++) {
-            if (addressNames.get(i).charAt(0) == '\"') {
-                addressNames.set(i, addressNames.get(i).substring(1, addressNames.get(i).length() - 1));
-            }
+            addressNames = stringLiteral.stream().map(ParseTree::getText).map(TypeUtils::parseStringLiteral).collect(Collectors.toList());
         }
 
         final HyperledgerLogEntryFilterInstruction logEntryFilterInstruction = new HyperledgerLogEntryFilterInstruction(
