@@ -279,4 +279,18 @@ public class HyperledgerLogEntryFilterInstruction extends FilterInstruction {
             this.exceptionHandler.handleExceptionAndDecideOnAbort(message, new JSONException(message));
         }
     }
+
+    /**
+     * Executes the nested EMIT instructions.
+     *
+     * @param hyperledgerProgramState The current ProgramState of the BLF.
+     */
+    private void executeNestedInstructions(HyperledgerProgramState hyperledgerProgramState) {
+        try {
+            this.executeInstructions(hyperledgerProgramState);
+        } catch (ProgramException err) {
+            String errorMsg = "Unable to execute instructions";
+            hyperledgerProgramState.getExceptionHandler().handleExceptionAndDecideOnAbort(errorMsg, err);
+        }
+    }
 }
