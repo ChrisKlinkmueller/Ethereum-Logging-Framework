@@ -1,24 +1,21 @@
 package blf.blockchains.hyperledger;
 
+import blf.blockchains.hyperledger.helpers.HyperledgerListenerHelper;
 import blf.blockchains.hyperledger.instructions.HyperledgerBlockFilterInstruction;
 import blf.blockchains.hyperledger.instructions.HyperledgerConnectInstruction;
 import blf.blockchains.hyperledger.instructions.HyperledgerLogEntryFilterInstruction;
+import blf.blockchains.hyperledger.instructions.HyperledgerTransactionFilterInstruction;
 import blf.blockchains.hyperledger.state.HyperledgerProgramState;
 import blf.configuration.*;
 import blf.core.exceptions.ExceptionHandler;
-import blf.core.exceptions.ProgramException;
-import blf.core.values.ValueAccessor;
 import blf.grammar.BcqlParser;
 import blf.parsing.VariableExistenceListener;
 import blf.util.TypeUtils;
 import org.antlr.v4.runtime.misc.Pair;
-import org.antlr.v4.runtime.tree.ParseTree;
-import org.antlr.v4.runtime.tree.TerminalNode;
 
 import java.math.BigInteger;
 import java.util.*;
 import java.util.logging.Logger;
-import java.util.stream.Collectors;
 
 /**
  * The HyperledgerListener class implements blockchain specific callback functions for Hyperledger, which are triggered
@@ -33,15 +30,16 @@ public class HyperledgerListener extends BaseBlockchainListener {
     private final Logger logger;
     private final ExceptionHandler exceptionHandler;
     private final HyperledgerProgramState hyperledgerProgramState;
+    private final HyperledgerListenerHelper hyperledgerListenerHelper;
 
     public HyperledgerListener(VariableExistenceListener analyzer) {
         super(analyzer);
 
         this.state = new HyperledgerProgramState();
-
-        hyperledgerProgramState = (HyperledgerProgramState) this.state;
-        logger = Logger.getLogger(HyperledgerListener.class.getName());
-        exceptionHandler = new ExceptionHandler();
+        this.hyperledgerProgramState = (HyperledgerProgramState) this.state;
+        this.logger = Logger.getLogger(HyperledgerListener.class.getName());
+        this.exceptionHandler = new ExceptionHandler();
+        this.hyperledgerListenerHelper = new HyperledgerListenerHelper(this.hyperledgerProgramState);
     }
 
     /**
@@ -115,6 +113,37 @@ public class HyperledgerListener extends BaseBlockchainListener {
     }
 
     /**
+     * This is the handler method in case a transactionFilter was identified in the manifest file. It reads the
+     * parameters 'senders' and 'recipients' from the transactionFilter context and it checks if they are
+     * specified in a semantically correct way. Subsequently it instantiates a hyperledgerTransactionFilterInstruction,
+     * which includes the extracted parameters, and adds this wrapper instruction to the list of instructions.
+     *
+     * @param transactionCtx - transactionFilter context
+     */
+
+    @Override
+    public void enterTransactionFilter(BcqlParser.TransactionFilterContext transactionCtx) {
+        final BcqlParser.AddressListContext sendersListCtx = transactionCtx.senders;
+        final BcqlParser.AddressListContext recipientsListCtx = transactionCtx.recipients;
+
+        // List of sender addresses might be null as the grammar allows this parameter to be skipped
+        List<String> sendersAddresses = new LinkedList<>();
+        if (sendersListCtx != null) {
+            sendersAddresses = this.hyperledgerListenerHelper.parseAddressListContext(sendersListCtx);
+        }
+
+        // According to the grammar the recipient addresses must be specified (at least one)
+        List<String> recipientsAddresses = this.hyperledgerListenerHelper.parseAddressListContext(recipientsListCtx);
+
+        final HyperledgerTransactionFilterInstruction hyperledgerTransactionFilterInstruction = new HyperledgerTransactionFilterInstruction(
+            sendersAddresses,
+            recipientsAddresses
+        );
+
+        this.composer.addInstruction(hyperledgerTransactionFilterInstruction);
+    }
+
+    /**
      * This is the handler method in case a logEntryFilter was identified in the manifest file. It reads the
      * parameters 'addressList' and 'logEntrySignature' from the logEntryFilter context and it checks if they are
      * specified in a semantically correct way. Subsequently it instantiates a logEntryFilterInstruction, which includes
@@ -127,14 +156,11 @@ public class HyperledgerListener extends BaseBlockchainListener {
         final BcqlParser.AddressListContext addressListCtx = logEntryCtx.addressList();
         final BcqlParser.LogEntrySignatureContext logEntrySignatureCtx = logEntryCtx.logEntrySignature();
 
-        final List<TerminalNode> stringLiteral = addressListCtx.STRING_LITERAL();
-        final BcqlParser.VariableNameContext variableNameCtx = addressListCtx.variableName();
-
         List<BcqlParser.LogEntryParameterContext> logEntryParameterContextList = logEntrySignatureCtx.logEntryParameter();
 
         if (logEntryParameterContextList == null) {
             this.exceptionHandler.handleExceptionAndDecideOnAbort(
-                "Variable 'logEntryParameterContextList' is null or empty",
+                "Variable 'logEntryParameterContextList' is null.",
                 new NullPointerException()
             );
 
@@ -149,27 +175,7 @@ public class HyperledgerListener extends BaseBlockchainListener {
             entryParameters.add(new Pair<>(logEntryParameterCtx.solType().getText(), logEntryParameterCtx.variableName().getText()));
         }
 
-        List<String> addressNames = null;
-
-        if (variableNameCtx != null) {
-            final ValueAccessor accessor = ValueAccessor.createVariableAccessor(variableNameCtx.getText());
-            String value = "";
-            try {
-                value = (String) accessor.getValue(this.hyperledgerProgramState);
-            } catch (ClassCastException e) {
-                String errorMsg = String.format("Variable '%s' in manifest file is not an instance of String.", variableNameCtx.getText());
-
-                this.exceptionHandler.handleExceptionAndDecideOnAbort(errorMsg, e);
-            } catch (ProgramException e) {
-                this.exceptionHandler.handleExceptionAndDecideOnAbort("Unexpected exception occurred!", e);
-            }
-
-            addressNames = new LinkedList<>(Collections.singletonList(value));
-        }
-
-        if (stringLiteral != null && !stringLiteral.isEmpty()) {
-            addressNames = stringLiteral.stream().map(ParseTree::getText).map(TypeUtils::parseStringLiteral).collect(Collectors.toList());
-        }
+        List<String> addressNames = this.hyperledgerListenerHelper.parseAddressListContext(addressListCtx);
 
         final HyperledgerLogEntryFilterInstruction logEntryFilterInstruction = new HyperledgerLogEntryFilterInstruction(
             addressNames,
@@ -187,7 +193,6 @@ public class HyperledgerListener extends BaseBlockchainListener {
      * Subsequently it instantiates a hyperledgerBlockFilterInstruction, which includes the 'from' and 'to' block
      * numbers and the statements included inside the scope as nested instructions, and adds this wrapper instruction to
      * the list of instructions.
-     *
      *
      * @param blockCtx - blockFilter context
      */
