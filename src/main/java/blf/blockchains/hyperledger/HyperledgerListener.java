@@ -93,6 +93,11 @@ public class HyperledgerListener extends BaseBlockchainListener {
         this.composer.instructionListsStack.add(new LinkedList<>());
     }
 
+    @Override
+    public void exitTransactionFilter(BcqlParser.TransactionFilterContext ctx) {
+        this.composer.instructionListsStack.add(new LinkedList<>());
+    }
+
     /**
      * When exiting a scope parse tree node, the listener identifies which filter was specified in the local scope
      * context and calls the corresponding handler method accordingly.
