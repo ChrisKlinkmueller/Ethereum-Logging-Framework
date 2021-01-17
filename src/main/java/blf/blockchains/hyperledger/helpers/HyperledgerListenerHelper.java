@@ -21,7 +21,7 @@ public class HyperledgerListenerHelper {
 
     public HyperledgerListenerHelper(HyperledgerProgramState hyperledgerProgramState) {
         this.hyperledgerProgramState = hyperledgerProgramState;
-        exceptionHandler = new ExceptionHandler();
+        this.exceptionHandler = hyperledgerProgramState.getExceptionHandler();
     }
 
     public List<String> parseAddressListContext(BcqlParser.AddressListContext addressListCtx) {

@@ -23,8 +23,9 @@ import java.util.logging.Logger;
  */
 public class HyperledgerLogEntryFilterInstruction extends FilterInstruction {
 
-    private final ExceptionHandler exceptionHandler;
     private final Logger logger;
+    private ExceptionHandler exceptionHandler;
+
     private final List<String> addressNames;
     private final String eventName;
     private final List<Pair<String, String>> entryParameters;
@@ -48,7 +49,6 @@ public class HyperledgerLogEntryFilterInstruction extends FilterInstruction {
         this.eventName = eventName;
         this.entryParameters = entryParameters;
         this.logger = Logger.getLogger(HyperledgerBlockFilterInstruction.class.getName());
-        this.exceptionHandler = new ExceptionHandler();
     }
 
     /**
@@ -60,6 +60,9 @@ public class HyperledgerLogEntryFilterInstruction extends FilterInstruction {
      */
     @Override
     public void execute(ProgramState state) throws ProgramException {
+        // init exception handler
+        this.exceptionHandler = state.getExceptionHandler();
+
         HyperledgerProgramState hyperledgerProgramState = (HyperledgerProgramState) state;
         // get current block
         BlockEvent be = hyperledgerProgramState.getCurrentBlock();

@@ -17,8 +17,9 @@ import java.util.logging.Logger;
  */
 public class HyperledgerTransactionFilterInstruction extends FilterInstruction {
 
-    private final ExceptionHandler exceptionHandler;
     private final Logger logger;
+    private ExceptionHandler exceptionHandler;
+
     private final List<String> sendersAddressList;
     private final List<String> recipientsAddressList;
 
@@ -39,7 +40,6 @@ public class HyperledgerTransactionFilterInstruction extends FilterInstruction {
         this.recipientsAddressList = recipientsAddressList;
 
         this.logger = Logger.getLogger(HyperledgerTransactionFilterInstruction.class.getName());
-        this.exceptionHandler = new ExceptionHandler();
     }
 
     /**
@@ -51,6 +51,9 @@ public class HyperledgerTransactionFilterInstruction extends FilterInstruction {
      */
     @Override
     public void execute(ProgramState state) throws ProgramException {
+        // init exception handler
+        this.exceptionHandler = state.getExceptionHandler();
+
         HyperledgerProgramState hyperledgerProgramState = (HyperledgerProgramState) state;
 
         // TODO: implement HyperledgerTransactionFilterInstruction logic here
@@ -65,6 +68,8 @@ public class HyperledgerTransactionFilterInstruction extends FilterInstruction {
         logger.info(infoMsg);
 
         this.executeNestedInstructions(hyperledgerProgramState);
+
+        // this.exceptionHandler.handleExceptionAndDecideOnAbort("Exception");
     }
 
 }

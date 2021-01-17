@@ -10,10 +10,11 @@ import java.util.logging.Logger;
  * ProgramState
  */
 public abstract class ProgramState {
+    private final ExceptionHandler exceptionHandler;
+
     protected static final Logger LOGGER = Logger.getLogger(ProgramState.class.getName());
     protected final ValueStore valueStore;
     protected final DataWriters writers;
-    protected final ExceptionHandler exceptionHandler;
 
     protected ProgramState() {
         this.valueStore = new ValueStore();

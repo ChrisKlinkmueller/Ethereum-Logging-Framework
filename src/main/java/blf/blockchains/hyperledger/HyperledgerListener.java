@@ -21,16 +21,16 @@ import java.util.logging.Logger;
  * The HyperledgerListener class implements blockchain specific callback functions for Hyperledger, which are triggered
  * when a parse tree walker enters or exits corresponding parse tree nodes. These callback functions handle how the
  * program should process the input of the manifest file.
- *
  * It extends the abstract BcqlBaseListener class, which already implements blockchain unspecific callback functions.
  */
 
 public class HyperledgerListener extends BaseBlockchainListener {
 
     private final Logger logger;
-    private final ExceptionHandler exceptionHandler;
+    @SuppressWarnings("FieldCanBeLocal")
     private final HyperledgerProgramState hyperledgerProgramState;
     private final HyperledgerListenerHelper hyperledgerListenerHelper;
+    private final ExceptionHandler exceptionHandler;
 
     public HyperledgerListener(VariableExistenceListener analyzer) {
         super(analyzer);
@@ -38,8 +38,8 @@ public class HyperledgerListener extends BaseBlockchainListener {
         this.state = new HyperledgerProgramState();
         this.hyperledgerProgramState = (HyperledgerProgramState) this.state;
         this.logger = Logger.getLogger(HyperledgerListener.class.getName());
-        this.exceptionHandler = new ExceptionHandler();
         this.hyperledgerListenerHelper = new HyperledgerListenerHelper(this.hyperledgerProgramState);
+        this.exceptionHandler = hyperledgerProgramState.getExceptionHandler();
     }
 
     /**
