@@ -12,7 +12,30 @@ SET CONNECTION {
 
 SET OUTPUT FOLDER "./test_output"
 
+address senderVar = 0x75228DcE4D82566d93068A8D5d49435212345678;
+address recipientVar = 0x75228DcE4D82566d93068A8D5d49435287654321;
 BLOCKS (12) (20) {
+
+   // For senders () is the same as (ANY)
+   TRANSACTIONS ("Sender1", "Sender2", "Sender3") ("Recipient1", "Recipient2", "Recipient3", "Recipient4") {
+   }
+
+   TRANSACTIONS () ("Recipient11", "Recipient12", "Recipient13", "Recipient14") {
+   }
+
+   TRANSACTIONS () (0x1eD3d2c916cab00631cce4b08a7F880d4Badae94) {
+   }
+
+   // this does not work (both values will be null)
+   TRANSACTIONS (senderVar) (recipientVar) {
+   }
+
+   TRANSACTIONS () (ANY) {
+   }
+
+   TRANSACTIONS (ANY) (ANY) {
+   }
+
    LOG ENTRIES ("basic") (basicTestEvent(string payload)) {
         EMIT LOG LINE ("payload: '", payload, "' .");
         EMIT CSV ROW ("payload") (payload);
