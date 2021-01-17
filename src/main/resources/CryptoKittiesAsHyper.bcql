@@ -12,9 +12,9 @@ SET OUTPUT FOLDER "./test_output"
 
 int[] kitties = newIntArray();
 BLOCKS (32) (91) {
-    LOG ENTRIES ("kitties") (Birth(string owner, uint256 kittyId, uint256 matronID, uint256 sireID, uint256 genes)) {
-        add(kitties, kittyId);
-        EMIT XES EVENT ()(kittyId)()("birth" as xs:string concept:name);
+    LOG ENTRIES ("kitties") (Birth(string owner, uint256 newKittenID, uint256 matronID, uint256 sireID, uint256 genes)) {
+        add(kitties, newKittenID);
+        EMIT XES EVENT ()(newKittenID)()("birth" as xs:string concept:name);
 
         bool containsMatron = contains(kitties, matronID);
         IF (containsMatron) {
