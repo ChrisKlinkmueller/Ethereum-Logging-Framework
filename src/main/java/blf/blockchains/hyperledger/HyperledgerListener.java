@@ -103,6 +103,7 @@ public class HyperledgerListener extends BaseBlockchainListener {
     @Override
     public void exitScope(BcqlParser.ScopeContext ctx) {
         final BcqlParser.BlockFilterContext blockFilterCtx = ctx.filter().blockFilter();
+        final BcqlParser.LogEntryFilterContext logEntryCtx = ctx.filter().logEntryFilter();
 
         if (blockFilterCtx != null) {
             handleBlockFilterScopeExit(blockFilterCtx);
