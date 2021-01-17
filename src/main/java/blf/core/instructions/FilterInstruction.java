@@ -25,4 +25,18 @@ public abstract class FilterInstruction implements Instruction {
             instruction.execute(state);
         }
     }
+
+    /**
+     * Executes the nested EMIT instructions.
+     *
+     * @param programState The current ProgramState of the BLF.
+     */
+    protected void executeNestedInstructions(ProgramState programState) {
+        try {
+            this.executeInstructions(programState);
+        } catch (ProgramException err) {
+            String errorMsg = "Unable to execute nested EMIT instructions.";
+            programState.getExceptionHandler().handleExceptionAndDecideOnAbort(errorMsg, err);
+        }
+    }
 }

@@ -103,13 +103,17 @@ public class HyperledgerListener extends BaseBlockchainListener {
     @Override
     public void exitScope(BcqlParser.ScopeContext ctx) {
         final BcqlParser.BlockFilterContext blockFilterCtx = ctx.filter().blockFilter();
-        final BcqlParser.LogEntryFilterContext logEntryCtx = ctx.filter().logEntryFilter();
+        final BcqlParser.LogEntryFilterContext logEntryFilterCtx = ctx.filter().logEntryFilter();
+        final BcqlParser.TransactionFilterContext transactionFilterCtx = ctx.filter().transactionFilter();
 
         if (blockFilterCtx != null) {
             handleBlockFilterScopeExit(blockFilterCtx);
         }
-        if (logEntryCtx != null) {
-            handleLogEntryFilterScopeExit(logEntryCtx);
+        if (logEntryFilterCtx != null) {
+            handleLogEntryFilterScopeExit(logEntryFilterCtx);
+        }
+        if (transactionFilterCtx != null) {
+            handleTransactionFilterScopeExit(transactionFilterCtx);
         }
     }
 
@@ -122,8 +126,7 @@ public class HyperledgerListener extends BaseBlockchainListener {
      * @param transactionCtx - transactionFilter context
      */
 
-    @Override
-    public void enterTransactionFilter(BcqlParser.TransactionFilterContext transactionCtx) {
+    public void handleTransactionFilterScopeExit(BcqlParser.TransactionFilterContext transactionCtx) {
         final BcqlParser.AddressListContext sendersListCtx = transactionCtx.senders;
         final BcqlParser.AddressListContext recipientsListCtx = transactionCtx.recipients;
 
@@ -138,7 +141,8 @@ public class HyperledgerListener extends BaseBlockchainListener {
 
         final HyperledgerTransactionFilterInstruction hyperledgerTransactionFilterInstruction = new HyperledgerTransactionFilterInstruction(
             sendersAddresses,
-            recipientsAddresses
+            recipientsAddresses,
+            this.composer.instructionListsStack.pop()
         );
 
         this.composer.addInstruction(hyperledgerTransactionFilterInstruction);

@@ -3,6 +3,7 @@ package blf.blockchains.hyperledger.instructions;
 import blf.blockchains.hyperledger.state.HyperledgerProgramState;
 import blf.core.exceptions.ExceptionHandler;
 import blf.core.exceptions.ProgramException;
+import blf.core.instructions.FilterInstruction;
 import blf.core.interfaces.Instruction;
 import blf.core.state.ProgramState;
 
@@ -14,7 +15,7 @@ import java.util.logging.Logger;
  * Logging Framework. It extracts the specified transactions (specified by transaction sender and/or recipient)
  * from the current Block and stores the extracted transaction parameters in the ValueStore.
  */
-public class HyperledgerTransactionFilterInstruction implements Instruction {
+public class HyperledgerTransactionFilterInstruction extends FilterInstruction {
 
     private final ExceptionHandler exceptionHandler;
     private final Logger logger;
@@ -27,7 +28,13 @@ public class HyperledgerTransactionFilterInstruction implements Instruction {
      * @param sendersAddressList    The list of all sender addresses the user requested in the manifest (might be empty).
      * @param recipientsAddressList The list of all recipient addresses the user requested in the manifest (always non-empty).
      */
-    public HyperledgerTransactionFilterInstruction(final List<String> sendersAddressList, final List<String> recipientsAddressList) {
+    public HyperledgerTransactionFilterInstruction(
+        final List<String> sendersAddressList,
+        final List<String> recipientsAddressList,
+        List<Instruction> nestedInstructions
+    ) {
+        super(nestedInstructions);
+
         this.sendersAddressList = sendersAddressList;
         this.recipientsAddressList = recipientsAddressList;
 
@@ -56,6 +63,8 @@ public class HyperledgerTransactionFilterInstruction implements Instruction {
         );
 
         logger.info(infoMsg);
+
+        this.executeNestedInstructions(hyperledgerProgramState);
     }
 
 }
