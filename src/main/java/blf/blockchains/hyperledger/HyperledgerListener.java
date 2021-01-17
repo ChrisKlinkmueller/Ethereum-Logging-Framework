@@ -90,6 +90,11 @@ public class HyperledgerListener extends BaseBlockchainListener {
         this.composer.instructionListsStack.add(new LinkedList<>());
     }
 
+    @Override
+    public void exitLogEntryFilter(BcqlParser.LogEntryFilterContext ctx) {
+        this.composer.instructionListsStack.add(new LinkedList<>());
+    }
+
     /**
      * When exiting a scope parse tree node, the listener identifies which filter was specified in the local scope
      * context and calls the corresponding handler method accordingly.
@@ -105,6 +110,9 @@ public class HyperledgerListener extends BaseBlockchainListener {
         if (blockFilterCtx != null) {
             handleBlockFilterScopeExit(blockFilterCtx);
         }
+        if (logEntryCtx != null) {
+            handleLogEntryFilterScopeExit(logEntryCtx);
+        }
     }
 
     /**
@@ -116,8 +124,7 @@ public class HyperledgerListener extends BaseBlockchainListener {
      * @param logEntryCtx - logEntryFilter context
      */
 
-    @Override
-    public void enterLogEntryFilter(BcqlParser.LogEntryFilterContext logEntryCtx) {
+    public void handleLogEntryFilterScopeExit(BcqlParser.LogEntryFilterContext logEntryCtx) {
         final BcqlParser.AddressListContext addressListCtx = logEntryCtx.addressList();
         final BcqlParser.LogEntrySignatureContext logEntrySignatureCtx = logEntryCtx.logEntrySignature();
 
@@ -175,7 +182,8 @@ public class HyperledgerListener extends BaseBlockchainListener {
         final HyperledgerLogEntryFilterInstruction logEntryFilterInstruction = new HyperledgerLogEntryFilterInstruction(
             addressNames,
             eventName,
-            entryParameters
+            entryParameters,
+            this.composer.instructionListsStack.pop()
         );
 
         this.composer.addInstruction(logEntryFilterInstruction);
