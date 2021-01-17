@@ -1,18 +1,18 @@
-package blf.blockchains.ethereum.variables;
+package blf.blockchains.hyperledger.variables;
+
+import blf.blockchains.ethereum.reader.EthereumBlock;
+import blf.blockchains.ethereum.state.EthereumProgramState;
+import blf.core.values.Variable;
 
 import java.math.BigInteger;
 import java.util.HashSet;
 import java.util.Set;
 import java.util.function.Function;
 
-import blf.blockchains.ethereum.reader.EthereumBlock;
-import blf.blockchains.ethereum.state.EthereumProgramState;
-import blf.core.values.Variable;
-
 /**
  * BlockVariables
  */
-class EthereumBlockVariables {
+public class HyperledgerBlockVariables {
     static final Set<Variable> BLOCK_VARIABLES;
 
     public static final String BLOCK_NUMBER = "block.number";

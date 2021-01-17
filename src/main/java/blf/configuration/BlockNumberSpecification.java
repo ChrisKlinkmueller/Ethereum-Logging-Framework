@@ -4,9 +4,8 @@ import java.math.BigInteger;
 
 import blf.core.exceptions.ProgramException;
 import blf.core.interfaces.FilterPredicate;
-import blf.blockchains.ethereum.variables.EthereumVariables;
+import blf.core.values.BlockchainVariables;
 import blf.core.values.ValueAccessor;
-import blf.core.values.Variables;
 import io.reactivex.annotations.NonNull;
 
 /**
@@ -35,18 +34,13 @@ public class BlockNumberSpecification {
         return this.type;
     }
 
-    public static BlockNumberSpecification ofVariableName(@NonNull String name) {
-        final ValueAccessor accessor = Variables.createValueAccessor(name);
-        return new BlockNumberSpecification(accessor, createStopCriterion(accessor), Type.VARIABLE);
-    }
-
     public static BlockNumberSpecification ofBlockNumber(@NonNull ValueAccessorSpecification number) {
         final ValueAccessor accessor = number.getValueAccessor();
         return new BlockNumberSpecification(accessor, createStopCriterion(accessor), Type.NUMBER);
     }
 
-    public static BlockNumberSpecification ofCurrent() {
-        final ValueAccessor accessor = EthereumVariables.currentBlockNumberAccessor();
+    public static BlockNumberSpecification ofCurrent(BlockchainVariables blockchainVariables) {
+        final ValueAccessor accessor = blockchainVariables.currentBlockNumberAccessor();
         return new BlockNumberSpecification(accessor, createStopCriterion(accessor), Type.CURRENT);
     }
 
@@ -70,7 +64,7 @@ public class BlockNumberSpecification {
         private BigInteger blockNumber;
     }
 
-    public static BlockNumberSpecification ofEarliest() throws BuildException {
+    public static BlockNumberSpecification ofEarliest() {
         final ValueAccessor accessor = ValueAccessorSpecification.integerLiteral(BigInteger.ZERO).getValueAccessor();
         return new BlockNumberSpecification(accessor, null, Type.EARLIEST);
     }

@@ -5,14 +5,11 @@ import blf.core.Program;
 import blf.core.instructions.SetOutputFolderInstruction;
 import blf.grammar.BcqlBaseListener;
 import blf.grammar.BcqlParser;
+import blf.parsing.InterpreterUtils;
 import blf.parsing.VariableExistenceListener;
 import blf.util.TypeUtils;
-import org.antlr.v4.runtime.ParserRuleContext;
 
-import java.util.ArrayDeque;
-import java.util.Deque;
-import java.util.LinkedList;
-import java.util.List;
+import java.util.*;
 import java.util.logging.Logger;
 
 /**
@@ -135,6 +132,67 @@ public abstract class BaseBlockchainListener extends BcqlBaseListener {
     }
 
     @Override
+    public void exitMethodStatement(BcqlParser.MethodStatementContext ctx) {
+        this.addMethodCall(ctx.methodInvocation(), null);
+    }
+
+    @Override
+    public void exitVariableAssignmentStatement(BcqlParser.VariableAssignmentStatementContext ctx) {
+        this.addVariableAssignment(ctx.variableName(), ctx.statementExpression());
+    }
+
+    @Override
+    public void exitVariableDeclarationStatement(BcqlParser.VariableDeclarationStatementContext ctx) {
+        this.addVariableAssignment(ctx.variableName(), ctx.statementExpression());
+    }
+
+    private void addVariableAssignment(BcqlParser.VariableNameContext varCtx, BcqlParser.StatementExpressionContext stmtCtx) {
+        try {
+            String varName = varCtx.getText();
+            final ValueMutatorSpecification mutator = ValueMutatorSpecification.ofVariableName(varName);
+            if (stmtCtx.valueExpression() != null) {
+                this.addValueAssignment(mutator, stmtCtx.valueExpression());
+            } else if (stmtCtx.methodInvocation() != null) {
+                this.addMethodCall(stmtCtx.methodInvocation(), mutator);
+            } else {
+                throw new UnsupportedOperationException("This type of value definition is not supported.");
+            }
+        } catch (UnsupportedOperationException e) {
+            LOGGER.severe(String.format("Adding variable assignment failed: %s", e.getMessage()));
+            System.exit(1);
+        }
+    }
+
+    private void addValueAssignment(ValueMutatorSpecification mutator, BcqlParser.ValueExpressionContext ctx) {
+        try {
+            final ValueAccessorSpecification accessor = this.getValueAccessor(ctx);
+            final ValueAssignmentSpecification assignment = ValueAssignmentSpecification.of(mutator, accessor);
+            this.composer.addInstruction(assignment);
+        } catch (BuildException e) {
+            LOGGER.severe(String.format("Adding value assignment failed: %s", e.getMessage()));
+            System.exit(1);
+        }
+    }
+
+    private void addMethodCall(BcqlParser.MethodInvocationContext ctx, ValueMutatorSpecification mutator) {
+        final List<String> parameterTypes = new ArrayList<>();
+        final List<ValueAccessorSpecification> accessors = new ArrayList<>();
+        try {
+            for (BcqlParser.ValueExpressionContext valCtx : ctx.valueExpression()) {
+                parameterTypes.add(InterpreterUtils.determineType(valCtx, this.variableAnalyzer));
+                accessors.add(this.getValueAccessor(valCtx));
+            }
+
+            final MethodSpecification method = MethodSpecification.of(ctx.methodName.getText(), parameterTypes);
+            final MethodCallSpecification call = MethodCallSpecification.of(method, mutator, accessors);
+            this.composer.addInstruction(call);
+        } catch (BuildException e) {
+            LOGGER.severe(String.format("Adding method call failed: %s", e.getMessage()));
+            System.exit(1);
+        }
+    }
+
+    @Override
     public void exitEmitStatementXesTrace(BcqlParser.EmitStatementXesTraceContext ctx) {
         this.handleEmitStatementXesTrace(ctx);
     }
@@ -219,7 +277,7 @@ public abstract class BaseBlockchainListener extends BcqlBaseListener {
     public ValueAccessorSpecification getValueAccessor(BcqlParser.ValueExpressionContext ctx) {
         try {
             if (ctx.variableName() != null) {
-                return ValueAccessorSpecification.ofVariable(ctx.getText());
+                return ValueAccessorSpecification.ofVariable(ctx.getText(), this.state.getBlockchainVariables());
             } else if (ctx.literal() != null) {
                 return this.getLiteral(ctx.literal());
             } else {

@@ -1,18 +1,18 @@
-package blf.blockchains.ethereum.variables;
+package blf.blockchains.hyperledger.variables;
+
+import blf.blockchains.ethereum.reader.EthereumDataReader;
+import blf.blockchains.ethereum.reader.EthereumTransaction;
+import blf.blockchains.ethereum.state.EthereumProgramState;
+import blf.core.exceptions.ProgramException;
+import blf.core.values.Variable;
 
 import java.util.HashSet;
 import java.util.Set;
 
-import blf.blockchains.ethereum.reader.EthereumDataReader;
-import blf.blockchains.ethereum.state.EthereumProgramState;
-import blf.core.exceptions.ProgramException;
-import blf.blockchains.ethereum.reader.EthereumTransaction;
-import blf.core.values.Variable;
-
 /**
  * TransactionVariables
  */
-class EthereumTransactionVariables {
+public class HyperledgerTransactionVariables {
     static final Set<Variable> TRANSACTION_VARIABLES;
 
     public static final String TX_BLOCKNUMBER = "tx.blockNumber";

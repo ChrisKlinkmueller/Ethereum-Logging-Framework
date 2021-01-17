@@ -3,7 +3,7 @@ package blf.parsing;
 import java.util.*;
 import java.util.stream.Stream;
 
-import blf.blockchains.ethereum.variables.EthereumVariables;
+import blf.core.values.BlockchainVariables;
 import org.antlr.v4.runtime.Token;
 
 import blf.grammar.BcqlParser.*;
@@ -13,6 +13,7 @@ import blf.grammar.BcqlParser.*;
  */
 public class VariableExistenceListener extends SemanticAnalyzer {
     private final Stack<List<Variable>> visibleVariables;
+    private BlockchainVariables blockchainVariables;
 
     public VariableExistenceListener() {
         this(new ErrorCollector());
@@ -27,6 +28,10 @@ public class VariableExistenceListener extends SemanticAnalyzer {
     @Override
     public void clear() {
         this.visibleVariables.clear();
+    }
+
+    public void setBlockchainVariables(BlockchainVariables blockchainVariables) {
+        this.blockchainVariables = blockchainVariables;
     }
 
     private void addConstant(String type, String name) {
@@ -162,18 +167,18 @@ public class VariableExistenceListener extends SemanticAnalyzer {
 
     @Override
     public void enterBlockFilter(BlockFilterContext ctx) {
-        this.addFilterConstants(EthereumVariables.getTransactionVariableNamesAndTypes());
-        this.addFilterConstants(EthereumVariables.getBlockVariableNamesAndTypes());
+        this.addFilterConstants(blockchainVariables.getTransactionVariableNamesAndTypes());
+        this.addFilterConstants(blockchainVariables.getBlockVariableNamesAndTypes());
     }
 
     @Override
     public void enterTransactionFilter(TransactionFilterContext ctx) {
-        this.addFilterConstants(EthereumVariables.getTransactionVariableNamesAndTypes());
+        this.addFilterConstants(blockchainVariables.getTransactionVariableNamesAndTypes());
     }
 
     @Override
     public void enterLogEntryFilter(LogEntryFilterContext ctx) {
-        this.addFilterConstants(EthereumVariables.getLogEntryVariableNamesAndTypes());
+        this.addFilterConstants(blockchainVariables.getLogEntryVariableNamesAndTypes());
     }
 
     private void addFilterConstants(Map<String, String> nameTypeMap) {

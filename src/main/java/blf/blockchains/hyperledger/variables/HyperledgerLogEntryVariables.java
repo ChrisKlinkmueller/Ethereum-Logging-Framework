@@ -1,17 +1,17 @@
-package blf.blockchains.ethereum.variables;
-
-import java.util.HashSet;
-import java.util.Set;
-import java.util.function.Function;
+package blf.blockchains.hyperledger.variables;
 
 import blf.blockchains.ethereum.reader.EthereumLogEntry;
 import blf.blockchains.ethereum.state.EthereumProgramState;
 import blf.core.values.Variable;
 
+import java.util.HashSet;
+import java.util.Set;
+import java.util.function.Function;
+
 /**
  * LogEntryVariables
  */
-class EthereumLogEntryVariables {
+public abstract class HyperledgerLogEntryVariables {
     static final Set<Variable> LOG_ENTRY_VARIABLES;
 
     public static final String LOG_REMOVED = "log.removed";
@@ -25,7 +25,7 @@ class EthereumLogEntryVariables {
         addLogEntryVariable(LOG_ADDRESS, "address", EthereumLogEntry::getAddress);
     }
 
-    private EthereumLogEntryVariables() {}
+    private HyperledgerLogEntryVariables() {}
 
     private static void addLogEntryVariable(String name, String type, Function<EthereumLogEntry, Object> blockValueExtractor) {
         Variable.addVariable(

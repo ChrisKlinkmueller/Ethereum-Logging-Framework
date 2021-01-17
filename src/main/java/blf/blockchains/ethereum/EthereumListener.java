@@ -11,7 +11,6 @@ import blf.blockchains.ethereum.instructions.EthereumConnectIpcInstruction;
 import blf.blockchains.ethereum.state.EthereumProgramState;
 import blf.configuration.*;
 
-import blf.parsing.InterpreterUtils;
 import blf.parsing.VariableExistenceListener;
 import blf.util.TypeUtils;
 import blf.grammar.BcqlParser;
@@ -26,6 +25,8 @@ public class EthereumListener extends BaseBlockchainListener {
         super(analyzer);
 
         this.state = new EthereumProgramState();
+
+        analyzer.setBlockchainVariables(this.state.getBlockchainVariables());
     }
 
     @Override
@@ -108,7 +109,7 @@ public class EthereumListener extends BaseBlockchainListener {
                 ValueAccessorSpecification number = this.getValueAccessor(ctx.valueExpression());
                 return BlockNumberSpecification.ofBlockNumber(number);
             } else if (ctx.KEY_CURRENT() != null) {
-                return BlockNumberSpecification.ofCurrent();
+                return BlockNumberSpecification.ofCurrent(this.state.getBlockchainVariables());
             } else if (ctx.KEY_EARLIEST() != null) {
                 return BlockNumberSpecification.ofEarliest();
             } else if (ctx.KEY_CONTINUOUS() != null) {
@@ -479,7 +480,7 @@ public class EthereumListener extends BaseBlockchainListener {
                 final String varName = ctx.variableName().getText();
                 return TypedValueAccessorSpecification.of(
                     this.variableAnalyzer.getVariableType(varName),
-                    ValueAccessorSpecification.ofVariable(varName)
+                    ValueAccessorSpecification.ofVariable(varName, this.state.getBlockchainVariables())
                 );
             } else if (ctx.solType() != null) {
                 return TypedValueAccessorSpecification.of(ctx.solType().getText(), this.getLiteral(ctx.literal()));
@@ -499,78 +500,6 @@ public class EthereumListener extends BaseBlockchainListener {
 
     private ParameterSpecification createParameterSpecification(BcqlParser.SmartContractParameterContext ctx) {
         return ParameterSpecification.of(ctx.variableName().getText(), ctx.solType().getText());
-    }
-
-    @Override
-    public void exitMethodStatement(BcqlParser.MethodStatementContext ctx) {
-        this.handleEthqlElement(ctx, this::handleMethodStatement);
-    }
-
-    private void handleMethodStatement(BcqlParser.MethodStatementContext ctx) {
-        this.addMethodCall(ctx.methodInvocation(), null);
-    }
-
-    @Override
-    public void exitVariableAssignmentStatement(BcqlParser.VariableAssignmentStatementContext ctx) {
-        this.handleEthqlElement(ctx, this::handleVariableAssignmentStatement);
-    }
-
-    private void handleVariableAssignmentStatement(BcqlParser.VariableAssignmentStatementContext ctx) {
-        this.addVariableAssignment(ctx.variableName(), ctx.statementExpression());
-    }
-
-    @Override
-    public void exitVariableDeclarationStatement(BcqlParser.VariableDeclarationStatementContext ctx) {
-        this.handleEthqlElement(ctx, this::handleVariableDeclarationStatement);
-    }
-
-    private void handleVariableDeclarationStatement(BcqlParser.VariableDeclarationStatementContext ctx) {
-        this.addVariableAssignment(ctx.variableName(), ctx.statementExpression());
-    }
-
-    private void addVariableAssignment(BcqlParser.VariableNameContext varCtx, BcqlParser.StatementExpressionContext stmtCtx) {
-        try {
-            final ValueMutatorSpecification mutator = ValueMutatorSpecification.ofVariableName(varCtx.getText());
-            if (stmtCtx.valueExpression() != null) {
-                this.addValueAssignment(mutator, stmtCtx.valueExpression());
-            } else if (stmtCtx.methodInvocation() != null) {
-                this.addMethodCall(stmtCtx.methodInvocation(), mutator);
-            } else {
-                throw new UnsupportedOperationException("This type of value definition is not supported.");
-            }
-        } catch (UnsupportedOperationException e) {
-            LOGGER.severe(String.format("Adding variable assignment failed: %s", e.getMessage()));
-            System.exit(1);
-        }
-    }
-
-    private void addValueAssignment(ValueMutatorSpecification mutator, BcqlParser.ValueExpressionContext ctx) {
-        try {
-            final ValueAccessorSpecification accessor = this.getValueAccessor(ctx);
-            final ValueAssignmentSpecification assignment = ValueAssignmentSpecification.of(mutator, accessor);
-            this.composer.addInstruction(assignment);
-        } catch (BuildException e) {
-            LOGGER.severe(String.format("Adding value assignment failed: %s", e.getMessage()));
-            System.exit(1);
-        }
-    }
-
-    private void addMethodCall(BcqlParser.MethodInvocationContext ctx, ValueMutatorSpecification mutator) {
-        final List<String> parameterTypes = new ArrayList<>();
-        final List<ValueAccessorSpecification> accessors = new ArrayList<>();
-        try {
-            for (BcqlParser.ValueExpressionContext valCtx : ctx.valueExpression()) {
-                parameterTypes.add(InterpreterUtils.determineType(valCtx, this.variableAnalyzer));
-                accessors.add(this.getValueAccessor(valCtx));
-            }
-
-            final MethodSpecification method = MethodSpecification.of(ctx.methodName.getText(), parameterTypes);
-            final MethodCallSpecification call = MethodCallSpecification.of(method, mutator, accessors);
-            this.composer.addInstruction(call);
-        } catch (BuildException e) {
-            LOGGER.severe(String.format("Adding method call failed: %s", e.getMessage()));
-            System.exit(1);
-        }
     }
 
     private <T extends ParserRuleContext> void handleEthqlElement(T ctx, BuilderMethod<T> builderMethod) {

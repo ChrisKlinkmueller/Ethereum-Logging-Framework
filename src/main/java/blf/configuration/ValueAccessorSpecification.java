@@ -3,6 +3,7 @@ package blf.configuration;
 import java.math.BigInteger;
 import java.util.List;
 
+import blf.core.values.BlockchainVariables;
 import blf.core.values.ValueAccessor;
 import blf.core.values.Variables;
 import blf.util.TypeUtils;
@@ -80,7 +81,7 @@ public class ValueAccessorSpecification {
         return new ValueAccessorSpecification(state -> values);
     }
 
-    public static ValueAccessorSpecification ofVariable(@NonNull String varName) {
-        return new ValueAccessorSpecification(Variables.createValueAccessor(varName));
+    public static ValueAccessorSpecification ofVariable(@NonNull String varName, BlockchainVariables blockchainVariables) {
+        return new ValueAccessorSpecification(Variables.createValueAccessor(varName, blockchainVariables));
     }
 }
