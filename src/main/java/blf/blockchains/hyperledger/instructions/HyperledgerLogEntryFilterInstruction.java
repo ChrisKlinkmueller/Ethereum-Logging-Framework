@@ -3,6 +3,7 @@ package blf.blockchains.hyperledger.instructions;
 import blf.blockchains.hyperledger.state.HyperledgerProgramState;
 import blf.core.exceptions.ExceptionHandler;
 import blf.core.exceptions.ProgramException;
+import blf.core.instructions.FilterInstruction;
 import blf.core.interfaces.Instruction;
 import blf.core.state.ProgramState;
 import org.antlr.v4.runtime.misc.Pair;
@@ -20,7 +21,7 @@ import java.util.logging.Logger;
  * Logging Framework. It extracts the requested event from the current Block and stores the extracted parameter values
  * in the ProgramState.
  */
-public class HyperledgerLogEntryFilterInstruction implements Instruction {
+public class HyperledgerLogEntryFilterInstruction extends FilterInstruction {
 
     private final ExceptionHandler exceptionHandler;
     private final Logger logger;
@@ -38,8 +39,11 @@ public class HyperledgerLogEntryFilterInstruction implements Instruction {
     public HyperledgerLogEntryFilterInstruction(
         final List<String> addressNames,
         String eventName,
-        List<Pair<String, String>> entryParameters
+        List<Pair<String, String>> entryParameters,
+        List<Instruction> nestedInstructions
     ) {
+        super(nestedInstructions);
+
         this.addressNames = addressNames;
         this.eventName = eventName;
         this.entryParameters = entryParameters;
@@ -125,6 +129,9 @@ public class HyperledgerLogEntryFilterInstruction implements Instruction {
 
                 setStateValue(hyperledgerProgramState, parameterName, parameterType, eventObj);
             }
+
+            // emit what we extracted
+            executeNestedInstructions(hyperledgerProgramState);
         } catch (JSONException e) {
             // payload does not contain a nested json object with the given eventName
             parseFlatJsonPayload(hyperledgerProgramState, ce, obj);
@@ -148,6 +155,9 @@ public class HyperledgerLogEntryFilterInstruction implements Instruction {
 
                 setStateValue(hyperledgerProgramState, parameterName, parameterType, obj);
             }
+
+            // emit what we extracted
+            executeNestedInstructions(hyperledgerProgramState);
         }
     }
 
@@ -176,6 +186,9 @@ public class HyperledgerLogEntryFilterInstruction implements Instruction {
                 String parameterType = this.entryParameters.get(0).a;
                 String parameterName = this.entryParameters.get(0).b;
                 setStateValue(hyperledgerProgramState, parameterName, parameterType, payloadString, ce.getPayload());
+
+                // emit what we extracted
+                executeNestedInstructions(hyperledgerProgramState);
             } else {
                 this.exceptionHandler.handleExceptionAndDecideOnAbort(
                     "We expect exactly one parameter when extracting unstructured data",
@@ -264,6 +277,20 @@ public class HyperledgerLogEntryFilterInstruction implements Instruction {
         } else {
             String message = "JSON object does not contain key: " + parameterName;
             this.exceptionHandler.handleExceptionAndDecideOnAbort(message, new JSONException(message));
+        }
+    }
+
+    /**
+     * Executes the nested EMIT instructions.
+     *
+     * @param hyperledgerProgramState The current ProgramState of the BLF.
+     */
+    private void executeNestedInstructions(HyperledgerProgramState hyperledgerProgramState) {
+        try {
+            this.executeInstructions(hyperledgerProgramState);
+        } catch (ProgramException err) {
+            String errorMsg = "Unable to execute instructions";
+            hyperledgerProgramState.getExceptionHandler().handleExceptionAndDecideOnAbort(errorMsg, err);
         }
     }
 }
