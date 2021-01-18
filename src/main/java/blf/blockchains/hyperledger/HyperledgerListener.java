@@ -13,7 +13,6 @@ import blf.parsing.VariableExistenceListener;
 import blf.util.TypeUtils;
 import org.antlr.v4.runtime.misc.Pair;
 
-import java.math.BigInteger;
 import java.util.*;
 import java.util.logging.Logger;
 
@@ -21,7 +20,7 @@ import java.util.logging.Logger;
  * The HyperledgerListener class implements blockchain specific callback functions for Hyperledger, which are triggered
  * when a parse tree walker enters or exits corresponding parse tree nodes. These callback functions handle how the
  * program should process the input of the manifest file.
- *
+ * <p>
  * It extends the abstract BcqlBaseListener class, which already implements blockchain unspecific callback functions.
  */
 
@@ -30,7 +29,6 @@ public class HyperledgerListener extends BaseBlockchainListener {
     private final Logger logger;
     private final ExceptionHandler exceptionHandler;
     private final HyperledgerProgramState hyperledgerProgramState;
-    private final HyperledgerListenerHelper hyperledgerListenerHelper;
 
     public HyperledgerListener(VariableExistenceListener analyzer) {
         super(analyzer);
@@ -39,7 +37,6 @@ public class HyperledgerListener extends BaseBlockchainListener {
         this.hyperledgerProgramState = (HyperledgerProgramState) this.state;
         this.logger = Logger.getLogger(HyperledgerListener.class.getName());
         this.exceptionHandler = new ExceptionHandler();
-        this.hyperledgerListenerHelper = new HyperledgerListenerHelper(this.hyperledgerProgramState);
     }
 
     /**
@@ -107,6 +104,8 @@ public class HyperledgerListener extends BaseBlockchainListener {
 
     @Override
     public void exitScope(BcqlParser.ScopeContext ctx) {
+        super.exitScope(ctx);
+
         final BcqlParser.BlockFilterContext blockFilterCtx = ctx.filter().blockFilter();
         final BcqlParser.LogEntryFilterContext logEntryFilterCtx = ctx.filter().logEntryFilter();
         final BcqlParser.TransactionFilterContext transactionFilterCtx = ctx.filter().transactionFilter();
@@ -132,21 +131,9 @@ public class HyperledgerListener extends BaseBlockchainListener {
      */
 
     public void handleTransactionFilterScopeExit(BcqlParser.TransactionFilterContext transactionCtx) {
-        final BcqlParser.AddressListContext sendersListCtx = transactionCtx.senders;
-        final BcqlParser.AddressListContext recipientsListCtx = transactionCtx.recipients;
-
-        // List of sender addresses might be null as the grammar allows this parameter to be skipped
-        List<String> sendersAddresses = new LinkedList<>();
-        if (sendersListCtx != null) {
-            sendersAddresses = this.hyperledgerListenerHelper.parseAddressListContext(sendersListCtx);
-        }
-
-        // According to the grammar the recipient addresses must be specified (at least one)
-        List<String> recipientsAddresses = this.hyperledgerListenerHelper.parseAddressListContext(recipientsListCtx);
 
         final HyperledgerTransactionFilterInstruction hyperledgerTransactionFilterInstruction = new HyperledgerTransactionFilterInstruction(
-            sendersAddresses,
-            recipientsAddresses,
+            transactionCtx,
             this.composer.instructionListsStack.pop()
         );
 
@@ -163,34 +150,9 @@ public class HyperledgerListener extends BaseBlockchainListener {
      */
 
     public void handleLogEntryFilterScopeExit(BcqlParser.LogEntryFilterContext logEntryCtx) {
-        final BcqlParser.AddressListContext addressListCtx = logEntryCtx.addressList();
-        final BcqlParser.LogEntrySignatureContext logEntrySignatureCtx = logEntryCtx.logEntrySignature();
-
-        List<BcqlParser.LogEntryParameterContext> logEntryParameterContextList = logEntrySignatureCtx.logEntryParameter();
-
-        if (logEntryParameterContextList == null) {
-            this.exceptionHandler.handleExceptionAndDecideOnAbort(
-                "Variable 'logEntryParameterContextList' is null.",
-                new NullPointerException()
-            );
-
-            logEntryParameterContextList = new LinkedList<>();
-        }
-
-        final String eventName = logEntrySignatureCtx.methodName.getText();
-
-        final List<Pair<String, String>> entryParameters = new LinkedList<>();
-
-        for (BcqlParser.LogEntryParameterContext logEntryParameterCtx : logEntryParameterContextList) {
-            entryParameters.add(new Pair<>(logEntryParameterCtx.solType().getText(), logEntryParameterCtx.variableName().getText()));
-        }
-
-        List<String> addressNames = this.hyperledgerListenerHelper.parseAddressListContext(addressListCtx);
 
         final HyperledgerLogEntryFilterInstruction logEntryFilterInstruction = new HyperledgerLogEntryFilterInstruction(
-            addressNames,
-            eventName,
-            entryParameters,
+            logEntryCtx,
             this.composer.instructionListsStack.pop()
         );
 
@@ -208,32 +170,8 @@ public class HyperledgerListener extends BaseBlockchainListener {
      */
 
     private void handleBlockFilterScopeExit(BcqlParser.BlockFilterContext blockCtx) {
-        final BcqlParser.LiteralContext fromLiteral = blockCtx.from.valueExpression().literal();
-        final BcqlParser.LiteralContext toLiteral = blockCtx.to.valueExpression().literal();
-
-        if (fromLiteral.INT_LITERAL() == null) {
-            this.exceptionHandler.handleExceptionAndDecideOnAbort(
-                "Hyperledger BLOCKS (`from`)() parameter should be an Integer",
-                new NullPointerException()
-            );
-        }
-
-        if (toLiteral.INT_LITERAL() == null) {
-            this.exceptionHandler.handleExceptionAndDecideOnAbort(
-                "Hyperledger BLOCKS ()(`to`) parameter should be an Integer",
-                new NullPointerException()
-            );
-        }
-
-        final String fromBlockNumberString = blockCtx.from.valueExpression().literal().getText();
-        final String toBlockNumberString = blockCtx.to.valueExpression().literal().getText();
-
-        final BigInteger fromBlockNumber = new BigInteger(fromBlockNumberString);
-        final BigInteger toBlockNumber = new BigInteger(toBlockNumberString);
-
         final HyperledgerBlockFilterInstruction hyperledgerBlockFilterInstruction = new HyperledgerBlockFilterInstruction(
-            fromBlockNumber,
-            toBlockNumber,
+            blockCtx,
             this.composer.instructionListsStack.pop()
         );
 

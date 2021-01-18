@@ -1,7 +1,6 @@
 package blf.blockchains.hyperledger.variables;
 
-import blf.blockchains.ethereum.state.EthereumProgramState;
-import blf.core.exceptions.ProgramException;
+import blf.blockchains.hyperledger.state.HyperledgerProgramState;
 import blf.core.values.BlockchainVariables;
 import blf.core.values.ValueAccessor;
 import blf.core.values.Variable;
@@ -19,13 +18,7 @@ public class HyperledgerVariables implements BlockchainVariables {
 
     @Override
     public ValueAccessor currentBlockNumberAccessor() {
-        return state -> {
-            try {
-                return ((EthereumProgramState) state).getReader().getClient().queryBlockNumber();
-            } catch (final Throwable error) {
-                throw new ProgramException("Error when retrieving the current block number.", error);
-            }
-        };
+        return state -> ((HyperledgerProgramState) state).getCurrentBlockNumber();
     }
 
     @Override

@@ -12,7 +12,7 @@ public class Variable {
     private final String type;
     private final ValueAccessor valueAccessor;
 
-    public Variable(@NonNull final String name, @NonNull final String type, @NonNull final ValueAccessor valueAccessor) {
+    public Variable(final String name, final String type, final ValueAccessor valueAccessor) {
         this.name = name;
         this.type = type;
         this.valueAccessor = valueAccessor;

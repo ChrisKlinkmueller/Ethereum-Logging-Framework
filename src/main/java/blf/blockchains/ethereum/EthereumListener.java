@@ -201,50 +201,9 @@ public class EthereumListener extends BaseBlockchainListener {
     }
 
     @Override
-    public void enterGenericFilter(BcqlParser.GenericFilterContext ctx) {
-        this.handleEthqlElement(ctx, this::prepareGenericFilterBuild);
-    }
-
-    private void prepareGenericFilterBuild(BcqlParser.GenericFilterContext ctx) {
-        LOGGER.info("Prepare generic filter build");
-        try {
-            this.composer.prepareGenericFilterBuild();
-        } catch (BuildException e) {
-            LOGGER.severe(String.format("Preparation of generic filter build failed: %s", e.getMessage()));
-            System.exit(1);
-        }
-    }
-
-    private void buildGenericFilter() {
-        LOGGER.info("Build generic filter");
-        try {
-            if (this.genericFilterPredicates.size() != 1) {
-                throw new BuildException("Error in boolean expression tree.");
-            }
-
-            final Object predicate = this.genericFilterPredicates.pop();
-            if (predicate instanceof GenericFilterPredicateSpecification) {
-                this.composer.buildGenericFilter((GenericFilterPredicateSpecification) predicate);
-            } else if (predicate instanceof ValueAccessorSpecification) {
-                final GenericFilterPredicateSpecification filterSpec = GenericFilterPredicateSpecification.ofBooleanAccessor(
-                    (ValueAccessorSpecification) predicate
-                );
-                this.composer.buildGenericFilter(filterSpec);
-            } else {
-                final String message = String.format(
-                    "Unsupported type for specification of generic filter predicates: %s",
-                    predicate.getClass()
-                );
-                throw new BuildException(message);
-            }
-        } catch (BuildException e) {
-            LOGGER.severe(String.format("Building generic filter failed: %s", e.getMessage()));
-            System.exit(1);
-        }
-    }
-
-    @Override
     public void exitScope(BcqlParser.ScopeContext ctx) {
+        super.exitScope(ctx);
+
         this.handleEthqlElement(ctx.filter(), this::handleScopeBuild);
     }
 
@@ -256,8 +215,6 @@ public class EthereumListener extends BaseBlockchainListener {
                 this.buildBlockFilter(ctx.blockFilter());
             } else if (ctx.transactionFilter() != null) {
                 this.buildTransactionFilter(ctx.transactionFilter());
-            } else if (ctx.genericFilter() != null) {
-                this.buildGenericFilter();
             } else if (ctx.smartContractFilter() != null) {
                 this.buildSmartContractFilter(ctx.smartContractFilter());
             } else {
@@ -266,161 +223,6 @@ public class EthereumListener extends BaseBlockchainListener {
         } catch (BuildException e) {
             LOGGER.severe(String.format("Handling of scope build failed: %s", e.getMessage()));
             System.exit(1);
-        }
-    }
-
-    @Override
-    public void exitConditionalOrExpression(BcqlParser.ConditionalOrExpressionContext ctx) {
-        this.handleEthqlElement(ctx, this::handleConditionalOrExpression);
-    }
-
-    private void handleConditionalOrExpression(BcqlParser.ConditionalOrExpressionContext ctx) {
-        try {
-            if (ctx.conditionalOrExpression() != null) {
-                this.createBinaryConditionalExpression(GenericFilterPredicateSpecification::or);
-            }
-        } catch (BuildException e) {
-            LOGGER.severe(String.format("Handling of conditional OR expression failed: %s", e.getMessage()));
-            System.exit(1);
-        }
-    }
-
-    @Override
-    public void exitConditionalAndExpression(BcqlParser.ConditionalAndExpressionContext ctx) {
-        this.handleEthqlElement(ctx, this::handleConditionalAndExpression);
-    }
-
-    private void handleConditionalAndExpression(BcqlParser.ConditionalAndExpressionContext ctx) {
-        try {
-            if (ctx.conditionalAndExpression() != null) {
-                this.createBinaryConditionalExpression(GenericFilterPredicateSpecification::and);
-            }
-        } catch (BuildException e) {
-            LOGGER.severe(String.format("Handling of conditional AND expression failed: %s", e.getMessage()));
-            System.exit(1);
-        }
-    }
-
-    private void createBinaryConditionalExpression(
-        BiFunction<
-            GenericFilterPredicateSpecification,
-            GenericFilterPredicateSpecification,
-            GenericFilterPredicateSpecification> constructor
-    ) throws BuildException {
-        if (this.genericFilterPredicates.isEmpty()
-            || !(this.genericFilterPredicates.peek() instanceof GenericFilterPredicateSpecification)) {
-            throw new BuildException("Parse tree error: binary boolean expression requires boolean predicates.");
-        }
-        final GenericFilterPredicateSpecification predicate1 = (GenericFilterPredicateSpecification) this.genericFilterPredicates.pop();
-
-        if (this.genericFilterPredicates.isEmpty()
-            || !(this.genericFilterPredicates.peek() instanceof GenericFilterPredicateSpecification)) {
-            throw new BuildException("Parse tree error: binary boolean expression requires boolean predicates.");
-        }
-        final GenericFilterPredicateSpecification predicate2 = (GenericFilterPredicateSpecification) this.genericFilterPredicates.pop();
-
-        this.genericFilterPredicates.push(constructor.apply(predicate1, predicate2));
-    }
-
-    @Override
-    public void exitConditionalComparisonExpression(BcqlParser.ConditionalComparisonExpressionContext ctx) {
-        this.handleEthqlElement(ctx, this::handleConditionalComparisonExpression);
-    }
-
-    private void handleConditionalComparisonExpression(BcqlParser.ConditionalComparisonExpressionContext ctx) {
-        try {
-            if (ctx.comparators() == null) {
-                return;
-            }
-
-            if (this.genericFilterPredicates.size() < 2) {
-                throw new BuildException("Parse tree does not contain enough expressions.");
-            }
-
-            final Object value2 = this.genericFilterPredicates.pop();
-            if (!(value2 instanceof ValueAccessorSpecification)) {
-                throw new BuildException("Can only compare values, but not boolean expressions.");
-            }
-
-            final Object value1 = this.genericFilterPredicates.pop();
-            if (!(value1 instanceof ValueAccessorSpecification)) {
-                throw new BuildException("Can only compare values, but not boolean expressions.");
-            }
-
-            final ValueAccessorSpecification spec1 = (ValueAccessorSpecification) value1;
-            final ValueAccessorSpecification spec2 = (ValueAccessorSpecification) value2;
-
-            GenericFilterPredicateSpecification predicate;
-            switch (ctx.comparators().getText().toLowerCase()) {
-                case "==":
-                    predicate = GenericFilterPredicateSpecification.equals(spec1, spec2);
-                    break;
-                case "!=":
-                    predicate = GenericFilterPredicateSpecification.notEquals(spec1, spec2);
-                    break;
-                case ">=":
-                    predicate = GenericFilterPredicateSpecification.greaterThanAndEquals(spec1, spec2);
-                    break;
-                case ">":
-                    predicate = GenericFilterPredicateSpecification.greaterThan(spec1, spec2);
-                    break;
-                case "<":
-                    predicate = GenericFilterPredicateSpecification.smallerThan(spec1, spec2);
-                    break;
-                case "<=":
-                    predicate = GenericFilterPredicateSpecification.smallerThanAndEquals(spec1, spec2);
-                    break;
-                case "in":
-                    predicate = GenericFilterPredicateSpecification.in(spec1, spec2);
-                    break;
-                default:
-                    throw new BuildException(String.format("Comparator %s not supported.", ctx.comparators().getText()));
-            }
-            this.genericFilterPredicates.push(predicate);
-        } catch (BuildException e) {
-            LOGGER.severe(String.format("Handling of conditional comparison expression failed: %s", e.getMessage()));
-            System.exit(1);
-        }
-    }
-
-    @Override
-    public void exitConditionalNotExpression(BcqlParser.ConditionalNotExpressionContext ctx) {
-        this.handleEthqlElement(ctx, this::handleConditionalNotExpression);
-    }
-
-    private void handleConditionalNotExpression(BcqlParser.ConditionalNotExpressionContext ctx) {
-        try {
-            if (ctx.KEY_NOT() == null) {
-                return;
-            }
-
-            Object valueExpression = this.genericFilterPredicates.pop();
-            if (valueExpression instanceof ValueAccessorSpecification) {
-                valueExpression = GenericFilterPredicateSpecification.ofBooleanAccessor((ValueAccessorSpecification) valueExpression);
-            }
-
-            if (!(valueExpression instanceof GenericFilterPredicateSpecification)) {
-                throw new BuildException(
-                    String.format("GenericFilterPredicateSpecification required, but was %s.", valueExpression.getClass())
-                );
-            }
-            this.genericFilterPredicates.push(
-                GenericFilterPredicateSpecification.not((GenericFilterPredicateSpecification) valueExpression)
-            );
-        } catch (BuildException e) {
-            LOGGER.severe(String.format("Handling of conditional NOT expression failed: %s", e.getMessage()));
-            System.exit(1);
-        }
-    }
-
-    @Override
-    public void exitConditionalPrimaryExpression(BcqlParser.ConditionalPrimaryExpressionContext ctx) {
-        this.handleEthqlElement(ctx, this::handleConditionalPrimaryExpression);
-    }
-
-    private void handleConditionalPrimaryExpression(BcqlParser.ConditionalPrimaryExpressionContext ctx) {
-        if (ctx.valueExpression() != null) {
-            this.genericFilterPredicates.push(this.getValueAccessor(ctx.valueExpression()));
         }
     }
 
