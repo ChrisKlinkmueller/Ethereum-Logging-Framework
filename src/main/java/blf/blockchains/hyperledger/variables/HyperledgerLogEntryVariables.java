@@ -11,7 +11,7 @@ import java.util.function.Function;
 /**
  * LogEntryVariables
  */
-public abstract class HyperledgerLogEntryVariables {
+public class HyperledgerLogEntryVariables {
     static final Set<Variable> LOG_ENTRY_VARIABLES;
 
     public static final String LOG_REMOVED = "log.removed";
