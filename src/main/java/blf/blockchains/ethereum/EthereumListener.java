@@ -208,6 +208,11 @@ public class EthereumListener extends BaseBlockchainListener {
     }
 
     private void handleScopeBuild(BcqlParser.FilterContext ctx) {
+        if (ctx.genericFilter() != null) {
+            // already handled by super.exitScope(ctx);
+            return;
+        }
+
         try {
             if (ctx.logEntryFilter() != null) {
                 this.buildLogEntryFilter(ctx.logEntryFilter());
