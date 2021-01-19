@@ -21,7 +21,7 @@ import BcqlUtil, BcqlLexemes;
  *  It can include an arbitrary number of statements and the explicit EOF defines that the entire file is parsed. */
 
 document
-    : (blockchain connection outputFolder)? statement* EOF
+    : (blockchain)? (connection outputFolder)? statement* EOF
     ;
 
 

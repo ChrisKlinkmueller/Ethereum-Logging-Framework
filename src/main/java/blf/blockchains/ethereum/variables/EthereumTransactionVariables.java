@@ -7,12 +7,13 @@ import blf.blockchains.ethereum.reader.EthereumDataReader;
 import blf.blockchains.ethereum.state.EthereumProgramState;
 import blf.core.exceptions.ProgramException;
 import blf.blockchains.ethereum.reader.EthereumTransaction;
+import blf.core.values.Variable;
 
 /**
  * TransactionVariables
  */
-public class EthereumTransactionVariables {
-    static final Set<EthereumVariable> TRANSACTION_VARIABLES;
+class EthereumTransactionVariables {
+    static final Set<Variable> TRANSACTION_VARIABLES;
 
     public static final String TX_BLOCKNUMBER = "tx.blockNumber";
     public static final String TX_BLOCKHASH = "tx.blockHash";
@@ -64,7 +65,7 @@ public class EthereumTransactionVariables {
     }
 
     private static void addTransactionVariable(String name, String type, ValueExtractor<EthereumTransaction> transactionValueExtractor) {
-        EthereumVariable.addVariable(TRANSACTION_VARIABLES, name, type, state -> {
+        Variable.addVariable(TRANSACTION_VARIABLES, name, type, state -> {
             final EthereumProgramState ethereumProgramState = (EthereumProgramState) state;
             final EthereumDataReader ethereumReader = ethereumProgramState.getReader();
 
@@ -77,7 +78,7 @@ public class EthereumTransactionVariables {
     }
 
     @FunctionalInterface
-    private static interface ValueExtractor<T> {
-        public Object extractValue(T entity) throws ProgramException;
+    private interface ValueExtractor<T> {
+        Object extractValue(T entity) throws ProgramException;
     }
 }

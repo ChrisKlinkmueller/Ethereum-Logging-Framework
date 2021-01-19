@@ -124,7 +124,7 @@ public class FilterDefinitionAnalyzer extends SemanticAnalyzer {
     private void verifyAddressList(final BcqlParser.AddressListContext ctx) {
         if (ctx.variableName() != null) {
             final String solType = this.variableAnalyzer.getVariableType(ctx.variableName().getText());
-            if (solType != null && !TypeUtils.isAddressType(solType)) {
+            if (solType != null && !TypeUtils.isAddressType(solType) && !TypeUtils.isStringType(solType)) {
                 this.addError(ctx.start, String.format("'%s' must be a string variable", ctx.variableName().getText()));
             }
             return;

@@ -23,7 +23,7 @@ import org.antlr.v4.runtime.tree.TerminalNode;
 public class RootListener implements BcqlListener {
     private final List<BcqlBaseListener> listeners;
 
-    private Map<String, BaseBlockchainListener> blockchainListeners;
+    protected Map<String, BaseBlockchainListener> blockchainListeners;
 
     public BaseBlockchainListener blockchainListener;
 
@@ -47,7 +47,7 @@ public class RootListener implements BcqlListener {
         return this.listeners;
     }
 
-    private <S> void notifyListener(BiConsumer<BcqlListener, S> consumer, S object) {
+    protected <S> void notifyListener(BiConsumer<BcqlListener, S> consumer, S object) {
         this.listeners.forEach(l -> consumer.accept(l, object));
     }
 

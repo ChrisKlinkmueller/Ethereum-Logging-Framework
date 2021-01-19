@@ -1,6 +1,7 @@
 package blf.blockchains.ethereum.state;
 
 import blf.blockchains.ethereum.reader.*;
+import blf.blockchains.ethereum.variables.EthereumVariables;
 import blf.core.state.ProgramState;
 
 import java.util.logging.Logger;
@@ -15,7 +16,7 @@ public class EthereumProgramState extends ProgramState {
     public String connectionIpcPath = "";
 
     public EthereumProgramState() {
-        super();
+        super(new EthereumVariables());
         this.reader = new EthereumDataReader();
     }
 

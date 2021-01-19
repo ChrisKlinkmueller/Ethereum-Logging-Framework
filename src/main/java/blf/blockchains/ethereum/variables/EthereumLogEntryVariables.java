@@ -6,12 +6,13 @@ import java.util.function.Function;
 
 import blf.blockchains.ethereum.reader.EthereumLogEntry;
 import blf.blockchains.ethereum.state.EthereumProgramState;
+import blf.core.values.Variable;
 
 /**
  * LogEntryVariables
  */
-public abstract class EthereumLogEntryVariables {
-    static final Set<EthereumVariable> LOG_ENTRY_VARIABLES;
+class EthereumLogEntryVariables {
+    static final Set<Variable> LOG_ENTRY_VARIABLES;
 
     public static final String LOG_REMOVED = "log.removed";
     public static final String LOG_INDEX = "log.logIndex";
@@ -27,7 +28,7 @@ public abstract class EthereumLogEntryVariables {
     private EthereumLogEntryVariables() {}
 
     private static void addLogEntryVariable(String name, String type, Function<EthereumLogEntry, Object> blockValueExtractor) {
-        EthereumVariable.addVariable(
+        Variable.addVariable(
             LOG_ENTRY_VARIABLES,
             name,
             type,

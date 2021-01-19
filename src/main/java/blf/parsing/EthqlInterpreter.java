@@ -4,6 +4,7 @@ import java.io.InputStream;
 import java.util.function.Function;
 
 import blf.BcqllProcessingResult;
+import blf.Constants;
 import blf.grammar.BcqlLexer;
 import blf.grammar.BcqlParser;
 import blf.util.MethodResult;
@@ -26,7 +27,7 @@ public class EthqlInterpreter {
 
     public EthqlInterpreter() {
         errorCollector = new ErrorCollector();
-        semanticAnalysis = new SemanticAnalysis(this.errorCollector);
+        semanticAnalysis = new SemanticAnalysis(this.errorCollector, Constants.getBlockchainMap(new VariableExistenceListener()));
     }
 
     public BcqllProcessingResult<ParseTree> parseDocument(InputStream is) {

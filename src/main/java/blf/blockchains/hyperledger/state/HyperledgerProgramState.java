@@ -1,6 +1,7 @@
 package blf.blockchains.hyperledger.state;
 
 import blf.blockchains.hyperledger.reader.HyperledgerDataReader;
+import blf.blockchains.hyperledger.variables.HyperledgerVariables;
 import blf.core.state.ProgramState;
 import org.hyperledger.fabric.gateway.Gateway;
 import org.hyperledger.fabric.gateway.Network;
@@ -11,7 +12,7 @@ import java.math.BigInteger;
 public class HyperledgerProgramState extends ProgramState {
 
     public HyperledgerProgramState() {
-        super();
+        super(new HyperledgerVariables());
         this.reader = new HyperledgerDataReader();
     }
 
