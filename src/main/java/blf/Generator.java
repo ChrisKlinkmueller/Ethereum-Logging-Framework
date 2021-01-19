@@ -9,8 +9,8 @@ import blf.generation.SolidityCodeGeneration;
  */
 public class Generator {
 
-    public String generateLoggingFunctionality(String ethqlFilepath) throws BcqlProcessingException {
-        final ParseTree parseTree = Validator.createParseTree(ethqlFilepath);
+    public String generateLoggingFunctionality(String bcqlFilepath) throws BcqlProcessingException {
+        final ParseTree parseTree = Validator.createParseTree(bcqlFilepath);
         final SolidityCodeGeneration generation = new SolidityCodeGeneration();
         return generation.generateLoggingFunctionality(parseTree);
     }

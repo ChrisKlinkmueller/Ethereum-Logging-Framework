@@ -30,7 +30,7 @@
     <web3j.version>4.5.5</web3j.version>
     <logback-classic.version>1.2.3</logback-classic.version>
     <jackson.version>2.10.1</jackson.version>
-    <elf.skip.assemble>false</elf.skip.assemble>
+    <blf.skip.assemble>false</blf.skip.assemble>
   </properties>
 
   <!-- Local Maven repository -->
@@ -299,8 +299,8 @@
               <goal>single</goal>
             </goals>
             <configuration>
-              <skipAssembly>${elf.skip.assemble}</skipAssembly>
-              <finalName>elf-cmd</finalName>
+              <skipAssembly>${blf.skip.assemble}</skipAssembly>
+              <finalName>blf-cmd</finalName>
               <archive>
                 <manifest>
                   <mainClass>blf.BlfApp</mainClass>

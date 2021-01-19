@@ -153,7 +153,7 @@ SILENT_PARAM="--silent"
 SCRIPT_DIR="$( cd "$( dirname "${BASH_SOURCE[0]}" )" >/dev/null 2>&1 && pwd )"
 WD="$SCRIPT_DIR"/../../..
 ED="./extracted"
-JAR="$WD"/target/elf-cmd.jar
+JAR="$WD"/target/blf-cmd.jar
 
 # BCQL scripts
 MAN_AugurContractRegistry=$(cat "$SCRIPT_DIR"/bcql/AugurContractRegistry.bcql)

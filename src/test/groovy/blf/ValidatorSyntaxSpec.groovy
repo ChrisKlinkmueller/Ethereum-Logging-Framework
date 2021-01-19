@@ -1,7 +1,7 @@
 package blf
 
 import blf.parsing.ErrorCollector
-import blf.parsing.EthqlInterpreter
+import blf.parsing.BcqlInterpreter
 import blf.parsing.SemanticAnalysis
 import org.antlr.v4.runtime.tree.ParseTree
 import spock.lang.Specification
@@ -12,9 +12,9 @@ class ValidatorSyntaxSpec extends Specification {
     SemanticAnalysis noOpAnalyser = Stub(SemanticAnalysis) {
         analyze(_ as ParseTree) >> {}
     }
-    EthqlInterpreter interpreter = new EthqlInterpreter(new ErrorCollector(), noOpAnalyser)
+    BcqlInterpreter interpreter = new BcqlInterpreter(new ErrorCollector(), noOpAnalyser)
 
-    static List<BcqlProcessingError> validateSyntax(String script, EthqlInterpreter interpreter) {
+    static List<BcqlProcessingError> validateSyntax(String script, BcqlInterpreter interpreter) {
         interpreter.parseDocument(new ByteArrayInputStream(script.getBytes())).getErrors()
     }
 
