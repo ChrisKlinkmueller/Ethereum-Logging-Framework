@@ -3,7 +3,6 @@ package blf.blockchains.hyperledger.variables;
 import blf.core.values.Variable;
 
 import java.util.HashSet;
-import java.util.Objects;
 import java.util.Set;
 
 /**
@@ -52,11 +51,6 @@ public class HyperledgerTransactionVariables {
     }
 
     private static void addTransactionVariable(String name, String type) {
-        TRANSACTION_VARIABLES.add(new Variable(name, type, state -> {
-            final Object value = state.getValueStore().getValue(name);
-
-            // return Object if null to make the validator work
-            return Objects.requireNonNullElseGet(value, Object::new);
-        }));
+        TRANSACTION_VARIABLES.add(new Variable(name, type, state -> state.getValueStore().getValue(name)));
     }
 }
