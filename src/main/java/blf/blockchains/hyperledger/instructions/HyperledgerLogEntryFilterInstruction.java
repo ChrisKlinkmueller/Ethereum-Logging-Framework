@@ -28,7 +28,7 @@ public class HyperledgerLogEntryFilterInstruction extends FilterInstruction {
 
     private final BcqlParser.LogEntryFilterContext logEntryFilterCtx;
 
-    private final ExceptionHandler exceptionHandler;
+    private ExceptionHandler exceptionHandler;
     @SuppressWarnings("FieldCanBeLocal")
     private final Logger logger;
 

@@ -26,8 +26,7 @@ import static blf.blockchains.hyperledger.variables.HyperledgerTransactionVariab
 public class HyperledgerTransactionFilterInstruction extends FilterInstruction {
 
     private final BcqlParser.TransactionFilterContext transactionCtx;
-    private final ExceptionHandler exceptionHandler;
-    @SuppressWarnings("FieldCanBeLocal")
+    @SuppressWarnings({"FieldCanBeLocal", "unused"})
     private final Logger logger;
 
     /**
@@ -57,7 +56,7 @@ public class HyperledgerTransactionFilterInstruction extends FilterInstruction {
     @Override
     public void execute(ProgramState state) throws ProgramException {
         // init exception handler
-        this.exceptionHandler = state.getExceptionHandler();
+        ExceptionHandler exceptionHandler = state.getExceptionHandler();
 
         HyperledgerProgramState hyperledgerProgramState = (HyperledgerProgramState) state;
 
@@ -73,7 +72,7 @@ public class HyperledgerTransactionFilterInstruction extends FilterInstruction {
         BlockEvent currentBlock = hyperledgerProgramState.getCurrentBlock();
 
         if (currentBlock == null) {
-            this.exceptionHandler.handleExceptionAndDecideOnAbort("Expected block, received null", new NullPointerException());
+            exceptionHandler.handleExceptionAndDecideOnAbort("Expected block, received null", new NullPointerException());
 
             return;
         }

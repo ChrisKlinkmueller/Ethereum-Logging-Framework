@@ -17,7 +17,6 @@ import org.hyperledger.fabric.gateway.Network;
 import java.math.BigInteger;
 import java.util.List;
 import java.util.logging.Logger;
-import java.lang.InterruptedException;
 
 import static blf.blockchains.hyperledger.variables.HyperledgerBlockVariables.*;
 
@@ -29,7 +28,6 @@ public class HyperledgerBlockFilterInstruction extends FilterInstruction {
     private final BcqlParser.BlockFilterContext blockCtx;
 
     private final Logger logger;
-    private ExceptionHandler exceptionHandler;
 
     public HyperledgerBlockFilterInstruction(BcqlParser.BlockFilterContext blockCtx, List<Instruction> nestedInstructions) {
         // here the list of nested instructions is created
@@ -41,9 +39,9 @@ public class HyperledgerBlockFilterInstruction extends FilterInstruction {
 
     @Override
     public void execute(final ProgramState state) throws ProgramException {
-        
+
         // init exception handler
-        this.exceptionHandler = state.getExceptionHandler();
+        ExceptionHandler exceptionHandler = state.getExceptionHandler();
 
         final HyperledgerProgramState hyperledgerProgramState = (HyperledgerProgramState) state;
         final ValueStore valueStore = hyperledgerProgramState.getValueStore();
