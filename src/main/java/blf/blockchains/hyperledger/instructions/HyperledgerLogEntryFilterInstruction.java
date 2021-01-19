@@ -1,12 +1,15 @@
 package blf.blockchains.hyperledger.instructions;
 
+import blf.blockchains.hyperledger.helpers.HyperledgerListenerHelper;
 import blf.blockchains.hyperledger.state.HyperledgerProgramState;
 import blf.core.exceptions.ExceptionHandler;
 import blf.core.exceptions.ProgramException;
 import blf.core.instructions.FilterInstruction;
 import blf.core.interfaces.Instruction;
 import blf.core.state.ProgramState;
+import blf.grammar.BcqlParser;
 import org.antlr.v4.runtime.misc.Pair;
+import org.antlr.v4.runtime.misc.Triple;
 import org.hyperledger.fabric.sdk.BlockEvent;
 import org.hyperledger.fabric.sdk.BlockInfo;
 import org.hyperledger.fabric.sdk.ChaincodeEvent;
@@ -23,31 +26,25 @@ import java.util.logging.Logger;
  */
 public class HyperledgerLogEntryFilterInstruction extends FilterInstruction {
 
-    private final Logger logger;
-    private ExceptionHandler exceptionHandler;
+    private final BcqlParser.LogEntryFilterContext logEntryFilterCtx;
 
-    private final List<String> addressNames;
-    private final String eventName;
-    private final List<Pair<String, String>> entryParameters;
+    private ExceptionHandler exceptionHandler;
+    @SuppressWarnings("FieldCanBeLocal")
+    private final Logger logger;
+
+    private String eventName;
+    private List<Pair<String, String>> entryParameters;
 
     /**
      * Constructs a HyperledgerLogEntryFilterInstruction.
      *
-     * @param addressNames The list of all chaincode addresses the user requested in the manifest.
-     * @param eventName The name of the event the user requested to extract.
-     * @param entryParameters The list of parameter types and names the event contains.
+     * @param logEntryFilterCtx  The context of logEntryFilter.
+     * @param nestedInstructions The list of nested instruction.
      */
-    public HyperledgerLogEntryFilterInstruction(
-        final List<String> addressNames,
-        String eventName,
-        List<Pair<String, String>> entryParameters,
-        List<Instruction> nestedInstructions
-    ) {
+    public HyperledgerLogEntryFilterInstruction(BcqlParser.LogEntryFilterContext logEntryFilterCtx, List<Instruction> nestedInstructions) {
         super(nestedInstructions);
 
-        this.addressNames = addressNames;
-        this.eventName = eventName;
-        this.entryParameters = entryParameters;
+        this.logEntryFilterCtx = logEntryFilterCtx;
         this.logger = Logger.getLogger(HyperledgerBlockFilterInstruction.class.getName());
     }
 
@@ -64,6 +61,14 @@ public class HyperledgerLogEntryFilterInstruction extends FilterInstruction {
         this.exceptionHandler = state.getExceptionHandler();
 
         HyperledgerProgramState hyperledgerProgramState = (HyperledgerProgramState) state;
+
+        final Triple<String, List<Pair<String, String>>, List<String>> logEntryFilterParams = HyperledgerListenerHelper
+            .parseLogEntryFilterCtx(hyperledgerProgramState, logEntryFilterCtx);
+
+        this.eventName = logEntryFilterParams.a;
+        this.entryParameters = logEntryFilterParams.b;
+        List<String> addressNames = logEntryFilterParams.c;
+
         // get current block
         BlockEvent be = hyperledgerProgramState.getCurrentBlock();
         if (be == null) {
@@ -94,7 +99,7 @@ public class HyperledgerLogEntryFilterInstruction extends FilterInstruction {
      * from the unstructured payload.
      *
      * @param hyperledgerProgramState The current ProgramState of the BLF.
-     * @param ce The current ChaincodeEvent to analyze.
+     * @param ce                      The current ChaincodeEvent to analyze.
      */
     private void parseChaincodeEvent(HyperledgerProgramState hyperledgerProgramState, ChaincodeEvent ce) {
         // first try parse json
@@ -117,8 +122,8 @@ public class HyperledgerLogEntryFilterInstruction extends FilterInstruction {
      * the event parameters.
      *
      * @param hyperledgerProgramState The current ProgramState of the BLF.
-     * @param ce The ChaincodeEvent to analyze.
-     * @param obj The top-level JSON object that was successfully parsed from the event payload.
+     * @param ce                      The ChaincodeEvent to analyze.
+     * @param obj                     The top-level JSON object that was successfully parsed from the event payload.
      */
     private void parseNestedJsonPayload(HyperledgerProgramState hyperledgerProgramState, ChaincodeEvent ce, JSONObject obj) {
         try {
@@ -145,8 +150,8 @@ public class HyperledgerLogEntryFilterInstruction extends FilterInstruction {
      * Tries to parse the requested event from a flat JSON object, if the event name fits the requested event name.
      *
      * @param hyperledgerProgramState The current ProgramState of the BLF.
-     * @param ce The ChaincodeEvent to analyze.
-     * @param obj The top-level JSON object that was successfully parsed from the event payload.
+     * @param ce                      The ChaincodeEvent to analyze.
+     * @param obj                     The top-level JSON object that was successfully parsed from the event payload.
      */
     private void parseFlatJsonPayload(HyperledgerProgramState hyperledgerProgramState, ChaincodeEvent ce, JSONObject obj) {
         // if json is flat, check if the eventName is the event name of the Event
@@ -172,9 +177,9 @@ public class HyperledgerLogEntryFilterInstruction extends FilterInstruction {
      * of these bytes.
      *
      * @param hyperledgerProgramState The current ProgramState of the BLF.
-     * @param ce The ChaincodeEvent to analyze.
-     * @param payloadString The payload of the ce, already converted to a string.
-     * @param jsonException The exception thrown by the JSON parser, the reason why the JSON could not be recognized.
+     * @param ce                      The ChaincodeEvent to analyze.
+     * @param payloadString           The payload of the ce, already converted to a string.
+     * @param jsonException           The exception thrown by the JSON parser, the reason why the JSON could not be recognized.
      */
     private void parseNonStructuredPayload(
         HyperledgerProgramState hyperledgerProgramState,
@@ -206,10 +211,10 @@ public class HyperledgerLogEntryFilterInstruction extends FilterInstruction {
      * ProgramState.
      *
      * @param hyperledgerProgramState The current ProgramState of the BLF.
-     * @param parameterName The name of the parameter that is to be extracted and set to the state.
-     * @param parameterType The type of the parameter that is to be extracted and set to the state.
-     * @param payloadString The payload of the ce, already converted to a string.
-     * @param payload The payload of the ce, as the original array of bytes.
+     * @param parameterName           The name of the parameter that is to be extracted and set to the state.
+     * @param parameterType           The type of the parameter that is to be extracted and set to the state.
+     * @param payloadString           The payload of the ce, already converted to a string.
+     * @param payload                 The payload of the ce, as the original array of bytes.
      */
     private void setStateValue(
         HyperledgerProgramState hyperledgerProgramState,
@@ -251,9 +256,9 @@ public class HyperledgerLogEntryFilterInstruction extends FilterInstruction {
      * ValueStore of the ProgramState.
      *
      * @param hyperledgerProgramState The current ProgramState of the BLF.
-     * @param parameterName The name of the parameter that is to be extracted and set to the state.
-     * @param parameterType The type of the parameter that is to be extracted and set to the state.
-     * @param obj The JSON object containing the requested event.
+     * @param parameterName           The name of the parameter that is to be extracted and set to the state.
+     * @param parameterType           The type of the parameter that is to be extracted and set to the state.
+     * @param obj                     The JSON object containing the requested event.
      */
     private void setStateValue(
         HyperledgerProgramState hyperledgerProgramState,

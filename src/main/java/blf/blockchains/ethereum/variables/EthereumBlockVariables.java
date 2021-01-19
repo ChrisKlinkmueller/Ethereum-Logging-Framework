@@ -7,12 +7,13 @@ import java.util.function.Function;
 
 import blf.blockchains.ethereum.reader.EthereumBlock;
 import blf.blockchains.ethereum.state.EthereumProgramState;
+import blf.core.values.Variable;
 
 /**
  * BlockVariables
  */
-public class EthereumBlockVariables {
-    static final Set<EthereumVariable> BLOCK_VARIABLES;
+class EthereumBlockVariables {
+    static final Set<Variable> BLOCK_VARIABLES;
 
     public static final String BLOCK_NUMBER = "block.number";
     public static final String BLOCK_HASH = "block.hash";
@@ -60,7 +61,7 @@ public class EthereumBlockVariables {
 
     private static void addBlockVariable(String name, String type, Function<EthereumBlock, Object> blockValueExtractor) {
 
-        EthereumVariable.addVariable(
+        Variable.addVariable(
             BLOCK_VARIABLES,
             name,
             type,

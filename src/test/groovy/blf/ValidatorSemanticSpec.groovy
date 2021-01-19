@@ -37,6 +37,7 @@ class ValidatorSemanticSpec extends Specification {
         where:
         script                              | expectedErr
         """
+        | SET BLOCKCHAIN "Ethereum"
         | BLOCKS (1) (5) {
         |   TRANSACTIONS (ANY) (
         |     0x931D387731bBbC988B312206c74F77D004D6B84b,
@@ -45,13 +46,16 @@ class ValidatorSemanticSpec extends Specification {
         | }
         """.stripMargin()                   | []
         """
+        | SET BLOCKCHAIN "Ethereum"
         | bytes20 addr = 0x931D387731bBbC988B312206c74F77D004D6B84b;
         | BLOCKS (1) (5) {
         |   TRANSACTIONS (ANY) (addr) {}
         | }
         """.stripMargin()                   | []
-        "TRANSACTIONS (ANY) (ANY) {}"       | ["Invalid nesting of filters."]
+        "SET BLOCKCHAIN \"Ethereum\" \n" +
+                "TRANSACTIONS (ANY) (ANY) {}"       | ["Invalid nesting of filters."]
         """
+        | SET BLOCKCHAIN "Ethereum"
         | BLOCKS (1) (5) {
         |   TRANSACTIONS (ANY) (0x123) {}
         | }
@@ -142,17 +146,20 @@ class ValidatorSemanticSpec extends Specification {
         where:
         script                              | expectedErr
         """
+        | SET BLOCKCHAIN "Ethereum"
         | address contract = 0x931D387731bBbC988B312206c74F77D004D6B84c;
         | BLOCKS (6605100) (6615100) {
         |   LOG ENTRIES (contract) (someMethod(uint indexed authorId, bytes32 sha)) {}
         | }
         """.stripMargin()                   | []
         """
+        | SET BLOCKCHAIN "Ethereum"
         | BLOCKS (6605100) (6615100) {
         |   LOG ENTRIES (contract) (someMethod(uint indexed authorId, bytes32 sha)) {}
         | }
         """.stripMargin()                   | ["Variable 'contract' not defined."]
         """
+        | SET BLOCKCHAIN "Ethereum"
         | address contract = 0x931D387731bBbC988B312206c74F77D004D6B84c;
         | LOG ENTRIES
         | (contract)

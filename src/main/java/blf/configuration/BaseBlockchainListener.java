@@ -5,13 +5,12 @@ import blf.core.Program;
 import blf.core.instructions.SetOutputFolderInstruction;
 import blf.grammar.BcqlBaseListener;
 import blf.grammar.BcqlParser;
+import blf.parsing.InterpreterUtils;
 import blf.parsing.VariableExistenceListener;
 import blf.util.TypeUtils;
 
-import java.util.ArrayDeque;
-import java.util.Deque;
-import java.util.LinkedList;
-import java.util.List;
+import java.util.*;
+import java.util.function.BiFunction;
 import java.util.logging.Logger;
 
 /**
@@ -133,6 +132,67 @@ public abstract class BaseBlockchainListener extends BcqlBaseListener {
     }
 
     @Override
+    public void exitMethodStatement(BcqlParser.MethodStatementContext ctx) {
+        this.addMethodCall(ctx.methodInvocation(), null);
+    }
+
+    @Override
+    public void exitVariableAssignmentStatement(BcqlParser.VariableAssignmentStatementContext ctx) {
+        this.addVariableAssignment(ctx.variableName(), ctx.statementExpression());
+    }
+
+    @Override
+    public void exitVariableDeclarationStatement(BcqlParser.VariableDeclarationStatementContext ctx) {
+        this.addVariableAssignment(ctx.variableName(), ctx.statementExpression());
+    }
+
+    private void addVariableAssignment(BcqlParser.VariableNameContext varCtx, BcqlParser.StatementExpressionContext stmtCtx) {
+        try {
+            String varName = varCtx.getText();
+            final ValueMutatorSpecification mutator = ValueMutatorSpecification.ofVariableName(varName);
+            if (stmtCtx.valueExpression() != null) {
+                this.addValueAssignment(mutator, stmtCtx.valueExpression());
+            } else if (stmtCtx.methodInvocation() != null) {
+                this.addMethodCall(stmtCtx.methodInvocation(), mutator);
+            } else {
+                throw new UnsupportedOperationException("This type of value definition is not supported.");
+            }
+        } catch (UnsupportedOperationException e) {
+            LOGGER.severe(String.format("Adding variable assignment failed: %s", e.getMessage()));
+            System.exit(1);
+        }
+    }
+
+    private void addValueAssignment(ValueMutatorSpecification mutator, BcqlParser.ValueExpressionContext ctx) {
+        try {
+            final ValueAccessorSpecification accessor = this.getValueAccessor(ctx);
+            final ValueAssignmentSpecification assignment = ValueAssignmentSpecification.of(mutator, accessor);
+            this.composer.addInstruction(assignment);
+        } catch (BuildException e) {
+            LOGGER.severe(String.format("Adding value assignment failed: %s", e.getMessage()));
+            System.exit(1);
+        }
+    }
+
+    private void addMethodCall(BcqlParser.MethodInvocationContext ctx, ValueMutatorSpecification mutator) {
+        final List<String> parameterTypes = new ArrayList<>();
+        final List<ValueAccessorSpecification> accessors = new ArrayList<>();
+        try {
+            for (BcqlParser.ValueExpressionContext valCtx : ctx.valueExpression()) {
+                parameterTypes.add(InterpreterUtils.determineType(valCtx, this.variableAnalyzer));
+                accessors.add(this.getValueAccessor(valCtx));
+            }
+
+            final MethodSpecification method = MethodSpecification.of(ctx.methodName.getText(), parameterTypes);
+            final MethodCallSpecification call = MethodCallSpecification.of(method, mutator, accessors);
+            this.composer.addInstruction(call);
+        } catch (BuildException e) {
+            LOGGER.severe(String.format("Adding method call failed: %s", e.getMessage()));
+            System.exit(1);
+        }
+    }
+
+    @Override
     public void exitEmitStatementXesTrace(BcqlParser.EmitStatementXesTraceContext ctx) {
         this.handleEmitStatementXesTrace(ctx);
     }
@@ -217,7 +277,7 @@ public abstract class BaseBlockchainListener extends BcqlBaseListener {
     public ValueAccessorSpecification getValueAccessor(BcqlParser.ValueExpressionContext ctx) {
         try {
             if (ctx.variableName() != null) {
-                return ValueAccessorSpecification.ofVariable(ctx.getText());
+                return ValueAccessorSpecification.ofVariable(ctx.getText(), this.state.getBlockchainVariables());
             } else if (ctx.literal() != null) {
                 return this.getLiteral(ctx.literal());
             } else {
@@ -305,6 +365,191 @@ public abstract class BaseBlockchainListener extends BcqlBaseListener {
             LOGGER.severe(String.format("Getter of literal failed: %s", e.getMessage()));
             System.exit(1);
             return null;
+        }
+    }
+
+    @Override
+    public void exitScope(BcqlParser.ScopeContext ctx) {
+        handleScopeBuild(ctx.filter());
+    }
+
+    private void handleScopeBuild(BcqlParser.FilterContext ctx) {
+        if (ctx.genericFilter() != null) {
+            this.buildGenericFilter();
+        }
+    }
+
+    @Override
+    public void exitConditionalOrExpression(BcqlParser.ConditionalOrExpressionContext ctx) {
+        try {
+            if (ctx.conditionalOrExpression() != null) {
+                this.createBinaryConditionalExpression(GenericFilterPredicateSpecification::or);
+            }
+        } catch (BuildException e) {
+            LOGGER.severe(String.format("Handling of conditional OR expression failed: %s", e.getMessage()));
+            System.exit(1);
+        }
+    }
+
+    @Override
+    public void exitConditionalAndExpression(BcqlParser.ConditionalAndExpressionContext ctx) {
+        try {
+            if (ctx.conditionalAndExpression() != null) {
+                this.createBinaryConditionalExpression(GenericFilterPredicateSpecification::and);
+            }
+        } catch (BuildException e) {
+            LOGGER.severe(String.format("Handling of conditional AND expression failed: %s", e.getMessage()));
+            System.exit(1);
+        }
+    }
+
+    private void createBinaryConditionalExpression(
+        BiFunction<
+            GenericFilterPredicateSpecification,
+            GenericFilterPredicateSpecification,
+            GenericFilterPredicateSpecification> constructor
+    ) throws BuildException {
+        if (this.genericFilterPredicates.isEmpty()
+            || !(this.genericFilterPredicates.peek() instanceof GenericFilterPredicateSpecification)) {
+            throw new BuildException("Parse tree error: binary boolean expression requires boolean predicates.");
+        }
+        final GenericFilterPredicateSpecification predicate1 = (GenericFilterPredicateSpecification) this.genericFilterPredicates.pop();
+
+        if (this.genericFilterPredicates.isEmpty()
+            || !(this.genericFilterPredicates.peek() instanceof GenericFilterPredicateSpecification)) {
+            throw new BuildException("Parse tree error: binary boolean expression requires boolean predicates.");
+        }
+        final GenericFilterPredicateSpecification predicate2 = (GenericFilterPredicateSpecification) this.genericFilterPredicates.pop();
+
+        this.genericFilterPredicates.push(constructor.apply(predicate1, predicate2));
+    }
+
+    @Override
+    public void exitConditionalComparisonExpression(BcqlParser.ConditionalComparisonExpressionContext ctx) {
+        try {
+            if (ctx.comparators() == null) {
+                return;
+            }
+
+            if (this.genericFilterPredicates.size() < 2) {
+                throw new BuildException("Parse tree does not contain enough expressions.");
+            }
+
+            final Object value2 = this.genericFilterPredicates.pop();
+            if (!(value2 instanceof ValueAccessorSpecification)) {
+                throw new BuildException("Can only compare values, but not boolean expressions.");
+            }
+
+            final Object value1 = this.genericFilterPredicates.pop();
+            if (!(value1 instanceof ValueAccessorSpecification)) {
+                throw new BuildException("Can only compare values, but not boolean expressions.");
+            }
+
+            final ValueAccessorSpecification spec1 = (ValueAccessorSpecification) value1;
+            final ValueAccessorSpecification spec2 = (ValueAccessorSpecification) value2;
+
+            GenericFilterPredicateSpecification predicate;
+            switch (ctx.comparators().getText().toLowerCase()) {
+                case "==":
+                    predicate = GenericFilterPredicateSpecification.equals(spec1, spec2);
+                    break;
+                case "!=":
+                    predicate = GenericFilterPredicateSpecification.notEquals(spec1, spec2);
+                    break;
+                case ">=":
+                    predicate = GenericFilterPredicateSpecification.greaterThanAndEquals(spec1, spec2);
+                    break;
+                case ">":
+                    predicate = GenericFilterPredicateSpecification.greaterThan(spec1, spec2);
+                    break;
+                case "<":
+                    predicate = GenericFilterPredicateSpecification.smallerThan(spec1, spec2);
+                    break;
+                case "<=":
+                    predicate = GenericFilterPredicateSpecification.smallerThanAndEquals(spec1, spec2);
+                    break;
+                case "in":
+                    predicate = GenericFilterPredicateSpecification.in(spec1, spec2);
+                    break;
+                default:
+                    throw new BuildException(String.format("Comparator %s not supported.", ctx.comparators().getText()));
+            }
+            this.genericFilterPredicates.push(predicate);
+        } catch (BuildException e) {
+            LOGGER.severe(String.format("Handling of conditional comparison expression failed: %s", e.getMessage()));
+            System.exit(1);
+        }
+    }
+
+    @Override
+    public void exitConditionalNotExpression(BcqlParser.ConditionalNotExpressionContext ctx) {
+        try {
+            if (ctx.KEY_NOT() == null) {
+                return;
+            }
+
+            Object valueExpression = this.genericFilterPredicates.pop();
+            if (valueExpression instanceof ValueAccessorSpecification) {
+                valueExpression = GenericFilterPredicateSpecification.ofBooleanAccessor((ValueAccessorSpecification) valueExpression);
+            }
+
+            if (!(valueExpression instanceof GenericFilterPredicateSpecification)) {
+                throw new BuildException(
+                    String.format("GenericFilterPredicateSpecification required, but was %s.", valueExpression.getClass())
+                );
+            }
+            this.genericFilterPredicates.push(
+                GenericFilterPredicateSpecification.not((GenericFilterPredicateSpecification) valueExpression)
+            );
+        } catch (BuildException e) {
+            LOGGER.severe(String.format("Handling of conditional NOT expression failed: %s", e.getMessage()));
+            System.exit(1);
+        }
+    }
+
+    @Override
+    public void exitConditionalPrimaryExpression(BcqlParser.ConditionalPrimaryExpressionContext ctx) {
+        if (ctx.valueExpression() != null) {
+            this.genericFilterPredicates.push(this.getValueAccessor(ctx.valueExpression()));
+        }
+    }
+
+    @Override
+    public void enterGenericFilter(BcqlParser.GenericFilterContext ctx) {
+        LOGGER.info("Prepare generic filter build");
+        try {
+            this.composer.prepareGenericFilterBuild();
+        } catch (BuildException e) {
+            LOGGER.severe(String.format("Preparation of generic filter build failed: %s", e.getMessage()));
+            System.exit(1);
+        }
+    }
+
+    private void buildGenericFilter() {
+        LOGGER.info("Build generic filter");
+        try {
+            if (this.genericFilterPredicates.size() != 1) {
+                throw new BuildException("Error in boolean expression tree.");
+            }
+
+            final Object predicate = this.genericFilterPredicates.pop();
+            if (predicate instanceof GenericFilterPredicateSpecification) {
+                this.composer.buildGenericFilter((GenericFilterPredicateSpecification) predicate);
+            } else if (predicate instanceof ValueAccessorSpecification) {
+                final GenericFilterPredicateSpecification filterSpec = GenericFilterPredicateSpecification.ofBooleanAccessor(
+                    (ValueAccessorSpecification) predicate
+                );
+                this.composer.buildGenericFilter(filterSpec);
+            } else {
+                final String message = String.format(
+                    "Unsupported type for specification of generic filter predicates: %s",
+                    predicate.getClass()
+                );
+                throw new BuildException(message);
+            }
+        } catch (BuildException e) {
+            LOGGER.severe(String.format("Building generic filter failed: %s", e.getMessage()));
+            System.exit(1);
         }
     }
 

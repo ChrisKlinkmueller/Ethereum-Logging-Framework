@@ -1,6 +1,5 @@
 package blf.core.values;
 
-import blf.blockchains.ethereum.variables.EthereumVariables;
 import blf.core.exceptions.ProgramException;
 import io.reactivex.annotations.NonNull;
 
@@ -9,8 +8,8 @@ import io.reactivex.annotations.NonNull;
  */
 public class Variables {
 
-    public static ValueAccessor createValueAccessor(@NonNull String name) {
-        final ValueAccessor accessor = EthereumVariables.getValueAccessor(name);
+    public static ValueAccessor createValueAccessor(@NonNull String name, BlockchainVariables blockchainVariables) {
+        final ValueAccessor accessor = blockchainVariables.getValueAccessor(name);
         if (accessor != null) {
             return accessor;
         }
