@@ -29,7 +29,7 @@ public class HyperledgerBlockFilterInstruction extends FilterInstruction {
     private final BcqlParser.BlockFilterContext blockCtx;
 
     private final Logger logger;
-    private final ExceptionHandler exceptionHandler;
+    private ExceptionHandler exceptionHandler;
 
     public HyperledgerBlockFilterInstruction(BcqlParser.BlockFilterContext blockCtx, List<Instruction> nestedInstructions) {
         // here the list of nested instructions is created
@@ -37,10 +37,13 @@ public class HyperledgerBlockFilterInstruction extends FilterInstruction {
 
         this.blockCtx = blockCtx;
         this.logger = Logger.getLogger(HyperledgerBlockFilterInstruction.class.getName());
-        this.exceptionHandler = new ExceptionHandler();
     }
 
+    @Override
     public void execute(final ProgramState state) throws ProgramException {
+        
+        // init exception handler
+        this.exceptionHandler = state.getExceptionHandler();
 
         final HyperledgerProgramState hyperledgerProgramState = (HyperledgerProgramState) state;
         final ValueStore valueStore = hyperledgerProgramState.getValueStore();
@@ -96,5 +99,4 @@ public class HyperledgerBlockFilterInstruction extends FilterInstruction {
             }
         }
     }
-
 }

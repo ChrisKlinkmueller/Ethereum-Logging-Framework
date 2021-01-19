@@ -45,7 +45,6 @@ public class HyperledgerTransactionFilterInstruction extends FilterInstruction {
         this.transactionCtx = transactionCtx;
 
         this.logger = Logger.getLogger(HyperledgerTransactionFilterInstruction.class.getName());
-        this.exceptionHandler = new ExceptionHandler();
     }
 
     /**
@@ -57,6 +56,9 @@ public class HyperledgerTransactionFilterInstruction extends FilterInstruction {
      */
     @Override
     public void execute(ProgramState state) throws ProgramException {
+        // init exception handler
+        this.exceptionHandler = state.getExceptionHandler();
+
         HyperledgerProgramState hyperledgerProgramState = (HyperledgerProgramState) state;
 
         final List<String> sendersAddressList = HyperledgerListenerHelper.parseAddressListCtx(
@@ -108,5 +110,4 @@ public class HyperledgerTransactionFilterInstruction extends FilterInstruction {
             }
         }
     }
-
 }

@@ -27,8 +27,9 @@ import java.util.logging.Logger;
 public class HyperledgerListener extends BaseBlockchainListener {
 
     private final Logger logger;
-    private final ExceptionHandler exceptionHandler;
+    @SuppressWarnings("FieldCanBeLocal")
     private final HyperledgerProgramState hyperledgerProgramState;
+    private final ExceptionHandler exceptionHandler;
 
     public HyperledgerListener(VariableExistenceListener analyzer) {
         super(analyzer);
@@ -36,7 +37,7 @@ public class HyperledgerListener extends BaseBlockchainListener {
         this.state = new HyperledgerProgramState();
         this.hyperledgerProgramState = (HyperledgerProgramState) this.state;
         this.logger = Logger.getLogger(HyperledgerListener.class.getName());
-        this.exceptionHandler = new ExceptionHandler();
+        this.exceptionHandler = hyperledgerProgramState.getExceptionHandler();
     }
 
     /**

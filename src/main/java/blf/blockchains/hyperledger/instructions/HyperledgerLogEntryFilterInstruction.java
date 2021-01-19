@@ -46,7 +46,6 @@ public class HyperledgerLogEntryFilterInstruction extends FilterInstruction {
 
         this.logEntryFilterCtx = logEntryFilterCtx;
         this.logger = Logger.getLogger(HyperledgerBlockFilterInstruction.class.getName());
-        this.exceptionHandler = new ExceptionHandler();
     }
 
     /**
@@ -58,6 +57,9 @@ public class HyperledgerLogEntryFilterInstruction extends FilterInstruction {
      */
     @Override
     public void execute(ProgramState state) throws ProgramException {
+        // init exception handler
+        this.exceptionHandler = state.getExceptionHandler();
+
         HyperledgerProgramState hyperledgerProgramState = (HyperledgerProgramState) state;
 
         final Triple<String, List<Pair<String, String>>, List<String>> logEntryFilterParams = HyperledgerListenerHelper
