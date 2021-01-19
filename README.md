@@ -56,18 +56,10 @@ Details of the framework are described in more detail in the following publicati
     ```bash
     mvn --version
     ```
-
-4. To setup the ```lib``` folder as a local repository, run
+4. To build the project, run
     ```bash
-    cd lib
-    mvn deploy:deploy-file "-Durl=file:///<project-path>/lib" "-Dfile=Spex.jar" "-DgroupId=org.deckfour" "-DartifactId=spex" "-Dversion=1.0" "-Dpackaging=jar"
-    mvn deploy:deploy-file "-Durl=file:///<project-path>/lib" "-Dfile=OpenXES-20181205.jar" "-DgroupId=org.deckfour" "-DartifactId=open-xes" "-Dversion=1.0" "-Dpackaging=jar"
-    ```
-   
-6. To build the project, run
-    ```bash
-    cd ethereum-logging-framework
-    mvn verify
+    cd Blockchain-Logging-Framework
+    mvn clean verify
     ```
     - To not build the executable jar ```elf-cmd.jar```, add the option
       ```bash
