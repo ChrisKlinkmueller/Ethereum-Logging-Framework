@@ -131,3 +131,5 @@ block_data.json
 CsvTransform.java
 *.docx
 /test_app
+/src/license
+package-lock.json
