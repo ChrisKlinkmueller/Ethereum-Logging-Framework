@@ -175,7 +175,7 @@ public class EthqlProgramComposer extends EthqlBaseListener {
     }
 
     private AddressListSpecification getAddressListSpecification(AddressListContext ctx) throws BuildException {
-        if (ctx.BYTES_LITERAL() != null) {
+        if (!ctx.BYTES_LITERAL().isEmpty()) {
             return AddressListSpecification.ofAddresses(
                 ctx.BYTES_LITERAL().stream().map(literal -> literal.getText()).collect(Collectors.toList())
             );
