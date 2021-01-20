@@ -6,27 +6,27 @@ import java.io.FileNotFoundException;
 import java.io.InputStream;
 import java.util.List;
 
-import blf.parsing.EthqlInterpreter;
+import blf.parsing.BcqlInterpreter;
 import org.antlr.v4.runtime.tree.ParseTree;
 
 /**
- * Validator class, serves mostly as a wrapper around {@link EthqlInterpreter}.
- * EthqlInterpreter method {@link EthqlInterpreter#parseDocument(InputStream)} takes
+ * Validator class, serves mostly as a wrapper around {@link BcqlInterpreter}.
+ * BcqlInterpreter method {@link BcqlInterpreter#parseDocument(InputStream)} takes
  * as a parameter an InputStream object.
  *
- * @see EthqlInterpreter
+ * @see BcqlInterpreter
  * @see #createParseTree
  *
  */
 public class Validator {
-    private final EthqlInterpreter interpreter;
+    private final BcqlInterpreter interpreter;
 
     public Validator() {
-        this.interpreter = new EthqlInterpreter();
+        this.interpreter = new BcqlInterpreter();
     }
 
-    public List<BcqlProcessingError> analyzeScript(String ethqlFile) throws BcqlProcessingException {
-        final BcqllProcessingResult<ParseTree> result = this.parseScript(ethqlFile);
+    public List<BcqlProcessingError> analyzeScript(String bcqlFile) throws BcqlProcessingException {
+        final BcqllProcessingResult<ParseTree> result = this.parseScript(bcqlFile);
         assert result != null;
         return result.getErrors();
     }
@@ -36,9 +36,9 @@ public class Validator {
         return result.getErrors();
     }
 
-    BcqllProcessingResult<ParseTree> parseScript(String ethqlFile) throws BcqlProcessingException {
-        assert ethqlFile != null;
-        final InputStream fileStream = this.createFileStream(ethqlFile);
+    BcqllProcessingResult<ParseTree> parseScript(String bcqlFile) throws BcqlProcessingException {
+        assert bcqlFile != null;
+        final InputStream fileStream = this.createFileStream(bcqlFile);
         return this.parseScript(fileStream);
     }
 
@@ -47,25 +47,25 @@ public class Validator {
         return this.interpreter.parseDocument(stream);
     }
 
-    private InputStream createFileStream(String ethqlFile) throws BcqlProcessingException {
-        if (ethqlFile == null) {
+    private InputStream createFileStream(String bcqlFile) throws BcqlProcessingException {
+        if (bcqlFile == null) {
             throw new BcqlProcessingException("The filepath parameter was null.");
         }
 
-        final File file = new File(ethqlFile);
+        final File file = new File(bcqlFile);
         try {
             return new FileInputStream(file);
         } catch (FileNotFoundException ex) {
-            throw new BcqlProcessingException(String.format("Invalid file path: '%s'.", ethqlFile), ex);
+            throw new BcqlProcessingException(String.format("Invalid file path: '%s'.", bcqlFile), ex);
         }
     }
 
-    public static ParseTree createParseTree(final String ethqlFile) throws BcqlProcessingException {
+    public static ParseTree createParseTree(final String bcqlFile) throws BcqlProcessingException {
         final Validator validator = new Validator();
-        final BcqllProcessingResult<ParseTree> validatorResult = validator.parseScript(ethqlFile);
+        final BcqllProcessingResult<ParseTree> validatorResult = validator.parseScript(bcqlFile);
 
         if (!validatorResult.isSuccessful()) {
-            throw new BcqlProcessingException("The ethql script is not valid. For detailed analysis results, run validator.");
+            throw new BcqlProcessingException("The bcql script is not valid. For detailed analysis results, run validator.");
         }
 
         return validatorResult.getResult();

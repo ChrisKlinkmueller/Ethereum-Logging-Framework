@@ -16,16 +16,16 @@ import org.antlr.v4.runtime.tree.ParseTree;
 /**
  * Parser
  */
-public class EthqlInterpreter {
+public class BcqlInterpreter {
     private final ErrorCollector errorCollector;
     private final SemanticAnalysis semanticAnalysis;
 
-    public EthqlInterpreter(@NonNull ErrorCollector errorCollector, @NonNull SemanticAnalysis analysis) {
+    public BcqlInterpreter(@NonNull ErrorCollector errorCollector, @NonNull SemanticAnalysis analysis) {
         this.errorCollector = errorCollector;
         this.semanticAnalysis = analysis;
     }
 
-    public EthqlInterpreter() {
+    public BcqlInterpreter() {
         errorCollector = new ErrorCollector();
         semanticAnalysis = new SemanticAnalysis(this.errorCollector, Constants.getBlockchainMap(new VariableExistenceListener()));
     }

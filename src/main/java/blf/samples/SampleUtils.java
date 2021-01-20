@@ -9,19 +9,19 @@ import java.util.stream.Collectors;
  * SampleUtils
  */
 public class SampleUtils {
-    public static final String CRYPTO_KITTIES = "CryptoKitties.ethql";
-    public static final String NETWORK_STATISTICS = "NetworkStatistics.ethql";
-    public static final String AUGUR_REGISTRY = "AugurContractRegistry.ethql";
-    public static final String AUGUR = "Augur.ethql";
-    public static final String GIT_GENERATOR = "GeneratorGitExample.ethql";
-    public static final String SHIRT_GENERATOR = "GeneratorShirtExample.ethql";
-    public static final String BOCKRATH_FORSAGE = "Bockrath_Forsage.ethql";
-    public static final String BOCKRATH_RAIDEN = "Bockrath_Raiden.ethql";
-    public static final String REBESKY_AUGUR = "Rebesky_Augur.ethql";
-    public static final String REBESKY_CHICKEN_HUNT = "Rebesky_ChickenHunt.ethql";
-    public static final String REBESKY_IDEX_1 = "Rebesky_Idex1.ethql";
-    public static final String REBESKY_IDEX_2 = "Rebesky_Idex2.ethql";
-    public static final String REBESKY_IDEX_3 = "Rebesky_Idex3.ethql";
+    public static final String CRYPTO_KITTIES = "CryptoKitties.bcql";
+    public static final String NETWORK_STATISTICS = "NetworkStatistics.bcql";
+    public static final String AUGUR_REGISTRY = "AugurContractRegistry.bcql";
+    public static final String AUGUR = "Augur.bcql";
+    public static final String GIT_GENERATOR = "GeneratorGitExample.bcql";
+    public static final String SHIRT_GENERATOR = "GeneratorShirtExample.bcql";
+    public static final String BOCKRATH_FORSAGE = "Bockrath_Forsage.bcql";
+    public static final String BOCKRATH_RAIDEN = "Bockrath_Raiden.bcql";
+    public static final String REBESKY_AUGUR = "Rebesky_Augur.bcql";
+    public static final String REBESKY_CHICKEN_HUNT = "Rebesky_ChickenHunt.bcql";
+    public static final String REBESKY_IDEX_1 = "Rebesky_Idex1.bcql";
+    public static final String REBESKY_IDEX_2 = "Rebesky_Idex2.bcql";
+    public static final String REBESKY_IDEX_3 = "Rebesky_Idex3.bcql";
 
     public static List<URL> getExtractorResources() {
         return getResources(CRYPTO_KITTIES, NETWORK_STATISTICS, AUGUR_REGISTRY);

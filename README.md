@@ -10,28 +10,28 @@ Please visit the [javadoc](https://tu-adsp.github.io/BLF-Javadoc/master/index.ht
 
 This framework provides advanced logging capabilities for Ethereum applications on top of Web3J / Ethereum's JSON RPC. It consists of four components:
 
-- Ethql: a query language for data on Ethereum
-- Validator: a component to check ethql documents for specification erros
-- Extractor: a component to extract, transform and format data based on ethql
+- BcQL: a query language for data on blockchains
+- Validator: a component to check bcql documents for specification erros
+- Extractor: a component to extract, transform and format data based on bcql
 - Generator: a component to create efficient logging functionality that can be embedded into smart contracts
 
 ![](framework.png)
 
-Example ethql documents include
-- [AugurContractRegistry.ethql](./src/main/resources/AugurContractRegistry.ethql)
-- [CryptoKitties.ethql](./src/main/resources/CryptoKitties.ethql)
-- [GeneratorShirtExample.ethql](./src/main/resources/GeneratorGitExample.ethql)
-- [GeneratorGitExample.ethql](./src/main/resources/GeneratorShirtExample.ethql)
-- [NetworkStatistics.ethql](./src/main/resources/NetworkStatistics.ethql)
+Example bcql documents include
+- [AugurContractRegistry.bcql](./src/main/resources/AugurContractRegistry.bcql)
+- [CryptoKitties.bcql](./src/main/resources/CryptoKitties.bcql)
+- [GeneratorShirtExample.bcql](./src/main/resources/GeneratorGitExample.bcql)
+- [GeneratorGitExample.bcql](./src/main/resources/GeneratorShirtExample.bcql)
+- [NetworkStatistics.bcql](./src/main/resources/NetworkStatistics.bcql)
 - Scripts contributed by Hendrik Bockrath
-  - [Bockrath_Forsage.ethql](./src/main/resources/Bockrath_Forsage.ethql)
-  - [Bockrath_Raiden.ethql](./src/main/resources/Bockrath_Raiden.ethql)
+  - [Bockrath_Forsage.bcql](./src/main/resources/Bockrath_Forsage.bcql)
+  - [Bockrath_Raiden.bcql](./src/main/resources/Bockrath_Raiden.bcql)
 - Scripts contributed by Martin Rebesky
-  - [Rebesky_Augur.ethql](./src/main/resources/Rebesky_Augur.ethql)
-  - [Rebesky_ChickenHunt.ethql](./src/main/resources/Rebesky_ChickenHunt.ethql)
-  - [Rebesky_Idex1.ethql](./src/main/resources/Rebesky_Idex1.ethql)
-  - [Rebesky_Idex2.ethql](./src/main/resources/Rebesky_Idex2.ethql)
-  - [Rebesky_Idex3.ethql](./src/main/resources/Rebesky_Idex3.ethql)
+  - [Rebesky_Augur.bcql](./src/main/resources/Rebesky_Augur.bcql)
+  - [Rebesky_ChickenHunt.bcql](./src/main/resources/Rebesky_ChickenHunt.bcql)
+  - [Rebesky_Idex1.bcql](./src/main/resources/Rebesky_Idex1.bcql)
+  - [Rebesky_Idex2.bcql](./src/main/resources/Rebesky_Idex2.bcql)
+  - [Rebesky_Idex3.bcql](./src/main/resources/Rebesky_Idex3.bcql)
 
 Code demonstrating the use of the component scan be found here
 - [Validator](src/main/java/blf/samples/ValidatorTest.java)
@@ -61,9 +61,9 @@ Details of the framework are described in more detail in the following publicati
     cd Blockchain-Logging-Framework
     mvn clean verify
     ```
-    - To not build the executable jar ```elf-cmd.jar```, add the option
+    - To not build the executable jar ```blf-cmd.jar```, add the option
       ```bash
-      "-Delf.skip.assemble=true"
+      "-Dblf.skip.assemble=true"
       ``` 
     - To skip testing, add the option
       ```bash
