@@ -26,7 +26,6 @@
     <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
 
     <antlr4.version>4.7.2</antlr4.version>
-    <junit.jupiter.version>5.7.0</junit.jupiter.version>
     <web3j.version>4.5.5</web3j.version>
     <logback-classic.version>1.2.3</logback-classic.version>
     <jackson.version>2.10.1</jackson.version>
@@ -44,13 +43,13 @@
   <dependencyManagement>
     <dependencies>
 
-      <dependency>
-        <groupId>org.junit</groupId>
-        <artifactId>junit-bom</artifactId>
-        <version>${junit.jupiter.version}</version>
-        <type>pom</type>
-        <scope>import</scope>
-      </dependency>
+      <!-- <dependency> -->
+      <!-- <groupId>org.junit</groupId> -->
+      <!-- <artifactId>junit-bom</artifactId> -->
+      <!-- <version>${junit.jupiter.version}</version> -->
+      <!-- <type>pom</type> -->
+      <!-- <scope>import</scope> -->
+      <!-- </dependency> -->
 
     </dependencies>
   </dependencyManagement>
@@ -120,7 +119,14 @@
     <!-- Testing -->
     <dependency>
       <groupId>org.junit.jupiter</groupId>
-      <artifactId>junit-jupiter</artifactId>
+      <artifactId>junit-jupiter-api</artifactId>
+      <version>5.7.0</version>
+      <scope>test</scope>
+    </dependency>
+    <dependency>
+      <groupId>org.junit.jupiter</groupId>
+      <artifactId>junit-jupiter-engine</artifactId>
+      <version>5.7.0</version>
       <scope>test</scope>
     </dependency>
 
@@ -194,6 +200,11 @@
               <include>**/*Spec.java</include>
             </includes>
           </configuration>
+        </plugin>
+
+        <plugin>
+          <artifactId>maven-failsafe-plugin</artifactId>
+          <version>2.22.2</version>
         </plugin>
 
         <plugin>
