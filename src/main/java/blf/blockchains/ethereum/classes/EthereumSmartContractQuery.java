@@ -1,4 +1,4 @@
-package blf.blockchains.hyperledger.classes;
+package blf.blockchains.ethereum.classes;
 
 import blf.blockchains.ethereum.state.EthereumProgramState;
 import blf.core.exceptions.ProgramException;

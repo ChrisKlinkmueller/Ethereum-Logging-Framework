@@ -1,4 +1,4 @@
-package blf.blockchains.hyperledger.classes;
+package blf.blockchains.ethereum.classes;
 
 import blf.core.parameters.Parameter;
 import blf.core.values.ValueAccessor;

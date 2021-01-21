@@ -1,6 +1,5 @@
 package blf.blockchains.hyperledger.state;
 
-import blf.blockchains.hyperledger.reader.HyperledgerDataReader;
 import blf.blockchains.hyperledger.variables.HyperledgerVariables;
 import blf.core.state.ProgramState;
 import org.hyperledger.fabric.gateway.Gateway;
@@ -13,19 +12,6 @@ public class HyperledgerProgramState extends ProgramState {
 
     public HyperledgerProgramState() {
         super(new HyperledgerVariables());
-        this.reader = new HyperledgerDataReader();
-    }
-
-    @Override
-    public void close() {
-        this.getReader().close();
-    }
-
-    // ======= reader =======
-    private final HyperledgerDataReader reader;
-
-    public HyperledgerDataReader getReader() {
-        return this.reader;
     }
 
     // ****************************************************
