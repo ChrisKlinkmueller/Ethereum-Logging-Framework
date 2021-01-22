@@ -92,29 +92,6 @@ public class SpecificationComposer {
         return new Program(this.instructionListsStack.peek());
     }
 
-    public void buildBlockRange(BlockNumberSpecification fromBlock, BlockNumberSpecification toBlock) throws BuildException {
-        assert fromBlock != null && fromBlock.getType() != BlockNumberSpecification.Type.CONTINUOUS;
-        assert toBlock != null && toBlock.getType() != BlockNumberSpecification.Type.EARLIEST;
-
-        if (this.states.peek() != FactoryState.BLOCK_RANGE_FILTER) {
-            throw new BuildException(
-                String.format("Cannot build a block filter, when construction of %s has not been finished.", this.states.peek())
-            );
-        }
-
-        final EthereumBlockFilterInstruction blockRange = new EthereumBlockFilterInstruction(
-            fromBlock.getValueAccessor(),
-            toBlock.getStopCriterion(),
-            this.instructionListsStack.peek()
-        );
-
-        this.instructionListsStack.pop();
-        if (!this.instructionListsStack.isEmpty()) {
-            this.instructionListsStack.peek().add(blockRange);
-        }
-        this.states.pop();
-    }
-
     public void buildTransactionFilter(@NonNull AddressListSpecification senders, @NonNull AddressListSpecification recipients)
         throws BuildException {
 

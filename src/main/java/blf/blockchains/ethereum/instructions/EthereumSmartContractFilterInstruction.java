@@ -7,7 +7,7 @@ import blf.blockchains.ethereum.state.EthereumProgramState;
 import blf.core.interfaces.Instruction;
 import blf.core.state.ProgramState;
 import blf.core.exceptions.ProgramException;
-import blf.blockchains.hyperledger.classes.EthereumSmartContractQuery;
+import blf.blockchains.ethereum.classes.EthereumSmartContractQuery;
 import blf.core.instructions.FilterInstruction;
 import blf.core.values.ValueAccessor;
 import io.reactivex.annotations.NonNull;

@@ -10,7 +10,7 @@ import blf.blockchains.ethereum.reader.EthereumLogEntry;
 import blf.blockchains.ethereum.reader.EthereumTransaction;
 import blf.core.interfaces.Instruction;
 import blf.core.state.ProgramState;
-import blf.blockchains.hyperledger.classes.EthereumLogEntrySignature;
+import blf.blockchains.ethereum.classes.EthereumLogEntrySignature;
 import blf.core.instructions.FilterInstruction;
 import blf.core.interfaces.FilterPredicate;
 import io.reactivex.annotations.NonNull;
