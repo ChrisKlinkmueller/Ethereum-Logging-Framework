@@ -12,7 +12,6 @@ public class HyperledgerTransactionVariables {
     static final Set<Variable> TRANSACTION_VARIABLES;
 
     public static final String TRANSACTION_ID = "transaction.id";
-    public static final String TRANSACTION_HASH = "transaction.hash";
     public static final String TRANSACTION_CREATOR_MSPID = "transaction.creatorMspid";
     public static final String TRANSACTION_CREATOR_ID = "transaction.creatorId";
     public static final String TRANSACTION_PEER_NAME = "transaction.peerName";
@@ -38,7 +37,6 @@ public class HyperledgerTransactionVariables {
         TRANSACTION_VARIABLES = new HashSet<>();
 
         addTransactionVariable(TRANSACTION_ID, TYPE_INT);
-        addTransactionVariable(TRANSACTION_HASH, TYPE_STRING);
         addTransactionVariable(TRANSACTION_CREATOR_MSPID, TYPE_INT);
         addTransactionVariable(TRANSACTION_CREATOR_ID, TYPE_INT);
         addTransactionVariable(TRANSACTION_PEER_NAME, TYPE_STRING);

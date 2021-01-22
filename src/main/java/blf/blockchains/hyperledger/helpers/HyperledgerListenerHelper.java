@@ -1,6 +1,5 @@
 package blf.blockchains.hyperledger.helpers;
 
-import blf.blockchains.hyperledger.HyperledgerListener;
 import blf.blockchains.hyperledger.state.HyperledgerProgramState;
 import blf.core.exceptions.ExceptionHandler;
 import blf.core.exceptions.ProgramException;
@@ -13,6 +12,7 @@ import org.antlr.v4.runtime.tree.ParseTree;
 import org.antlr.v4.runtime.tree.TerminalNode;
 
 import java.math.BigInteger;
+import java.nio.charset.StandardCharsets;
 import java.util.Collections;
 import java.util.LinkedList;
 import java.util.List;
@@ -176,5 +176,17 @@ public interface HyperledgerListenerHelper {
         }
 
         return blockNumber;
+    }
+
+    // inspired from: https://stackoverflow.com/questions/9655181/how-to-convert-a-byte-array-to-a-hex-string-in-java
+    static String bytesToHexString(byte[] bytes) {
+        final byte[] hexArray = "0123456789ABCDEF".getBytes(StandardCharsets.US_ASCII);
+        byte[] hexChars = new byte[bytes.length * 2];
+        for (int j = 0; j < bytes.length; j++) {
+            int v = bytes[j] & 0xFF;
+            hexChars[j * 2] = hexArray[v >>> 4];
+            hexChars[j * 2 + 1] = hexArray[v & 0x0F];
+        }
+        return new String(hexChars, StandardCharsets.UTF_8);
     }
 }
