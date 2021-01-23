@@ -46,7 +46,6 @@ BLOCKS (blockNumberFrom) (blockNumberTo) {
    TRANSACTIONS (sender) (recipient) {
       EMIT LOG LINE ("====================================================================================");
       EMIT LOG LINE ("transaction.id: ", transaction.id);
-      EMIT LOG LINE ("transaction.hash: ", transaction.hash);
       EMIT LOG LINE ("transaction.creatorMspid: ", transaction.creatorMspid);
       EMIT LOG LINE ("transaction.creatorId: ", transaction.creatorId);
       EMIT LOG LINE ("transaction.peerName: ", transaction.peerName);

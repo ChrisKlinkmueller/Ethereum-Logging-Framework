@@ -65,7 +65,7 @@ public class HyperledgerBlockFilterInstruction extends FilterInstruction {
                 }
             } else {
                 valueStore.setValue(BLOCK_NUMBER, BigInteger.valueOf(blockEvent.getBlockNumber()));
-                valueStore.setValue(BLOCK_HASH, BigInteger.valueOf(blockEvent.hashCode()));
+                valueStore.setValue(BLOCK_HASH, HyperledgerListenerHelper.bytesToHexString(blockEvent.getDataHash()));
                 valueStore.setValue(BLOCK_TRANSACTION_COUNT, BigInteger.valueOf(blockEvent.getTransactionCount()));
 
                 hyperledgerProgramState.setCurrentBlockNumber(currentBlockNumber);

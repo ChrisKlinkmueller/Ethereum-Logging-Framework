@@ -26,7 +26,7 @@ import static blf.blockchains.hyperledger.variables.HyperledgerTransactionVariab
 public class HyperledgerTransactionFilterInstruction extends FilterInstruction {
 
     private final BcqlParser.TransactionFilterContext transactionCtx;
-    @SuppressWarnings({"FieldCanBeLocal", "unused"})
+    @SuppressWarnings({ "FieldCanBeLocal", "unused" })
     private final Logger logger;
 
     /**
@@ -91,7 +91,6 @@ public class HyperledgerTransactionFilterInstruction extends FilterInstruction {
                     if (recipientsAddressList.isEmpty() || recipientsAddressList.contains(transactionRecipient)) {
                         ValueStore valueStore = state.getValueStore();
 
-                        valueStore.setValue(TRANSACTION_HASH, BigInteger.valueOf(transactionEvent.hashCode()));
                         valueStore.setValue(TRANSACTION_ID, transactionEvent.getTransactionID());
                         valueStore.setValue(TRANSACTION_CREATOR_ID, transactionEventCreator.getId());
                         valueStore.setValue(TRANSACTION_CREATOR_MSPID, transactionEventCreator.getMspid());
