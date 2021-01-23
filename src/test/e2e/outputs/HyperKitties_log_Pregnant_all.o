@@ -1,0 +1,41 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!-- This file has been generated with the OpenXES library. It conforms -->
+<!-- to the XML serialization of the XES standard for log storage and -->
+<!-- management. -->
+<!-- XES standard version: 1.0 -->
+<!-- OpenXES library version: 1.0RC7 -->
+<!-- OpenXES is available from http://www.openxes.org/ -->
+<log xes.version="1.0" xes.features="nested-attributes" openxes.version="1.0RC7">
+	<string key="ident:pid" value="Pregnant"/>
+	<trace>
+		<string key="ident:piid" value="piid0"/>
+		<event>
+			<string key="owner" value="Admin@org1.example.com"/>
+			<string key="matronCooldown" value="2021-01-16T17:25:13.677552652Z"/>
+			<int key="matronID" value="5"/>
+			<string key="ident:eid" value="eid12"/>
+			<int key="sireID" value="4"/>
+		</event>
+		<event>
+			<string key="owner" value="Admin@org1.example.com"/>
+			<string key="matronCooldown" value="2021-01-16T17:39:05.296530273Z"/>
+			<int key="matronID" value="5"/>
+			<string key="ident:eid" value="eid13"/>
+			<int key="sireID" value="4"/>
+		</event>
+		<event>
+			<string key="owner" value="Admin@org1.example.com"/>
+			<string key="matronCooldown" value="2021-01-16T17:52:56.415516776Z"/>
+			<int key="matronID" value="6"/>
+			<string key="ident:eid" value="eid17"/>
+			<int key="sireID" value="4"/>
+		</event>
+		<event>
+			<string key="owner" value="Admin@org1.example.com"/>
+			<string key="matronCooldown" value="2021-01-16T18:30:16.890312625Z"/>
+			<int key="matronID" value="6"/>
+			<string key="ident:eid" value="eid22"/>
+			<int key="sireID" value="7"/>
+		</event>
+	</trace>
+</log>

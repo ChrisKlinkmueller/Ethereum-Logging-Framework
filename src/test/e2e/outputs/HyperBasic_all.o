@@ -1,0 +1,753 @@
+++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
+block.number: 0
+block.hash: 59E0BCECEFE6C504E68B5C5A117AE5307EE2D98CAC525A24F07BE81977141578
+block.transactionCount: 0
+blockNumberSum: 0
+++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
+++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
+block.number: 1
+block.hash: 8B9DBD7C566DA727A5DC2F4675969FCD86526A37EF3D6DF6975BDC8916BB6D12
+block.transactionCount: 0
+blockNumberSum: 1
+++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
+++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
+block.number: 2
+block.hash: 6C391548BF8AE0C65BB6E7F6E6E179478EFF2A72E8688EAE523582E94CF83BD0
+block.transactionCount: 0
+blockNumberSum: 3
+++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
+++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
+block.number: 3
+block.hash: 571845734D05E0D4FA6C4F7838391C61D7C8E3D03E3386DB38C7A8F5C5B7774E
+block.transactionCount: 1
+blockNumberSum: 6
+++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
+++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
+block.number: 4
+block.hash: 5825755F1CE4E04505A6C73D74BC298809B83A2DCC0A53220023F506906ACCAD
+block.transactionCount: 1
+blockNumberSum: 10
+++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
+++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
+block.number: 5
+block.hash: 9374B47F8E9E51B02438BCADECC0762E8AACEE9D978F2A1BE1F18E2F9CE36C72
+block.transactionCount: 1
+blockNumberSum: 15
+++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
+++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
+block.number: 6
+block.hash: 7E9D0F39E6837A033DDD900312A9646D47899A94E6DD111A19E60A38C275CC7B
+block.transactionCount: 1
+blockNumberSum: 21
+++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
+====================================================================================
+transaction.id: 4e9b0b73894079668bee2c654c68e040fe24de3d1ea29f7614e57a3086f17ad5
+transaction.creatorMspid: Org1MSP
+transaction.creatorId: -----BEGIN CERTIFICATE-----
+MIICKDCCAc+gAwIBAgIQeFuWGiBToc9WGq/2SucRozAKBggqhkjOPQQDAjBzMQsw
+CQYDVQQGEwJVUzETMBEGA1UECBMKQ2FsaWZvcm5pYTEWMBQGA1UEBxMNU2FuIEZy
+YW5jaXNjbzEZMBcGA1UEChMQb3JnMS5leGFtcGxlLmNvbTEcMBoGA1UEAxMTY2Eu
+b3JnMS5leGFtcGxlLmNvbTAeFw0yMDExMjcxODEwMDBaFw0zMDExMjUxODEwMDBa
+MGsxCzAJBgNVBAYTAlVTMRMwEQYDVQQIEwpDYWxpZm9ybmlhMRYwFAYDVQQHEw1T
+YW4gRnJhbmNpc2NvMQ4wDAYDVQQLEwVhZG1pbjEfMB0GA1UEAwwWQWRtaW5Ab3Jn
+MS5leGFtcGxlLmNvbTBZMBMGByqGSM49AgEGCCqGSM49AwEHA0IABHACNq69/3ZP
+gfg+3nFyfMnX0446XW/4JrXq+WNzOKINv01KPE+kfZAFbxUzizCf0ia4Cca+DwKk
+sPGlPoW6tJKjTTBLMA4GA1UdDwEB/wQEAwIHgDAMBgNVHRMBAf8EAjAAMCsGA1Ud
+IwQkMCKAIBPU+lqePt/2UsXqjNiXu+ymLPuf/VWKf9K7oiqvwD2BMAoGCCqGSM49
+BAMCA0cAMEQCIBKnU54TY830i9tglJ2BLvIVbSTNwgAeSqwh0K+M9h8yAiB0dk3P
+6v5VpZVxD6NAun+u8KCJkCHYMAs9VmuIxM3EZw==
+-----END CERTIFICATE-----
+
+transaction.peerName: peer0.org1.example.com
+transaction.peerHash: 1063550310
+transaction.peerUrl: grpcs://localhost:7051
+transaction.chaincodeId: basic
+transaction.responseMessage: 
+transaction.responseStatus: 200
+transaction.endorsementCount: 2
+====================================================================================
+++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
+block.number: 7
+block.hash: 2CB43FF5C55800329C1FED80D94AF6712FAEE1C81B34CF9249B8588D397A0416
+block.transactionCount: 1
+blockNumberSum: 28
+++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
+++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
+block.number: 8
+block.hash: 68A66D8DA997BE26A0E444B85F62E64F6A30D896693EEFB464873A1780B758EF
+block.transactionCount: 1
+blockNumberSum: 36
+++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
+++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
+block.number: 9
+block.hash: BD936CA19A63EFA520DB281721DD6C7DA441058A6DC3EEA3C302EC5E2D7582CE
+block.transactionCount: 1
+blockNumberSum: 45
+++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
+++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
+block.number: 10
+block.hash: 98FB5712F11A6ADB294B2161B293AD22FCE091BB3C76559D634EDEBF674C8CCB
+block.transactionCount: 1
+blockNumberSum: 55
+contains block number 10: true
+++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
+++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
+block.number: 11
+block.hash: 4B181B841CB40FBD6F1048EB2452CB4C192DD77DDA0CE8944726522BAE0463DF
+block.transactionCount: 1
+blockNumberSum: 66
+contains block number 10: true
+++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
+====================================================================================
+transaction.id: 1e58c838149642aa9b6184b1a0a276bf99092812a58d92960cfbb02051f8a00c
+transaction.creatorMspid: Org1MSP
+transaction.creatorId: -----BEGIN CERTIFICATE-----
+MIICKDCCAc+gAwIBAgIQeFuWGiBToc9WGq/2SucRozAKBggqhkjOPQQDAjBzMQsw
+CQYDVQQGEwJVUzETMBEGA1UECBMKQ2FsaWZvcm5pYTEWMBQGA1UEBxMNU2FuIEZy
+YW5jaXNjbzEZMBcGA1UEChMQb3JnMS5leGFtcGxlLmNvbTEcMBoGA1UEAxMTY2Eu
+b3JnMS5leGFtcGxlLmNvbTAeFw0yMDExMjcxODEwMDBaFw0zMDExMjUxODEwMDBa
+MGsxCzAJBgNVBAYTAlVTMRMwEQYDVQQIEwpDYWxpZm9ybmlhMRYwFAYDVQQHEw1T
+YW4gRnJhbmNpc2NvMQ4wDAYDVQQLEwVhZG1pbjEfMB0GA1UEAwwWQWRtaW5Ab3Jn
+MS5leGFtcGxlLmNvbTBZMBMGByqGSM49AgEGCCqGSM49AwEHA0IABHACNq69/3ZP
+gfg+3nFyfMnX0446XW/4JrXq+WNzOKINv01KPE+kfZAFbxUzizCf0ia4Cca+DwKk
+sPGlPoW6tJKjTTBLMA4GA1UdDwEB/wQEAwIHgDAMBgNVHRMBAf8EAjAAMCsGA1Ud
+IwQkMCKAIBPU+lqePt/2UsXqjNiXu+ymLPuf/VWKf9K7oiqvwD2BMAoGCCqGSM49
+BAMCA0cAMEQCIBKnU54TY830i9tglJ2BLvIVbSTNwgAeSqwh0K+M9h8yAiB0dk3P
+6v5VpZVxD6NAun+u8KCJkCHYMAs9VmuIxM3EZw==
+-----END CERTIFICATE-----
+
+transaction.peerName: peer0.org1.example.com
+transaction.peerHash: 1063550310
+transaction.peerUrl: grpcs://localhost:7051
+transaction.chaincodeId: basic
+transaction.responseMessage: 
+transaction.responseStatus: 200
+transaction.endorsementCount: 2
+====================================================================================
+++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
+block.number: 12
+block.hash: 9E009AF6973B3AAEB515E65211705833D3A44AC706904C3438E8EEAFC91AD09A
+block.transactionCount: 1
+blockNumberSum: 78
+contains block number 10: true
+++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
+====================================================================================
+transaction.id: 705ed9e3c78348fe150bd6c5b28ad68d2395417158c29397a490127de3dc731e
+transaction.creatorMspid: Org1MSP
+transaction.creatorId: -----BEGIN CERTIFICATE-----
+MIICKDCCAc+gAwIBAgIQeFuWGiBToc9WGq/2SucRozAKBggqhkjOPQQDAjBzMQsw
+CQYDVQQGEwJVUzETMBEGA1UECBMKQ2FsaWZvcm5pYTEWMBQGA1UEBxMNU2FuIEZy
+YW5jaXNjbzEZMBcGA1UEChMQb3JnMS5leGFtcGxlLmNvbTEcMBoGA1UEAxMTY2Eu
+b3JnMS5leGFtcGxlLmNvbTAeFw0yMDExMjcxODEwMDBaFw0zMDExMjUxODEwMDBa
+MGsxCzAJBgNVBAYTAlVTMRMwEQYDVQQIEwpDYWxpZm9ybmlhMRYwFAYDVQQHEw1T
+YW4gRnJhbmNpc2NvMQ4wDAYDVQQLEwVhZG1pbjEfMB0GA1UEAwwWQWRtaW5Ab3Jn
+MS5leGFtcGxlLmNvbTBZMBMGByqGSM49AgEGCCqGSM49AwEHA0IABHACNq69/3ZP
+gfg+3nFyfMnX0446XW/4JrXq+WNzOKINv01KPE+kfZAFbxUzizCf0ia4Cca+DwKk
+sPGlPoW6tJKjTTBLMA4GA1UdDwEB/wQEAwIHgDAMBgNVHRMBAf8EAjAAMCsGA1Ud
+IwQkMCKAIBPU+lqePt/2UsXqjNiXu+ymLPuf/VWKf9K7oiqvwD2BMAoGCCqGSM49
+BAMCA0cAMEQCIBKnU54TY830i9tglJ2BLvIVbSTNwgAeSqwh0K+M9h8yAiB0dk3P
+6v5VpZVxD6NAun+u8KCJkCHYMAs9VmuIxM3EZw==
+-----END CERTIFICATE-----
+
+transaction.peerName: peer0.org1.example.com
+transaction.peerHash: 1063550310
+transaction.peerUrl: grpcs://localhost:7051
+transaction.chaincodeId: basic
+transaction.responseMessage: 
+transaction.responseStatus: 200
+transaction.endorsementCount: 2
+====================================================================================
+--------------------------------------------------------------------------------
+payload: 'Transferring asset asset7: from owner Rohrschacht to PaulBeck'
+--------------------------------------------------------------------------------
+++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
+block.number: 13
+block.hash: AE3C583C5BC39BD2AA54D99B925B4032CE645148E79E0561BAC7CA95400EF451
+block.transactionCount: 1
+blockNumberSum: 91
+contains block number 10: true
+++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
+====================================================================================
+transaction.id: 9768b5d1f92371f2c5dbb24efd4e6ea7edf6485fb794af04d68bd5f90237a8e8
+transaction.creatorMspid: Org1MSP
+transaction.creatorId: -----BEGIN CERTIFICATE-----
+MIICKDCCAc+gAwIBAgIQeFuWGiBToc9WGq/2SucRozAKBggqhkjOPQQDAjBzMQsw
+CQYDVQQGEwJVUzETMBEGA1UECBMKQ2FsaWZvcm5pYTEWMBQGA1UEBxMNU2FuIEZy
+YW5jaXNjbzEZMBcGA1UEChMQb3JnMS5leGFtcGxlLmNvbTEcMBoGA1UEAxMTY2Eu
+b3JnMS5leGFtcGxlLmNvbTAeFw0yMDExMjcxODEwMDBaFw0zMDExMjUxODEwMDBa
+MGsxCzAJBgNVBAYTAlVTMRMwEQYDVQQIEwpDYWxpZm9ybmlhMRYwFAYDVQQHEw1T
+YW4gRnJhbmNpc2NvMQ4wDAYDVQQLEwVhZG1pbjEfMB0GA1UEAwwWQWRtaW5Ab3Jn
+MS5leGFtcGxlLmNvbTBZMBMGByqGSM49AgEGCCqGSM49AwEHA0IABHACNq69/3ZP
+gfg+3nFyfMnX0446XW/4JrXq+WNzOKINv01KPE+kfZAFbxUzizCf0ia4Cca+DwKk
+sPGlPoW6tJKjTTBLMA4GA1UdDwEB/wQEAwIHgDAMBgNVHRMBAf8EAjAAMCsGA1Ud
+IwQkMCKAIBPU+lqePt/2UsXqjNiXu+ymLPuf/VWKf9K7oiqvwD2BMAoGCCqGSM49
+BAMCA0cAMEQCIBKnU54TY830i9tglJ2BLvIVbSTNwgAeSqwh0K+M9h8yAiB0dk3P
+6v5VpZVxD6NAun+u8KCJkCHYMAs9VmuIxM3EZw==
+-----END CERTIFICATE-----
+
+transaction.peerName: peer0.org1.example.com
+transaction.peerHash: 1063550310
+transaction.peerUrl: grpcs://localhost:7051
+transaction.chaincodeId: basic
+transaction.responseMessage: 
+transaction.responseStatus: 200
+transaction.endorsementCount: 2
+====================================================================================
+--------------------------------------------------------------------------------
+payload: 'Transferring asset asset7: from owner PaulBeck to hendrik'
+--------------------------------------------------------------------------------
+++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
+block.number: 14
+block.hash: FB2671E3D7D4E325173F97764C40B80710AD8610ACECFC87B41913283706EB35
+block.transactionCount: 1
+blockNumberSum: 105
+contains block number 10: true
+++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
+====================================================================================
+transaction.id: ce99b115faacae5a31eb177fbef57f4dca8abf6c7907f13371518f179b4bc0ab
+transaction.creatorMspid: Org1MSP
+transaction.creatorId: -----BEGIN CERTIFICATE-----
+MIICKDCCAc+gAwIBAgIQeFuWGiBToc9WGq/2SucRozAKBggqhkjOPQQDAjBzMQsw
+CQYDVQQGEwJVUzETMBEGA1UECBMKQ2FsaWZvcm5pYTEWMBQGA1UEBxMNU2FuIEZy
+YW5jaXNjbzEZMBcGA1UEChMQb3JnMS5leGFtcGxlLmNvbTEcMBoGA1UEAxMTY2Eu
+b3JnMS5leGFtcGxlLmNvbTAeFw0yMDExMjcxODEwMDBaFw0zMDExMjUxODEwMDBa
+MGsxCzAJBgNVBAYTAlVTMRMwEQYDVQQIEwpDYWxpZm9ybmlhMRYwFAYDVQQHEw1T
+YW4gRnJhbmNpc2NvMQ4wDAYDVQQLEwVhZG1pbjEfMB0GA1UEAwwWQWRtaW5Ab3Jn
+MS5leGFtcGxlLmNvbTBZMBMGByqGSM49AgEGCCqGSM49AwEHA0IABHACNq69/3ZP
+gfg+3nFyfMnX0446XW/4JrXq+WNzOKINv01KPE+kfZAFbxUzizCf0ia4Cca+DwKk
+sPGlPoW6tJKjTTBLMA4GA1UdDwEB/wQEAwIHgDAMBgNVHRMBAf8EAjAAMCsGA1Ud
+IwQkMCKAIBPU+lqePt/2UsXqjNiXu+ymLPuf/VWKf9K7oiqvwD2BMAoGCCqGSM49
+BAMCA0cAMEQCIBKnU54TY830i9tglJ2BLvIVbSTNwgAeSqwh0K+M9h8yAiB0dk3P
+6v5VpZVxD6NAun+u8KCJkCHYMAs9VmuIxM3EZw==
+-----END CERTIFICATE-----
+
+transaction.peerName: peer0.org1.example.com
+transaction.peerHash: 1063550310
+transaction.peerUrl: grpcs://localhost:7051
+transaction.chaincodeId: basic
+transaction.responseMessage: 
+transaction.responseStatus: 200
+transaction.endorsementCount: 2
+====================================================================================
+--------------------------------------------------------------------------------
+payload: 'Transferring asset asset7: from owner hendrik to Rohrschacht'
+--------------------------------------------------------------------------------
+++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
+block.number: 15
+block.hash: D804C329C84347B560F4A12A6630389026EC46D01AEA34FEAB3FE0967CEF4973
+block.transactionCount: 1
+blockNumberSum: 120
+contains block number 10: true
+++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
+====================================================================================
+transaction.id: b507813d073b39c2879f149c8bee85a3f8c8bb91b400c9096692cfa5fa467b04
+transaction.creatorMspid: Org1MSP
+transaction.creatorId: -----BEGIN CERTIFICATE-----
+MIICKDCCAc+gAwIBAgIQeFuWGiBToc9WGq/2SucRozAKBggqhkjOPQQDAjBzMQsw
+CQYDVQQGEwJVUzETMBEGA1UECBMKQ2FsaWZvcm5pYTEWMBQGA1UEBxMNU2FuIEZy
+YW5jaXNjbzEZMBcGA1UEChMQb3JnMS5leGFtcGxlLmNvbTEcMBoGA1UEAxMTY2Eu
+b3JnMS5leGFtcGxlLmNvbTAeFw0yMDExMjcxODEwMDBaFw0zMDExMjUxODEwMDBa
+MGsxCzAJBgNVBAYTAlVTMRMwEQYDVQQIEwpDYWxpZm9ybmlhMRYwFAYDVQQHEw1T
+YW4gRnJhbmNpc2NvMQ4wDAYDVQQLEwVhZG1pbjEfMB0GA1UEAwwWQWRtaW5Ab3Jn
+MS5leGFtcGxlLmNvbTBZMBMGByqGSM49AgEGCCqGSM49AwEHA0IABHACNq69/3ZP
+gfg+3nFyfMnX0446XW/4JrXq+WNzOKINv01KPE+kfZAFbxUzizCf0ia4Cca+DwKk
+sPGlPoW6tJKjTTBLMA4GA1UdDwEB/wQEAwIHgDAMBgNVHRMBAf8EAjAAMCsGA1Ud
+IwQkMCKAIBPU+lqePt/2UsXqjNiXu+ymLPuf/VWKf9K7oiqvwD2BMAoGCCqGSM49
+BAMCA0cAMEQCIBKnU54TY830i9tglJ2BLvIVbSTNwgAeSqwh0K+M9h8yAiB0dk3P
+6v5VpZVxD6NAun+u8KCJkCHYMAs9VmuIxM3EZw==
+-----END CERTIFICATE-----
+
+transaction.peerName: peer0.org1.example.com
+transaction.peerHash: 1063550310
+transaction.peerUrl: grpcs://localhost:7051
+transaction.chaincodeId: basic
+transaction.responseMessage: 
+transaction.responseStatus: 200
+transaction.endorsementCount: 2
+====================================================================================
+--------------------------------------------------------------------------------
+payload: 'Transferring asset asset7: from owner Rohrschacht to Paul'
+--------------------------------------------------------------------------------
+++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
+block.number: 16
+block.hash: A026BDE3A276B74E13D4A9850BB3E4AC708DCC4D8C3BE8B106A0463DDF49E58D
+block.transactionCount: 1
+blockNumberSum: 136
+contains block number 10: true
+++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
+====================================================================================
+transaction.id: 3663a88539b1afce5470ef2b2cac8cd925056043760b7974b3fbace9a42d2ac5
+transaction.creatorMspid: Org1MSP
+transaction.creatorId: -----BEGIN CERTIFICATE-----
+MIICKDCCAc+gAwIBAgIQeFuWGiBToc9WGq/2SucRozAKBggqhkjOPQQDAjBzMQsw
+CQYDVQQGEwJVUzETMBEGA1UECBMKQ2FsaWZvcm5pYTEWMBQGA1UEBxMNU2FuIEZy
+YW5jaXNjbzEZMBcGA1UEChMQb3JnMS5leGFtcGxlLmNvbTEcMBoGA1UEAxMTY2Eu
+b3JnMS5leGFtcGxlLmNvbTAeFw0yMDExMjcxODEwMDBaFw0zMDExMjUxODEwMDBa
+MGsxCzAJBgNVBAYTAlVTMRMwEQYDVQQIEwpDYWxpZm9ybmlhMRYwFAYDVQQHEw1T
+YW4gRnJhbmNpc2NvMQ4wDAYDVQQLEwVhZG1pbjEfMB0GA1UEAwwWQWRtaW5Ab3Jn
+MS5leGFtcGxlLmNvbTBZMBMGByqGSM49AgEGCCqGSM49AwEHA0IABHACNq69/3ZP
+gfg+3nFyfMnX0446XW/4JrXq+WNzOKINv01KPE+kfZAFbxUzizCf0ia4Cca+DwKk
+sPGlPoW6tJKjTTBLMA4GA1UdDwEB/wQEAwIHgDAMBgNVHRMBAf8EAjAAMCsGA1Ud
+IwQkMCKAIBPU+lqePt/2UsXqjNiXu+ymLPuf/VWKf9K7oiqvwD2BMAoGCCqGSM49
+BAMCA0cAMEQCIBKnU54TY830i9tglJ2BLvIVbSTNwgAeSqwh0K+M9h8yAiB0dk3P
+6v5VpZVxD6NAun+u8KCJkCHYMAs9VmuIxM3EZw==
+-----END CERTIFICATE-----
+
+transaction.peerName: peer0.org1.example.com
+transaction.peerHash: 1063550310
+transaction.peerUrl: grpcs://localhost:7051
+transaction.chaincodeId: basic
+transaction.responseMessage: 
+transaction.responseStatus: 200
+transaction.endorsementCount: 2
+====================================================================================
+--------------------------------------------------------------------------------
+payload: 'Transferring asset asset7: from owner Paul to Rohrschacht'
+--------------------------------------------------------------------------------
+++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
+block.number: 17
+block.hash: 0272D417D4321A9FB6A483485A520B17E3108B536D80D432235F4F22EC763768
+block.transactionCount: 1
+blockNumberSum: 153
+contains block number 10: true
+++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
+====================================================================================
+transaction.id: ed3868e69954a450f611793b74645228cec06d85a55ad58bb83ad7e24b63b69f
+transaction.creatorMspid: Org1MSP
+transaction.creatorId: -----BEGIN CERTIFICATE-----
+MIICKDCCAc+gAwIBAgIQeFuWGiBToc9WGq/2SucRozAKBggqhkjOPQQDAjBzMQsw
+CQYDVQQGEwJVUzETMBEGA1UECBMKQ2FsaWZvcm5pYTEWMBQGA1UEBxMNU2FuIEZy
+YW5jaXNjbzEZMBcGA1UEChMQb3JnMS5leGFtcGxlLmNvbTEcMBoGA1UEAxMTY2Eu
+b3JnMS5leGFtcGxlLmNvbTAeFw0yMDExMjcxODEwMDBaFw0zMDExMjUxODEwMDBa
+MGsxCzAJBgNVBAYTAlVTMRMwEQYDVQQIEwpDYWxpZm9ybmlhMRYwFAYDVQQHEw1T
+YW4gRnJhbmNpc2NvMQ4wDAYDVQQLEwVhZG1pbjEfMB0GA1UEAwwWQWRtaW5Ab3Jn
+MS5leGFtcGxlLmNvbTBZMBMGByqGSM49AgEGCCqGSM49AwEHA0IABHACNq69/3ZP
+gfg+3nFyfMnX0446XW/4JrXq+WNzOKINv01KPE+kfZAFbxUzizCf0ia4Cca+DwKk
+sPGlPoW6tJKjTTBLMA4GA1UdDwEB/wQEAwIHgDAMBgNVHRMBAf8EAjAAMCsGA1Ud
+IwQkMCKAIBPU+lqePt/2UsXqjNiXu+ymLPuf/VWKf9K7oiqvwD2BMAoGCCqGSM49
+BAMCA0cAMEQCIBKnU54TY830i9tglJ2BLvIVbSTNwgAeSqwh0K+M9h8yAiB0dk3P
+6v5VpZVxD6NAun+u8KCJkCHYMAs9VmuIxM3EZw==
+-----END CERTIFICATE-----
+
+transaction.peerName: peer0.org1.example.com
+transaction.peerHash: 1063550310
+transaction.peerUrl: grpcs://localhost:7051
+transaction.chaincodeId: basic
+transaction.responseMessage: 
+transaction.responseStatus: 200
+transaction.endorsementCount: 2
+====================================================================================
+--------------------------------------------------------------------------------
+payload: 'Transferring asset asset7: from owner Rohrschacht to Tobias'
+--------------------------------------------------------------------------------
+++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
+block.number: 18
+block.hash: 4D7A092C92B7B78EC2D2D49DACF877F75C83B007C3FC01E88574D433DA155248
+block.transactionCount: 1
+blockNumberSum: 171
+contains block number 10: true
+++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
+====================================================================================
+transaction.id: debdef3c215cfa0d743d28343d42a04f15525ae698b157375976777910c43bf6
+transaction.creatorMspid: Org1MSP
+transaction.creatorId: -----BEGIN CERTIFICATE-----
+MIICKDCCAc+gAwIBAgIQeFuWGiBToc9WGq/2SucRozAKBggqhkjOPQQDAjBzMQsw
+CQYDVQQGEwJVUzETMBEGA1UECBMKQ2FsaWZvcm5pYTEWMBQGA1UEBxMNU2FuIEZy
+YW5jaXNjbzEZMBcGA1UEChMQb3JnMS5leGFtcGxlLmNvbTEcMBoGA1UEAxMTY2Eu
+b3JnMS5leGFtcGxlLmNvbTAeFw0yMDExMjcxODEwMDBaFw0zMDExMjUxODEwMDBa
+MGsxCzAJBgNVBAYTAlVTMRMwEQYDVQQIEwpDYWxpZm9ybmlhMRYwFAYDVQQHEw1T
+YW4gRnJhbmNpc2NvMQ4wDAYDVQQLEwVhZG1pbjEfMB0GA1UEAwwWQWRtaW5Ab3Jn
+MS5leGFtcGxlLmNvbTBZMBMGByqGSM49AgEGCCqGSM49AwEHA0IABHACNq69/3ZP
+gfg+3nFyfMnX0446XW/4JrXq+WNzOKINv01KPE+kfZAFbxUzizCf0ia4Cca+DwKk
+sPGlPoW6tJKjTTBLMA4GA1UdDwEB/wQEAwIHgDAMBgNVHRMBAf8EAjAAMCsGA1Ud
+IwQkMCKAIBPU+lqePt/2UsXqjNiXu+ymLPuf/VWKf9K7oiqvwD2BMAoGCCqGSM49
+BAMCA0cAMEQCIBKnU54TY830i9tglJ2BLvIVbSTNwgAeSqwh0K+M9h8yAiB0dk3P
+6v5VpZVxD6NAun+u8KCJkCHYMAs9VmuIxM3EZw==
+-----END CERTIFICATE-----
+
+transaction.peerName: peer0.org1.example.com
+transaction.peerHash: 1063550310
+transaction.peerUrl: grpcs://localhost:7051
+transaction.chaincodeId: basic
+transaction.responseMessage: 
+transaction.responseStatus: 200
+transaction.endorsementCount: 2
+====================================================================================
+--------------------------------------------------------------------------------
+payload: 'Transferring asset asset7: from owner Tobias to Hendrik'
+--------------------------------------------------------------------------------
+++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
+block.number: 19
+block.hash: 0D9DF86F4C7317020E4B2D424C1F8F8580ED44CB2D26A4BB4970665CFA908E55
+block.transactionCount: 1
+blockNumberSum: 190
+contains block number 10: true
+++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
+====================================================================================
+transaction.id: aa84df19d7aca6c154ca8e1a3ccbd9934c880da2b85c088c3e3e5d89d6d4ce8e
+transaction.creatorMspid: Org1MSP
+transaction.creatorId: -----BEGIN CERTIFICATE-----
+MIICKDCCAc+gAwIBAgIQeFuWGiBToc9WGq/2SucRozAKBggqhkjOPQQDAjBzMQsw
+CQYDVQQGEwJVUzETMBEGA1UECBMKQ2FsaWZvcm5pYTEWMBQGA1UEBxMNU2FuIEZy
+YW5jaXNjbzEZMBcGA1UEChMQb3JnMS5leGFtcGxlLmNvbTEcMBoGA1UEAxMTY2Eu
+b3JnMS5leGFtcGxlLmNvbTAeFw0yMDExMjcxODEwMDBaFw0zMDExMjUxODEwMDBa
+MGsxCzAJBgNVBAYTAlVTMRMwEQYDVQQIEwpDYWxpZm9ybmlhMRYwFAYDVQQHEw1T
+YW4gRnJhbmNpc2NvMQ4wDAYDVQQLEwVhZG1pbjEfMB0GA1UEAwwWQWRtaW5Ab3Jn
+MS5leGFtcGxlLmNvbTBZMBMGByqGSM49AgEGCCqGSM49AwEHA0IABHACNq69/3ZP
+gfg+3nFyfMnX0446XW/4JrXq+WNzOKINv01KPE+kfZAFbxUzizCf0ia4Cca+DwKk
+sPGlPoW6tJKjTTBLMA4GA1UdDwEB/wQEAwIHgDAMBgNVHRMBAf8EAjAAMCsGA1Ud
+IwQkMCKAIBPU+lqePt/2UsXqjNiXu+ymLPuf/VWKf9K7oiqvwD2BMAoGCCqGSM49
+BAMCA0cAMEQCIBKnU54TY830i9tglJ2BLvIVbSTNwgAeSqwh0K+M9h8yAiB0dk3P
+6v5VpZVxD6NAun+u8KCJkCHYMAs9VmuIxM3EZw==
+-----END CERTIFICATE-----
+
+transaction.peerName: peer0.org1.example.com
+transaction.peerHash: 1063550310
+transaction.peerUrl: grpcs://localhost:7051
+transaction.chaincodeId: basic
+transaction.responseMessage: 
+transaction.responseStatus: 200
+transaction.endorsementCount: 2
+====================================================================================
+--------------------------------------------------------------------------------
+payload: 'Transferring asset asset7: from owner Hendrik to Paul'
+--------------------------------------------------------------------------------
+++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
+block.number: 20
+block.hash: 75C28F10281754E24516B3400900C86D5CFCDEAED7646D679AFF899EAEC7958B
+block.transactionCount: 1
+blockNumberSum: 210
+contains block number 10: true
+++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
+====================================================================================
+transaction.id: 0b351e8252a6dfbbdb24d8813504da1374033ebd37900f8a4f77c131658361bb
+transaction.creatorMspid: Org1MSP
+transaction.creatorId: -----BEGIN CERTIFICATE-----
+MIICKDCCAc+gAwIBAgIQeFuWGiBToc9WGq/2SucRozAKBggqhkjOPQQDAjBzMQsw
+CQYDVQQGEwJVUzETMBEGA1UECBMKQ2FsaWZvcm5pYTEWMBQGA1UEBxMNU2FuIEZy
+YW5jaXNjbzEZMBcGA1UEChMQb3JnMS5leGFtcGxlLmNvbTEcMBoGA1UEAxMTY2Eu
+b3JnMS5leGFtcGxlLmNvbTAeFw0yMDExMjcxODEwMDBaFw0zMDExMjUxODEwMDBa
+MGsxCzAJBgNVBAYTAlVTMRMwEQYDVQQIEwpDYWxpZm9ybmlhMRYwFAYDVQQHEw1T
+YW4gRnJhbmNpc2NvMQ4wDAYDVQQLEwVhZG1pbjEfMB0GA1UEAwwWQWRtaW5Ab3Jn
+MS5leGFtcGxlLmNvbTBZMBMGByqGSM49AgEGCCqGSM49AwEHA0IABHACNq69/3ZP
+gfg+3nFyfMnX0446XW/4JrXq+WNzOKINv01KPE+kfZAFbxUzizCf0ia4Cca+DwKk
+sPGlPoW6tJKjTTBLMA4GA1UdDwEB/wQEAwIHgDAMBgNVHRMBAf8EAjAAMCsGA1Ud
+IwQkMCKAIBPU+lqePt/2UsXqjNiXu+ymLPuf/VWKf9K7oiqvwD2BMAoGCCqGSM49
+BAMCA0cAMEQCIBKnU54TY830i9tglJ2BLvIVbSTNwgAeSqwh0K+M9h8yAiB0dk3P
+6v5VpZVxD6NAun+u8KCJkCHYMAs9VmuIxM3EZw==
+-----END CERTIFICATE-----
+
+transaction.peerName: peer0.org1.example.com
+transaction.peerHash: 1063550310
+transaction.peerUrl: grpcs://localhost:7051
+transaction.chaincodeId: basic
+transaction.responseMessage: 
+transaction.responseStatus: 200
+transaction.endorsementCount: 2
+====================================================================================
+--------------------------------------------------------------------------------
+payload: 'Transferring asset asset7: from owner Paul to Hendrik'
+--------------------------------------------------------------------------------
+++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
+block.number: 21
+block.hash: DAF70C4AEEEA9EA280A5B728945EA2405C19F53F278C880CB948E821766FE707
+block.transactionCount: 1
+blockNumberSum: 231
+contains block number 10: true
+++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
+====================================================================================
+transaction.id: 6affe9e3fbf84221c32a3374c7382e589542d6c3e703c1024a0d2c677bda319f
+transaction.creatorMspid: Org1MSP
+transaction.creatorId: -----BEGIN CERTIFICATE-----
+MIICKDCCAc+gAwIBAgIQeFuWGiBToc9WGq/2SucRozAKBggqhkjOPQQDAjBzMQsw
+CQYDVQQGEwJVUzETMBEGA1UECBMKQ2FsaWZvcm5pYTEWMBQGA1UEBxMNU2FuIEZy
+YW5jaXNjbzEZMBcGA1UEChMQb3JnMS5leGFtcGxlLmNvbTEcMBoGA1UEAxMTY2Eu
+b3JnMS5leGFtcGxlLmNvbTAeFw0yMDExMjcxODEwMDBaFw0zMDExMjUxODEwMDBa
+MGsxCzAJBgNVBAYTAlVTMRMwEQYDVQQIEwpDYWxpZm9ybmlhMRYwFAYDVQQHEw1T
+YW4gRnJhbmNpc2NvMQ4wDAYDVQQLEwVhZG1pbjEfMB0GA1UEAwwWQWRtaW5Ab3Jn
+MS5leGFtcGxlLmNvbTBZMBMGByqGSM49AgEGCCqGSM49AwEHA0IABHACNq69/3ZP
+gfg+3nFyfMnX0446XW/4JrXq+WNzOKINv01KPE+kfZAFbxUzizCf0ia4Cca+DwKk
+sPGlPoW6tJKjTTBLMA4GA1UdDwEB/wQEAwIHgDAMBgNVHRMBAf8EAjAAMCsGA1Ud
+IwQkMCKAIBPU+lqePt/2UsXqjNiXu+ymLPuf/VWKf9K7oiqvwD2BMAoGCCqGSM49
+BAMCA0cAMEQCIBKnU54TY830i9tglJ2BLvIVbSTNwgAeSqwh0K+M9h8yAiB0dk3P
+6v5VpZVxD6NAun+u8KCJkCHYMAs9VmuIxM3EZw==
+-----END CERTIFICATE-----
+
+transaction.peerName: peer0.org1.example.com
+transaction.peerHash: 1063550310
+transaction.peerUrl: grpcs://localhost:7051
+transaction.chaincodeId: basic
+transaction.responseMessage: 
+transaction.responseStatus: 200
+transaction.endorsementCount: 2
+====================================================================================
+--------------------------------------------------------------------------------
+payload: 'Transferring asset asset7: from owner Hendrik to Rohrschacht'
+--------------------------------------------------------------------------------
+++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
+block.number: 22
+block.hash: 0B445A4A45C45C35D8BA429C534F4F13FA4CE5B6F92F753DFF24CF26AAC284C3
+block.transactionCount: 1
+blockNumberSum: 253
+contains block number 10: true
+++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
+====================================================================================
+transaction.id: 44ae569d453994da82141f7b3774716628ec4c53331e8252e5a6a8fe73b2aad4
+transaction.creatorMspid: Org1MSP
+transaction.creatorId: -----BEGIN CERTIFICATE-----
+MIICKDCCAc+gAwIBAgIQeFuWGiBToc9WGq/2SucRozAKBggqhkjOPQQDAjBzMQsw
+CQYDVQQGEwJVUzETMBEGA1UECBMKQ2FsaWZvcm5pYTEWMBQGA1UEBxMNU2FuIEZy
+YW5jaXNjbzEZMBcGA1UEChMQb3JnMS5leGFtcGxlLmNvbTEcMBoGA1UEAxMTY2Eu
+b3JnMS5leGFtcGxlLmNvbTAeFw0yMDExMjcxODEwMDBaFw0zMDExMjUxODEwMDBa
+MGsxCzAJBgNVBAYTAlVTMRMwEQYDVQQIEwpDYWxpZm9ybmlhMRYwFAYDVQQHEw1T
+YW4gRnJhbmNpc2NvMQ4wDAYDVQQLEwVhZG1pbjEfMB0GA1UEAwwWQWRtaW5Ab3Jn
+MS5leGFtcGxlLmNvbTBZMBMGByqGSM49AgEGCCqGSM49AwEHA0IABHACNq69/3ZP
+gfg+3nFyfMnX0446XW/4JrXq+WNzOKINv01KPE+kfZAFbxUzizCf0ia4Cca+DwKk
+sPGlPoW6tJKjTTBLMA4GA1UdDwEB/wQEAwIHgDAMBgNVHRMBAf8EAjAAMCsGA1Ud
+IwQkMCKAIBPU+lqePt/2UsXqjNiXu+ymLPuf/VWKf9K7oiqvwD2BMAoGCCqGSM49
+BAMCA0cAMEQCIBKnU54TY830i9tglJ2BLvIVbSTNwgAeSqwh0K+M9h8yAiB0dk3P
+6v5VpZVxD6NAun+u8KCJkCHYMAs9VmuIxM3EZw==
+-----END CERTIFICATE-----
+
+transaction.peerName: peer0.org1.example.com
+transaction.peerHash: 1063550310
+transaction.peerUrl: grpcs://localhost:7051
+transaction.chaincodeId: basic
+transaction.responseMessage: 
+transaction.responseStatus: 200
+transaction.endorsementCount: 2
+====================================================================================
+--------------------------------------------------------------------------------
+payload: 'Transferring asset asset7: from owner Rohrschacht to Paul'
+--------------------------------------------------------------------------------
+++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
+block.number: 23
+block.hash: 6CA3E56887B4024049575A3FB5F3B5F99CE091C4AF453F6060001FFD0C5BF9E5
+block.transactionCount: 1
+blockNumberSum: 276
+contains block number 10: true
+++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
+++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
+block.number: 24
+block.hash: DBC23C492DE388F7B4AB0865D33A4C6FFFAF398D171990EBB5934C0735A273FB
+block.transactionCount: 1
+blockNumberSum: 300
+contains block number 10: true
+++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
+++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
+block.number: 25
+block.hash: 36B8FDD97F8E64802295CCE4201CA19B556A941A0B1B2E2B5A754F5122D8DC3C
+block.transactionCount: 1
+blockNumberSum: 325
+contains block number 10: true
+++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
+++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
+block.number: 26
+block.hash: 879A8977C371DFD07E1B8C9360F59C8DA34D7ECE4868ECEA29D15BEEFD8AE813
+block.transactionCount: 1
+blockNumberSum: 351
+contains block number 10: true
+++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
+++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
+block.number: 27
+block.hash: B475A23B5E87CC5FC2774030028C4592BC4B64922B613E6C3CE7A968531D6B4B
+block.transactionCount: 1
+blockNumberSum: 378
+contains block number 10: true
+++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
+++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
+block.number: 28
+block.hash: EFA79333A886187B080F8E229AF290D6B89E96A12670A1B31837E0FB6B25D640
+block.transactionCount: 1
+blockNumberSum: 406
+contains block number 10: true
+++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
+++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
+block.number: 29
+block.hash: 507D0A4013BABAD75D834331C27CB56A5345A6001C1B6620221B08300926F091
+block.transactionCount: 1
+blockNumberSum: 435
+contains block number 10: true
+++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
+++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
+block.number: 30
+block.hash: 08A5A5723F7EA836A6C46D470B94634B14719C954D401B909FE81CFA665F843C
+block.transactionCount: 1
+blockNumberSum: 465
+contains block number 10: true
+++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
+++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
+block.number: 31
+block.hash: 2F16F0283067EAC69A64BF24C5F2BAFB935F1E1A1BC1C79D24A8904C4F57D6C3
+block.transactionCount: 1
+blockNumberSum: 496
+contains block number 10: true
+++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
+++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
+block.number: 32
+block.hash: F1F61DD178AC4B458505765303E0CA49E24555E38AB11E233AAC72C03903B4D1
+block.transactionCount: 1
+blockNumberSum: 528
+contains block number 10: true
+++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
+++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
+block.number: 33
+block.hash: D936895CB71B2FF06C5C436FE73830415D8B351F8E287C460528C98A17037016
+block.transactionCount: 1
+blockNumberSum: 561
+contains block number 10: true
+++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
+++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
+block.number: 34
+block.hash: DC94D10B74B3F9D951873D84BF40497C26808A505333C058FAA36F3DF701E129
+block.transactionCount: 1
+blockNumberSum: 595
+contains block number 10: true
+++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
+++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
+block.number: 35
+block.hash: 9EF670D032D1EF19DA8BCEDDFB7FE2B5E1AA86598DA49852DF572F86AE1D0F08
+block.transactionCount: 1
+blockNumberSum: 630
+contains block number 10: true
+++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
+++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
+block.number: 36
+block.hash: D97B782927CA7119C4A020A1492F32549323751F195B17AFE7D45723773616C3
+block.transactionCount: 1
+blockNumberSum: 666
+contains block number 10: true
+++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
+++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
+block.number: 37
+block.hash: 7FC04050A151022673FC7A887FDC38641C68BD30C3A57307387C8B159E6C0261
+block.transactionCount: 1
+blockNumberSum: 703
+contains block number 10: true
+++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
+++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
+block.number: 38
+block.hash: 362C935A7E8F88F464726640F7016F3DD9C07FC50C7BF286E976FEE041CD06C4
+block.transactionCount: 1
+blockNumberSum: 741
+contains block number 10: true
+++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
+++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
+block.number: 39
+block.hash: 5FA71FC23C5F4FDA2023EEA649281D370786BFFB7ABAF49B40794F30DDEAA83E
+block.transactionCount: 1
+blockNumberSum: 780
+contains block number 10: true
+++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
+++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
+block.number: 40
+block.hash: 93236F330D1785C45EB914C032EB01C40485C8DF8CA5C96D44625C42F18B3E85
+block.transactionCount: 1
+blockNumberSum: 820
+contains block number 10: true
+++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
+++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
+block.number: 41
+block.hash: 628D741AD55EE3AE592066542C2507A082CB3907E07D0BCE19CAD500BA4A64BA
+block.transactionCount: 1
+blockNumberSum: 861
+contains block number 10: true
+++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
+++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
+block.number: 42
+block.hash: D0AEA80CF5E602E1253C6818935F299BD6BB35729DB301BEE96F5F5F16BDD7B8
+block.transactionCount: 1
+blockNumberSum: 903
+contains block number 10: true
+++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
+++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
+block.number: 43
+block.hash: 5A7791B6CAF3B3FD59DBC69BF2F26256F62B481843DF34AE5D731ADE8F703880
+block.transactionCount: 1
+blockNumberSum: 946
+contains block number 10: true
+++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
+++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
+block.number: 44
+block.hash: B7AC407DE5F1C1A5BFB99734A1C1E02F960BC4567E2F472DD0E6B7D559FFEC24
+block.transactionCount: 1
+blockNumberSum: 990
+contains block number 10: true
+++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
+++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
+block.number: 45
+block.hash: 52D37482DFA75824E9549F6A55802FB7F9EA94AFDB6DE36D8090499D5730FD29
+block.transactionCount: 1
+blockNumberSum: 1035
+contains block number 10: true
+++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
+++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
+block.number: 46
+block.hash: 75C4F940A3A9C8E4C89E63790480D65DDABBF1B643E2D2CAD4722030FFCCC2A6
+block.transactionCount: 1
+blockNumberSum: 1081
+contains block number 10: true
+++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
+++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
+block.number: 47
+block.hash: 3D0B8EC1CB2305D8F312D652B10CE0AE77D3BACFF4BA99BB506018127ADA9902
+block.transactionCount: 1
+blockNumberSum: 1128
+contains block number 10: true
+++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
+++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
+block.number: 48
+block.hash: 775ECAC14C94EAC5755C344F57C4D17183A313F5521A5C74102BEF729F116848
+block.transactionCount: 1
+blockNumberSum: 1176
+contains block number 10: true
+++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
+++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
+block.number: 49
+block.hash: 8713D5F6D97DCF1271FA1583858864F71A2AA18B87F1C959561181B24C3F0AAE
+block.transactionCount: 1
+blockNumberSum: 1225
+contains block number 10: true
+++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
+++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
+block.number: 50
+block.hash: 18B7B9EB4B6FD44FFF84BDDABF73C79FF8935258133BB97DB645442F2EBEC7E5
+block.transactionCount: 1
+blockNumberSum: 1275
+contains block number 10: true
+++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
+++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
+block.number: 51
+block.hash: 7D1517B919DDC9E8ECCD74A5211259286433661E40A734D7DB77384330A3FFF6
+block.transactionCount: 1
+blockNumberSum: 1326
+contains block number 10: true
+++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
+++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
+block.number: 52
+block.hash: 59A6861B8A4A2AF201635742A56BA7290ABC4A7E938EB18E79B779C5556D39D3
+block.transactionCount: 1
+blockNumberSum: 1378
+contains block number 10: true
+++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
+++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
+block.number: 53
+block.hash: 37C5D834E916BBF7863F6171340E669DA7763A0C66F5F0A3AD07AEFB5A1EAFC9
+block.transactionCount: 1
+blockNumberSum: 1431
+contains block number 10: true
+++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
+++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
+block.number: 54
+block.hash: F6AD52D6B7BDCF169EE1CEE1027D451C993250721478470A705F8AC6C56F50EC
+block.transactionCount: 1
+blockNumberSum: 1485
+contains block number 10: true
+++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
+++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
+block.number: 55
+block.hash: FBCA741BED5E9C8A64D4DC57ABD7E3D4ECD916FEB5B3480F99BBB74378769747
+block.transactionCount: 1
+blockNumberSum: 1540
+contains block number 10: true
+++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
