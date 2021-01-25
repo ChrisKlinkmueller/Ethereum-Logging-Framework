@@ -1,0 +1,85 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!-- This file has been generated with the OpenXES library. It conforms -->
+<!-- to the XML serialization of the XES standard for log storage and -->
+<!-- management. -->
+<!-- XES standard version: 1.0 -->
+<!-- OpenXES library version: 1.0RC7 -->
+<!-- OpenXES is available from http://www.openxes.org/ -->
+<log xes.version="1.0" xes.features="nested-attributes" openxes.version="1.0RC7">
+	<string key="ident:pid" value="Birth"/>
+	<trace>
+		<string key="ident:piid" value="piid0"/>
+		<event>
+			<string key="owner" value="Org1MSP"/>
+			<int key="newKittenID" value="1"/>
+			<int key="matronID" value="0"/>
+			<int key="genes" value="123456"/>
+			<string key="ident:eid" value="eid0"/>
+			<int key="sireID" value="0"/>
+		</event>
+		<event>
+			<string key="owner" value="Org1MSP"/>
+			<int key="newKittenID" value="2"/>
+			<int key="matronID" value="0"/>
+			<int key="genes" value="420420"/>
+			<string key="ident:eid" value="eid2"/>
+			<int key="sireID" value="0"/>
+		</event>
+		<event>
+			<string key="owner" value="Org1MSP"/>
+			<int key="newKittenID" value="3"/>
+			<int key="matronID" value="0"/>
+			<int key="genes" value="963659"/>
+			<string key="ident:eid" value="eid4"/>
+			<int key="sireID" value="0"/>
+		</event>
+		<event>
+			<string key="owner" value="Admin@org1.example.com"/>
+			<int key="newKittenID" value="4"/>
+			<int key="matronID" value="0"/>
+			<int key="genes" value="123456"/>
+			<string key="ident:eid" value="eid6"/>
+			<int key="sireID" value="0"/>
+		</event>
+		<event>
+			<string key="owner" value="Admin@org1.example.com"/>
+			<int key="newKittenID" value="5"/>
+			<int key="matronID" value="0"/>
+			<int key="genes" value="420420"/>
+			<string key="ident:eid" value="eid8"/>
+			<int key="sireID" value="0"/>
+		</event>
+		<event>
+			<string key="owner" value="Admin@org1.example.com"/>
+			<int key="newKittenID" value="6"/>
+			<int key="matronID" value="0"/>
+			<int key="genes" value="963659"/>
+			<string key="ident:eid" value="eid10"/>
+			<int key="sireID" value="0"/>
+		</event>
+		<event>
+			<string key="owner" value="Admin@org1.example.com"/>
+			<int key="newKittenID" value="7"/>
+			<int key="matronID" value="5"/>
+			<int key="genes" value="493572"/>
+			<string key="ident:eid" value="eid14"/>
+			<int key="sireID" value="4"/>
+		</event>
+		<event>
+			<string key="owner" value="Admin@org1.example.com"/>
+			<int key="newKittenID" value="8"/>
+			<int key="matronID" value="6"/>
+			<int key="genes" value="1005067"/>
+			<string key="ident:eid" value="eid18"/>
+			<int key="sireID" value="4"/>
+		</event>
+		<event>
+			<string key="owner" value="Admin@org1.example.com"/>
+			<int key="newKittenID" value="9"/>
+			<int key="matronID" value="6"/>
+			<int key="genes" value="605263"/>
+			<string key="ident:eid" value="eid23"/>
+			<int key="sireID" value="7"/>
+		</event>
+	</trace>
+</log>
