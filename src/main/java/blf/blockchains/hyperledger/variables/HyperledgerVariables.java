@@ -5,6 +5,7 @@ import blf.core.values.BlockchainVariables;
 import blf.core.values.ValueAccessor;
 import blf.core.values.Variable;
 
+import java.util.HashSet;
 import java.util.Map;
 import java.util.Set;
 import java.util.function.Function;
@@ -33,7 +34,7 @@ public class HyperledgerVariables implements BlockchainVariables {
 
     @Override
     public Map<String, String> getLogEntryVariableNamesAndTypes() {
-        return getVariableNamesAndType(HyperledgerLogEntryVariables.LOG_ENTRY_VARIABLES);
+        return getVariableNamesAndType(new HashSet<>());
     }
 
     private Map<String, String> getVariableNamesAndType(Set<Variable> variables) {
@@ -60,10 +61,7 @@ public class HyperledgerVariables implements BlockchainVariables {
     private static Stream<Variable> variableStream() {
         return Stream.concat(
             HyperledgerBlockVariables.BLOCK_VARIABLES.stream(),
-            Stream.concat(
-                HyperledgerTransactionVariables.TRANSACTION_VARIABLES.stream(),
-                HyperledgerLogEntryVariables.LOG_ENTRY_VARIABLES.stream()
-            )
+            HyperledgerTransactionVariables.TRANSACTION_VARIABLES.stream()
         );
     }
 

@@ -1,12 +1,13 @@
 package blf.blockchains.ethereum.reader;
 
-import java.net.ConnectException;
-import java.net.URISyntaxException;
-import java.util.stream.Stream;
-
+import blf.core.exceptions.ExceptionHandler;
 import blf.core.exceptions.ProgramException;
 import blf.core.readers.DataReader;
 import io.reactivex.annotations.NonNull;
+
+import java.net.ConnectException;
+import java.net.URISyntaxException;
+import java.util.stream.Stream;
 
 /**
  * EthereumSources
@@ -27,15 +28,19 @@ public class EthereumDataReader extends DataReader<EthereumClient, EthereumBlock
         }
     }
 
-    public void connect(String url) throws ProgramException {
+    public void connect(String url) {
+        final ExceptionHandler exceptionHandler = new ExceptionHandler();
+
         if (this.client != null) {
-            throw new ProgramException("Already connected to Ethereum node.");
+            exceptionHandler.handleExceptionAndDecideOnAbort("Already connected to Ethereum node.");
+            return;
         }
 
         try {
             this.client = Web3jClient.connectWebsocket(url);
         } catch (ConnectException | URISyntaxException e) {
-            throw new ProgramException(String.format("Error when connecting to Ethereum node via websocket using URL '%s'.", url), e);
+            final String exceptionMsg = String.format("Error when connecting to Ethereum node via websocket using URL '%s'.", url);
+            exceptionHandler.handleExceptionAndDecideOnAbort(exceptionMsg, e);
         }
     }
 
