@@ -1,6 +1,6 @@
 package blf.blockchains.hyperledger.instructions;
 
-import blf.blockchains.hyperledger.helpers.HyperledgerListenerHelper;
+import blf.blockchains.hyperledger.helpers.HyperledgerInstructionHelper;
 import blf.blockchains.hyperledger.state.HyperledgerProgramState;
 import blf.core.exceptions.ExceptionHandler;
 import blf.core.instructions.Instruction;
@@ -57,11 +57,11 @@ public class HyperledgerTransactionFilterInstruction extends Instruction {
 
         HyperledgerProgramState hyperledgerProgramState = (HyperledgerProgramState) state;
 
-        final List<String> sendersAddressList = HyperledgerListenerHelper.parseAddressListCtx(
+        final List<String> sendersAddressList = HyperledgerInstructionHelper.parseAddressListCtx(
             hyperledgerProgramState,
             transactionCtx.senders
         );
-        final List<String> recipientsAddressList = HyperledgerListenerHelper.parseAddressListCtx(
+        final List<String> recipientsAddressList = HyperledgerInstructionHelper.parseAddressListCtx(
             hyperledgerProgramState,
             transactionCtx.recipients
         );

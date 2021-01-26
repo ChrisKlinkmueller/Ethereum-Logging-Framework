@@ -1,6 +1,6 @@
 package blf.blockchains.hyperledger.instructions;
 
-import blf.blockchains.hyperledger.helpers.HyperledgerListenerHelper;
+import blf.blockchains.hyperledger.helpers.HyperledgerInstructionHelper;
 import blf.blockchains.hyperledger.state.HyperledgerProgramState;
 import blf.core.exceptions.ExceptionHandler;
 import blf.core.instructions.Instruction;
@@ -60,7 +60,7 @@ public class HyperledgerLogEntryFilterInstruction extends Instruction {
 
         HyperledgerProgramState hyperledgerProgramState = (HyperledgerProgramState) state;
 
-        final Triple<String, List<Pair<String, String>>, List<String>> logEntryFilterParams = HyperledgerListenerHelper
+        final Triple<String, List<Pair<String, String>>, List<String>> logEntryFilterParams = HyperledgerInstructionHelper
             .parseLogEntryFilterCtx(hyperledgerProgramState, logEntryFilterCtx);
 
         this.eventName = logEntryFilterParams.a;

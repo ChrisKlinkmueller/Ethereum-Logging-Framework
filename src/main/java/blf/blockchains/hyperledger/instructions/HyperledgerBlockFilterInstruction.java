@@ -1,6 +1,6 @@
 package blf.blockchains.hyperledger.instructions;
 
-import blf.blockchains.hyperledger.helpers.HyperledgerListenerHelper;
+import blf.blockchains.hyperledger.helpers.HyperledgerInstructionHelper;
 import blf.blockchains.hyperledger.state.HyperledgerProgramState;
 import blf.core.exceptions.ExceptionHandler;
 import blf.core.instructions.Instruction;
@@ -43,7 +43,7 @@ public class HyperledgerBlockFilterInstruction extends Instruction {
         final HyperledgerProgramState hyperledgerProgramState = (HyperledgerProgramState) state;
         final ValueStore valueStore = hyperledgerProgramState.getValueStore();
 
-        final Pair<BigInteger, BigInteger> pairOfBlockNumbers = HyperledgerListenerHelper.parseBlockFilterCtx(
+        final Pair<BigInteger, BigInteger> pairOfBlockNumbers = HyperledgerInstructionHelper.parseBlockFilterCtx(
             hyperledgerProgramState,
             this.blockCtx
         );
@@ -62,7 +62,7 @@ public class HyperledgerBlockFilterInstruction extends Instruction {
                 }
             } else {
                 valueStore.setValue(BLOCK_NUMBER, BigInteger.valueOf(blockEvent.getBlockNumber()));
-                valueStore.setValue(BLOCK_HASH, HyperledgerListenerHelper.bytesToHexString(blockEvent.getDataHash()));
+                valueStore.setValue(BLOCK_HASH, HyperledgerInstructionHelper.bytesToHexString(blockEvent.getDataHash()));
                 valueStore.setValue(BLOCK_TRANSACTION_COUNT, BigInteger.valueOf(blockEvent.getTransactionCount()));
 
                 hyperledgerProgramState.setCurrentBlockNumber(currentBlockNumber);
