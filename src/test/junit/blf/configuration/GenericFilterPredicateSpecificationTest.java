@@ -1,29 +1,26 @@
 package blf.configuration;
 
-import blf.blockchains.ethereum.state.EthereumProgramState;
-import blf.core.exceptions.ProgramException;
+import blf.core.interfaces.GenericFilterPredicate;
 import blf.core.state.ProgramState;
-import blf.core.values.ValueAccessor;
-import org.junit.jupiter.api.AfterEach;
-import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
+import org.mockito.Mockito;
 
 import java.util.ArrayList;
 import java.util.List;
 
-import static org.junit.jupiter.api.Assertions.*;
+import static org.junit.jupiter.api.Assertions.assertThrows;
 
 class GenericFilterPredicateSpecificationTest {
     @Test
     void ofBooleanAccessor() {
-        // TODO think about parameterization?
-        List<ValueAccessorSpecification> notBoolean = new ArrayList<ValueAccessorSpecification>();
+        List<ValueAccessorSpecification> notBoolean = new ArrayList<>();
         notBoolean.add(ValueAccessorSpecification.stringLiteral("\"string\""));
         notBoolean.add(ValueAccessorSpecification.integerLiteral("123"));
 
         for(ValueAccessorSpecification vas : notBoolean) {
-            GenericFilterPredicateSpecification predicateSpec = GenericFilterPredicateSpecification.ofBooleanAccessor(vas);
-            assertThrows(ClassCastException.class, () -> predicateSpec.getPredicate().test(new EthereumProgramState()));
+            GenericFilterPredicate gfPredicate = GenericFilterPredicateSpecification.ofBooleanAccessor(vas).getPredicate();
+            ProgramState psMock = Mockito.mock(ProgramState.class);
+            assertThrows(ClassCastException.class, () -> gfPredicate.test(psMock));
         }
     }
 }

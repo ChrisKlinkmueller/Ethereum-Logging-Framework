@@ -10,24 +10,6 @@ class ValidatorSemanticSpec extends Specification {
         validator.analyzeScript(new ByteArrayInputStream(script.getBytes()))
     }
 
-    /*
-    Fails
-    @Unroll
-    def "type #script"() {
-        expect:
-        List<EthqlProcessingError> errors = validate(script, validator)
-        errors*.getErrorMessage() == expectedErr
-
-        where:
-        script                              | expectedErr
-        "int[] a = newIntArray();"          | []
-        "int a = 0x876;"                    | ["Cannot assign a byte value to a int variable."]
-        "string a = 5;"                     | ["Cannot assign a int value to a string variable."]
-        "uint a = -15;"                     | ["out of range"]
-        "int8 a = 260"                      | ["out of range"]
-    }
-    */
-
     @Unroll
     def "transaction filter #script"() {
         expect:
@@ -104,39 +86,6 @@ class ValidatorSemanticSpec extends Specification {
         | if (i in \"[5,3]\") {}
         """.stripMargin()                   | ["Types are not compatible, cannot check containment of int in string."]
     }
-
-    /*
-    Fails
-    @Unroll
-    def "smartContractFilter #script"() {
-        expect:
-        List<EthqlProcessingError> errors = validate(script, validator)
-        errors*.getErrorMessage() == expectedErr
-
-        where:
-        script                              | expectedErr
-        """
-        | BLOCKS (6605100) (6615100) {
-        |   SMART CONTRACT (0x931D387731bBbC988B312206c74F77D004D6B84c)
-        |   (address addr, int i, string s = someMethod(int[] {5, 6})) {}
-        | }
-        """.stripMargin()                   | []
-        """
-        | BLOCKS (6605100) (6615100) {
-        |   address addr = 0x931D387731bBbC988B312206c74F77D004D6B84c;
-        |   SMART CONTRACT (addr)
-        |   (int i, string s = someMethod(int[] {5, 6})) {}
-        | }
-        """.stripMargin()                   | []
-        """
-        | BLOCKS (6605100) (6615100) {
-        |   address addr = 0x931D387731bBbC988B312206c74F77D004D6B84c;
-        |   SMART CONTRACT (addr)
-        |   (int i, string s = someMethod(int[] {"5", "6"})) {}
-        | }
-        """.stripMargin()                   | ["Cannot cast string[] literal to int[]."]
-    }
-    */
 
     def "log entries filter"() {
         expect:

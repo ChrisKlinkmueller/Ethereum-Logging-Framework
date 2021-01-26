@@ -16,7 +16,7 @@ class SpecificationComposerTest {
             fail();
         }
 
-        assertThrows(BuildException.class, () -> composer.prepareProgramBuild());
+        assertThrows(BuildException.class, composer::prepareProgramBuild);
     }
 
     @Test
@@ -29,7 +29,7 @@ class SpecificationComposerTest {
             fail();
         }
 
-        assertThrows(BuildException.class, () -> composer.prepareTransactionFilterBuild());
+        assertThrows(BuildException.class, composer::prepareTransactionFilterBuild);
 
         try {
             composer.prepareBlockRangeBuild();

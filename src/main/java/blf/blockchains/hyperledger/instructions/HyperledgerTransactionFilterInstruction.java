@@ -14,7 +14,6 @@ import org.hyperledger.fabric.sdk.BlockInfo;
 
 import java.math.BigInteger;
 import java.util.List;
-import java.util.logging.Logger;
 
 import static blf.blockchains.hyperledger.variables.HyperledgerTransactionVariables.*;
 
@@ -26,8 +25,6 @@ import static blf.blockchains.hyperledger.variables.HyperledgerTransactionVariab
 public class HyperledgerTransactionFilterInstruction extends FilterInstruction {
 
     private final BcqlParser.TransactionFilterContext transactionCtx;
-    @SuppressWarnings({"FieldCanBeLocal", "unused"})
-    private final Logger logger;
 
     /**
      * Constructs a HyperledgerTransactionFilterInstruction.
@@ -42,8 +39,6 @@ public class HyperledgerTransactionFilterInstruction extends FilterInstruction {
         super(nestedInstructions);
 
         this.transactionCtx = transactionCtx;
-
-        this.logger = Logger.getLogger(HyperledgerTransactionFilterInstruction.class.getName());
     }
 
     /**
