@@ -1,22 +1,21 @@
 package blf.blockchains.ethereum.instructions;
 
+import blf.blockchains.ethereum.reader.EthereumDataReader;
+import blf.blockchains.ethereum.reader.EthereumTransaction;
+import blf.blockchains.ethereum.state.EthereumProgramState;
+import blf.core.exceptions.ProgramException;
+import blf.core.instructions.Instruction;
+import blf.core.interfaces.FilterPredicate;
+import blf.core.state.ProgramState;
+import io.reactivex.annotations.NonNull;
+
 import java.util.Arrays;
 import java.util.List;
-
-import blf.blockchains.ethereum.reader.EthereumDataReader;
-import blf.blockchains.ethereum.state.EthereumProgramState;
-import blf.core.state.ProgramState;
-import blf.core.interfaces.Instruction;
-import blf.core.exceptions.ProgramException;
-import blf.blockchains.ethereum.reader.EthereumTransaction;
-import blf.core.instructions.FilterInstruction;
-import blf.core.interfaces.FilterPredicate;
-import io.reactivex.annotations.NonNull;
 
 /**
  * TransactionScope
  */
-public class EthereumTransactionFilterInstruction extends FilterInstruction {
+public class EthereumTransactionFilterInstruction extends Instruction {
     private final FilterPredicate<String> senderCriterion;
     private final FilterPredicate<String> recipientCriterion;
 
@@ -39,28 +38,33 @@ public class EthereumTransactionFilterInstruction extends FilterInstruction {
     }
 
     @Override
-    public void execute(ProgramState state) throws ProgramException {
+    public void execute(ProgramState state) {
         final EthereumProgramState ethereumProgramState = (EthereumProgramState) state;
         final EthereumDataReader ethereumReader = ethereumProgramState.getReader();
 
         for (EthereumTransaction tx : ethereumReader.getCurrentBlock()) {
-            if (this.senderCriterion.test(state, tx.getFrom()) && this.recipientCriterion.test(state, tx.getTo())) {
-                try {
-                    ethereumReader.setCurrentTransaction(tx);
-                    this.executeInstructions(state);
-                } catch (Exception cause) {
-                    final String message = String.format(
-                        "Error mapping transaction '%s' in block '%s'.",
-                        tx.getTransactionIndex(),
-                        tx.getBlockNumber()
-                    );
-                    final boolean abort = state.getExceptionHandler().handleExceptionAndDecideOnAbort(message, cause);
-                    if (abort) {
-                        throw new ProgramException(message, cause);
+            try {
+                if (this.senderCriterion.test(state, tx.getFrom()) && this.recipientCriterion.test(state, tx.getTo())) {
+                    try {
+                        ethereumReader.setCurrentTransaction(tx);
+                        this.executeNestedInstructions(state);
+                    } catch (Exception cause) {
+                        final String message = String.format(
+                            "Error mapping transaction '%s' in block '%s'.",
+                            tx.getTransactionIndex(),
+                            tx.getBlockNumber()
+                        );
+                        final boolean abort = state.getExceptionHandler().handleExceptionAndDecideOnAbort(message, cause);
+                        if (abort) {
+                            state.getExceptionHandler().handleExceptionAndDecideOnAbort(message, cause);
+                        }
+                    } finally {
+                        ethereumReader.setCurrentTransaction(null);
                     }
-                } finally {
-                    ethereumReader.setCurrentTransaction(null);
                 }
+            } catch (ProgramException e) {
+                // TODO: remove throw of ProgramException
+                state.getExceptionHandler().handleExceptionAndDecideOnAbort("Program exception.", e);
             }
         }
     }

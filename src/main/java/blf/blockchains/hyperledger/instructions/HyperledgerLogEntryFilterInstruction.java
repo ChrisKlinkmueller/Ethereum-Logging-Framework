@@ -3,9 +3,7 @@ package blf.blockchains.hyperledger.instructions;
 import blf.blockchains.hyperledger.helpers.HyperledgerListenerHelper;
 import blf.blockchains.hyperledger.state.HyperledgerProgramState;
 import blf.core.exceptions.ExceptionHandler;
-import blf.core.exceptions.ProgramException;
-import blf.core.instructions.FilterInstruction;
-import blf.core.interfaces.Instruction;
+import blf.core.instructions.Instruction;
 import blf.core.state.ProgramState;
 import blf.grammar.BcqlParser;
 import org.antlr.v4.runtime.misc.Pair;
@@ -13,7 +11,8 @@ import org.antlr.v4.runtime.misc.Triple;
 import org.hyperledger.fabric.sdk.BlockEvent;
 import org.hyperledger.fabric.sdk.BlockInfo;
 import org.hyperledger.fabric.sdk.ChaincodeEvent;
-import org.json.*;
+import org.json.JSONException;
+import org.json.JSONObject;
 
 import java.math.BigInteger;
 import java.util.List;
@@ -24,7 +23,7 @@ import java.util.logging.Logger;
  * Logging Framework. It extracts the requested event from the current Block and stores the extracted parameter values
  * in the ProgramState.
  */
-public class HyperledgerLogEntryFilterInstruction extends FilterInstruction {
+public class HyperledgerLogEntryFilterInstruction extends Instruction {
 
     private final BcqlParser.LogEntryFilterContext logEntryFilterCtx;
 
@@ -53,10 +52,9 @@ public class HyperledgerLogEntryFilterInstruction extends FilterInstruction {
      * event from the Hyperledger block that the BLF is currently analyzing. It is called by the Program class.
      *
      * @param state The current ProgramState of the BLF, provided by the Program when called.
-     * @throws ProgramException never explicitly
      */
     @Override
-    public void execute(ProgramState state) throws ProgramException {
+    public void execute(ProgramState state) {
         // init exception handler
         this.exceptionHandler = state.getExceptionHandler();
 

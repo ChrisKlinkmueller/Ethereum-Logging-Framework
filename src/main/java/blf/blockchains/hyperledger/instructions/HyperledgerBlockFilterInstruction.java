@@ -3,16 +3,13 @@ package blf.blockchains.hyperledger.instructions;
 import blf.blockchains.hyperledger.helpers.HyperledgerListenerHelper;
 import blf.blockchains.hyperledger.state.HyperledgerProgramState;
 import blf.core.exceptions.ExceptionHandler;
-import blf.core.exceptions.ProgramException;
-import blf.core.instructions.FilterInstruction;
-import blf.core.interfaces.Instruction;
+import blf.core.instructions.Instruction;
 import blf.core.state.ProgramState;
-
 import blf.core.values.ValueStore;
 import blf.grammar.BcqlParser;
 import org.antlr.v4.runtime.misc.Pair;
-import org.hyperledger.fabric.sdk.BlockEvent;
 import org.hyperledger.fabric.gateway.Network;
+import org.hyperledger.fabric.sdk.BlockEvent;
 
 import java.math.BigInteger;
 import java.util.List;
@@ -23,7 +20,7 @@ import static blf.blockchains.hyperledger.variables.HyperledgerBlockVariables.*;
 /**
  * This class handles the 'BLOCKS (fromBlock) (toBlock)' filter of the .bcql file.
  */
-public class HyperledgerBlockFilterInstruction extends FilterInstruction {
+public class HyperledgerBlockFilterInstruction extends Instruction {
 
     private final BcqlParser.BlockFilterContext blockCtx;
 
@@ -38,7 +35,7 @@ public class HyperledgerBlockFilterInstruction extends FilterInstruction {
     }
 
     @Override
-    public void execute(final ProgramState state) throws ProgramException {
+    public void execute(final ProgramState state) {
 
         // init exception handler
         ExceptionHandler exceptionHandler = state.getExceptionHandler();
@@ -74,12 +71,7 @@ public class HyperledgerBlockFilterInstruction extends FilterInstruction {
                 this.logger.info("Extracting block number: " + infoMsg);
                 hyperledgerProgramState.setCurrentBlock(blockEvent);
 
-                try {
-                    this.executeInstructions(hyperledgerProgramState);
-                } catch (ProgramException err) {
-                    String errorMsg = "Unable to execute instructions";
-                    exceptionHandler.handleExceptionAndDecideOnAbort(errorMsg, err);
-                }
+                this.executeNestedInstructions(hyperledgerProgramState);
 
                 if (currentBlockNumber.compareTo(toBlockNumber) == 0) {
                     synchronized (network) {

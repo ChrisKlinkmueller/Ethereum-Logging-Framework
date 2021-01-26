@@ -1,10 +1,13 @@
 package blf.blockchains.hyperledger.instructions;
 
 import blf.blockchains.hyperledger.state.HyperledgerProgramState;
-import blf.core.interfaces.Instruction;
-import blf.core.state.ProgramState;
 import blf.core.exceptions.ExceptionHandler;
-import blf.core.exceptions.ProgramException;
+import blf.core.instructions.Instruction;
+import blf.core.state.ProgramState;
+import org.apache.commons.codec.binary.Base64;
+import org.hyperledger.fabric.gateway.Gateway;
+import org.hyperledger.fabric.gateway.Identities;
+import org.hyperledger.fabric.gateway.Network;
 
 import java.io.FileInputStream;
 import java.io.FileNotFoundException;
@@ -25,15 +28,10 @@ import java.security.spec.InvalidKeySpecException;
 import java.security.spec.PKCS8EncodedKeySpec;
 import java.util.logging.Logger;
 
-import org.hyperledger.fabric.gateway.Gateway;
-import org.hyperledger.fabric.gateway.Identities;
-import org.hyperledger.fabric.gateway.Network;
-import org.apache.commons.codec.binary.Base64;
-
 /**
  * This class provides functionality to connect to a Hyperledger blockchain node.
  */
-public class HyperledgerConnectInstruction implements Instruction {
+public class HyperledgerConnectInstruction extends Instruction {
 
     private final Logger logger;
     private ExceptionHandler exceptionHandler;
@@ -61,7 +59,7 @@ public class HyperledgerConnectInstruction implements Instruction {
     }
 
     @Override
-    public void execute(ProgramState state) throws ProgramException {
+    public void execute(ProgramState state) {
         // init exception handler
         this.exceptionHandler = state.getExceptionHandler();
 

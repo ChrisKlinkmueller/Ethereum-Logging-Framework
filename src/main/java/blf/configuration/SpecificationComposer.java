@@ -1,21 +1,22 @@
 package blf.configuration;
 
+import blf.blockchains.ethereum.instructions.EthereumLogEntryFilterInstruction;
+import blf.blockchains.ethereum.instructions.EthereumSmartContractFilterInstruction;
+import blf.blockchains.ethereum.instructions.EthereumTransactionFilterInstruction;
+import blf.core.Program;
+import blf.core.exceptions.ProgramException;
+import blf.core.instructions.GenericFilterInstruction;
+import blf.core.instructions.Instruction;
+import blf.core.state.ProgramState;
+import blf.core.values.ValueAccessor;
+import blf.core.values.ValueMutator;
+import io.reactivex.annotations.NonNull;
+
 import java.util.Arrays;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Stack;
 import java.util.stream.Collectors;
-
-import blf.core.interfaces.Instruction;
-import blf.blockchains.ethereum.instructions.EthereumBlockFilterInstruction;
-import blf.core.instructions.GenericFilterInstruction;
-import blf.blockchains.ethereum.instructions.EthereumLogEntryFilterInstruction;
-import blf.core.Program;
-import blf.blockchains.ethereum.instructions.EthereumSmartContractFilterInstruction;
-import blf.blockchains.ethereum.instructions.EthereumTransactionFilterInstruction;
-import blf.core.values.ValueAccessor;
-import blf.core.values.ValueMutator;
-import io.reactivex.annotations.NonNull;
 
 /**
  * SpecificationComposer
@@ -92,8 +93,7 @@ public class SpecificationComposer {
         return new Program(this.instructionListsStack.peek());
     }
 
-    public void buildTransactionFilter(@NonNull AddressListSpecification senders, @NonNull AddressListSpecification recipients)
-        throws BuildException {
+    public void buildTransactionFilter(AddressListSpecification senders, AddressListSpecification recipients) throws BuildException {
 
         if (this.states.peek() != FactoryState.TRANSACTION_FILTER) {
             throw new BuildException(
@@ -163,7 +163,7 @@ public class SpecificationComposer {
         this.states.pop();
     }
 
-    public void addInstruction(@NonNull Instruction instruction) {
+    public void addInstruction(Instruction instruction) {
         if (this.instructionListsStack.isEmpty()) {
             return;
         }
@@ -173,7 +173,7 @@ public class SpecificationComposer {
 
     public void addInstruction(InstructionSpecification<?> instruction) throws BuildException {
         if (instruction == null) {
-            throw new BuildException(String.format("Parameter instruction is null."));
+            throw new BuildException("Parameter instruction is null.", new NullPointerException());
         }
         this.instructionListsStack.peek().add(instruction.getInstruction());
     }
@@ -184,10 +184,21 @@ public class SpecificationComposer {
     }
 
     private Instruction createVariableAssignment(ValueMutator variable, ValueAccessor valueAccessor) {
-        return state -> {
-            final Object value = valueAccessor.getValue(state);
-            variable.setValue(value, state);
-        };
+        // TODO: replace TmpInstruction declaration with smth meaningful
+        class TmpInstruction extends Instruction {
+            @Override
+            public void execute(ProgramState programState) {
+                final Object value;
+                try {
+                    value = valueAccessor.getValue(programState);
+                    variable.setValue(value, programState);
+                } catch (ProgramException e) {
+                    programState.getExceptionHandler().handleExceptionAndDecideOnAbort(e.getMessage(), e);
+                }
+            }
+        }
+
+        return new TmpInstruction();
     }
 
     public enum FactoryState {
