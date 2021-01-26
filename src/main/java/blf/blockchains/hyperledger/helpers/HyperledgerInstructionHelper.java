@@ -82,6 +82,66 @@ public interface HyperledgerInstructionHelper {
         return addressNames;
     }
 
+    static Pair<String, List<HyperledgerQueryParameters>> parseSmartContractFilterCtx(
+        HyperledgerProgramState hyperledgerProgramState,
+        BcqlParser.SmartContractFilterContext smartContractFilterCtx
+    ) {
+
+        final ExceptionHandler exceptionHandler = hyperledgerProgramState.getExceptionHandler();
+
+        final String contractAddress = smartContractFilterCtx.contractAddress.getText();
+        List<BcqlParser.SmartContractQueryContext> smartContractQueries = smartContractFilterCtx.smartContractQuery();
+
+        List<HyperledgerQueryParameters> hyperledgerQueryParameters = new LinkedList<>();
+
+        for (BcqlParser.SmartContractQueryContext smartContractQuery : smartContractQueries) {
+
+            if (smartContractQuery.publicVariableQuery() != null) {
+                BcqlParser.SmartContractParameterContext smartContractParameterContext = smartContractQuery.publicVariableQuery()
+                    .smartContractParameter();
+
+                Pair<String, String> outputParameter = new Pair<>(
+                    smartContractParameterContext.solType().getText(),
+                    smartContractParameterContext.variableName().getText()
+                );
+                hyperledgerQueryParameters.add(new HyperledgerQueryParameters(outputParameter));
+            }
+
+            if (smartContractQuery.publicFunctionQuery() != null) {
+                BcqlParser.PublicFunctionQueryContext publicFunctionQuery = smartContractQuery.publicFunctionQuery();
+
+                List<BcqlParser.SmartContractParameterContext> smartContractParameters = publicFunctionQuery.smartContractParameter();
+                List<Pair<String, String>> outputParameters = new LinkedList<>();
+
+                for (BcqlParser.SmartContractParameterContext smartContractParameter : smartContractParameters) {
+                    Pair<String, String> outputParameter = new Pair<>(
+                        smartContractParameter.solType().getText(),
+                        smartContractParameter.variableName().getText()
+                    );
+                    outputParameters.add(outputParameter);
+                }
+
+                String methodName = publicFunctionQuery.methodName.getText();
+
+                List<BcqlParser.SmartContractQueryParameterContext> smartContractQueryParameters = publicFunctionQuery
+                    .smartContractQueryParameter();
+                List<Pair<String, String>> inputParameters = new LinkedList<>();
+
+                for (BcqlParser.SmartContractQueryParameterContext smartContractQueryParameter : smartContractQueryParameters) {
+                    Pair<String, String> outputParameter = new Pair<>(
+                        smartContractQueryParameter.solType().getText(),
+                        smartContractQueryParameter.variableName().getText()
+                    );
+                    inputParameters.add(outputParameter);
+                }
+
+                hyperledgerQueryParameters.add(new HyperledgerQueryParameters(outputParameters, methodName, inputParameters));
+            }
+        }
+
+        return new Pair<>(contractAddress, hyperledgerQueryParameters);
+    }
+
     static Triple<String, List<Pair<String, String>>, List<String>> parseLogEntryFilterCtx(
         HyperledgerProgramState hyperledgerProgramState,
         BcqlParser.LogEntryFilterContext logEntryCtx

@@ -1,9 +1,6 @@
 package blf.blockchains.hyperledger;
 
-import blf.blockchains.hyperledger.instructions.HyperledgerBlockFilterInstruction;
-import blf.blockchains.hyperledger.instructions.HyperledgerConnectInstruction;
-import blf.blockchains.hyperledger.instructions.HyperledgerLogEntryFilterInstruction;
-import blf.blockchains.hyperledger.instructions.HyperledgerTransactionFilterInstruction;
+import blf.blockchains.hyperledger.instructions.*;
 import blf.blockchains.hyperledger.state.HyperledgerProgramState;
 import blf.configuration.BaseBlockchainListener;
 import blf.core.exceptions.ExceptionHandler;
@@ -95,6 +92,11 @@ public class HyperledgerListener extends BaseBlockchainListener {
         this.composer.instructionListsStack.add(new LinkedList<>());
     }
 
+    @Override
+    public void exitSmartContractFilter(BcqlParser.SmartContractFilterContext ctx) {
+        this.composer.instructionListsStack.add(new LinkedList<>());
+    }
+
     /**
      * When exiting a scope parse tree node, the listener identifies which filter was specified in the local scope
      * context and calls the corresponding handler method accordingly.
@@ -107,18 +109,41 @@ public class HyperledgerListener extends BaseBlockchainListener {
         super.exitScope(ctx);
 
         final BcqlParser.BlockFilterContext blockFilterCtx = ctx.filter().blockFilter();
-        final BcqlParser.LogEntryFilterContext logEntryFilterCtx = ctx.filter().logEntryFilter();
         final BcqlParser.TransactionFilterContext transactionFilterCtx = ctx.filter().transactionFilter();
+        final BcqlParser.LogEntryFilterContext logEntryFilterCtx = ctx.filter().logEntryFilter();
+        final BcqlParser.SmartContractFilterContext smartContractFilterCtx = ctx.filter().smartContractFilter();
 
         if (blockFilterCtx != null) {
             handleBlockFilterScopeExit(blockFilterCtx);
         }
-        if (logEntryFilterCtx != null) {
-            handleLogEntryFilterScopeExit(logEntryFilterCtx);
-        }
         if (transactionFilterCtx != null) {
             handleTransactionFilterScopeExit(transactionFilterCtx);
         }
+        if (logEntryFilterCtx != null) {
+            handleLogEntryFilterScopeExit(logEntryFilterCtx);
+        }
+        if (smartContractFilterCtx != null) {
+            handleSmartContractFilterScopeExit(smartContractFilterCtx);
+        }
+    }
+
+    /**
+     * This is the handler method in case a blockFilter was identified in the manifest file. It reads the parameters
+     * 'from' and 'to' from the blockFilter context and it checks if they are specified in a semantically correct way.
+     * Subsequently it instantiates a hyperledgerBlockFilterInstruction, which includes the 'from' and 'to' block
+     * numbers and the statements included inside the scope as nested instructions, and adds this wrapper instruction to
+     * the list of instructions.
+     *
+     * @param blockCtx - blockFilter context
+     */
+
+    private void handleBlockFilterScopeExit(BcqlParser.BlockFilterContext blockCtx) {
+        final HyperledgerBlockFilterInstruction hyperledgerBlockFilterInstruction = new HyperledgerBlockFilterInstruction(
+            blockCtx,
+            this.composer.instructionListsStack.pop()
+        );
+
+        this.composer.addInstruction(hyperledgerBlockFilterInstruction);
     }
 
     /**
@@ -160,22 +185,22 @@ public class HyperledgerListener extends BaseBlockchainListener {
     }
 
     /**
-     * This is the handler method in case a blockFilter was identified in the manifest file. It reads the parameters
-     * 'from' and 'to' from the blockFilter context and it checks if they are specified in a semantically correct way.
-     * Subsequently it instantiates a hyperledgerBlockFilterInstruction, which includes the 'from' and 'to' block
-     * numbers and the statements included inside the scope as nested instructions, and adds this wrapper instruction to
-     * the list of instructions.
+     * This is the handler method in case a smartContractFilter was identified in the manifest file. It reads the
+     * parameters according to the selected query from the smartContractFilter context and it checks if they are
+     * specified in a semantically correct way. Subsequently it instantiates a smartContractFilterInstruction, which includes
+     * the extracted parameters, and adds this wrapper instruction to the list of instructions.
      *
-     * @param blockCtx - blockFilter context
+     * @param smartContractFilterCtx - smartContractFilter context
      */
 
-    private void handleBlockFilterScopeExit(BcqlParser.BlockFilterContext blockCtx) {
-        final HyperledgerBlockFilterInstruction hyperledgerBlockFilterInstruction = new HyperledgerBlockFilterInstruction(
-            blockCtx,
+    public void handleSmartContractFilterScopeExit(BcqlParser.SmartContractFilterContext smartContractFilterCtx) {
+
+        final HyperledgerSmartContractFilterInstruction smartContractFilterInstruction = new HyperledgerSmartContractFilterInstruction(
+            smartContractFilterCtx,
             this.composer.instructionListsStack.pop()
         );
 
-        this.composer.addInstruction(hyperledgerBlockFilterInstruction);
+        this.composer.addInstruction(smartContractFilterInstruction);
     }
 
 }
