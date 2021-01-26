@@ -18,7 +18,7 @@ public class ExtractorTest {
         System.out.println(url.getFile());
 
         try {
-            extractor.extractData(url.getFile());
+            extractor.extractData(url.getFile(), true);
         } catch (Throwable ex) {
             ex.printStackTrace();
         }
