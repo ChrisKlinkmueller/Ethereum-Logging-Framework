@@ -1,25 +1,24 @@
 package blf.blockchains.ethereum.instructions;
 
+import blf.blockchains.ethereum.classes.EthereumLogEntrySignature;
+import blf.blockchains.ethereum.reader.EthereumLogEntry;
+import blf.blockchains.ethereum.reader.EthereumTransaction;
+import blf.blockchains.ethereum.state.EthereumProgramState;
+import blf.core.exceptions.ProgramException;
+import blf.core.instructions.Instruction;
+import blf.core.interfaces.FilterPredicate;
+import blf.core.state.ProgramState;
+import io.reactivex.annotations.NonNull;
+
 import java.util.Arrays;
 import java.util.List;
 import java.util.stream.Collectors;
-
-import blf.blockchains.ethereum.state.EthereumProgramState;
-import blf.core.exceptions.ProgramException;
-import blf.blockchains.ethereum.reader.EthereumLogEntry;
-import blf.blockchains.ethereum.reader.EthereumTransaction;
-import blf.core.interfaces.Instruction;
-import blf.core.state.ProgramState;
-import blf.blockchains.ethereum.classes.EthereumLogEntrySignature;
-import blf.core.instructions.FilterInstruction;
-import blf.core.interfaces.FilterPredicate;
-import io.reactivex.annotations.NonNull;
 
 /**
  * LogEntryFilter To understand how to decode event data and topics, see:
  * https://www.programcreek.com/java-api-examples/?class=org.web3j.abi.FunctionReturnDecoder&amp;method=decode
  */
-public class EthereumLogEntryFilterInstruction extends FilterInstruction {
+public class EthereumLogEntryFilterInstruction extends Instruction {
     private final FilterPredicate<String> contractCriterion;
     private final EthereumLogEntrySignature signature;
 
@@ -42,10 +41,16 @@ public class EthereumLogEntryFilterInstruction extends FilterInstruction {
     }
 
     @Override
-    public void execute(ProgramState state) throws ProgramException {
-        final List<EthereumLogEntry> logEntries = this.getEntries(state);
-        for (EthereumLogEntry logEntry : logEntries) {
-            processLogEntry(state, logEntry);
+    public void execute(ProgramState state) {
+        final List<EthereumLogEntry> logEntries;
+        try {
+            logEntries = this.getEntries(state);
+            for (EthereumLogEntry logEntry : logEntries) {
+                processLogEntry(state, logEntry);
+            }
+        } catch (ProgramException e) {
+            // TODO: Remove ProgramException exception throw
+            state.getExceptionHandler().handleExceptionAndDecideOnAbort("Unexpected exception occurred.", e);
         }
     }
 
@@ -56,7 +61,7 @@ public class EthereumLogEntryFilterInstruction extends FilterInstruction {
             if (this.isValidLogEntry(state, logEntry)) {
                 ethereumProgramState.getReader().setCurrentLogEntry(logEntry);
                 this.signature.addLogEntryValues(state, logEntry);
-                this.executeInstructions(state);
+                this.executeNestedInstructions(state);
             }
         } catch (Exception cause) {
             final String message = String.format(

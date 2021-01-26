@@ -1,19 +1,18 @@
 package blf.core.instructions;
 
+import blf.core.exceptions.ProgramException;
+import blf.core.state.ProgramState;
+import blf.core.values.ValueAccessor;
+import io.reactivex.annotations.NonNull;
+
 import java.util.Arrays;
 import java.util.LinkedList;
 import java.util.List;
 
-import blf.core.interfaces.Instruction;
-import blf.core.state.ProgramState;
-import blf.core.exceptions.ProgramException;
-import blf.core.values.ValueAccessor;
-import io.reactivex.annotations.NonNull;
-
 /**
  * AddLogLineInstruction
  */
-public class AddLogLineInstruction implements Instruction {
+public class AddLogLineInstruction extends Instruction {
     private final List<ValueAccessor> valueAccessors;
 
     public AddLogLineInstruction(ValueAccessor... valueAccessors) {
@@ -25,10 +24,14 @@ public class AddLogLineInstruction implements Instruction {
     }
 
     @Override
-    public void execute(ProgramState state) throws ProgramException {
+    public void execute(ProgramState state) {
         final List<Object> values = new LinkedList<>();
         for (ValueAccessor va : this.valueAccessors) {
-            values.add(va.getValue(state));
+            try {
+                values.add(va.getValue(state));
+            } catch (ProgramException e) {
+                state.getExceptionHandler().handleExceptionAndDecideOnAbort("Error occurred.", e);
+            }
         }
         state.getWriters().getLogWriter().addLogLine(values);
     }

@@ -18,7 +18,7 @@ import java.util.LinkedList;
 import java.util.List;
 import java.util.stream.Collectors;
 
-public interface HyperledgerListenerHelper {
+public interface HyperledgerInstructionHelper {
 
     static List<String> parseAddressListCtx(HyperledgerProgramState hyperledgerProgramState, BcqlParser.AddressListContext addressListCtx) {
 
@@ -110,7 +110,7 @@ public interface HyperledgerListenerHelper {
             entryParameters.add(new Pair<>(logEntryParameterCtx.solType().getText(), logEntryParameterCtx.variableName().getText()));
         }
 
-        List<String> addressNames = HyperledgerListenerHelper.parseAddressListCtx(hyperledgerProgramState, addressListCtx);
+        List<String> addressNames = HyperledgerInstructionHelper.parseAddressListCtx(hyperledgerProgramState, addressListCtx);
 
         return new Triple<>(eventName, entryParameters, addressNames);
     }
