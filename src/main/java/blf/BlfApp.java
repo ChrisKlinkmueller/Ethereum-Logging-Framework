@@ -19,17 +19,17 @@ public class BlfApp {
 
     public static void main(String[] args) {
         boolean onExceptionAbort = Arrays.asList(args).contains(ON_EXCEPTION_ABORT);
-        if(onExceptionAbort) {
+        if (onExceptionAbort) {
             List<String> listArgs = Arrays.asList(args);
             listArgs.remove(ON_EXCEPTION_ABORT);
             args = (String[]) listArgs.toArray();
         }
         if (args.length < 2) {
             final String message = String.format(
-                    "Execution of ELF requires two arguments: [%s|%s|%s] <PATH_TO_SCRIPT>",
-                    CMD_GENERATE,
-                    CMD_EXTRACT,
-                    CMD_VALIDATE
+                "Execution of ELF requires two arguments: [%s|%s|%s] <PATH_TO_SCRIPT>",
+                CMD_GENERATE,
+                CMD_EXTRACT,
+                CMD_VALIDATE
             );
             LOGGER.log(Level.SEVERE, message);
             return;
@@ -56,11 +56,11 @@ public class BlfApp {
                 break;
             default:
                 final String message = String.format(
-                        "Unsupported command. Must be %s, %s, or %s. But was: %s",
-                        CMD_GENERATE,
-                        CMD_EXTRACT,
-                        CMD_VALIDATE,
-                        command
+                    "Unsupported command. Must be %s, %s, or %s. But was: %s",
+                    CMD_GENERATE,
+                    CMD_EXTRACT,
+                    CMD_VALIDATE,
+                    command
                 );
                 LOGGER.log(Level.SEVERE, message);
                 break;

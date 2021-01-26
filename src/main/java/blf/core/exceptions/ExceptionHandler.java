@@ -58,8 +58,12 @@ public class ExceptionHandler {
     public boolean handleExceptionAndDecideOnAbort(String message, Throwable cause) {
         this.errorLogger.log(Level.SEVERE, message, cause);
         if (this.abortOnException) {
-          System.out.printf("Program failed with the following message: %s For more details please check the error log %s.%n", message, ERROR_LOG_FILENAME);
-          System.exit(1);
+            System.out.printf(
+                "Program failed with the following message: %s For more details please check the error log %s.%n",
+                message,
+                ERROR_LOG_FILENAME
+            );
+            System.exit(1);
         }
         return false;
     }
