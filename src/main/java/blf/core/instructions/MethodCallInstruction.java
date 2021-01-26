@@ -1,19 +1,18 @@
 package blf.core.instructions;
 
-import java.util.List;
-
 import blf.core.exceptions.ProgramException;
-import blf.core.interfaces.Instruction;
 import blf.core.interfaces.Method;
 import blf.core.state.ProgramState;
 import blf.core.values.ValueAccessor;
 import blf.core.values.ValueMutator;
 import io.reactivex.annotations.NonNull;
 
+import java.util.List;
+
 /**
  * MethodCall
  */
-public class MethodCallInstruction implements Instruction {
+public class MethodCallInstruction extends Instruction {
     private final List<ValueAccessor> parameterAccessors;
     private final Method method;
     private final ValueMutator resultStorer;
@@ -25,15 +24,21 @@ public class MethodCallInstruction implements Instruction {
     }
 
     @Override
-    public void execute(ProgramState state) throws ProgramException {
+    public void execute(ProgramState state) {
         Object[] parameterValues = new Object[parameterAccessors.size()];
-        for (int i = 0; i < parameterAccessors.size(); i++) {
-            parameterValues[i] = parameterAccessors.get(i).getValue(state);
-        }
 
-        final Object result = method.call(parameterValues, state);
-        if (resultStorer != null) {
-            resultStorer.setValue(result, state);
+        try {
+            for (int i = 0; i < parameterAccessors.size(); i++) {
+                parameterValues[i] = parameterAccessors.get(i).getValue(state);
+            }
+
+            final Object result = method.call(parameterValues, state);
+            if (resultStorer != null) {
+                resultStorer.setValue(result, state);
+            }
+        } catch (ProgramException e) {
+            // TODO: remove the throw of ProgramException
+            state.getExceptionHandler().handleExceptionAndDecideOnAbort(e.getMessage(), e);
         }
     }
 

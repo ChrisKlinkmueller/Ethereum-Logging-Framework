@@ -1,20 +1,19 @@
 package blf.core.instructions;
 
+import blf.core.exceptions.ProgramException;
+import blf.core.parameters.XesParameter;
+import blf.core.state.ProgramState;
+import blf.core.values.ValueAccessor;
+import blf.core.writers.XesWriter;
+
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Objects;
 
-import blf.core.interfaces.Instruction;
-import blf.core.state.ProgramState;
-import blf.core.exceptions.ProgramException;
-import blf.core.values.ValueAccessor;
-import blf.core.parameters.XesParameter;
-import blf.core.writers.XesWriter;
-
 /**
  * AddXesElementInstruction
  */
-public abstract class AddXesElementInstruction implements Instruction {
+public abstract class AddXesElementInstruction extends Instruction {
     private final List<XesParameter> parameters;
     private final ValueAccessor pid;
     private final ValueAccessor piid;
@@ -27,12 +26,17 @@ public abstract class AddXesElementInstruction implements Instruction {
     }
 
     @Override
-    public void execute(ProgramState state) throws ProgramException {
+    public void execute(ProgramState state) {
         final XesWriter writer = state.getWriters().getXesWriter();
-        this.startElement(writer, state, this.getId(state, this.pid), this.getId(state, this.piid));
+        try {
+            this.startElement(writer, state, this.getId(state, this.pid), this.getId(state, this.piid));
 
-        for (XesParameter parameter : this.parameters) {
-            parameter.exportAttribute(state, writer);
+            for (XesParameter parameter : this.parameters) {
+                parameter.exportAttribute(state, writer);
+            }
+        } catch (ProgramException e) {
+            // TODO: remove throw of ProgramException
+            state.getExceptionHandler().handleExceptionAndDecideOnAbort(e.getMessage(), e);
         }
     }
 
