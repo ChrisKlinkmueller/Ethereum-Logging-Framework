@@ -5,6 +5,7 @@ import blf.util.RootListenerException;
 import java.io.File;
 import java.util.Arrays;
 import java.util.List;
+import java.util.LinkedList;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
@@ -14,15 +15,16 @@ public class BlfApp {
     private static final String CMD_GENERATE = "generate";
     private static final String CMD_EXTRACT = "extract";
     private static final String CMD_VALIDATE = "validate";
-    private static final String ON_EXCEPTION_ABORT = "-onExc=stop";
+    private static final String ON_EXCEPTION_ABORT = "-abortOnException";
     private static final Logger LOGGER = Logger.getLogger(BlfApp.class.getName());
 
     public static void main(String[] args) {
+        LOGGER.log(Level.SEVERE, String.join(", ", args));
         boolean onExceptionAbort = Arrays.asList(args).contains(ON_EXCEPTION_ABORT);
         if (onExceptionAbort) {
-            List<String> listArgs = Arrays.asList(args);
+            List<String> listArgs = new LinkedList<String>(Arrays.asList(args));
             listArgs.remove(ON_EXCEPTION_ABORT);
-            args = (String[]) listArgs.toArray();
+            args = listArgs.toArray(new String[0]);
         }
         if (args.length < 2) {
             final String message = String.format(
