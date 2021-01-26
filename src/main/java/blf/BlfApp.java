@@ -3,6 +3,7 @@ package blf;
 import blf.util.RootListenerException;
 
 import java.io.File;
+import java.util.Arrays;
 import java.util.List;
 import java.util.logging.Level;
 import java.util.logging.Logger;
@@ -13,15 +14,22 @@ public class BlfApp {
     private static final String CMD_GENERATE = "generate";
     private static final String CMD_EXTRACT = "extract";
     private static final String CMD_VALIDATE = "validate";
+    private static final String ON_EXCEPTION_ABORT = "-onExc=stop";
     private static final Logger LOGGER = Logger.getLogger(BlfApp.class.getName());
 
     public static void main(String[] args) {
+        boolean onExceptionAbort = Arrays.asList(args).contains(ON_EXCEPTION_ABORT);
+        if(onExceptionAbort) {
+            List<String> listArgs = Arrays.asList(args);
+            listArgs.remove(ON_EXCEPTION_ABORT);
+            args = (String[]) listArgs.toArray();
+        }
         if (args.length < 2) {
             final String message = String.format(
-                "Execution of ELF requires two arguments: [%s|%s|%s] <PATH_TO_SCRIPT>",
-                CMD_GENERATE,
-                CMD_EXTRACT,
-                CMD_VALIDATE
+                    "Execution of ELF requires two arguments: [%s|%s|%s] <PATH_TO_SCRIPT>",
+                    CMD_GENERATE,
+                    CMD_EXTRACT,
+                    CMD_VALIDATE
             );
             LOGGER.log(Level.SEVERE, message);
             return;
@@ -41,18 +49,18 @@ public class BlfApp {
                 generate(filepath);
                 break;
             case CMD_EXTRACT:
-                extract(filepath);
+                extract(filepath, onExceptionAbort);
                 break;
             case CMD_VALIDATE:
                 validate(filepath);
                 break;
             default:
                 final String message = String.format(
-                    "Unsupported command. Must be %s, %s, or %s. But was: %s",
-                    CMD_GENERATE,
-                    CMD_EXTRACT,
-                    CMD_VALIDATE,
-                    command
+                        "Unsupported command. Must be %s, %s, or %s. But was: %s",
+                        CMD_GENERATE,
+                        CMD_EXTRACT,
+                        CMD_VALIDATE,
+                        command
                 );
                 LOGGER.log(Level.SEVERE, message);
                 break;
@@ -69,11 +77,11 @@ public class BlfApp {
         }
     }
 
-    private static void extract(String filepath) {
+    private static void extract(String filepath, boolean onExceptionAbort) {
         final Extractor extractor = new Extractor();
 
         try {
-            extractor.extractData(filepath);
+            extractor.extractData(filepath, onExceptionAbort);
         } catch (BcqlProcessingException ex) {
             ex.printStackTrace(System.err);
         } catch (RootListenerException e) {
