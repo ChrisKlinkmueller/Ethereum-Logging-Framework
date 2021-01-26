@@ -15,15 +15,16 @@ public class BlfApp {
     private static final String CMD_GENERATE = "generate";
     private static final String CMD_EXTRACT = "extract";
     private static final String CMD_VALIDATE = "validate";
-    private static final String ON_EXCEPTION_ABORT = "-abortOnException";
+    private static final String[] ON_EXCEPTION_ABORT_KEYS = new String[] { "-abortOnException", "--abort-on-exception" };
     private static final Logger LOGGER = Logger.getLogger(BlfApp.class.getName());
 
     public static void main(String[] args) {
-        LOGGER.log(Level.SEVERE, String.join(", ", args));
-        boolean onExceptionAbort = Arrays.asList(args).contains(ON_EXCEPTION_ABORT);
+        boolean onExceptionAbort = Arrays.asList(args).contains(ON_EXCEPTION_ABORT_KEYS[0])
+            || Arrays.asList(args).contains(ON_EXCEPTION_ABORT_KEYS[1]);
         if (onExceptionAbort) {
             List<String> listArgs = new LinkedList<String>(Arrays.asList(args));
-            listArgs.remove(ON_EXCEPTION_ABORT);
+            listArgs.remove(ON_EXCEPTION_ABORT_KEYS[0]);
+            listArgs.remove(ON_EXCEPTION_ABORT_KEYS[1]);
             args = listArgs.toArray(new String[0]);
         }
         if (args.length < 2) {
