@@ -54,10 +54,7 @@ public class EthereumTransactionFilterInstruction extends Instruction {
                             tx.getTransactionIndex(),
                             tx.getBlockNumber()
                         );
-                        final boolean abort = state.getExceptionHandler().handleExceptionAndDecideOnAbort(message, cause);
-                        if (abort) {
-                            state.getExceptionHandler().handleExceptionAndDecideOnAbort(message, cause);
-                        }
+                        state.getExceptionHandler().handleExceptionAndDecideOnAbort(message, cause);
                     } finally {
                         ethereumReader.setCurrentTransaction(null);
                     }
