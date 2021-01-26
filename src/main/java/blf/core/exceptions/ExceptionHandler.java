@@ -20,7 +20,7 @@ import java.util.logging.SimpleFormatter;
 public class ExceptionHandler {
     private static final Logger LOGGER = Logger.getLogger(ExceptionHandler.class.getName());
     private final Logger errorLogger;
-    private boolean abortOnException;
+    private boolean abortOnException = false;
 
     public static final String ERROR_LOG_FILENAME = "error.log";
 
@@ -56,9 +56,11 @@ public class ExceptionHandler {
     }
 
     public boolean handleExceptionAndDecideOnAbort(String message, Throwable cause) {
-        // TODO (by Mykola Digtiar): the program abortion should be handled here
         this.errorLogger.log(Level.SEVERE, message, cause);
-        return this.abortOnException;
+        if (this.abortOnException) {
+          System.out.printf("Program failed with the following message: %s For more details please check the error log %s.%n", message, ERROR_LOG_FILENAME);
+          System.exit(1);
+        }
+        return false;
     }
-
 }
