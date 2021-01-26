@@ -1,0 +1,10 @@
+owner,newKittenID,matronID,sireID,genes
+Org1MSP,1,0,0,123456
+Org1MSP,2,0,0,420420
+Org1MSP,3,0,0,963659
+Admin@org1.example.com,4,0,0,123456
+Admin@org1.example.com,5,0,0,420420
+Admin@org1.example.com,6,0,0,963659
+Admin@org1.example.com,7,5,4,493572
+Admin@org1.example.com,8,6,4,1005067
+Admin@org1.example.com,9,6,7,605263

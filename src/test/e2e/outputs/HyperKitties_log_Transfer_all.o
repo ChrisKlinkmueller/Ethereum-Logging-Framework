@@ -1,0 +1,85 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!-- This file has been generated with the OpenXES library. It conforms -->
+<!-- to the XML serialization of the XES standard for log storage and -->
+<!-- management. -->
+<!-- XES standard version: 1.0 -->
+<!-- OpenXES library version: 1.0RC7 -->
+<!-- OpenXES is available from http://www.openxes.org/ -->
+<log xes.version="1.0" xes.features="nested-attributes" openxes.version="1.0RC7">
+	<string key="ident:pid" value="Transfer"/>
+	<trace>
+		<string key="ident:piid" value="piid0"/>
+		<event>
+			<string key="from"/>
+			<string key="to" value="Org1MSP"/>
+			<string key="ident:eid" value="eid1"/>
+			<int key="kittyID" value="1"/>
+		</event>
+		<event>
+			<string key="from"/>
+			<string key="to" value="Org1MSP"/>
+			<string key="ident:eid" value="eid3"/>
+			<int key="kittyID" value="2"/>
+		</event>
+		<event>
+			<string key="from"/>
+			<string key="to" value="Org1MSP"/>
+			<string key="ident:eid" value="eid5"/>
+			<int key="kittyID" value="3"/>
+		</event>
+		<event>
+			<string key="from"/>
+			<string key="to" value="Admin@org1.example.com"/>
+			<string key="ident:eid" value="eid7"/>
+			<int key="kittyID" value="4"/>
+		</event>
+		<event>
+			<string key="from"/>
+			<string key="to" value="Admin@org1.example.com"/>
+			<string key="ident:eid" value="eid9"/>
+			<int key="kittyID" value="5"/>
+		</event>
+		<event>
+			<string key="from"/>
+			<string key="to" value="Admin@org1.example.com"/>
+			<string key="ident:eid" value="eid11"/>
+			<int key="kittyID" value="6"/>
+		</event>
+		<event>
+			<string key="from"/>
+			<string key="to" value="Admin@org1.example.com"/>
+			<string key="ident:eid" value="eid15"/>
+			<int key="kittyID" value="7"/>
+		</event>
+		<event>
+			<string key="from" value="Admin@org1.example.com"/>
+			<string key="to" value="Admin@org2.example.com"/>
+			<string key="ident:eid" value="eid16"/>
+			<int key="kittyID" value="7"/>
+		</event>
+		<event>
+			<string key="from"/>
+			<string key="to" value="Admin@org1.example.com"/>
+			<string key="ident:eid" value="eid19"/>
+			<int key="kittyID" value="8"/>
+		</event>
+		<event>
+			<string key="from" value="Admin@org2.example.com"/>
+			<string key="to" value="Admin@org1.example.com"/>
+			<string key="ident:eid" value="eid20"/>
+			<int key="kittyID" value="8"/>
+		</event>
+		<event>
+			<string key="from" value="Admin@org1.example.com"/>
+			<string key="to" value="Admin@org2.example.com"/>
+			<string key="ident:eid" value="eid21"/>
+			<int key="kittyID" value="8"/>
+		</event>
+		<event>
+			<string key="from"/>
+			<string key="to" value="Admin@org1.example.com"/>
+			<string key="ident:eid" value="eid24"/>
+			<int key="kittyID" value="9"/>
+		</event>
+	</trace>
+</log>

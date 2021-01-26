@@ -28,7 +28,11 @@ function main() {
 	fi
 
 	colorecho "Setting up test environment"
-	mkdir -p "$ED"/{AugurContractRegistry,CryptoKitties,NetworkStatistics,Rebesky_Augur,Rebesky_ChickenHunt,Rebesky_Idex1}
+	mkdir -p "$ED"/{AugurContractRegistry,CryptoKitties,NetworkStatistics,Rebesky_Augur,Rebesky_ChickenHunt,Rebesky_Idex1,HyperBasic,HyperKitties,CryptoKittiesAsHyper,hyperledger}
+
+	echo "$CRED_Connection" > "$ED"/hyperledger/connection-org1.yaml
+	echo "$CRED_Server_CRT" > "$ED"/hyperledger/server.crt
+	echo "$CRED_Server_KEY" > "$ED"/hyperledger/server.key
 
 	echo "$MAN_AugurContractRegistry" > "$ED"/AugurContractRegistry.bcql
 	echo "$MAN_CryptoKitties" > "$ED"/CryptoKitties.bcql
@@ -36,6 +40,9 @@ function main() {
 	echo "$MAN_Rebesky_Augur" > "$ED"/Rebesky_Augur.bcql
 	echo "$MAN_Rebesky_ChickenHunt" > "$ED"/Rebesky_ChickenHunt.bcql
 	echo "$MAN_Rebesky_Idex1" > "$ED"/Rebesky_Idex1.bcql
+  echo "$MAN_HyperBasic" > "$ED"/HyperBasic.bcql
+  echo "$MAN_HyperKitties" > "$ED"/HyperKitties.bcql
+  echo "$MAN_CryptoKittiesAsHyper" > "$ED"/CryptoKittiesAsHyper.bcql
 
 	touch "$ED"/AugurContractRegistry/error.log.xelf
 	touch "$ED"/CryptoKitties/error.log.xelf
@@ -43,6 +50,9 @@ function main() {
 	touch "$ED"/Rebesky_Augur/error.log.xelf
 	touch "$ED"/Rebesky_ChickenHunt/error.log.xelf
 	touch "$ED"/Rebesky_Idex1/error.log.xelf
+	touch "$ED"/HyperBasic/error.log.xblf
+	touch "$ED"/HyperKitties/error.log.xblf
+	touch "$ED"/CryptoKittiesAsHyper/error.log.xblf
 
 	echo "$XELF_AugurContractRegistry" > "$ED"/AugurContractRegistry/all.log.xelf
 	echo "$XELF_CryptoKitties" > "$ED"/CryptoKitties/log_pid0_all.xes.xelf
@@ -50,6 +60,17 @@ function main() {
 	echo "$XELF_Rebesky_Augur" > "$ED"/Rebesky_Augur/log_pid0_all.xes.xelf
 	echo "$XELF_Rebesky_ChickenHunt" > "$ED"/Rebesky_ChickenHunt/log_pid0_all.xes.xelf
 	echo "$XELF_Rebesky_Idex1" > "$ED"/Rebesky_Idex1/Idex_calls_all.csv.xelf
+	echo "$XBLF_HyperBasic_all" > "$ED"/HyperBasic/all.log.xblf
+	echo "$XBLF_HyperBasic_log_testEvent" > "$ED"/HyperBasic/log_testEvent_all.xes.xblf
+	echo "$XBLF_HyperBasic_payload" > "$ED"/HyperBasic/payload_all.csv.xblf
+	echo "$XBLF_HyperKitties_all" > "$ED"/HyperKitties/all.log.xblf
+	echo "$XBLF_HyperKitties_Birth_all" > "$ED"/HyperKitties/Birth_all.csv.xblf
+	echo "$XBLF_HyperKitties_log_Birth_all" > "$ED"/HyperKitties/log_Birth_all.xes.xblf
+	echo "$XBLF_HyperKitties_log_Pregnant_all" > "$ED"/HyperKitties/log_Pregnant_all.xes.xblf
+	echo "$XBLF_HyperKitties_log_Transfer_all" > "$ED"/HyperKitties/log_Transfer_all.xes.xblf
+	echo "$XBLF_HyperKitties_Pregnant_all" > "$ED"/HyperKitties/Pregnant_all.csv.xblf
+	echo "$XBLF_HyperKitties_Transfer_all" > "$ED"/HyperKitties/Transfer_all.csv.xblf
+	echo "$XBLF_CryptoKittiesAsHyper_all" > "$ED"/CryptoKittiesAsHyper/log_pid0_all.xes.xblf
 
   if [ ! "$1" = "$SKIP_BUILD_PARAM" ] && [ ! "$2" = "$SKIP_BUILD_PARAM" ] && [ ! "$3" = "$SKIP_BUILD_PARAM" ]; then
 	  colorecho "Building the BLF"
@@ -122,6 +143,44 @@ function main() {
 	cmp Rebesky_Idex1/error.log{,.xelf} || { redecho "Comparing the extracted data with the expected data failed! Leaving test environment as is for investigation" ; exit 2; }
 	colorecho "Test successful"
 
+	colorecho "Testing HyperBasic"
+	if [ "$1" = "$SILENT_PARAM" ] || [ "$2" = "$SILENT_PARAM" ] || [ "$3" = "$SILENT_PARAM" ]; then
+	  java -jar "$JAR" extract HyperBasic.bcql &> /dev/null
+	else
+	  java -jar "$JAR" extract HyperBasic.bcql
+  fi
+	cmp HyperBasic/all.log{,.xblf} || { redecho "Comparing the extracted data with the expected data failed! Leaving test environment as is for investigation" ; exit 2; }
+	cmp HyperBasic/log_testEvent_all.xes{,.xblf} || { redecho "Comparing the extracted data with the expected data failed! Leaving test environment as is for investigation" ; exit 2; }
+	cmp HyperBasic/payload_all.csv{,.xblf} || { redecho "Comparing the extracted data with the expected data failed! Leaving test environment as is for investigation" ; exit 2; }
+	cmp HyperBasic/error.log{,.xblf} || { redecho "Comparing the extracted data with the expected data failed! Leaving test environment as is for investigation" ; exit 2; }
+	colorecho "Test successful"
+
+	colorecho "Testing HyperKitties"
+	if [ "$1" = "$SILENT_PARAM" ] || [ "$2" = "$SILENT_PARAM" ] || [ "$3" = "$SILENT_PARAM" ]; then
+	  java -jar "$JAR" extract HyperKitties.bcql &> /dev/null
+	else
+	  java -jar "$JAR" extract HyperKitties.bcql
+  fi
+	cmp HyperKitties/all.log{,.xblf} || { redecho "Comparing the extracted data with the expected data failed! Leaving test environment as is for investigation" ; exit 2; }
+	cmp HyperKitties/Birth_all.csv{,.xblf} || { redecho "Comparing the extracted data with the expected data failed! Leaving test environment as is for investigation" ; exit 2; }
+	cmp HyperKitties/log_Birth_all.xes{,.xblf} || { redecho "Comparing the extracted data with the expected data failed! Leaving test environment as is for investigation" ; exit 2; }
+	cmp HyperKitties/log_Pregnant_all.xes{,.xblf} || { redecho "Comparing the extracted data with the expected data failed! Leaving test environment as is for investigation" ; exit 2; }
+	cmp HyperKitties/log_Transfer_all.xes{,.xblf} || { redecho "Comparing the extracted data with the expected data failed! Leaving test environment as is for investigation" ; exit 2; }
+	cmp HyperKitties/Pregnant_all.csv{,.xblf} || { redecho "Comparing the extracted data with the expected data failed! Leaving test environment as is for investigation" ; exit 2; }
+	cmp HyperKitties/Transfer_all.csv{,.xblf} || { redecho "Comparing the extracted data with the expected data failed! Leaving test environment as is for investigation" ; exit 2; }
+	cmp HyperKitties/error.log{,.xblf} || { redecho "Comparing the extracted data with the expected data failed! Leaving test environment as is for investigation" ; exit 2; }
+	colorecho "Test successful"
+
+	colorecho "Testing CryptoKittiesAsHyper"
+	if [ "$1" = "$SILENT_PARAM" ] || [ "$2" = "$SILENT_PARAM" ] || [ "$3" = "$SILENT_PARAM" ]; then
+	  java -jar "$JAR" extract CryptoKittiesAsHyper.bcql &> /dev/null
+	else
+	  java -jar "$JAR" extract CryptoKittiesAsHyper.bcql
+  fi
+	cmp CryptoKittiesAsHyper/log_pid0_all.xes{,.xblf} || { redecho "Comparing the extracted data with the expected data failed! Leaving test environment as is for investigation" ; exit 2; }
+	cmp CryptoKittiesAsHyper/error.log{,.xblf} || { redecho "Comparing the extracted data with the expected data failed! Leaving test environment as is for investigation" ; exit 2; }
+	colorecho "Test successful"
+
 	colorecho "All tests completed successfully"
 	cd "$LWD"
 	if [ ! "$1" = "$AUTO_PARAM" ] && [ ! "$2" = "$AUTO_PARAM" ] && [ ! "$3" = "$AUTO_PARAM" ]; then
@@ -155,6 +214,13 @@ WD="$SCRIPT_DIR"/../../..
 ED="./extracted"
 JAR="$WD"/target/blf-cmd.jar
 
+# HyperLedger credentials
+CRED_Connection=$(cat "$SCRIPT_DIR/credentials/connection-org1.yaml")
+
+CRED_Server_CRT=$(cat "$SCRIPT_DIR/credentials/server.crt")
+
+CRED_Server_KEY=$(cat "$SCRIPT_DIR/credentials/server.key")
+
 # BCQL scripts
 MAN_AugurContractRegistry=$(cat "$SCRIPT_DIR"/bcql/AugurContractRegistry.bcql)
 
@@ -168,6 +234,12 @@ MAN_Rebesky_ChickenHunt=$(cat "$SCRIPT_DIR"/bcql/Rebesky_ChickenHunt.bcql)
 
 MAN_Rebesky_Idex1=$(cat "$SCRIPT_DIR"/bcql/Rebesky_Idex1.bcql)
 
+MAN_HyperBasic=$(cat "$SCRIPT_DIR/bcql/HyperBasic.bcql")
+
+MAN_HyperKitties=$(cat "$SCRIPT_DIR/bcql/HyperKitties.bcql")
+
+MAN_CryptoKittiesAsHyper=$(cat "$SCRIPT_DIR/bcql/CryptoKittiesAsHyper.bcql")
+
 # BCQL expected outputs
 XELF_AugurContractRegistry=$(cat "$SCRIPT_DIR"/outputs/AugurContractRegistry.o)
 
@@ -180,5 +252,27 @@ XELF_Rebesky_Augur=$(cat "$SCRIPT_DIR"/outputs/Rebesky_Augur.o)
 XELF_Rebesky_ChickenHunt=$(cat "$SCRIPT_DIR"/outputs/Rebesky_ChickenHunt.o)
 
 XELF_Rebesky_Idex1=$(cat "$SCRIPT_DIR"/outputs/Rebesky_Idex1.o)
+
+XBLF_HyperBasic_all=$(cat "$SCRIPT_DIR/outputs/HyperBasic_all.o")
+
+XBLF_HyperBasic_log_testEvent=$(cat "$SCRIPT_DIR/outputs/HyperBasic_log_testEvent_all.o")
+
+XBLF_HyperBasic_payload=$(cat "$SCRIPT_DIR/outputs/HyperBasic_payload_all.o")
+
+XBLF_HyperKitties_all=$(cat "$SCRIPT_DIR/outputs/HyperKitties_all.o")
+
+XBLF_HyperKitties_Birth_all=$(cat "$SCRIPT_DIR/outputs/HyperKitties_Birth_all.o")
+
+XBLF_HyperKitties_log_Birth_all=$(cat "$SCRIPT_DIR/outputs/HyperKitties_log_Birth_all.o")
+
+XBLF_HyperKitties_log_Pregnant_all=$(cat "$SCRIPT_DIR/outputs/HyperKitties_log_Pregnant_all.o")
+
+XBLF_HyperKitties_log_Transfer_all=$(cat "$SCRIPT_DIR/outputs/HyperKitties_log_Transfer_all.o")
+
+XBLF_HyperKitties_Pregnant_all=$(cat "$SCRIPT_DIR/outputs/HyperKitties_Pregnant_all.o")
+
+XBLF_HyperKitties_Transfer_all=$(cat "$SCRIPT_DIR/outputs/HyperKitties_Transfer_all.o")
+
+XBLF_CryptoKittiesAsHyper_all=$(cat "$SCRIPT_DIR/outputs/CryptoKittiesAsHyper_log_pid0_all.o")
 
 main "$@"

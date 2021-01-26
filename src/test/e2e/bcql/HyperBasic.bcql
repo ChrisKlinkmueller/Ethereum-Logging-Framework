@@ -1,0 +1,87 @@
+// Author: Tobias Petrich
+
+SET BLOCKCHAIN "Hyperledger"
+
+SET CONNECTION {
+   "hyperledger/connection-org1.yaml",
+   "hyperledger/server.key",
+   "hyperledger/server.crt",
+   "Org1MSP",
+   "mychannel"
+}
+
+SET OUTPUT FOLDER "./HyperBasic"
+
+int blockNumberFrom = 0;
+int blockNumberTo = 55;
+
+string chainCodeName = "basic";
+
+string sender = "-----BEGIN CERTIFICATE-----MIICKDCCAc+gAwIBAgIQeFuWGiBToc9WGq/2SucRozAKBggqhkjOPQQDAjBzMQswCQYDVQQGEwJVUzETMBEGA1UECBMKQ2FsaWZvcm5pYTEWMBQGA1UEBxMNU2FuIEZyYW5jaXNjbzEZMBcGA1UEChMQb3JnMS5leGFtcGxlLmNvbTEcMBoGA1UEAxMTY2Eub3JnMS5leGFtcGxlLmNvbTAeFw0yMDExMjcxODEwMDBaFw0zMDExMjUxODEwMDBaMGsxCzAJBgNVBAYTAlVTMRMwEQYDVQQIEwpDYWxpZm9ybmlhMRYwFAYDVQQHEw1TYW4gRnJhbmNpc2NvMQ4wDAYDVQQLEwVhZG1pbjEfMB0GA1UEAwwWQWRtaW5Ab3JnMS5leGFtcGxlLmNvbTBZMBMGByqGSM49AgEGCCqGSM49AwEHA0IABHACNq69/3ZPgfg+3nFyfMnX0446XW/4JrXq+WNzOKINv01KPE+kfZAFbxUzizCf0ia4Cca+DwKksPGlPoW6tJKjTTBLMA4GA1UdDwEB/wQEAwIHgDAMBgNVHRMBAf8EAjAAMCsGA1UdIwQkMCKAIBPU+lqePt/2UsXqjNiXu+ymLPuf/VWKf9K7oiqvwD2BMAoGCCqGSM49BAMCA0cAMEQCIBKnU54TY830i9tglJ2BLvIVbSTNwgAeSqwh0K+M9h8yAiB0dk3P6v5VpZVxD6NAun+u8KCJkCHYMAs9VmuIxM3EZw==-----END CERTIFICATE-----";
+string recipient = chainCodeName;
+
+int blockNumberSum = 0;
+int[] blockNumbers = newIntArray();
+
+BLOCKS (blockNumberFrom) (blockNumberTo) {
+
+   blockNumberSum = add(blockNumberSum, block.number);
+
+   add(blockNumbers, block.number);
+
+   bool containsBlockNumber10 = contains(blockNumbers, 10);
+
+   EMIT LOG LINE ("++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++");
+   EMIT LOG LINE ("block.number: ", block.number);
+   EMIT LOG LINE ("block.hash: ", block.hash);
+   EMIT LOG LINE ("block.transactionCount: ", block.transactionCount);
+   EMIT LOG LINE ("blockNumberSum: ", blockNumberSum);
+   IF (containsBlockNumber10) {
+      EMIT LOG LINE ("contains block number 10: ", containsBlockNumber10);
+   }
+   EMIT LOG LINE ("++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++");
+
+
+   // For senders () is the same as (ANY)
+   TRANSACTIONS (sender) (recipient) {
+      EMIT LOG LINE ("====================================================================================");
+      EMIT LOG LINE ("transaction.id: ", transaction.id);
+      EMIT LOG LINE ("transaction.creatorMspid: ", transaction.creatorMspid);
+      EMIT LOG LINE ("transaction.creatorId: ", transaction.creatorId);
+      EMIT LOG LINE ("transaction.peerName: ", transaction.peerName);
+      EMIT LOG LINE ("transaction.peerHash: ", transaction.peerHash);
+      EMIT LOG LINE ("transaction.peerUrl: ", transaction.peerUrl);
+      EMIT LOG LINE ("transaction.chaincodeId: ", transaction.chaincodeId);
+      EMIT LOG LINE ("transaction.responseMessage: ", transaction.responseMessage);
+      EMIT LOG LINE ("transaction.responseStatus: ", transaction.responseStatus);
+      EMIT LOG LINE ("transaction.endorsementCount: ", transaction.endorsementCount);
+      EMIT LOG LINE ("====================================================================================");
+   }
+
+   // For senders () is the same as (ANY)
+   TRANSACTIONS ("Sender1", "Sender2", "Sender3") ("Recipient1", "Recipient2", "Recipient3", "Recipient4") {
+   }
+
+   TRANSACTIONS () ("Recipient11", "Recipient12", "Recipient13", "Recipient14") {
+   }
+
+   TRANSACTIONS () (0x1eD3d2c916cab00631cce4b08a7F880d4Badae94) {
+   }
+
+   TRANSACTIONS (sender) (recipient) {
+   }
+
+   TRANSACTIONS () (ANY) {
+   }
+
+   TRANSACTIONS (ANY) (ANY) {
+   }
+
+   LOG ENTRIES (chainCodeName) (basicTestEvent(string payload)) {
+        EMIT LOG LINE ("--------------------------------------------------------------------------------");
+        EMIT LOG LINE ("payload: '", payload, "'");
+        EMIT LOG LINE ("--------------------------------------------------------------------------------");
+        EMIT CSV ROW ("payload") (payload);
+        EMIT XES EVENT ("testEvent")()()(payload as xs:string payload);
+   }
+}
