@@ -1,13 +1,12 @@
 package blf.blockchains.ethereum.instructions;
 
 import blf.blockchains.ethereum.state.EthereumProgramState;
-import blf.core.interfaces.Instruction;
+import blf.core.instructions.Instruction;
 import blf.core.state.ProgramState;
-import blf.core.exceptions.ProgramException;
 
-public class EthereumConnectInstruction implements Instruction {
+public class EthereumConnectInstruction extends Instruction {
     @Override
-    public void execute(ProgramState state) throws ProgramException {
+    public void execute(ProgramState state) {
         EthereumProgramState ethereumState = (EthereumProgramState) state;
 
         ethereumState.getReader().connect(ethereumState.connectionUrl);
