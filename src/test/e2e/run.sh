@@ -28,7 +28,7 @@ function main() {
 	fi
 
 	colorecho "Setting up test environment"
-	mkdir -p "$ED"/{AugurContractRegistry,CryptoKitties,NetworkStatistics,Rebesky_Augur,Rebesky_ChickenHunt,Rebesky_Idex1,HyperBasic,HyperKitties,CryptoKittiesAsHyper,hyperledger}
+	mkdir -p "$ED"/{AugurContractRegistry,CryptoKitties,NetworkStatistics,Rebesky_Augur,Rebesky_ChickenHunt,Rebesky_Idex1,HyperBasic,HyperKitties,CryptoKittiesAsHyper,FailingHyperKitties,FailingCryptoKitties,hyperledger}
 
 	echo "$CRED_Connection" > "$ED"/hyperledger/connection-org1.yaml
 	echo "$CRED_Server_CRT" > "$ED"/hyperledger/server.crt
@@ -43,6 +43,8 @@ function main() {
   echo "$MAN_HyperBasic" > "$ED"/HyperBasic.bcql
   echo "$MAN_HyperKitties" > "$ED"/HyperKitties.bcql
   echo "$MAN_CryptoKittiesAsHyper" > "$ED"/CryptoKittiesAsHyper.bcql
+  echo "$MAN_FailingHyperKitties" > "$ED"/FailingHyperKitties.bcql
+  echo "$MAN_FailingCryptoKitties" > "$ED"/FailingCryptoKitties.bcql
 
 	touch "$ED"/AugurContractRegistry/error.log.xelf
 	touch "$ED"/CryptoKitties/error.log.xelf
@@ -181,6 +183,32 @@ function main() {
 	cmp CryptoKittiesAsHyper/error.log{,.xblf} || { redecho "Comparing the extracted data with the expected data failed! Leaving test environment as is for investigation" ; exit 2; }
 	colorecho "Test successful"
 
+	colorecho "Testing FailingHyperKitties"
+	LAST_EXIT=0
+	if [ "$1" = "$SILENT_PARAM" ] || [ "$2" = "$SILENT_PARAM" ] || [ "$3" = "$SILENT_PARAM" ]; then
+	  java -jar "$JAR" -abortOnException extract FailingHyperKitties.bcql &> /dev/null
+	  LAST_EXIT=$?
+	else
+	  java -jar "$JAR" -abortOnException extract FailingHyperKitties.bcql
+	  LAST_EXIT=$?
+  fi
+  [ $LAST_EXIT -ne 1 ] && { redecho "The program did not return the correct error code" ; exit 2; }
+	grep 'JSON object does not contain key: a' FailingHyperKitties/error.log || { redecho "Comparing the extracted data with the expected data failed! Leaving test environment as is for investigation" ; exit 2; }
+	colorecho "Test successful"
+
+	colorecho "Testing FailingCryptoKitties"
+	LAST_EXIT=0
+	if [ "$1" = "$SILENT_PARAM" ] || [ "$2" = "$SILENT_PARAM" ] || [ "$3" = "$SILENT_PARAM" ]; then
+	  java -jar "$JAR" -abortOnException extract FailingCryptoKitties.bcql &> /dev/null
+	  LAST_EXIT=$?
+	else
+	  java -jar "$JAR" -abortOnException extract FailingCryptoKitties.bcql
+	  LAST_EXIT=$?
+  fi
+  [ $LAST_EXIT -ne 1 ] && { redecho "The program did not return the correct error code" ; exit 2; }
+	grep 'Error when processing block number' FailingCryptoKitties/error.log || { redecho "Comparing the extracted data with the expected data failed! Leaving test environment as is for investigation" ; exit 2; }
+	colorecho "Test successful"
+
 	colorecho "All tests completed successfully"
 	cd "$LWD"
 	if [ ! "$1" = "$AUTO_PARAM" ] && [ ! "$2" = "$AUTO_PARAM" ] && [ ! "$3" = "$AUTO_PARAM" ]; then
@@ -239,6 +267,10 @@ MAN_HyperBasic=$(cat "$SCRIPT_DIR/bcql/HyperBasic.bcql")
 MAN_HyperKitties=$(cat "$SCRIPT_DIR/bcql/HyperKitties.bcql")
 
 MAN_CryptoKittiesAsHyper=$(cat "$SCRIPT_DIR/bcql/CryptoKittiesAsHyper.bcql")
+
+MAN_FailingHyperKitties=$(cat "$SCRIPT_DIR/bcql/FailingHyperKitties.bcql")
+
+MAN_FailingCryptoKitties=$(cat "$SCRIPT_DIR/bcql/FailingCryptoKitties.bcql")
 
 # BCQL expected outputs
 XELF_AugurContractRegistry=$(cat "$SCRIPT_DIR"/outputs/AugurContractRegistry.o)
