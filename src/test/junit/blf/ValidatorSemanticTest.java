@@ -1,13 +1,22 @@
 package blf;
 
+import org.antlr.v4.runtime.misc.Pair;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.Arguments;
 import org.junit.jupiter.params.provider.MethodSource;
 
 import java.io.ByteArrayInputStream;
+import java.io.IOException;
+import java.net.URISyntaxException;
+import java.net.URL;
+import java.nio.file.Files;
+import java.nio.file.Path;
+import java.nio.file.Paths;
 import java.util.Collections;
+import java.util.LinkedList;
 import java.util.List;
+import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
 class ValidatorSemanticTest {
@@ -31,20 +40,48 @@ class ValidatorSemanticTest {
     }
 
     static Stream<Arguments> transactionProvider() {
-        return Stream.of(
-                Arguments.of(
-                        "SET BLOCKCHAIN \"Ethereum\"\n" +
-                        "BLOCKS (1) (5) {\n" +
-                        "TRANSACTIONS (ANY) (\n" +
-                        "0x931D387731bBbC988B312206c74F77D004D6B84b,\n" +
-                        "0x931D387731bBbC988B312206c74F77D004D6B84c\n" +
-                        ") {}\n" +
-                        "}\n",
-                        "")
-//                Arguments.of("", ""),
-//                Arguments.of("", "Invalid nesting of filters."),
-//                Arguments.of("", "'0x123' is not a valid address literal.")
-        );
+        return readTestData("./ValidatorSemanticTestData.txt");
+    }
+
+    static Stream<Arguments> readTestData(String filename) {
+        try {
+            URL url = ValidatorSemanticTest.class.getResource(filename);
+            Path path = Paths.get(url.toURI());
+            Stream<String> streamlines = Files.lines(path);
+
+            List<String> lines = streamlines.collect(Collectors.toList());
+            List<Arguments> output = new LinkedList<>();
+
+            String script = "";
+            String expectedErr = "";
+            boolean operateOnScript = true;
+            for (String line : lines) {
+                if (line.equals("|")) {
+                    operateOnScript = false;
+                    continue;
+                }
+                if (line.equals("||")) {
+                    output.add(Arguments.of(script, expectedErr));
+                    script = "";
+                    expectedErr = "";
+                    operateOnScript = true;
+                    continue;
+                }
+                if (operateOnScript) {
+                    script += line + "\n";
+                } else {
+                    expectedErr += line;
+                }
+            }
+
+            return output.stream();
+        } catch (IOException e) {
+            e.printStackTrace();
+        } catch (URISyntaxException e) {
+            e.printStackTrace();
+        }
+
+        return null;
     }
 
 //    @ParameterizedTest
