@@ -290,8 +290,8 @@ public class FilterDefinitionAnalyzer extends SemanticAnalyzer {
             return;
         }
 
-        if (!TypeUtils.isAddressType(type)) {
-            this.addError(ctx.valueExpression().start, "Smart contract address must be of address type.");
+        if (!(TypeUtils.isAddressType(type) || TypeUtils.isStringType(type))) {
+            this.addError(ctx.valueExpression().start, "Smart contract address must be of address or string type.");
         }
     }
 

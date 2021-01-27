@@ -89,7 +89,29 @@ public interface HyperledgerInstructionHelper {
 
         final ExceptionHandler exceptionHandler = hyperledgerProgramState.getExceptionHandler();
 
-        final String contractAddress = smartContractFilterCtx.contractAddress.getText();
+        String contractAddress = null;
+
+        if (smartContractFilterCtx.contractAddress.variableName() != null) {
+            final String variableName = smartContractFilterCtx.contractAddress.getText();
+            final ValueAccessor valueAccessor = ValueAccessor.createVariableAccessor(variableName);
+
+            try {
+                contractAddress = (String) valueAccessor.getValue(hyperledgerProgramState);
+            } catch (ClassCastException e) {
+                String errorMsg = String.format(
+                    "Variable '%s' in manifest file is not an instance of String.",
+                    smartContractFilterCtx.contractAddress.getText()
+                );
+
+                exceptionHandler.handleExceptionAndDecideOnAbort(errorMsg, e);
+            } catch (ProgramException e) {
+                exceptionHandler.handleExceptionAndDecideOnAbort("Unexpected exception occurred.", e);
+            }
+        }
+        if (smartContractFilterCtx.contractAddress.literal() != null) {
+            contractAddress = smartContractFilterCtx.contractAddress.getText();
+        }
+
         List<BcqlParser.SmartContractQueryContext> smartContractQueries = smartContractFilterCtx.smartContractQuery();
 
         List<HyperledgerQueryParameters> hyperledgerQueryParameters = new LinkedList<>();
@@ -128,11 +150,14 @@ public interface HyperledgerInstructionHelper {
                 List<Pair<String, String>> inputParameters = new LinkedList<>();
 
                 for (BcqlParser.SmartContractQueryParameterContext smartContractQueryParameter : smartContractQueryParameters) {
-                    Pair<String, String> outputParameter = new Pair<>(
-                        smartContractQueryParameter.solType().getText(),
-                        smartContractQueryParameter.variableName().getText()
-                    );
-                    inputParameters.add(outputParameter);
+                    if (smartContractQueryParameter.solType() != null && smartContractQueryParameter.literal() != null) {
+                        Pair<String, String> outputParameter = new Pair<>(
+                            smartContractQueryParameter.solType().getText(),
+                            smartContractQueryParameter.literal().getText()
+                        );
+                        inputParameters.add(outputParameter);
+                    }
+
                 }
 
                 hyperledgerQueryParameters.add(new HyperledgerQueryParameters(outputParameters, methodName, inputParameters));

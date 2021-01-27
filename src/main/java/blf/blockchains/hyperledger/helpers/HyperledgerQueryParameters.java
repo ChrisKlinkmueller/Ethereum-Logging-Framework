@@ -26,4 +26,16 @@ public class HyperledgerQueryParameters {
         this.methodName = null;
         this.inputParameters = null;
     }
+
+    public String getMethodname() {
+        return methodName;
+    }
+
+    public List<Pair<String, String>> getOutputParameters() {
+        return outputParameters;
+    }
+
+    public List<Pair<String, String>> getInputParameters() {
+        return inputParameters;
+    }
 }
