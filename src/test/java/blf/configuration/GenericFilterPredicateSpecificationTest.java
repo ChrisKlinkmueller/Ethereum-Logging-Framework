@@ -17,7 +17,7 @@ class GenericFilterPredicateSpecificationTest {
         notBoolean.add(ValueAccessorSpecification.stringLiteral("\"string\""));
         notBoolean.add(ValueAccessorSpecification.integerLiteral("123"));
 
-        for(ValueAccessorSpecification vas : notBoolean) {
+        for (ValueAccessorSpecification vas : notBoolean) {
             GenericFilterPredicate gfPredicate = GenericFilterPredicateSpecification.ofBooleanAccessor(vas).getPredicate();
             ProgramState psMock = Mockito.mock(ProgramState.class);
             assertThrows(ClassCastException.class, () -> gfPredicate.test(psMock));

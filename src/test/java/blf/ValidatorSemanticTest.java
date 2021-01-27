@@ -22,7 +22,7 @@ import java.util.stream.Stream;
 class ValidatorSemanticTest {
     static final private Validator validator = new Validator();
 
-    static List<BcqlProcessingError> validate(String script)  {
+    static List<BcqlProcessingError> validate(String script) {
         try {
             return validator.analyzeScript(new ByteArrayInputStream(script.getBytes()));
         } catch (BcqlProcessingException e) {
@@ -40,12 +40,12 @@ class ValidatorSemanticTest {
     }
 
     static Stream<Arguments> transactionProvider() {
-        return readTestData("./ValidatorSemanticTestData.txt");
+        return readTestData("ValidatorSemanticTestData.txt");
     }
 
     static Stream<Arguments> readTestData(String filename) {
         try {
-            URL url = ValidatorSemanticTest.class.getResource(filename);
+            URL url = ValidatorSemanticTest.class.getClassLoader().getResource(filename);
             Path path = Paths.get(url.toURI());
             Stream<String> streamlines = Files.lines(path);
 
@@ -84,15 +84,15 @@ class ValidatorSemanticTest {
         return null;
     }
 
-//    @ParameterizedTest
-//    @ValueSource
-//    void genericFilter() {
-//
-//    }
+    // @ParameterizedTest
+    // @ValueSource
+    // void genericFilter() {
+    //
+    // }
 
-//    @ParameterizedTest
-//    @ValueSource
-//    void logEntriesFilter() {
-//
-//    }
+    // @ParameterizedTest
+    // @ValueSource
+    // void logEntriesFilter() {
+    //
+    // }
 }

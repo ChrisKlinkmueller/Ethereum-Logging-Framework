@@ -29,7 +29,7 @@ class ValidatorSyntaxTest {
     }
 
     @ParameterizedTest
-    @ValueSource(strings = {"/**/", "/*\n*/", "/* some comments\n*/", "//", "// some comments"})
+    @ValueSource(strings = { "/**/", "/*\n*/", "/* some comments\n*/", "//", "// some comments" })
     void testComment(String commentString) {
         Assertions.assertTrue(validateSyntax(commentString).isEmpty());
     }
