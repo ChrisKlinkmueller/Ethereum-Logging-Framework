@@ -63,7 +63,9 @@ skippableLogEntryParameter
     ;
 
 
-/** A smartContractQuery is parsed to a publicVariableQuery or a publicFunctionQuery. */
+/** A smartContractQuery is parsed to a publicVariableQuery or a publicFunctionQuery. With the publicVariableQuery
+ *  a variable on the respective Blockchain contract is queried and with a publicFunctionQuery a function on the
+ *  respective Blockchain contract is queried. */
 
 smartContractQuery
     : publicVariableQuery
@@ -71,28 +73,38 @@ smartContractQuery
     ;
 
 
-/** A publicVariableQuery is parsed to a smartContractParameter. */
+/** A publicVariableQuery is parsed to a single smartContractParameter, representing a queried variable. */
 
 publicVariableQuery
     : smartContractParameter
     ;
 
 
-/** A publicFunctionQuery consists of .... */
+/** A publicFunctionQuery consists of
+ *  - at least one smartContractParameter (devided by ','), defining the output parameters of the respective function
+ *  - the methodName (stated after an '='), which represents the function name the user wants query on the contract
+ *  - at least one smartContractQueryParameter (inside () braces and devided by ','), the corresponding input parameters
+ *  of the respective function. In contrast to the smartContractParameter, this one can also be parsed into an variableName.
+ */
 
 publicFunctionQuery
     : smartContractParameter (',' smartContractParameter)* '=' methodName=Identifier '(' (smartContractQueryParameter (',' smartContractQueryParameter)* )? ')'
     ;
 
 
-/** A smartContractQuery consists of the Solidity type and the name of the parameter. */
+/** A smartContractParameter consists of a parameter type (solType) and name (variableName). In contrast to the
+ *  smartContractQueryParameter the name of the parameter is declared and saved in a variable, as it the output parameter
+ *  which is queried for and therefore made usable inside the scope of the smartContractFilter.
+ */
 
 smartContractParameter
     : solType variableName
     ;
 
 
-/** A smartContractQuery consists of the Solidity type and the name of the parameter. */
+/** A smartContractQueryParameter consists of a parameter type (solType) and name (literal). Alternativly a variableName
+ *  can be used, in which both parameter type and name has to be previously stored.
+ */
 
 smartContractQueryParameter
     : variableName
