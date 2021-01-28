@@ -1,22 +1,12 @@
 package blf;
 
-import org.antlr.v4.runtime.misc.Pair;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.Arguments;
 import org.junit.jupiter.params.provider.MethodSource;
 
 import java.io.ByteArrayInputStream;
-import java.io.IOException;
-import java.net.URISyntaxException;
-import java.net.URL;
-import java.nio.file.Files;
-import java.nio.file.Path;
-import java.nio.file.Paths;
-import java.util.Collections;
-import java.util.LinkedList;
-import java.util.List;
-import java.util.stream.Collectors;
+import java.util.*;
 import java.util.stream.Stream;
 
 class ValidatorSemanticTest {
@@ -40,59 +30,30 @@ class ValidatorSemanticTest {
     }
 
     static Stream<Arguments> transactionProvider() {
-        return readTestData("ValidatorSemanticTestData.txt");
+        return YamlTestLoader.readTestData("ValidatorSemanticTestTransactionData.yaml", ValidatorSemanticTest.class.getClassLoader());
     }
 
-    static Stream<Arguments> readTestData(String filename) {
-        try {
-            URL url = ValidatorSemanticTest.class.getClassLoader().getResource(filename);
-            Path path = Paths.get(url.toURI());
-            Stream<String> streamlines = Files.lines(path);
+    @ParameterizedTest(name = "script: {0} expected error msg: {1}")
+    @MethodSource("genericProvider")
+    void genericFilter(String script, String expectedErrorMsg) {
+        List<BcqlProcessingError> errors = validate(script);
 
-            List<String> lines = streamlines.collect(Collectors.toList());
-            List<Arguments> output = new LinkedList<>();
-
-            String script = "";
-            String expectedErr = "";
-            boolean operateOnScript = true;
-            for (String line : lines) {
-                if (line.equals("|")) {
-                    operateOnScript = false;
-                    continue;
-                }
-                if (line.equals("||")) {
-                    output.add(Arguments.of(script, expectedErr));
-                    script = "";
-                    expectedErr = "";
-                    operateOnScript = true;
-                    continue;
-                }
-                if (operateOnScript) {
-                    script += line + "\n";
-                } else {
-                    expectedErr += line;
-                }
-            }
-
-            return output.stream();
-        } catch (IOException e) {
-            e.printStackTrace();
-        } catch (URISyntaxException e) {
-            e.printStackTrace();
-        }
-
-        return null;
+        errors.forEach(err -> Assertions.assertEquals(err.getErrorMessage(), expectedErrorMsg));
     }
 
-    // @ParameterizedTest
-    // @ValueSource
-    // void genericFilter() {
-    //
-    // }
+    static Stream<Arguments> genericProvider() {
+        return YamlTestLoader.readTestData("ValidatorSemanticTestGenericData.yaml", ValidatorSemanticTest.class.getClassLoader());
+    }
 
-    // @ParameterizedTest
-    // @ValueSource
-    // void logEntriesFilter() {
-    //
-    // }
+    @ParameterizedTest(name = "script: {0} expected error msg: {1}")
+    @MethodSource("logEntryProvider")
+    void logEntryFilter(String script, String expectedErrorMsg) {
+        List<BcqlProcessingError> errors = validate(script);
+
+        errors.forEach(err -> Assertions.assertEquals(err.getErrorMessage(), expectedErrorMsg));
+    }
+
+    static Stream<Arguments> logEntryProvider() {
+        return YamlTestLoader.readTestData("ValidatorSemanticTestLogEntryData.yaml", ValidatorSemanticTest.class.getClassLoader());
+    }
 }

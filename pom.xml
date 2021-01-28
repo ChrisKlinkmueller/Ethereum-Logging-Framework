@@ -142,35 +142,18 @@
       <scope>test</scope>
     </dependency>
 
-
-    <dependency>
-      <groupId>org.spockframework</groupId>
-      <artifactId>spock-core</artifactId>
-      <version>2.0-M2-groovy-3.0</version>
-      <scope>test</scope>
-    </dependency>
-
-    <!-- bytebuddy is used to mock non-interface types in tests -->
-    <dependency>
-      <groupId>net.bytebuddy</groupId>
-      <artifactId>byte-buddy</artifactId>
-      <version>1.10.10</version>
-      <scope>test</scope>
-    </dependency>
-
-    <!-- objenesis is used to bypass constructor when mocking -->
-    <dependency>
-      <groupId>org.objenesis</groupId>
-      <artifactId>objenesis</artifactId>
-      <version>3.1</version>
-      <scope>test</scope>
-    </dependency>
-
     <!-- https://mvnrepository.com/artifact/org.hyperledger.fabric-sdk-java/fabric-sdk-java -->
     <dependency>
       <groupId>org.hyperledger.fabric</groupId>
       <artifactId>fabric-gateway-java</artifactId>
       <version>2.2.0</version>
+    </dependency>
+
+    <dependency>
+      <groupId>org.yaml</groupId>
+      <artifactId>snakeyaml</artifactId>
+      <version>1.21</version>
+      <scope>test</scope>
     </dependency>
 
   </dependencies>
@@ -257,21 +240,6 @@
             <phase>generate-sources</phase>
             <goals>
               <goal>antlr4</goal>
-            </goals>
-          </execution>
-        </executions>
-      </plugin>
-
-      <!-- The gmavenplus plugin is used to compile Groovy code -->
-      <plugin>
-        <groupId>org.codehaus.gmavenplus</groupId>
-        <artifactId>gmavenplus-plugin</artifactId>
-        <version>1.9.0</version>
-        <executions>
-          <execution>
-            <goals>
-              <goal>compile</goal>
-              <goal>compileTests</goal>
             </goals>
           </execution>
         </executions>

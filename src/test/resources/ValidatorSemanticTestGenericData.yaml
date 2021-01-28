@@ -1,0 +1,72 @@
+README: "
+The scriptPrefix is prepended to every script that is executed.
+The testData is an array that contains the script that should be run and the error message that is expected.
+"
+
+
+scriptPrefix: "
+"
+
+testData:
+  - expectedErr: ""
+    script: "
+if (true) {}
+"
+
+  - expectedErr: ""
+    script: "
+int i = 5;
+if (i == 0) {}
+"
+
+  - expectedErr: ""
+    script: "
+if (5 > 0) {}
+"
+
+  - expectedErr: ""
+    script: "
+if (true && false) {}
+"
+
+  - expectedErr: ""
+    script: "
+if (true || false) {}
+"
+
+  - expectedErr: ""
+    script: "
+if (5 in {4,5,6}) {}
+"
+
+  - expectedErr: ""
+    script: "
+int i = 5;
+if (i in {4,5,6}) {}
+"
+
+  - expectedErr: ""
+    script: "
+if (true == (5 == 4)) {}
+"
+
+  - expectedErr: ""
+    script: "
+if (!false) {}
+"
+
+  - expectedErr: "Variable 'i' not defined."
+    script: "
+if (true && i in {5, 3}) {}
+"
+
+  - expectedErr: "Expression must return a boolean value."
+    script: "
+if (false && \"true\") {}
+"
+
+  - expectedErr: "Types are not compatible, cannot check containment of int in string."
+    script: "
+int i = 4;
+if (i in \"[5,3]\") {}
+"
