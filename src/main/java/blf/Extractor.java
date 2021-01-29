@@ -13,7 +13,7 @@ import org.antlr.v4.runtime.tree.ParseTreeWalker;
  */
 public class Extractor {
 
-    public void extractData(final String bcqlFilepath) throws BcqlProcessingException, RootListenerException {
+    public void extractData(final String bcqlFilepath, boolean onExceptionAbort) throws BcqlProcessingException, RootListenerException {
 
         final ParseTree parseTree = Validator.createParseTree(bcqlFilepath);
 
@@ -28,6 +28,7 @@ public class Extractor {
         walker.walk(rootListener, parseTree);
 
         BaseBlockchainListener blockchainListener = rootListener.blockchainListener;
+        blockchainListener.getState().getExceptionHandler().setAbortOnException(onExceptionAbort);
 
         if (blockchainListener.containsError()) {
             throw new BcqlProcessingException("Error when configuring the data extraction.", blockchainListener.getError());

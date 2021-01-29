@@ -3,7 +3,9 @@ package blf;
 import blf.util.RootListenerException;
 
 import java.io.File;
+import java.util.Arrays;
 import java.util.List;
+import java.util.LinkedList;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
@@ -13,9 +15,18 @@ public class BlfApp {
     private static final String CMD_GENERATE = "generate";
     private static final String CMD_EXTRACT = "extract";
     private static final String CMD_VALIDATE = "validate";
+    private static final String[] ON_EXCEPTION_ABORT_KEYS = new String[] { "-abortOnException", "--abort-on-exception" };
     private static final Logger LOGGER = Logger.getLogger(BlfApp.class.getName());
 
     public static void main(String[] args) {
+        boolean onExceptionAbort = Arrays.asList(args).contains(ON_EXCEPTION_ABORT_KEYS[0])
+            || Arrays.asList(args).contains(ON_EXCEPTION_ABORT_KEYS[1]);
+        if (onExceptionAbort) {
+            List<String> listArgs = new LinkedList<String>(Arrays.asList(args));
+            listArgs.remove(ON_EXCEPTION_ABORT_KEYS[0]);
+            listArgs.remove(ON_EXCEPTION_ABORT_KEYS[1]);
+            args = listArgs.toArray(new String[0]);
+        }
         if (args.length < 2) {
             final String message = String.format(
                 "Execution of ELF requires two arguments: [%s|%s|%s] <PATH_TO_SCRIPT>",
@@ -41,7 +52,7 @@ public class BlfApp {
                 generate(filepath);
                 break;
             case CMD_EXTRACT:
-                extract(filepath);
+                extract(filepath, onExceptionAbort);
                 break;
             case CMD_VALIDATE:
                 validate(filepath);
@@ -69,11 +80,11 @@ public class BlfApp {
         }
     }
 
-    private static void extract(String filepath) {
+    private static void extract(String filepath, boolean onExceptionAbort) {
         final Extractor extractor = new Extractor();
 
         try {
-            extractor.extractData(filepath);
+            extractor.extractData(filepath, onExceptionAbort);
         } catch (BcqlProcessingException ex) {
             ex.printStackTrace(System.err);
         } catch (RootListenerException e) {

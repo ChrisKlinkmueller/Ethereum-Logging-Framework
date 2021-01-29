@@ -1,0 +1,177 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!-- This file has been generated with the OpenXES library. It conforms -->
+<!-- to the XML serialization of the XES standard for log storage and -->
+<!-- management. -->
+<!-- XES standard version: 1.0 -->
+<!-- OpenXES library version: 1.0RC7 -->
+<!-- OpenXES is available from http://www.openxes.org/ -->
+<log xes.version="1.0" xes.features="nested-attributes" openxes.version="1.0RC7">
+	<string key="ident:pid" value="pid0"/>
+	<trace>
+		<string key="ident:piid" value="1"/>
+		<event>
+			<string key="concept:name" value="birth"/>
+			<string key="ident:eid" value="eid0"/>
+		</event>
+		<event>
+			<string key="concept:name" value="transferred"/>
+			<string key="ident:eid" value="eid1"/>
+		</event>
+	</trace>
+	<trace>
+		<string key="ident:piid" value="2"/>
+		<event>
+			<string key="concept:name" value="birth"/>
+			<string key="ident:eid" value="eid2"/>
+		</event>
+		<event>
+			<string key="concept:name" value="transferred"/>
+			<string key="ident:eid" value="eid3"/>
+		</event>
+	</trace>
+	<trace>
+		<string key="ident:piid" value="3"/>
+		<event>
+			<string key="concept:name" value="birth"/>
+			<string key="ident:eid" value="eid4"/>
+		</event>
+		<event>
+			<string key="concept:name" value="transferred"/>
+			<string key="ident:eid" value="eid5"/>
+		</event>
+	</trace>
+	<trace>
+		<string key="ident:piid" value="4"/>
+		<event>
+			<string key="concept:name" value="birth"/>
+			<string key="ident:eid" value="eid6"/>
+		</event>
+		<event>
+			<string key="concept:name" value="transferred"/>
+			<string key="ident:eid" value="eid7"/>
+		</event>
+		<event>
+			<string key="concept:name" value="conceived as father"/>
+			<string key="ident:eid" value="eid13"/>
+		</event>
+		<event>
+			<string key="concept:name" value="conceived as father"/>
+			<string key="ident:eid" value="eid15"/>
+		</event>
+		<event>
+			<string key="concept:name" value="became father"/>
+			<string key="ident:eid" value="eid18"/>
+		</event>
+		<event>
+			<string key="concept:name" value="conceived as father"/>
+			<string key="ident:eid" value="eid22"/>
+		</event>
+		<event>
+			<string key="concept:name" value="became father"/>
+			<string key="ident:eid" value="eid25"/>
+		</event>
+	</trace>
+	<trace>
+		<string key="ident:piid" value="5"/>
+		<event>
+			<string key="concept:name" value="birth"/>
+			<string key="ident:eid" value="eid8"/>
+		</event>
+		<event>
+			<string key="concept:name" value="transferred"/>
+			<string key="ident:eid" value="eid9"/>
+		</event>
+		<event>
+			<string key="concept:name" value="conceived as mother"/>
+			<string key="ident:eid" value="eid12"/>
+		</event>
+		<event>
+			<string key="concept:name" value="conceived as mother"/>
+			<string key="ident:eid" value="eid14"/>
+		</event>
+		<event>
+			<string key="concept:name" value="became mother"/>
+			<string key="ident:eid" value="eid17"/>
+		</event>
+	</trace>
+	<trace>
+		<string key="ident:piid" value="6"/>
+		<event>
+			<string key="concept:name" value="birth"/>
+			<string key="ident:eid" value="eid10"/>
+		</event>
+		<event>
+			<string key="concept:name" value="transferred"/>
+			<string key="ident:eid" value="eid11"/>
+		</event>
+		<event>
+			<string key="concept:name" value="conceived as mother"/>
+			<string key="ident:eid" value="eid21"/>
+		</event>
+		<event>
+			<string key="concept:name" value="became mother"/>
+			<string key="ident:eid" value="eid24"/>
+		</event>
+		<event>
+			<string key="concept:name" value="conceived as mother"/>
+			<string key="ident:eid" value="eid29"/>
+		</event>
+		<event>
+			<string key="concept:name" value="became mother"/>
+			<string key="ident:eid" value="eid32"/>
+		</event>
+	</trace>
+	<trace>
+		<string key="ident:piid" value="7"/>
+		<event>
+			<string key="concept:name" value="birth"/>
+			<string key="ident:eid" value="eid16"/>
+		</event>
+		<event>
+			<string key="concept:name" value="transferred"/>
+			<string key="ident:eid" value="eid19"/>
+		</event>
+		<event>
+			<string key="concept:name" value="transferred"/>
+			<string key="ident:eid" value="eid20"/>
+		</event>
+		<event>
+			<string key="concept:name" value="conceived as father"/>
+			<string key="ident:eid" value="eid30"/>
+		</event>
+		<event>
+			<string key="concept:name" value="became father"/>
+			<string key="ident:eid" value="eid33"/>
+		</event>
+	</trace>
+	<trace>
+		<string key="ident:piid" value="8"/>
+		<event>
+			<string key="concept:name" value="birth"/>
+			<string key="ident:eid" value="eid23"/>
+		</event>
+		<event>
+			<string key="concept:name" value="transferred"/>
+			<string key="ident:eid" value="eid26"/>
+		</event>
+		<event>
+			<string key="concept:name" value="transferred"/>
+			<string key="ident:eid" value="eid27"/>
+		</event>
+		<event>
+			<string key="concept:name" value="transferred"/>
+			<string key="ident:eid" value="eid28"/>
+		</event>
+	</trace>
+	<trace>
+		<string key="ident:piid" value="9"/>
+		<event>
+			<string key="concept:name" value="birth"/>
+			<string key="ident:eid" value="eid31"/>
+		</event>
+		<event>
+			<string key="concept:name" value="transferred"/>
+			<string key="ident:eid" value="eid34"/>
+		</event>
+	</trace>
+</log>

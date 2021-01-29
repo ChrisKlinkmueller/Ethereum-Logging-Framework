@@ -1,0 +1,18 @@
+// Author: Paul Beck
+
+SET BLOCKCHAIN "Hyperledger"
+
+SET CONNECTION {
+   "hyperledger/connection-org1.yaml",
+   "hyperledger/server.key",
+   "hyperledger/server.crt",
+   "Org1MSP",
+   "mychannel"
+}
+
+SET OUTPUT FOLDER "./test_output"
+
+BLOCKS (32) (91) {
+   LOG ENTRIES ("kitties") (Birth(string a)) {
+   }
+}

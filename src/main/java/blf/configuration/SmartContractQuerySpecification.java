@@ -5,9 +5,9 @@ import java.util.List;
 import java.util.stream.Collectors;
 
 import blf.core.parameters.Parameter;
-import blf.blockchains.hyperledger.classes.EthereumPublicMemberQueryEthereum;
-import blf.blockchains.hyperledger.classes.EthereumSmartContractParameter;
-import blf.blockchains.hyperledger.classes.EthereumSmartContractQuery;
+import blf.blockchains.ethereum.classes.EthereumPublicMemberQueryEthereum;
+import blf.blockchains.ethereum.classes.EthereumSmartContractParameter;
+import blf.blockchains.ethereum.classes.EthereumSmartContractQuery;
 import io.reactivex.annotations.NonNull;
 
 /**

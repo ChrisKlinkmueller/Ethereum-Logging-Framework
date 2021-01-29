@@ -1,19 +1,18 @@
 package blf.blockchains.hyperledger;
 
-import blf.blockchains.hyperledger.helpers.HyperledgerListenerHelper;
 import blf.blockchains.hyperledger.instructions.HyperledgerBlockFilterInstruction;
 import blf.blockchains.hyperledger.instructions.HyperledgerConnectInstruction;
 import blf.blockchains.hyperledger.instructions.HyperledgerLogEntryFilterInstruction;
 import blf.blockchains.hyperledger.instructions.HyperledgerTransactionFilterInstruction;
 import blf.blockchains.hyperledger.state.HyperledgerProgramState;
-import blf.configuration.*;
+import blf.configuration.BaseBlockchainListener;
 import blf.core.exceptions.ExceptionHandler;
 import blf.grammar.BcqlParser;
 import blf.parsing.VariableExistenceListener;
 import blf.util.TypeUtils;
-import org.antlr.v4.runtime.misc.Pair;
 
-import java.util.*;
+import java.util.LinkedList;
+import java.util.List;
 import java.util.logging.Logger;
 
 /**

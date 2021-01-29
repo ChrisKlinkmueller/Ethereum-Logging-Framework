@@ -1,21 +1,20 @@
 package blf.blockchains.ethereum.instructions;
 
-import java.util.ArrayList;
-import java.util.List;
-
+import blf.blockchains.ethereum.classes.EthereumSmartContractQuery;
 import blf.blockchains.ethereum.state.EthereumProgramState;
-import blf.core.interfaces.Instruction;
-import blf.core.state.ProgramState;
 import blf.core.exceptions.ProgramException;
-import blf.blockchains.hyperledger.classes.EthereumSmartContractQuery;
-import blf.core.instructions.FilterInstruction;
+import blf.core.instructions.Instruction;
+import blf.core.state.ProgramState;
 import blf.core.values.ValueAccessor;
 import io.reactivex.annotations.NonNull;
+
+import java.util.ArrayList;
+import java.util.List;
 
 /**
  * SmartContractFilter
  */
-public class EthereumSmartContractFilterInstruction extends FilterInstruction {
+public class EthereumSmartContractFilterInstruction extends Instruction {
     private final List<EthereumSmartContractQuery> queries;
     private final ValueAccessor contractAddress;
 
@@ -30,15 +29,24 @@ public class EthereumSmartContractFilterInstruction extends FilterInstruction {
     }
 
     @Override
-    public void execute(ProgramState state) throws ProgramException {
+    public void execute(ProgramState state) {
         final EthereumProgramState ethereumProgramState = (EthereumProgramState) state;
 
-        final String address = (String) this.contractAddress.getValue(state);
-        for (EthereumSmartContractQuery query : this.queries) {
-            query.query(address, ethereumProgramState);
+        try {
+            final String address;
+
+            address = (String) this.contractAddress.getValue(state);
+
+            for (EthereumSmartContractQuery query : this.queries) {
+                query.query(address, ethereumProgramState);
+            }
+
+        } catch (ProgramException e) {
+            // TODO: remove the throw of ProgramException
+            state.getExceptionHandler().handleExceptionAndDecideOnAbort(e.getMessage(), e);
         }
 
-        this.executeInstructions(state);
+        this.executeNestedInstructions(state);
     }
 
 }

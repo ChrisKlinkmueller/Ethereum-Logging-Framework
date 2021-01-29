@@ -1,4 +1,4 @@
-package blf.blockchains.hyperledger.classes;
+package blf.blockchains.ethereum.classes;
 
 import java.util.ArrayList;
 import java.util.Arrays;

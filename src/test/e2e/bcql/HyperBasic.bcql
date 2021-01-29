@@ -10,7 +10,7 @@ SET CONNECTION {
    "mychannel"
 }
 
-SET OUTPUT FOLDER "./test_output"
+SET OUTPUT FOLDER "./HyperBasic"
 
 int blockNumberFrom = 0;
 int blockNumberTo = 55;
@@ -78,9 +78,9 @@ BLOCKS (blockNumberFrom) (blockNumberTo) {
    }
 
    LOG ENTRIES (chainCodeName) (basicTestEvent(string payload)) {
-        EMIT LOG LINE ("≈≈≈≈≈≈≈≈≈≈≈≈≈≈≈≈≈≈≈≈≈≈≈≈≈≈≈≈≈≈≈≈≈≈≈≈≈≈≈≈≈≈≈≈≈≈≈≈≈≈≈≈≈≈≈≈≈≈≈≈≈≈≈≈≈≈≈≈≈≈");
+        EMIT LOG LINE ("--------------------------------------------------------------------------------");
         EMIT LOG LINE ("payload: '", payload, "'");
-        EMIT LOG LINE ("≈≈≈≈≈≈≈≈≈≈≈≈≈≈≈≈≈≈≈≈≈≈≈≈≈≈≈≈≈≈≈≈≈≈≈≈≈≈≈≈≈≈≈≈≈≈≈≈≈≈≈≈≈≈≈≈≈≈≈≈≈≈≈≈≈≈≈≈≈≈");
+        EMIT LOG LINE ("--------------------------------------------------------------------------------");
         EMIT CSV ROW ("payload") (payload);
         EMIT XES EVENT ("testEvent")()()(payload as xs:string payload);
    }

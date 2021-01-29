@@ -1,0 +1,57 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!-- This file has been generated with the OpenXES library. It conforms -->
+<!-- to the XML serialization of the XES standard for log storage and -->
+<!-- management. -->
+<!-- XES standard version: 1.0 -->
+<!-- OpenXES library version: 1.0RC7 -->
+<!-- OpenXES is available from http://www.openxes.org/ -->
+<log xes.version="1.0" xes.features="nested-attributes" openxes.version="1.0RC7">
+	<string key="ident:pid" value="testEvent"/>
+	<trace>
+		<string key="ident:piid" value="piid0"/>
+		<event>
+			<string key="payload" value="Transferring asset asset7: from owner Rohrschacht to PaulBeck"/>
+			<string key="ident:eid" value="eid0"/>
+		</event>
+		<event>
+			<string key="payload" value="Transferring asset asset7: from owner PaulBeck to hendrik"/>
+			<string key="ident:eid" value="eid1"/>
+		</event>
+		<event>
+			<string key="payload" value="Transferring asset asset7: from owner hendrik to Rohrschacht"/>
+			<string key="ident:eid" value="eid2"/>
+		</event>
+		<event>
+			<string key="payload" value="Transferring asset asset7: from owner Rohrschacht to Paul"/>
+			<string key="ident:eid" value="eid3"/>
+		</event>
+		<event>
+			<string key="payload" value="Transferring asset asset7: from owner Paul to Rohrschacht"/>
+			<string key="ident:eid" value="eid4"/>
+		</event>
+		<event>
+			<string key="payload" value="Transferring asset asset7: from owner Rohrschacht to Tobias"/>
+			<string key="ident:eid" value="eid5"/>
+		</event>
+		<event>
+			<string key="payload" value="Transferring asset asset7: from owner Tobias to Hendrik"/>
+			<string key="ident:eid" value="eid6"/>
+		</event>
+		<event>
+			<string key="payload" value="Transferring asset asset7: from owner Hendrik to Paul"/>
+			<string key="ident:eid" value="eid7"/>
+		</event>
+		<event>
+			<string key="payload" value="Transferring asset asset7: from owner Paul to Hendrik"/>
+			<string key="ident:eid" value="eid8"/>
+		</event>
+		<event>
+			<string key="payload" value="Transferring asset asset7: from owner Hendrik to Rohrschacht"/>
+			<string key="ident:eid" value="eid9"/>
+		</event>
+		<event>
+			<string key="payload" value="Transferring asset asset7: from owner Rohrschacht to Paul"/>
+			<string key="ident:eid" value="eid10"/>
+		</event>
+	</trace>
+</log>

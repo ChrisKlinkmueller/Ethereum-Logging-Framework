@@ -1,6 +1,6 @@
 package blf.configuration;
 
-import blf.core.interfaces.Instruction;
+import blf.core.instructions.Instruction;
 
 /**
  * InstructionBuilder
