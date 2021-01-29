@@ -16,6 +16,7 @@ import java.util.List;
 class ValidatorSyntaxTest {
 
     static private BcqlInterpreter interpreter;
+    final static String p = "SET BLOCKCHAIN \"Ethereum\" \nSET CONNECTION \"ws://localhost:0000/\" \nSET OUTPUT FOLDER \"./test_output\"";
 
     @BeforeAll
     static void setup() {
@@ -29,7 +30,7 @@ class ValidatorSyntaxTest {
     }
 
     @ParameterizedTest
-    @ValueSource(strings = { "/**/", "/*\n*/", "/* some comments\n*/", "//", "// some comments" })
+    @ValueSource(strings = { p + "/**/", p + "/*\n*/", p + "/* some comments\n*/", p + "//", p + "// some comments" })
     void testComment(String commentString) {
         Assertions.assertTrue(validateSyntax(commentString).isEmpty());
     }
