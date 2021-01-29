@@ -1,0 +1,38 @@
+README: "
+The scriptPrefix is prepended to every script that is executed.
+The testData is an array that contains the script that should be run and the error message that is expected.
+"
+
+
+scriptPrefix: "
+SET BLOCKCHAIN \"Ethereum\"
+SET CONNECTION \"ws://localhost:0000/\"
+SET OUTPUT FOLDER \"./test_output\"
+"
+
+testData:
+  - expectedErr: ""
+    script: "
+address contract = 0x931D387731bBbC988B312206c74F77D004D6B84c;
+BLOCKS (6605100) (6615100) {
+  LOG ENTRIES (contract) (someMethod(uint indexed authorId, bytes32 sha)) {}
+}
+"
+
+  - expectedErr: "Variable 'contract' not defined."
+    script: "
+BLOCKS (6605100) (6615100) {
+  LOG ENTRIES (contract) (someMethod(uint indexed authorId, bytes32 sha)) {}
+}
+"
+
+  - expectedErr: "Invalid nesting of filters."
+    script: "
+address contract = 0x931D387731bBbC988B312206c74F77D004D6B84c;
+LOG ENTRIES
+(contract)
+(GitCommit(
+  uint authorId,
+  bytes32 sha
+)) {}
+"

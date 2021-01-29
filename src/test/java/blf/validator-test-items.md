@@ -1,6 +1,6 @@
 # Validator Test Items
 
-Validator is expected to performance both syntax and semantic check, which
+Validator is expected to perform both syntax and semantic checks, that
 is why test items are divided into the two categories.
 
 The test items can be viewed as expectations of how the validator should behave.
