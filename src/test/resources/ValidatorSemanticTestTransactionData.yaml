@@ -1,0 +1,42 @@
+README: "
+The scriptPrefix is prepended to every script that is executed.
+The testData is an array that contains the script that should be run and the error message that is expected.
+"
+
+
+scriptPrefix: "
+SET BLOCKCHAIN \"Ethereum\"
+SET CONNECTION \"ws://localhost:0000/\"
+SET OUTPUT FOLDER \"./test_output\"
+"
+
+testData:
+  - expectedErr: ""
+    script: "
+BLOCKS (1) (5) {
+  TRANSACTIONS (ANY) (
+    0x931D387731bBbC988B312206c74F77D004D6B84b,
+    0x931D387731bBbC988B312206c74F77D004D6B84c
+  ) {}
+}
+"
+
+  - expectedErr: ""
+    script: "
+bytes20 addr = 0x931D387731bBbC988B312206c74F77D004D6B84b;
+BLOCKS (1) (5) {
+  TRANSACTIONS (ANY) (addr) {}
+}
+"
+
+  - expectedErr: "Invalid nesting of filters."
+    script: "
+TRANSACTIONS (ANY) (ANY) {}
+"
+
+  - expectedErr: "'0x123' is not a valid address literal."
+    script: "
+BLOCKS (1) (5) {
+  TRANSACTIONS (ANY) (0x123) {}
+}
+"

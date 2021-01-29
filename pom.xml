@@ -26,7 +26,6 @@
     <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
 
     <antlr4.version>4.7.2</antlr4.version>
-    <junit.jupiter.version>5.7.0</junit.jupiter.version>
     <web3j.version>4.5.5</web3j.version>
     <logback-classic.version>1.2.3</logback-classic.version>
     <jackson.version>2.10.1</jackson.version>
@@ -44,13 +43,13 @@
   <dependencyManagement>
     <dependencies>
 
-      <dependency>
-        <groupId>org.junit</groupId>
-        <artifactId>junit-bom</artifactId>
-        <version>${junit.jupiter.version}</version>
-        <type>pom</type>
-        <scope>import</scope>
-      </dependency>
+      <!-- <dependency> -->
+      <!-- <groupId>org.junit</groupId> -->
+      <!-- <artifactId>junit-bom</artifactId> -->
+      <!-- <version>${junit.jupiter.version}</version> -->
+      <!-- <type>pom</type> -->
+      <!-- <scope>import</scope> -->
+      <!-- </dependency> -->
 
     </dependencies>
   </dependencyManagement>
@@ -120,30 +119,26 @@
     <!-- Testing -->
     <dependency>
       <groupId>org.junit.jupiter</groupId>
-      <artifactId>junit-jupiter</artifactId>
+      <artifactId>junit-jupiter-api</artifactId>
+      <version>5.7.0</version>
       <scope>test</scope>
     </dependency>
-
     <dependency>
-      <groupId>org.spockframework</groupId>
-      <artifactId>spock-core</artifactId>
-      <version>2.0-M2-groovy-3.0</version>
+      <groupId>org.junit.jupiter</groupId>
+      <artifactId>junit-jupiter-engine</artifactId>
+      <version>5.7.0</version>
       <scope>test</scope>
     </dependency>
-
-    <!-- bytebuddy is used to mock non-interface types in tests -->
     <dependency>
-      <groupId>net.bytebuddy</groupId>
-      <artifactId>byte-buddy</artifactId>
-      <version>1.10.10</version>
+      <groupId>org.junit.jupiter</groupId>
+      <artifactId>junit-jupiter-params</artifactId>
+      <version>5.7.0</version>
       <scope>test</scope>
     </dependency>
-
-    <!-- objenesis is used to bypass constructor when mocking -->
     <dependency>
-      <groupId>org.objenesis</groupId>
-      <artifactId>objenesis</artifactId>
-      <version>3.1</version>
+      <groupId>org.mockito</groupId>
+      <artifactId>mockito-core</artifactId>
+      <version>3.7.7</version>
       <scope>test</scope>
     </dependency>
 
@@ -154,9 +149,21 @@
       <version>2.2.0</version>
     </dependency>
 
+    <dependency>
+      <groupId>org.yaml</groupId>
+      <artifactId>snakeyaml</artifactId>
+      <version>1.21</version>
+      <scope>test</scope>
+    </dependency>
+
   </dependencies>
 
   <build>
+    <testResources>
+      <testResource>
+        <directory>src/test/resources</directory>
+      </testResource>
+    </testResources>
     <pluginManagement>
       <!-- lock down plugins versions to avoid using Maven defaults (may 
         be moved to parent pom) -->
@@ -188,12 +195,12 @@
 
         <plugin>
           <artifactId>maven-surefire-plugin</artifactId>
-          <version>2.22.1</version>
-          <configuration>
-            <includes>
-              <include>**/*Spec.java</include>
-            </includes>
-          </configuration>
+          <version>2.22.2</version>
+        </plugin>
+
+        <plugin>
+          <artifactId>maven-failsafe-plugin</artifactId>
+          <version>2.22.2</version>
         </plugin>
 
         <plugin>
@@ -233,21 +240,6 @@
             <phase>generate-sources</phase>
             <goals>
               <goal>antlr4</goal>
-            </goals>
-          </execution>
-        </executions>
-      </plugin>
-
-      <!-- The gmavenplus plugin is used to compile Groovy code -->
-      <plugin>
-        <groupId>org.codehaus.gmavenplus</groupId>
-        <artifactId>gmavenplus-plugin</artifactId>
-        <version>1.9.0</version>
-        <executions>
-          <execution>
-            <goals>
-              <goal>compile</goal>
-              <goal>compileTests</goal>
             </goals>
           </execution>
         </executions>

@@ -17,12 +17,15 @@ import BcqlUtil, BcqlLexemes;
 
 //      GENERAL: Entry rules which are initiating the parser tree
 
-/** The entry parser rule enters the manifest file, a source and destination directory should be specified.
- *  It can include an arbitrary number of statements and the explicit EOF defines that the entire file is parsed. */
+/** The document parser rule is the root parser rule of a manifest file, all other grammar rules are nested inside it
+ *  and must be satisfied.
+ *
+ *  A blockchain, a connection and an outputfolder must be specified. After that, tt can include an arbitrary number of
+ *  statements and the explicit EOF defines that the entire file is parsed. */
 
 document
-    : blockchain? connection? outputFolder? statement* EOF
-    | blockchain? outputFolder? connection? statement* EOF
+    : blockchain connection outputFolder statement* EOF
+    | blockchain outputFolder connection statement* EOF
     ;
 
 
@@ -30,8 +33,6 @@ blockchain
     : KEY_SET KEY_BLOCKCHAIN literal
     ;
 
-/** The entry parser rule enters the manifest file, a source and destination directory should be specified.
- *  It can include an arbitrary number of statements and the explicit EOF defines that the entire file is parsed. */
 
 connection
     : KEY_SET (KEY_IPC)? KEY_CONNECTION literal

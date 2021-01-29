@@ -40,7 +40,6 @@ public class HyperledgerTransactionFilterInstruction extends Instruction {
         super(nestedInstructions);
 
         this.transactionCtx = transactionCtx;
-
         this.logger = Logger.getLogger(HyperledgerTransactionFilterInstruction.class.getName());
     }
 
