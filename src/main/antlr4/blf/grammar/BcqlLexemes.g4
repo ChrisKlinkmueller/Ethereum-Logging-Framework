@@ -4,11 +4,12 @@ lexer grammar BcqlLexemes;
 //      KEYWORDS: Used to set certain grammar specifications and provide easily legible grammar vocabular.
 //      Are defined in single big letters to make them case insensitive (compare CASE FRAGMENTS).
 
-KEY_SET: S E T;                                         // helper keyword for settings
-KEY_BLOCKCHAIN: B L O C K C H A I N;                    // initiates the blockchain parameter setting
-KEY_OUTPUT_FOLDER: O U T P U T ' ' F O L D E R;         // initiates the output parameter setting
-KEY_CONNECTION: C O N N E C T I O N;                    // initiates the connection setting
-KEY_IPC: I P C;                                         // initiates the inter process communication setting
+KEY_SET: S E T;                                                     // helper keyword for settings
+KEY_BLOCKCHAIN: B L O C K C H A I N;                                // initiates the blockchain parameter setting
+KEY_OUTPUT_FOLDER: O U T P U T ' ' F O L D E R;                     // initiates the output parameter setting
+KEY_CONNECTION: C O N N E C T I O N;                                // initiates the connection setting
+KEY_IPC: I P C;                                                     // initiates the inter process communication setting
+KEY_ABORT_ON_EXCEPTION: A B O R T ' ' O N ' ' E X C E P T I O N;    // initiates the boolean flag for exception handling
 
 KEY_BLOCK_RANGE : B L O C K S;                          // initiates a blockFilter
 KEY_TRANSACTIONS : T R A N S A C T I O N S;             // initiates a transactionFilter
