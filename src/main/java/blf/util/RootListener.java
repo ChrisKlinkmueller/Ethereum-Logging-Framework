@@ -82,16 +82,6 @@ public class RootListener implements BcqlListener {
     }
 
     @Override
-    public void enterAbortOnException(AbortOnExceptionContext ctx) {
-        this.notifyListener(BcqlListener::enterAbortOnException, ctx);
-    }
-
-    @Override
-    public void exitAbortOnException(AbortOnExceptionContext ctx) {
-        this.notifyListener(BcqlListener::exitAbortOnException, ctx);
-    }
-
-    @Override
     public void enterBlockchain(BlockchainContext ctx) {
         if (blockchainListeners == null) {
             return;
@@ -136,6 +126,26 @@ public class RootListener implements BcqlListener {
     @Override
     public void exitOutputFolder(OutputFolderContext ctx) {
         this.notifyListener(BcqlListener::exitOutputFolder, ctx);
+    }
+
+    @Override
+    public void enterEmissionMode(EmissionModeContext ctx) {
+        this.notifyListener(BcqlListener::enterEmissionMode, ctx);
+    }
+
+    @Override
+    public void exitEmissionMode(EmissionModeContext ctx) {
+        this.notifyListener(BcqlListener::exitEmissionMode, ctx);
+    }
+
+    @Override
+    public void enterAbortOnException(AbortOnExceptionContext ctx) {
+        this.notifyListener(BcqlListener::enterAbortOnException, ctx);
+    }
+
+    @Override
+    public void exitAbortOnException(AbortOnExceptionContext ctx) {
+        this.notifyListener(BcqlListener::exitAbortOnException, ctx);
     }
 
     @Override

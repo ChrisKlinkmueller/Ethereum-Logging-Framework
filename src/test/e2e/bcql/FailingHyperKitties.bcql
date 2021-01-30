@@ -12,6 +12,8 @@ SET CONNECTION {
 
 SET OUTPUT FOLDER "./FailingHyperKitties"
 
+ABORT ON EXCEPTION true
+
 BLOCKS (32) (91) {
    LOG ENTRIES ("kitties") (Birth(string a)) {
    }
