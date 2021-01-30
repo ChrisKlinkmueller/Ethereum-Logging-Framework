@@ -139,16 +139,6 @@ public class RootListener implements BcqlListener {
     }
 
     @Override
-    public void enterEmissionMode(EmissionModeContext ctx) {
-        this.notifyListener(BcqlListener::enterEmissionMode, ctx);
-    }
-
-    @Override
-    public void exitEmissionMode(EmissionModeContext ctx) {
-        this.notifyListener(BcqlListener::exitEmissionMode, ctx);
-    }
-
-    @Override
     public void enterStatement(StatementContext ctx) {
         this.notifyListener(BcqlListener::enterStatement, ctx);
     }
