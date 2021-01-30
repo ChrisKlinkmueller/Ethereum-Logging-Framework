@@ -12,7 +12,7 @@ SET CONNECTION {
 
 SET OUTPUT FOLDER "./test_output"
 
-ABORT ON EXCEPTION true
+ABORT ON EXCEPTION false
 
 BLOCKS (32) (91) {
    LOG ENTRIES ("kitties") (Birth(string a)) {
