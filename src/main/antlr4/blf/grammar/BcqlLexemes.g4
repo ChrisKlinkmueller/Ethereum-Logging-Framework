@@ -9,6 +9,7 @@ KEY_BLOCKCHAIN: B L O C K C H A I N;                    // initiates the blockch
 KEY_OUTPUT_FOLDER: O U T P U T ' ' F O L D E R;         // initiates the output parameter setting
 KEY_CONNECTION: C O N N E C T I O N;                    // initiates the connection setting
 KEY_IPC: I P C;                                         // initiates the inter process communication setting
+KEY_EMISSION_MODE: E M I S S I O N ' ' M O D E;         // initiates the emission mode setting
 
 KEY_BLOCK_RANGE : B L O C K S;                          // initiates a blockFilter
 KEY_TRANSACTIONS : T R A N S A C T I O N S;             // initiates a transactionFilter

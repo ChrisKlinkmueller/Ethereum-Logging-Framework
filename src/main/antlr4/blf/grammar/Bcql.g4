@@ -24,8 +24,8 @@ import BcqlUtil, BcqlLexemes;
  *  statements and the explicit EOF defines that the entire file is parsed. */
 
 document
-    : blockchain connection outputFolder statement* EOF
-    | blockchain outputFolder connection statement* EOF
+    : blockchain connection outputFolder (emissionMode)? statement* EOF
+    | blockchain outputFolder connection (emissionMode)? statement* EOF
     ;
 
 
@@ -41,6 +41,11 @@ connection
 
 outputFolder
     : KEY_SET KEY_OUTPUT_FOLDER literal
+    ;
+
+
+emissionMode
+    : KEY_SET KEY_EMISSION_MODE literal
     ;
 
 
