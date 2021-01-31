@@ -9,7 +9,7 @@ public class EmissionSettings {
 
     public static Map<String, EmissionMode> getEmissionModeMap() {
         emissionModeMap.put("default batching", EmissionMode.DEFAULT_BATCHING);
-        emissionModeMap.put("save batching", EmissionMode.SAVE_BATCHING);
+        emissionModeMap.put("safe batching", EmissionMode.SAFE_BATCHING);
         emissionModeMap.put("streaming", EmissionMode.STREAMING);
 
         return emissionModeMap;
@@ -17,7 +17,7 @@ public class EmissionSettings {
 
     public enum EmissionMode {
         DEFAULT_BATCHING,
-        SAVE_BATCHING,
+        SAFE_BATCHING,
         STREAMING
     }
 

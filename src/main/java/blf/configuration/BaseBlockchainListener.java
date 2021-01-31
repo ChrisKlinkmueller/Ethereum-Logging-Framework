@@ -90,7 +90,7 @@ public abstract class BaseBlockchainListener extends BcqlBaseListener {
             final Map<String, EmissionSettings.EmissionMode> emissionModeMap = EmissionSettings.getEmissionModeMap();
 
             if (!emissionModeMap.containsKey(emissionMode)) {
-                LOGGER.severe("EMISSION MODE parameter should be either \"default batching\", \"save batching\" or \"streaming\"");
+                LOGGER.severe("EMISSION MODE parameter should be either \"default batching\", \"safe batching\" or \"streaming\"");
                 System.exit(1);
             }
 
