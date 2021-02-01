@@ -4,6 +4,7 @@ import blf.core.state.ProgramState;
 import blf.core.Program;
 import blf.core.instructions.SetOutputFolderInstruction;
 import blf.grammar.BcqlBaseListener;
+import blf.grammar.BcqlListener;
 import blf.grammar.BcqlParser;
 import blf.parsing.InterpreterUtils;
 import blf.parsing.VariableExistenceListener;
@@ -75,6 +76,26 @@ public abstract class BaseBlockchainListener extends BcqlBaseListener {
         this.state.outputFolderPath = TypeUtils.parseStringLiteral(literalText);
 
         this.composer.addInstruction(new SetOutputFolderInstruction());
+    }
+
+    @Override
+    public void enterEmissionMode(BcqlParser.EmissionModeContext ctx) {
+        if (ctx != null) {
+            if (ctx.literal().STRING_LITERAL() == null) {
+                LOGGER.severe("EMISSION MODE parameter should be a String");
+                System.exit(1);
+            }
+
+            final String emissionMode = ctx.literal().getText().replace("\"", "").toLowerCase();
+            final Map<String, EmissionSettings.EmissionMode> emissionModeMap = EmissionSettings.getEmissionModeMap();
+
+            if (!emissionModeMap.containsKey(emissionMode)) {
+                LOGGER.severe("EMISSION MODE parameter should be either \"default batching\", \"safe batching\" or \"streaming\"");
+                System.exit(1);
+            }
+
+            this.state.setEmissionMode(emissionModeMap.get(emissionMode));
+        }
     }
 
     @Override
