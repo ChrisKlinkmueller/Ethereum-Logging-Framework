@@ -78,6 +78,14 @@ public abstract class BaseBlockchainListener extends BcqlBaseListener {
     }
 
     @Override
+    public void enterAbortOnException(BcqlParser.AbortOnExceptionContext ctx) {
+        if (ctx != null) {
+            boolean abortionFlag = Boolean.parseBoolean(ctx.BOOLEAN_LITERAL().getText());
+            this.state.getExceptionHandler().setAbortOnException(abortionFlag);
+        }
+    }
+
+    @Override
     public void exitDocument(BcqlParser.DocumentContext ctx) {
         LOGGER.info("Build program");
         try {
