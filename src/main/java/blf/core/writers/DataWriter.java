@@ -1,5 +1,6 @@
 package blf.core.writers;
 
+import blf.configuration.EmissionSettings;
 import io.reactivex.annotations.NonNull;
 
 import java.math.BigInteger;
@@ -12,7 +13,7 @@ import java.util.stream.Collectors;
  */
 public abstract class DataWriter {
     private Path outputFolder;
-    private boolean streaming;
+    private EmissionSettings.EmissionMode emissionMode;
     private BigInteger currentBlock;
 
     public void setOutputFolder(@NonNull Path outputFolder) {
@@ -23,8 +24,8 @@ public abstract class DataWriter {
         return this.outputFolder;
     }
 
-    public void setStreaming(boolean streaming) {
-        this.streaming = streaming;
+    public void setEmissionMode(EmissionSettings.EmissionMode emissionMode) {
+        this.emissionMode = emissionMode;
     }
 
     public void startBlock(BigInteger blocknumber) {
@@ -32,18 +33,25 @@ public abstract class DataWriter {
     }
 
     public final void endBlock() throws Throwable {
-        if (this.streaming) {
+        if (this.emissionMode == EmissionSettings.EmissionMode.STREAMING) {
             this.writeState(currentBlock.toString());
+            this.deleteState();
         }
-    }
-
-    public final void endProgram() throws Throwable {
-        if (!this.streaming) {
+        if (this.emissionMode == EmissionSettings.EmissionMode.SAFE_BATCHING) {
             this.writeState("all");
         }
     }
 
+    public final void endProgram() throws Throwable {
+        if (this.emissionMode == EmissionSettings.EmissionMode.STREAMING) {
+            this.writeState("all");
+            this.deleteState();
+        }
+    }
+
     protected abstract void writeState(String filenameSuffix) throws Throwable;
+
+    protected abstract void deleteState() throws Throwable;
 
     @SuppressWarnings("unchecked")
     protected final String asString(Object object) {

@@ -191,12 +191,15 @@ public class XesWriter extends DataWriter {
             LOGGER.info("Xes export finished unsuccessfully.");
             final String message = "Error exporting data to XES.";
             throw new ProgramException(message, t);
-        } finally {
-            this.events.clear();
-            this.traces.clear();
-            this.element = null;
         }
         LOGGER.info("Xes export finished.");
+    }
+
+    @Override
+    protected void deleteState() throws Throwable {
+        this.events.clear();
+        this.traces.clear();
+        this.element = null;
     }
 
     private Map<String, XLog> getLogs() {

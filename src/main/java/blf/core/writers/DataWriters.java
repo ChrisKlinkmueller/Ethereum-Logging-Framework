@@ -1,5 +1,6 @@
 package blf.core.writers;
 
+import blf.configuration.EmissionSettings;
 import io.reactivex.annotations.NonNull;
 
 import java.math.BigInteger;
@@ -37,6 +38,12 @@ public class DataWriters {
 
     public void setOutputFolder(@NonNull Path folderPath) {
         Arrays.stream(this.writers).forEach(e -> e.setOutputFolder(folderPath));
+    }
+
+    public void setEmissionMode(EmissionSettings.EmissionMode emissionMode) {
+        for (DataWriter ex : this.writers) {
+            ex.setEmissionMode(emissionMode);
+        }
     }
 
     public void startNewBlock(BigInteger blockNumber) {

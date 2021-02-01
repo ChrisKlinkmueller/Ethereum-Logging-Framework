@@ -52,6 +52,7 @@ public abstract class ProgramState {
 
     public void setEmissionMode(EmissionSettings.EmissionMode emissionMode) {
         this.emissionMode = emissionMode;
+        getWriters().setEmissionMode(emissionMode);
     }
 
     public void close() {}
