@@ -1,7 +1,9 @@
 package blf.core.instructions;
 
+import blf.core.exceptions.ProgramException;
 import blf.core.state.ProgramState;
 
+import java.math.BigInteger;
 import java.util.List;
 
 public class BlockInstruction extends Instruction{
@@ -10,6 +12,11 @@ public class BlockInstruction extends Instruction{
 
     @Override
     public void executeNestedInstructions(final ProgramState programState) {
+        try {
+            programState.getWriters().startNewBlock((BigInteger) programState.getBlockchainVariables().currentBlockNumberAccessor().getValue(programState));
+        } catch (ProgramException e) {
+            programState.getExceptionHandler().handleExceptionAndDecideOnAbort(e.getMessage(), e);
+        }
         super.executeNestedInstructions(programState);
         try {
             programState.getWriters().writeBlock();

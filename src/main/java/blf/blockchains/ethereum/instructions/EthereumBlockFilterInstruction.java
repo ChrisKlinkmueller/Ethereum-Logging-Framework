@@ -63,12 +63,10 @@ public class EthereumBlockFilterInstruction extends BlockInstruction {
                 final String blockProcessingFinishMessage = String.format("Processing of block %s finished", currentBlock);
 
                 LOGGER.info(blockProcessingStartMessage);
-                ethereumProgramState.getWriters().startNewBlock(currentBlock);
 
                 ethereumProgramState.getReader().setCurrentBlock(block);
                 this.executeNestedInstructions(ethereumProgramState);
 
-                ethereumProgramState.getWriters().writeBlock();
                 LOGGER.info(blockProcessingFinishMessage);
 
                 currentBlock = currentBlock.add(BigInteger.ONE);

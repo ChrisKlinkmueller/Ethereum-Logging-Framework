@@ -33,7 +33,7 @@ public abstract class DataWriter {
 
     public final void endBlock() throws Throwable {
         if (this.streaming) {
-            this.writeState(this.currentBlock.toString());
+            this.writeState(currentBlock.toString());
         }
     }
 
