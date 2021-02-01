@@ -1,4 +1,4 @@
-// Author: Paul Beck
+// Author: Tom Knoche
 
 SET BLOCKCHAIN "Hyperledger"
 
@@ -10,7 +10,7 @@ SET CONNECTION {
    "mychannel"
 }
 
-SET OUTPUT FOLDER "./FailingHyperKitties"
+SET OUTPUT FOLDER "./test_output"
 
 ABORT ON EXCEPTION true
 

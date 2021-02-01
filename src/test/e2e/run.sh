@@ -186,10 +186,10 @@ function main() {
 	colorecho "Testing FailingHyperKitties"
 	LAST_EXIT=0
 	if [ "$1" = "$SILENT_PARAM" ] || [ "$2" = "$SILENT_PARAM" ] || [ "$3" = "$SILENT_PARAM" ]; then
-	  java -jar "$JAR" -abortOnException extract FailingHyperKitties.bcql &> /dev/null
+	  java -jar "$JAR" extract FailingHyperKitties.bcql &> /dev/null
 	  LAST_EXIT=$?
 	else
-	  java -jar "$JAR" -abortOnException extract FailingHyperKitties.bcql
+	  java -jar "$JAR" extract FailingHyperKitties.bcql
 	  LAST_EXIT=$?
   fi
   [ $LAST_EXIT -ne 1 ] && { redecho "The program did not return the correct error code" ; exit 2; }
@@ -199,10 +199,10 @@ function main() {
 	colorecho "Testing FailingCryptoKitties"
 	LAST_EXIT=0
 	if [ "$1" = "$SILENT_PARAM" ] || [ "$2" = "$SILENT_PARAM" ] || [ "$3" = "$SILENT_PARAM" ]; then
-	  java -jar "$JAR" -abortOnException extract FailingCryptoKitties.bcql &> /dev/null
+	  java -jar "$JAR" extract FailingCryptoKitties.bcql &> /dev/null
 	  LAST_EXIT=$?
 	else
-	  java -jar "$JAR" -abortOnException extract FailingCryptoKitties.bcql
+	  java -jar "$JAR" extract FailingCryptoKitties.bcql
 	  LAST_EXIT=$?
   fi
   [ $LAST_EXIT -ne 1 ] && { redecho "The program did not return the correct error code" ; exit 2; }

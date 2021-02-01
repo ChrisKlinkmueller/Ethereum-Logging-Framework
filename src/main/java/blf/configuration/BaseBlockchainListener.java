@@ -80,7 +80,7 @@ public abstract class BaseBlockchainListener extends BcqlBaseListener {
 
     @Override
     public void enterEmissionMode(BcqlParser.EmissionModeContext ctx) {
-        if(ctx != null) {
+        if (ctx != null) {
             if (ctx.literal().STRING_LITERAL() == null) {
                 LOGGER.severe("EMISSION MODE parameter should be a String");
                 System.exit(1);
@@ -95,6 +95,14 @@ public abstract class BaseBlockchainListener extends BcqlBaseListener {
             }
 
             this.state.setEmissionMode(emissionModeMap.get(emissionMode));
+        }
+    }
+
+    @Override
+    public void enterAbortOnException(BcqlParser.AbortOnExceptionContext ctx) {
+        if (ctx != null) {
+            boolean abortionFlag = Boolean.parseBoolean(ctx.BOOLEAN_LITERAL().getText());
+            this.state.getExceptionHandler().setAbortOnException(abortionFlag);
         }
     }
 

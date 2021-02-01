@@ -139,6 +139,16 @@ public class RootListener implements BcqlListener {
     }
 
     @Override
+    public void enterAbortOnException(AbortOnExceptionContext ctx) {
+        this.notifyListener(BcqlListener::enterAbortOnException, ctx);
+    }
+
+    @Override
+    public void exitAbortOnException(AbortOnExceptionContext ctx) {
+        this.notifyListener(BcqlListener::exitAbortOnException, ctx);
+    }
+
+    @Override
     public void enterStatement(StatementContext ctx) {
         this.notifyListener(BcqlListener::enterStatement, ctx);
     }
