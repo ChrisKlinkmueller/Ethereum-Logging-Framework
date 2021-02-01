@@ -13,7 +13,7 @@ import java.util.stream.Collectors;
  */
 public abstract class DataWriter {
     private Path outputFolder;
-    private EmissionSettings.EmissionMode emissionMode;
+    private EmissionSettings.EmissionMode emissionMode = EmissionSettings.EmissionMode.SAFE_BATCHING;
     private BigInteger currentBlock;
 
     public void setOutputFolder(@NonNull Path outputFolder) {

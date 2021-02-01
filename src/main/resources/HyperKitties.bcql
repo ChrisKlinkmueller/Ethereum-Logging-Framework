@@ -12,6 +12,8 @@ SET CONNECTION {
 
 SET OUTPUT FOLDER "./test_output"
 
+SET EMISSION MODE "streaming"
+
 BLOCKS (32) (91) {
    LOG ENTRIES ("kitties") (Birth(string owner, int newKittenID, int matronID, int sireID, int genes)) {
         EMIT LOG LINE ("Birth: '", owner, " ", newKittenID, " ", genes, "'.");
