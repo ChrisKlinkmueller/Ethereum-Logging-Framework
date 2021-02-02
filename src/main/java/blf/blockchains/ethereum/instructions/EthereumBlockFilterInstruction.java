@@ -2,6 +2,7 @@ package blf.blockchains.ethereum.instructions;
 
 import blf.blockchains.ethereum.reader.EthereumBlock;
 import blf.blockchains.ethereum.state.EthereumProgramState;
+import blf.core.instructions.BlockInstruction;
 import blf.core.instructions.Instruction;
 import blf.core.interfaces.FilterPredicate;
 import blf.core.state.ProgramState;
@@ -17,7 +18,7 @@ import java.util.logging.Logger;
 /**
  * This class handles the `BLOCKS (fromBlock) (toBlock)` filter of the .bcql file.
  */
-public class EthereumBlockFilterInstruction extends Instruction {
+public class EthereumBlockFilterInstruction extends BlockInstruction {
     private static final Logger LOGGER = Logger.getLogger(EthereumBlockFilterInstruction.class.getName());
     // TODO (by Mykola Digtiar): move this constant into Constants.java
     private static final int BLOCK_QUERY_DELAY_MILLISECONDS = 3000;
@@ -62,12 +63,10 @@ public class EthereumBlockFilterInstruction extends Instruction {
                 final String blockProcessingFinishMessage = String.format("Processing of block %s finished", currentBlock);
 
                 LOGGER.info(blockProcessingStartMessage);
-                ethereumProgramState.getWriters().startNewBlock(currentBlock);
 
                 ethereumProgramState.getReader().setCurrentBlock(block);
                 this.executeNestedInstructions(ethereumProgramState);
 
-                ethereumProgramState.getWriters().writeBlock();
                 LOGGER.info(blockProcessingFinishMessage);
 
                 currentBlock = currentBlock.add(BigInteger.ONE);

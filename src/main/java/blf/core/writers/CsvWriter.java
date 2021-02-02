@@ -80,6 +80,16 @@ public class CsvWriter extends DataWriter {
         }
     }
 
+    @Override
+    protected void deleteState() throws Throwable {
+        List<String> tableNames = new LinkedList<>(this.tables.keySet());
+        for (String tableName : tableNames) {
+            this.tables.remove(tableName);
+            this.rowCounts.remove(tableName);
+            this.columnNames.remove(tableName);
+        }
+    }
+
     protected void writeTable(String filenameSuffix, String tableName) throws Exception {
         LOGGER.info(String.format("Export of CSV table %s started.", tableName));
         final Path path = Paths.get(this.getOutputFolder().toString(), String.format("%s_%s.csv", tableName, filenameSuffix));
@@ -103,9 +113,6 @@ public class CsvWriter extends DataWriter {
             }
         } finally {
             LOGGER.info(String.format("Export of CSV table %s finished.", tableName));
-            this.tables.remove(tableName);
-            this.rowCounts.remove(tableName);
-            this.columnNames.remove(tableName);
         }
     }
 

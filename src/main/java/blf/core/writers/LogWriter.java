@@ -36,9 +36,12 @@ public class LogWriter extends DataWriter {
                     writer.write(line);
                     writer.newLine();
                 }
-            } finally {
-                this.lines.clear();
             }
         }
+    }
+
+    @Override
+    protected void deleteState() throws Throwable {
+        this.lines.clear();
     }
 }

@@ -20,7 +20,7 @@ public class EthereumVariables implements BlockchainVariables {
     public ValueAccessor currentBlockNumberAccessor() {
         return state -> {
             try {
-                return ((EthereumProgramState) state).getReader().getClient().queryBlockNumber();
+                return ((EthereumProgramState) state).getReader().getCurrentBlock().getNumber();
             } catch (final Throwable error) {
                 throw new ProgramException("Error when retrieving the current block number.", error);
             }
