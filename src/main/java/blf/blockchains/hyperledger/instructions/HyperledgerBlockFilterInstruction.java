@@ -13,6 +13,7 @@ import org.hyperledger.fabric.sdk.BlockEvent;
 
 import java.math.BigInteger;
 import java.util.List;
+import java.util.function.Consumer;
 import java.util.logging.Logger;
 
 import static blf.blockchains.hyperledger.variables.HyperledgerBlockVariables.*;
@@ -53,7 +54,7 @@ public class HyperledgerBlockFilterInstruction extends Instruction {
 
         Network network = hyperledgerProgramState.getNetwork();
 
-        network.addBlockListener(fromBlockNumber.longValue(), (BlockEvent blockEvent) -> {
+        Consumer<BlockEvent> blockEventConsumer = (BlockEvent blockEvent) -> {
             BigInteger currentBlockNumber = BigInteger.valueOf(blockEvent.getBlockNumber());
             // If the currentBlockNumber is greater than the toBlockNumber, we want to stop
             if (currentBlockNumber.compareTo(toBlockNumber) > 0) {
@@ -79,7 +80,13 @@ public class HyperledgerBlockFilterInstruction extends Instruction {
                     }
                 }
             }
-        });
+        };
+
+        if (fromBlockNumber.equals(HyperledgerInstructionHelper.CURRENT_BLOCK)) {
+            network.addBlockListener(blockEventConsumer);
+        } else {
+            network.addBlockListener(fromBlockNumber.longValue(), blockEventConsumer);
+        }
         synchronized (network) {
             try {
                 network.wait();
