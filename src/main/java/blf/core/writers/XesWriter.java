@@ -176,7 +176,16 @@ public class XesWriter extends DataWriter {
     @Override
     protected void writeState(String filenameSuffix) throws Throwable {
         LOGGER.info("Xes export started.");
+        // Before
+        Map<String, Map<String, XTrace>> formerTraces = deepCopyTraces();
+        Map<String, Map<String, Map<String, XEvent>>> formerEvents = deepCopyEvents();
+        // Modification of state
         final Map<String, XLog> logs = this.getLogs();
+        // Restore of state
+        this.traces.clear();
+        this.events.clear();
+        this.traces.putAll(formerTraces);
+        this.events.putAll(formerEvents);
         try {
             final File folder = this.getOutputFolder().toAbsolutePath().toFile();
             final XesXmlSerializer serializer = new XesXmlSerializer();
@@ -229,6 +238,36 @@ public class XesWriter extends DataWriter {
             .entrySet()
             .stream()
             .forEach(entry -> trace.add(entry.getValue()));
+    }
+
+    private Map<String, Map<String, XTrace>> deepCopyTraces() {
+        Map<String, Map<String, XTrace>> clonedTraces = new LinkedHashMap<>();
+        for (Entry<String, Map<String, XTrace>> entries0 : this.traces.entrySet()) {
+            Map<String, XTrace> clonedValue = new LinkedHashMap<>();
+            for (Entry<String, XTrace> entries1 : entries0.getValue().entrySet()) {
+                XTrace value1 = new XTraceImpl(entries1.getValue().getAttributes());
+                clonedValue.put(entries1.getKey(), value1);
+            }
+            clonedTraces.put(entries0.getKey(), clonedValue);
+        }
+        return clonedTraces;
+    }
+
+    private Map<String, Map<String, Map<String, XEvent>>> deepCopyEvents() {
+        Map<String, Map<String, Map<String, XEvent>>> clonedEvents = new LinkedHashMap<>();
+        for (Entry<String, Map<String, Map<String, XEvent>>> entries0 : this.events.entrySet()) {
+            Map<String, Map<String, XEvent>> clonedValue0 = new LinkedHashMap<>();
+            for (Entry<String, Map<String, XEvent>> entries1 : entries0.getValue().entrySet()) {
+                Map<String, XEvent> clonedValue1 = new LinkedHashMap<>();
+                for (Entry<String, XEvent> entries2 : entries1.getValue().entrySet()) {
+                    XEvent clonedEvent = new XEventImpl(entries2.getValue().getAttributes());
+                    clonedValue1.put(entries2.getKey(), clonedEvent);
+                }
+                clonedValue0.put(entries1.getKey(), clonedValue1);
+            }
+            clonedEvents.put(entries0.getKey(), clonedValue0);
+        }
+        return clonedEvents;
     }
 
     public static final String BOOLEAN_TYPE = "xs:boolean";
