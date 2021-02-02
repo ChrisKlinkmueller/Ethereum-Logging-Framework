@@ -29,7 +29,7 @@ public class GenericFilterInstruction extends Instruction {
                 "Exception occurred while executing nested instructions of %s class.",
                 getClass().getName()
             );
-            state.getExceptionHandler().handleExceptionAndDecideOnAbort(exceptionMsg, new NullPointerException());
+            state.getExceptionHandler().handleException(exceptionMsg, new NullPointerException());
         }
     }
 

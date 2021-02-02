@@ -30,7 +30,7 @@ public class AddLogLineInstruction extends Instruction {
             try {
                 values.add(va.getValue(state));
             } catch (ProgramException e) {
-                state.getExceptionHandler().handleExceptionAndDecideOnAbort("Error occurred.", e);
+                state.getExceptionHandler().handleException("Error occurred.", e);
             }
         }
         state.getWriters().getLogWriter().addLogLine(values);

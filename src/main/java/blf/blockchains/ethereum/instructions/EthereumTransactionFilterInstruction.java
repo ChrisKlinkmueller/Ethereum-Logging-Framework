@@ -54,14 +54,14 @@ public class EthereumTransactionFilterInstruction extends Instruction {
                             tx.getTransactionIndex(),
                             tx.getBlockNumber()
                         );
-                        state.getExceptionHandler().handleExceptionAndDecideOnAbort(message, cause);
+                        state.getExceptionHandler().handleException(message, cause);
                     } finally {
                         ethereumReader.setCurrentTransaction(null);
                     }
                 }
             } catch (ProgramException e) {
                 // TODO: remove throw of ProgramException
-                state.getExceptionHandler().handleExceptionAndDecideOnAbort(e.getMessage(), e);
+                state.getExceptionHandler().handleException(e.getMessage(), e);
             }
         }
     }

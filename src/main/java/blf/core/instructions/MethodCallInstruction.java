@@ -38,7 +38,7 @@ public class MethodCallInstruction extends Instruction {
             }
         } catch (ProgramException e) {
             // TODO: remove the throw of ProgramException
-            state.getExceptionHandler().handleExceptionAndDecideOnAbort(e.getMessage(), e);
+            state.getExceptionHandler().handleException(e.getMessage(), e);
         }
     }
 

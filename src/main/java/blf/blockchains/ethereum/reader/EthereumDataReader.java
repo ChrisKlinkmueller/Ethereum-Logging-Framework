@@ -35,7 +35,7 @@ public class EthereumDataReader extends DataReader<EthereumClient, EthereumBlock
     public void connect(String url) {
 
         if (this.client != null) {
-            exceptionHandler.handleExceptionAndDecideOnAbort("Already connected to Ethereum node.");
+            exceptionHandler.handleException("Already connected to Ethereum node.");
             return;
         }
 
@@ -43,19 +43,19 @@ public class EthereumDataReader extends DataReader<EthereumClient, EthereumBlock
             this.client = Web3jClient.connectWebsocket(url);
         } catch (ConnectException | URISyntaxException e) {
             final String exceptionMsg = String.format("Error when connecting to Ethereum node via websocket using URL '%s'.", url);
-            this.exceptionHandler.handleExceptionAndDecideOnAbort(exceptionMsg, e);
+            this.exceptionHandler.handleException(exceptionMsg, e);
         }
     }
 
     public void connectIpc(String path) {
         if (this.client != null) {
-            this.exceptionHandler.handleExceptionAndDecideOnAbort("Already connected to Ethereum node.", new NullPointerException());
+            this.exceptionHandler.handleException("Already connected to Ethereum node.", new NullPointerException());
         }
 
         try {
             this.client = Web3jClient.connectIpc(path);
         } catch (ConnectException e) {
-            this.exceptionHandler.handleExceptionAndDecideOnAbort("Error when connecting to Ethereum node via ipc.", e);
+            this.exceptionHandler.handleException("Error when connecting to Ethereum node via ipc.", e);
         }
     }
 

@@ -1,10 +1,9 @@
 package blf.configuration;
 
-import blf.core.state.ProgramState;
 import blf.core.Program;
 import blf.core.instructions.SetOutputFolderInstruction;
+import blf.core.state.ProgramState;
 import blf.grammar.BcqlBaseListener;
-import blf.grammar.BcqlListener;
 import blf.grammar.BcqlParser;
 import blf.parsing.InterpreterUtils;
 import blf.parsing.VariableExistenceListener;
@@ -399,11 +398,7 @@ public abstract class BaseBlockchainListener extends BcqlBaseListener {
 
     @Override
     public void exitScope(BcqlParser.ScopeContext ctx) {
-        handleScopeBuild(ctx.filter());
-    }
-
-    private void handleScopeBuild(BcqlParser.FilterContext ctx) {
-        if (ctx.genericFilter() != null) {
+        if (ctx.filter().genericFilter() != null) {
             this.buildGenericFilter();
         }
     }

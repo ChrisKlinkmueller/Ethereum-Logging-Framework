@@ -105,17 +105,14 @@ public class HyperledgerConnectInstruction extends Instruction {
         try (InputStream inStream = new FileInputStream(serverCrtFilePath)) {
             certificate = (X509Certificate) CertificateFactory.getInstance("X509").generateCertificate(inStream);
         } catch (FileNotFoundException e) {
-            this.exceptionHandler.handleExceptionAndDecideOnAbort(
+            this.exceptionHandler.handleException(
                 String.format("Unable to read certificate from provided file %s", networkConfigFilePath),
                 e
             );
         } catch (CertificateException e) {
-            this.exceptionHandler.handleExceptionAndDecideOnAbort(
-                String.format("No correct certificate provided at path: %s.", serverCrtFilePath),
-                e
-            );
+            this.exceptionHandler.handleException(String.format("No correct certificate provided at path: %s.", serverCrtFilePath), e);
         } catch (IOException e) {
-            this.exceptionHandler.handleExceptionAndDecideOnAbort(
+            this.exceptionHandler.handleException(
                 String.format("Input error when trying to read from certificate file %s", serverCrtFilePath),
                 e
             );
@@ -142,31 +139,28 @@ public class HyperledgerConnectInstruction extends Instruction {
 
             privateKey = keyFactory.generatePrivate(keySpec);
         } catch (NoSuchFileException e) {
-            this.exceptionHandler.handleExceptionAndDecideOnAbort(
-                String.format("Private key file does not exist on path '%s'", serverKeyFilePath),
-                e
-            );
+            this.exceptionHandler.handleException(String.format("Private key file does not exist on path '%s'", serverKeyFilePath), e);
         } catch (IOException e) {
-            this.exceptionHandler.handleExceptionAndDecideOnAbort(
+            this.exceptionHandler.handleException(
                 String.format("Input error when trying to read from private key file: %s.", serverKeyFilePath),
                 e
             );
         } catch (NoSuchAlgorithmException e) {
-            this.exceptionHandler.handleExceptionAndDecideOnAbort("Provided algorithm not found.", e);
+            this.exceptionHandler.handleException("Provided algorithm not found.", e);
         } catch (InvalidKeySpecException e) {
-            this.exceptionHandler.handleExceptionAndDecideOnAbort("Provided key spec is invalid.", e);
+            this.exceptionHandler.handleException("Provided key spec is invalid.", e);
         } catch (Exception e) {
-            this.exceptionHandler.handleExceptionAndDecideOnAbort("Unhandled exception has occurred.", e);
+            this.exceptionHandler.handleException("Unhandled exception has occurred.", e);
         }
 
         if (certificate == null) {
-            this.exceptionHandler.handleExceptionAndDecideOnAbort("Variable 'certificate' is null.", new NullPointerException());
+            this.exceptionHandler.handleException("Variable 'certificate' is null.", new NullPointerException());
 
             return null;
         }
 
         if (privateKey == null) {
-            this.exceptionHandler.handleExceptionAndDecideOnAbort("Variable 'privateKey' is null.", new NullPointerException());
+            this.exceptionHandler.handleException("Variable 'privateKey' is null.", new NullPointerException());
 
             return null;
         }
@@ -178,10 +172,7 @@ public class HyperledgerConnectInstruction extends Instruction {
                 .identity(Identities.newX509Identity(mspName, certificate, privateKey))
                 .networkConfig(networkConfigFile);
         } catch (IOException e) {
-            this.exceptionHandler.handleExceptionAndDecideOnAbort(
-                String.format("Unable to read network config from file %s", networkConfigFile),
-                e
-            );
+            this.exceptionHandler.handleException(String.format("Unable to read network config from file %s", networkConfigFile), e);
         }
 
         if (builder == null) {
@@ -207,13 +198,13 @@ public class HyperledgerConnectInstruction extends Instruction {
         logger.info(infoMsg);
 
         if (gateway == null) {
-            this.exceptionHandler.handleExceptionAndDecideOnAbort("Variable 'gateway' is null.", new NullPointerException());
+            this.exceptionHandler.handleException("Variable 'gateway' is null.", new NullPointerException());
 
             return null;
         }
 
         if (channel == null) {
-            this.exceptionHandler.handleExceptionAndDecideOnAbort("Variable 'channel' is null.", new NullPointerException());
+            this.exceptionHandler.handleException("Variable 'channel' is null.", new NullPointerException());
 
             return null;
         }

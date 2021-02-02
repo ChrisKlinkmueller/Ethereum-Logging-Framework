@@ -1,7 +1,6 @@
 package blf.core.writers;
 
 import blf.configuration.EmissionSettings;
-import io.reactivex.annotations.NonNull;
 
 import java.math.BigInteger;
 import java.nio.file.Path;
@@ -36,7 +35,7 @@ public class DataWriters {
         return this.csvWriter;
     }
 
-    public void setOutputFolder(@NonNull Path folderPath) {
+    public void setOutputFolder(Path folderPath) {
         Arrays.stream(this.writers).forEach(e -> e.setOutputFolder(folderPath));
     }
 

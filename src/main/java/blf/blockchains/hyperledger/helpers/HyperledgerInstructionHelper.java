@@ -50,9 +50,9 @@ public interface HyperledgerInstructionHelper {
                     addressListVariableNameCtx.getText()
                 );
 
-                hyperledgerProgramState.getExceptionHandler().handleExceptionAndDecideOnAbort(errorMsg, e);
+                hyperledgerProgramState.getExceptionHandler().handleException(errorMsg, e);
             } catch (ProgramException e) {
-                hyperledgerProgramState.getExceptionHandler().handleExceptionAndDecideOnAbort("Unexpected exception occurred.", e);
+                hyperledgerProgramState.getExceptionHandler().handleException("Unexpected exception occurred.", e);
             }
 
             if (value != null) {
@@ -75,8 +75,7 @@ public interface HyperledgerInstructionHelper {
         }
 
         if (addressNames == null) {
-            hyperledgerProgramState.getExceptionHandler()
-                .handleExceptionAndDecideOnAbort("Variable 'addressNames' is null.", new NullPointerException());
+            hyperledgerProgramState.getExceptionHandler().handleException("Variable 'addressNames' is null.", new NullPointerException());
         }
 
         return addressNames;
@@ -103,12 +102,9 @@ public interface HyperledgerInstructionHelper {
                     smartContractFilterCtx.contractAddress.getText()
                 );
 
-                exceptionHandler.handleExceptionAndDecideOnAbort(errorMsg, e);
+                exceptionHandler.handleException(errorMsg, e);
             } catch (ProgramException e) {
-                exceptionHandler.handleExceptionAndDecideOnAbort(
-                    "Unexpected exception occurred while accessing a variable in the programState",
-                    e
-                );
+                exceptionHandler.handleException("Unexpected exception occurred while accessing a variable in the programState", e);
             }
         }
 
@@ -196,10 +192,7 @@ public interface HyperledgerInstructionHelper {
         List<BcqlParser.LogEntryParameterContext> logEntryParameterContextList = logEntrySignatureCtx.logEntryParameter();
 
         if (logEntryParameterContextList == null) {
-            exceptionHandler.handleExceptionAndDecideOnAbort(
-                "Variable 'logEntryParameterContextList' is null.",
-                new NullPointerException()
-            );
+            exceptionHandler.handleException("Variable 'logEntryParameterContextList' is null.", new NullPointerException());
 
             logEntryParameterContextList = new LinkedList<>();
         }
@@ -264,14 +257,14 @@ public interface HyperledgerInstructionHelper {
             } catch (NumberFormatException e) {
                 String errorMsg = String.format("Variable '%s' in manifest file is not an instance of Int.", fromBlockVariableName);
 
-                exceptionHandler.handleExceptionAndDecideOnAbort(errorMsg, e);
+                exceptionHandler.handleException(errorMsg, e);
             } catch (ProgramException e) {
-                hyperledgerProgramState.getExceptionHandler().handleExceptionAndDecideOnAbort("Unexpected exception occurred.", e);
+                hyperledgerProgramState.getExceptionHandler().handleException("Unexpected exception occurred.", e);
             }
 
         } else {
             // Fallback
-            exceptionHandler.handleExceptionAndDecideOnAbort(
+            exceptionHandler.handleException(
                 "Hyperledger BLOCKS (`from`)() parameter should be an Integer or a valid variable name.",
                 new NullPointerException()
             );

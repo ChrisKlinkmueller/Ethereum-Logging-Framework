@@ -104,11 +104,11 @@ public class CsvWriter extends DataWriter {
         LOGGER.info(exportStartInfoMsg);
 
         if (fileNameSuffix == null) {
-            this.exceptionHandler.handleExceptionAndDecideOnAbort(fileNameSuffixNullErrorMsg, new NullPointerException());
+            this.exceptionHandler.handleException(fileNameSuffixNullErrorMsg, new NullPointerException());
         }
 
         if (tableName == null) {
-            this.exceptionHandler.handleExceptionAndDecideOnAbort(tableNameNullErrorMsg, new NullPointerException());
+            this.exceptionHandler.handleException(tableNameNullErrorMsg, new NullPointerException());
         }
 
         final Path path = Paths.get(this.getOutputFolder().toString(), String.format("%s_%s.csv", tableName, fileNameSuffix));
@@ -142,7 +142,7 @@ public class CsvWriter extends DataWriter {
             }
 
         } catch (Exception e) {
-            this.exceptionHandler.handleExceptionAndDecideOnAbort(exportErrorMsg, e);
+            this.exceptionHandler.handleException(exportErrorMsg, e);
         } finally {
             LOGGER.info(exportFinishInfoMsg);
 

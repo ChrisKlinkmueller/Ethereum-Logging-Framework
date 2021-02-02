@@ -176,7 +176,7 @@ public class XesWriter extends DataWriter {
             }
         } catch (Exception e) {
             final String errorMsg = "Error exporting data to XES.";
-            this.exceptionHandler.handleExceptionAndDecideOnAbort(errorMsg, e);
+            this.exceptionHandler.handleException(errorMsg, e);
         } finally {
             this.events.clear();
             this.traces.clear();

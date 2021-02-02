@@ -43,13 +43,13 @@ public class EthereumPublicMemberQueryEthereum implements EthereumSmartContractQ
         final String stateNullErrorMsg = "State is null.";
 
         if (contract == null || contract.isEmpty()) {
-            exceptionHandler.handleExceptionAndDecideOnAbort(contractNullErrorMsg, new Exception());
+            exceptionHandler.handleException(contractNullErrorMsg, new Exception());
 
             return;
         }
 
         if (state == null) {
-            exceptionHandler.handleExceptionAndDecideOnAbort(stateNullErrorMsg, new Exception());
+            exceptionHandler.handleException(stateNullErrorMsg, new Exception());
 
             return;
         }
@@ -62,7 +62,7 @@ public class EthereumPublicMemberQueryEthereum implements EthereumSmartContractQ
             final List<Type> values = client.queryPublicMember(contract, block, this.memberName, inputs, outputs);
             this.setValues(values, state);
         } catch (Throwable cause) {
-            exceptionHandler.handleExceptionAndDecideOnAbort(queryErrorMsg, cause);
+            exceptionHandler.handleException(queryErrorMsg, cause);
         }
     }
 

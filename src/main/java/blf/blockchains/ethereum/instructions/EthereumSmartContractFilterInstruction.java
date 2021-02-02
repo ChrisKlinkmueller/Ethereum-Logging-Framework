@@ -40,7 +40,7 @@ public class EthereumSmartContractFilterInstruction extends Instruction {
                 query.query(address, ethereumProgramState);
             }
         } catch (ProgramException e) {
-            state.getExceptionHandler().handleExceptionAndDecideOnAbort(e.getMessage(), e);
+            state.getExceptionHandler().handleException(e.getMessage(), e);
         }
 
         this.executeNestedInstructions(state);

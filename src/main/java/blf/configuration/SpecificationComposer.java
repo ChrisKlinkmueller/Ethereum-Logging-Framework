@@ -22,6 +22,8 @@ import java.util.stream.Collectors;
  * SpecificationComposer
  */
 public class SpecificationComposer {
+    // TODO: remove the throw of BuildException
+
     public final Stack<FactoryState> states;
     public final Stack<List<Instruction>> instructionListsStack;
 
@@ -193,7 +195,7 @@ public class SpecificationComposer {
                     value = valueAccessor.getValue(programState);
                     variable.setValue(value, programState);
                 } catch (ProgramException e) {
-                    programState.getExceptionHandler().handleExceptionAndDecideOnAbort(e.getMessage(), e);
+                    programState.getExceptionHandler().handleException(e.getMessage(), e);
                 }
             }
         }

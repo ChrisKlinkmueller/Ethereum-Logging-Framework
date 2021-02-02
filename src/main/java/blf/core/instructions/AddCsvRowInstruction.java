@@ -39,7 +39,7 @@ public class AddCsvRowInstruction extends Instruction {
             writer.endRow(tbName);
         } catch (ProgramException e) {
             // TODO: remove the throw of ProgramException
-            state.getExceptionHandler().handleExceptionAndDecideOnAbort(e.getMessage(), e);
+            state.getExceptionHandler().handleException(e.getMessage(), e);
         }
     }
 

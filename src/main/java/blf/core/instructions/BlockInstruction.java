@@ -21,13 +21,13 @@ public class BlockInstruction extends Instruction {
             programState.getWriters()
                 .startNewBlock((BigInteger) programState.getBlockchainVariables().currentBlockNumberAccessor().getValue(programState));
         } catch (ProgramException e) {
-            programState.getExceptionHandler().handleExceptionAndDecideOnAbort(e.getMessage(), e);
+            programState.getExceptionHandler().handleException(e.getMessage(), e);
         }
         super.executeNestedInstructions(programState);
         try {
             programState.getWriters().writeBlock();
         } catch (Throwable throwable) {
-            programState.getExceptionHandler().handleExceptionAndDecideOnAbort(throwable.getMessage(), throwable);
+            programState.getExceptionHandler().handleException(throwable.getMessage(), throwable);
         }
     }
 }

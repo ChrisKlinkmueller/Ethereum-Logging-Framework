@@ -37,7 +37,7 @@ public class LogWriter extends DataWriter {
         final String logLineWriteErrorMsg = "An error occurred while writing a log line into log file.";
 
         if (fileNameSuffix == null) {
-            this.exceptionHandler.handleExceptionAndDecideOnAbort(fileNameSuffixNullErrorMsg, new NullPointerException());
+            this.exceptionHandler.handleException(fileNameSuffixNullErrorMsg, new NullPointerException());
         }
 
         final Path outputPath = Paths.get(this.getOutputFolder().toString(), String.format("%s.log", fileNameSuffix));
@@ -55,7 +55,7 @@ public class LogWriter extends DataWriter {
             }
 
         } catch (Exception e) {
-            this.exceptionHandler.handleExceptionAndDecideOnAbort(logLineWriteErrorMsg, e);
+            this.exceptionHandler.handleException(logLineWriteErrorMsg, e);
         } finally {
             this.lines.clear();
         }

@@ -71,7 +71,7 @@ public class EthereumLogEntryFilterInstruction extends Instruction {
                 logEntry.getTransactionIndex(),
                 logEntry.getBlockNumber()
             );
-            state.getExceptionHandler().handleExceptionAndDecideOnAbort(message, cause);
+            state.getExceptionHandler().handleException(message, cause);
         } finally {
             ethereumProgramState.getReader().setCurrentTransaction(null);
         }
@@ -93,7 +93,7 @@ public class EthereumLogEntryFilterInstruction extends Instruction {
                 .flatMap(EthereumTransaction::logStream)
                 .collect(Collectors.toList());
         } else {
-            this.exceptionHandler.handleExceptionAndDecideOnAbort(
+            this.exceptionHandler.handleException(
                 "Log entries can only be extracted from blocks or transactions, but there is no open block or transaction.",
                 new Exception()
             );

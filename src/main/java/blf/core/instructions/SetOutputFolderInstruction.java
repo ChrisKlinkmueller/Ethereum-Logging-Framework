@@ -15,14 +15,14 @@ public class SetOutputFolderInstruction extends Instruction {
         final Path outputFolder = Path.of(state.outputFolderPath);
         if (!outputFolder.toFile().exists()) {
             final String exceptionMsg = String.format("Folder '%s' does not exist.", outputFolder.toString());
-            state.getExceptionHandler().handleExceptionAndDecideOnAbort(exceptionMsg);
+            state.getExceptionHandler().handleException(exceptionMsg);
         }
 
         try {
-            state.getExceptionHandler().setOutputFolder(outputFolder);
+            state.getExceptionHandler().setErrorLogOutputFolder(outputFolder);
             state.getWriters().setOutputFolder(outputFolder);
         } catch (Exception cause) {
-            state.getExceptionHandler().handleExceptionAndDecideOnAbort("Error when setting the output folder.", cause);
+            state.getExceptionHandler().handleException("Error when setting the output folder.", cause);
         }
     }
 }

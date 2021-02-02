@@ -25,7 +25,7 @@ public class VariableAssignmentInstruction extends Instruction {
             this.valueMutator.setValue(value, state);
         } catch (ProgramException e) {
             // TODO: remove the throw of ProgramException
-            state.getExceptionHandler().handleExceptionAndDecideOnAbort(e.getMessage(), e);
+            state.getExceptionHandler().handleException(e.getMessage(), e);
         }
     }
 }
