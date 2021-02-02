@@ -13,7 +13,7 @@ import java.util.stream.Collectors;
  */
 public abstract class DataWriter {
     private Path outputFolder;
-    private EmissionSettings.EmissionMode emissionMode = EmissionSettings.EmissionMode.SAFE_BATCHING;
+    private EmissionSettings.EmissionMode emissionMode = EmissionSettings.EmissionMode.DEFAULT_BATCHING;
     private BigInteger currentBlock;
 
     public void setOutputFolder(@NonNull Path outputFolder) {
@@ -43,10 +43,8 @@ public abstract class DataWriter {
     }
 
     public final void endProgram() throws Throwable {
-        if (this.emissionMode == EmissionSettings.EmissionMode.STREAMING) {
-            this.writeState("all");
-            this.deleteState();
-        }
+        this.writeState("all");
+        this.deleteState();
     }
 
     protected abstract void writeState(String filenameSuffix) throws Throwable;
