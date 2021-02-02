@@ -32,7 +32,7 @@ public abstract class DataWriter {
         this.currentBlock = blocknumber;
     }
 
-    public final void endBlock() throws Throwable {
+    public final void endBlock() {
         if (this.emissionMode == EmissionSettings.EmissionMode.STREAMING) {
             this.writeState(currentBlock.toString());
             this.deleteState();
@@ -42,14 +42,14 @@ public abstract class DataWriter {
         }
     }
 
-    public final void endProgram() throws Throwable {
+    public final void endProgram() {
         this.writeState("all");
         this.deleteState();
     }
 
-    protected abstract void writeState(String filenameSuffix) throws Throwable;
+    protected abstract void writeState(String filenameSuffix);
 
-    protected abstract void deleteState() throws Throwable;
+    protected abstract void deleteState();
 
     @SuppressWarnings("unchecked")
     protected final String asString(Object object) {

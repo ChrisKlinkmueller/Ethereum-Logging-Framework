@@ -61,7 +61,7 @@ public class EthereumTransactionFilterInstruction extends Instruction {
                 }
             } catch (ProgramException e) {
                 // TODO: remove throw of ProgramException
-                state.getExceptionHandler().handleExceptionAndDecideOnAbort("Program exception.", e);
+                state.getExceptionHandler().handleExceptionAndDecideOnAbort(e.getMessage(), e);
             }
         }
     }

@@ -50,13 +50,13 @@ public class DataWriters {
         Arrays.stream(this.writers).forEach(e -> e.startBlock(blockNumber));
     }
 
-    public void writeBlock() throws Throwable {
+    public void writeBlock() {
         for (DataWriter ex : this.writers) {
             ex.endBlock();
         }
     }
 
-    public void writeAllData() throws Throwable {
+    public void writeAllData() {
         for (DataWriter ex : this.writers) {
             ex.endProgram();
         }

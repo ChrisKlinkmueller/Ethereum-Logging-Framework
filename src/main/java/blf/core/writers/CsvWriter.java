@@ -1,16 +1,14 @@
 package blf.core.writers;
 
+import blf.core.exceptions.ExceptionHandler;
 import io.reactivex.annotations.NonNull;
 
 import java.io.BufferedWriter;
+import java.io.File;
 import java.io.FileWriter;
 import java.nio.file.Path;
 import java.nio.file.Paths;
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.LinkedList;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 import java.util.logging.Logger;
 import java.util.stream.Collectors;
 import java.util.stream.IntStream;
@@ -25,6 +23,9 @@ public class CsvWriter extends DataWriter {
     private final Map<String, Map<String, ArrayList<Object>>> tables;
     private final Map<String, List<String>> columnNames;
     private final Map<String, Integer> rowCounts;
+
+    private final ExceptionHandler exceptionHandler;
+
     private String delimiter;
 
     public CsvWriter() {
@@ -32,6 +33,8 @@ public class CsvWriter extends DataWriter {
         this.tables = new HashMap<>();
         this.rowCounts = new HashMap<>();
         this.columnNames = new HashMap<>();
+
+        this.exceptionHandler = new ExceptionHandler();
     }
 
     public void setDelimiter(@NonNull String delimiter) {
@@ -73,7 +76,7 @@ public class CsvWriter extends DataWriter {
     }
 
     @Override
-    protected void writeState(String namePrefix) throws Throwable {
+    protected void writeState(String namePrefix) {
         List<String> tableNames = new LinkedList<>(this.tables.keySet());
         for (String tableName : tableNames) {
             this.writeTable(namePrefix, tableName);
@@ -81,7 +84,7 @@ public class CsvWriter extends DataWriter {
     }
 
     @Override
-    protected void deleteState() throws Throwable {
+    protected void deleteState() {
         List<String> tableNames = new LinkedList<>(this.tables.keySet());
         for (String tableName : tableNames) {
             this.tables.remove(tableName);
@@ -90,29 +93,62 @@ public class CsvWriter extends DataWriter {
         }
     }
 
-    protected void writeTable(String filenameSuffix, String tableName) throws Exception {
-        LOGGER.info(String.format("Export of CSV table %s started.", tableName));
-        final Path path = Paths.get(this.getOutputFolder().toString(), String.format("%s_%s.csv", tableName, filenameSuffix));
+    protected void writeTable(String fileNameSuffix, String tableName) {
+        final String fileNameSuffixNullErrorMsg = "The suffix of the CSV file is null.";
+        final String tableNameNullErrorMsg = "The CSV table name is null.";
+
+        final String exportStartInfoMsg = String.format("Export of CSV table %s started.", tableName);
+        final String exportFinishInfoMsg = String.format("Export of CSV table %s finished.", tableName);
+        final String exportErrorMsg = String.format("An error occurred while exporting of CSV table %s.", tableName);
+
+        LOGGER.info(exportStartInfoMsg);
+
+        if (fileNameSuffix == null) {
+            this.exceptionHandler.handleExceptionAndDecideOnAbort(fileNameSuffixNullErrorMsg, new NullPointerException());
+        }
+
+        if (tableName == null) {
+            this.exceptionHandler.handleExceptionAndDecideOnAbort(tableNameNullErrorMsg, new NullPointerException());
+        }
+
+        final Path path = Paths.get(this.getOutputFolder().toString(), String.format("%s_%s.csv", tableName, fileNameSuffix));
 
         final Map<String, ArrayList<Object>> table = this.tables.get(tableName);
-        try (BufferedWriter writer = new BufferedWriter(new FileWriter(path.toFile()))) {
+
+        final File csvFile = path.toFile();
+
+        try (
+            final FileWriter csvFileWriter = new FileWriter(csvFile);
+            final BufferedWriter csvBufferedWriter = new BufferedWriter(csvFileWriter)
+        ) {
+
             final List<String> columns = this.columnNames.get(tableName);
 
             final String header = columns.stream().collect(Collectors.joining(this.delimiter));
-            writer.write(header);
-            writer.newLine();
+            final int rowCount = this.rowCounts.get(tableName);
 
-            for (int i = 0; i < this.rowCounts.get(tableName); i++) {
-                final int index = i;
+            csvBufferedWriter.write(header);
+            csvBufferedWriter.newLine();
+
+            for (int i = 0; i < rowCount; i++) {
+                final int rowIndex = i;
                 final String row = columns.stream()
-                    .map(column -> table.get(column).get(index))
+                    .map(column -> table.get(column).get(rowIndex))
                     .map(this::asString)
                     .collect(Collectors.joining(this.delimiter));
-                writer.write(row);
-                writer.newLine();
+
+                csvBufferedWriter.write(row);
+                csvBufferedWriter.newLine();
             }
+
+        } catch (Exception e) {
+            this.exceptionHandler.handleExceptionAndDecideOnAbort(exportErrorMsg, e);
         } finally {
-            LOGGER.info(String.format("Export of CSV table %s finished.", tableName));
+            LOGGER.info(exportFinishInfoMsg);
+
+            this.tables.remove(tableName);
+            this.rowCounts.remove(tableName);
+            this.columnNames.remove(tableName);
         }
     }
 

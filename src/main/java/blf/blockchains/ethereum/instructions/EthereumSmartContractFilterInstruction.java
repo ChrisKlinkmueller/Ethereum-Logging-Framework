@@ -32,17 +32,14 @@ public class EthereumSmartContractFilterInstruction extends Instruction {
     public void execute(ProgramState state) {
         final EthereumProgramState ethereumProgramState = (EthereumProgramState) state;
 
+        final String address;
         try {
-            final String address;
-
             address = (String) this.contractAddress.getValue(state);
 
             for (EthereumSmartContractQuery query : this.queries) {
                 query.query(address, ethereumProgramState);
             }
-
         } catch (ProgramException e) {
-            // TODO: remove the throw of ProgramException
             state.getExceptionHandler().handleExceptionAndDecideOnAbort(e.getMessage(), e);
         }
 
