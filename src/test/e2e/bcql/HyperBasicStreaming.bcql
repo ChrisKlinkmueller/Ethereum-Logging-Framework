@@ -1,0 +1,50 @@
+// Author: Tobias Petrich
+
+SET BLOCKCHAIN "Hyperledger"
+
+SET CONNECTION {
+   "hyperledger/connection-org1.yaml",
+   "hyperledger/server.key",
+   "hyperledger/server.crt",
+   "Org1MSP",
+   "mychannel"
+}
+
+SET OUTPUT FOLDER "./HyperBasicStreaming"
+
+SET EMISSION MODE "streaming"
+
+int blockNumberFrom = 30;
+int blockNumberTo = 33;
+
+string chainCodeName = "basic";
+
+int blockNumberSum = 0;
+int[] blockNumbers = newIntArray();
+
+BLOCKS (blockNumberFrom) (blockNumberTo) {
+
+   blockNumberSum = add(blockNumberSum, block.number);
+
+   add(blockNumbers, block.number);
+
+   bool containsBlockNumber10 = contains(blockNumbers, 10);
+
+   EMIT LOG LINE ("++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++");
+   EMIT LOG LINE ("block.number: ", block.number);
+   EMIT LOG LINE ("block.hash: ", block.hash);
+   EMIT LOG LINE ("block.transactionCount: ", block.transactionCount);
+   EMIT LOG LINE ("blockNumberSum: ", blockNumberSum);
+   IF (containsBlockNumber10) {
+      EMIT LOG LINE ("contains block number 10: ", containsBlockNumber10);
+   }
+   EMIT LOG LINE ("++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++");
+
+   LOG ENTRIES (chainCodeName) (basicTestEvent(string payload)) {
+        EMIT LOG LINE ("--------------------------------------------------------------------------------");
+        EMIT LOG LINE ("payload: '", payload, "'");
+        EMIT LOG LINE ("--------------------------------------------------------------------------------");
+        EMIT CSV ROW ("payload") (payload);
+        EMIT XES EVENT ("testEvent")()()(payload as xs:string payload);
+   }
+}
