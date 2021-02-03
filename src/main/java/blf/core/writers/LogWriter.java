@@ -39,31 +39,33 @@ public class LogWriter extends DataWriter {
         final String fileNameSuffixNullErrorMsg = "The suffix of the log file is null.";
         final String logLineWriteErrorMsg = "An error occurred while writing a log line into log file.";
 
-        LOGGER.info("Log export started.");
+        if (!this.lines.isEmpty()) {
+            LOGGER.info("Log export started.");
 
-        if (fileNameSuffix == null) {
-            this.exceptionHandler.handleException(fileNameSuffixNullErrorMsg, new NullPointerException());
-        }
-
-        final Path outputPath = Paths.get(this.getOutputFolder().toString(), String.format("%s.log", fileNameSuffix));
-
-        final File logFile = outputPath.toFile();
-
-        try (
-            final FileWriter logFileWriter = new FileWriter(logFile);
-            final BufferedWriter logBufferedWriter = new BufferedWriter(logFileWriter)
-        ) {
-
-            for (String line : lines) {
-                logBufferedWriter.write(line);
-                logBufferedWriter.newLine();
+            if (fileNameSuffix == null) {
+                this.exceptionHandler.handleException(fileNameSuffixNullErrorMsg, new NullPointerException());
             }
 
-        } catch (Exception e) {
-            this.exceptionHandler.handleException(logLineWriteErrorMsg, e);
+            final Path outputPath = Paths.get(this.getOutputFolder().toString(), String.format("%s.log", fileNameSuffix));
+
+            final File logFile = outputPath.toFile();
+
+            try (
+                final FileWriter logFileWriter = new FileWriter(logFile);
+                final BufferedWriter logBufferedWriter = new BufferedWriter(logFileWriter)
+            ) {
+
+                for (String line : lines) {
+                    logBufferedWriter.write(line);
+                    logBufferedWriter.newLine();
+                }
+
+            } catch (Exception e) {
+                this.exceptionHandler.handleException(logLineWriteErrorMsg, e);
+            }
+            LOGGER.info("Log export finished.");
         }
 
-        LOGGER.info("Log export finished.");
     }
 
     @Override
