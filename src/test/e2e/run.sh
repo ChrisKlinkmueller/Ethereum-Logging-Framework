@@ -28,7 +28,7 @@ function main() {
 	fi
 
 	colorecho "Setting up test environment"
-	mkdir -p "$ED"/{,hyperledger}
+	mkdir -p "$ED"/{,hyperledger,FailingHyperKitties,FailingCryptoKitties}
 
   cp $CRED_DIR/* "$ED/hyperledger/"
 
@@ -61,9 +61,11 @@ function main() {
 
   echo "JAR file should be located at '$JAR'"
 
+  #--------------------------------------------------------------------------------
+
 	colorecho "Testing AugurContractRegistry"
 	# Test with default batching mode
-	colorecho "Running default bathing mode"
+	colorecho "Running default batching mode"
   if [ "$1" = "$SILENT_PARAM" ] || [ "$2" = "$SILENT_PARAM" ] || [ "$3" = "$SILENT_PARAM" ]; then
 	  java -jar "$JAR" extract AugurContractRegistry.bcql &> /dev/null
 	else
@@ -72,7 +74,7 @@ function main() {
 	cmp AugurContractRegistry/all.log{,.xelf} || { redecho "Comparing the extracted data with the expected data failed! Leaving test environment as is for investigation" ; exit 2; }
 	cmp AugurContractRegistry/error.log{,.xelf} || { redecho "Comparing the extracted data with the expected data failed! Leaving test environment as is for investigation" ; exit 2; }
 	# Cleanup and test with safe batching mode
-	colorecho "Running safe bathing mode"
+	colorecho "Running safe batching mode"
 	rm -f AugurContractRegistry/{*.log,*.csv,*.xes}
 	sed -i '/^SET OUTPUT FOLDER/a SET EMISSION MODE "safe batching"' AugurContractRegistry.bcql
   if [ "$1" = "$SILENT_PARAM" ] || [ "$2" = "$SILENT_PARAM" ] || [ "$3" = "$SILENT_PARAM" ]; then
@@ -84,9 +86,11 @@ function main() {
 	cmp AugurContractRegistry/error.log{,.xelf} || { redecho "Comparing the extracted data with the expected data failed! Leaving test environment as is for investigation" ; exit 2; }
 	colorecho "Test successful"
 
+  #--------------------------------------------------------------------------------
+
 	colorecho "Testing CryptoKitties"
 	# Test with default batching mode
-	colorecho "Running default bathing mode"
+	colorecho "Running default batching mode"
   if [ "$1" = "$SILENT_PARAM" ] || [ "$2" = "$SILENT_PARAM" ] || [ "$3" = "$SILENT_PARAM" ]; then
 	  java -jar "$JAR" extract CryptoKitties.bcql &> /dev/null
 	else
@@ -95,7 +99,7 @@ function main() {
 	cmp CryptoKitties/log_pid0_all.xes{,.xelf} || { redecho "Comparing the extracted data with the expected data failed! Leaving test environment as is for investigation" ; exit 2; }
 	cmp CryptoKitties/error.log{,.xelf} || { redecho "Comparing the extracted data with the expected data failed! Leaving test environment as is for investigation" ; exit 2; }
 	# Cleanup and test with safe batching mode
-	colorecho "Running safe bathing mode"
+	colorecho "Running safe batching mode"
 	rm -f CryptoKitties/{*.log,*.csv,*.xes}
 	sed -i '/^SET OUTPUT FOLDER/a SET EMISSION MODE "safe batching"' CryptoKitties.bcql
   if [ "$1" = "$SILENT_PARAM" ] || [ "$2" = "$SILENT_PARAM" ] || [ "$3" = "$SILENT_PARAM" ]; then
@@ -107,9 +111,11 @@ function main() {
 	cmp CryptoKitties/error.log{,.xelf} || { redecho "Comparing the extracted data with the expected data failed! Leaving test environment as is for investigation" ; exit 2; }
 	colorecho "Test successful"
 
+  #--------------------------------------------------------------------------------
+
 	colorecho "Testing NetworkStatistics"
 	# Test with default batching mode
-	colorecho "Running default bathing mode"
+	colorecho "Running default batching mode"
   if [ "$1" = "$SILENT_PARAM" ] || [ "$2" = "$SILENT_PARAM" ] || [ "$3" = "$SILENT_PARAM" ]; then
 	  java -jar "$JAR" extract NetworkStatistics.bcql &> /dev/null
 	else
@@ -118,7 +124,7 @@ function main() {
 	cmp NetworkStatistics/NetworkStatistics_all.csv{,.xelf} || { redecho "Comparing the extracted data with the expected data failed! Leaving test environment as is for investigation" ; exit 2; }
 	cmp NetworkStatistics/error.log{,.xelf} || { redecho "Comparing the extracted data with the expected data failed! Leaving test environment as is for investigation" ; exit 2; }
 	# Cleanup and test with safe batching mode
-	colorecho "Running safe bathing mode"
+	colorecho "Running safe batching mode"
 	rm -f NetworkStatistics/{*.log,*.csv,*.xes}
 	sed -i '/^SET OUTPUT FOLDER/a SET EMISSION MODE "safe batching"' NetworkStatistics.bcql
   if [ "$1" = "$SILENT_PARAM" ] || [ "$2" = "$SILENT_PARAM" ] || [ "$3" = "$SILENT_PARAM" ]; then
@@ -130,9 +136,11 @@ function main() {
 	cmp NetworkStatistics/error.log{,.xelf} || { redecho "Comparing the extracted data with the expected data failed! Leaving test environment as is for investigation" ; exit 2; }
 	colorecho "Test successful"
 
+  #--------------------------------------------------------------------------------
+
 	colorecho "Testing Rebesky_Augur"
 	# Test with default batching mode
-	colorecho "Running default bathing mode"
+	colorecho "Running default batching mode"
 	if [ "$1" = "$SILENT_PARAM" ] || [ "$2" = "$SILENT_PARAM" ] || [ "$3" = "$SILENT_PARAM" ]; then
 	  java -jar "$JAR" extract Rebesky_Augur.bcql &> /dev/null
 	else
@@ -141,7 +149,7 @@ function main() {
 	cmp Rebesky_Augur/log_pid0_all.xes{,.xelf} || { redecho "Comparing the extracted data with the expected data failed! Leaving test environment as is for investigation" ; exit 2; }
 	cmp Rebesky_Augur/error.log{,.xelf} || { redecho "Comparing the extracted data with the expected data failed! Leaving test environment as is for investigation" ; exit 2; }
 	# Cleanup and test with safe batching mode
-	colorecho "Running safe bathing mode"
+	colorecho "Running safe batching mode"
 	rm -f Rebesky_Augur/{*.log,*.csv,*.xes}
 	sed -i '/^SET OUTPUT FOLDER/a SET EMISSION MODE "safe batching"' Rebesky_Augur.bcql
   if [ "$1" = "$SILENT_PARAM" ] || [ "$2" = "$SILENT_PARAM" ] || [ "$3" = "$SILENT_PARAM" ]; then
@@ -153,9 +161,11 @@ function main() {
 	cmp Rebesky_Augur/error.log{,.xelf} || { redecho "Comparing the extracted data with the expected data failed! Leaving test environment as is for investigation" ; exit 2; }
 	colorecho "Test successful"
 
+  #--------------------------------------------------------------------------------
+
 	colorecho "Testing Rebesky_ChickenHunt"
 	# Test with default batching mode
-	colorecho "Running default bathing mode"
+	colorecho "Running default batching mode"
 	if [ "$1" = "$SILENT_PARAM" ] || [ "$2" = "$SILENT_PARAM" ] || [ "$3" = "$SILENT_PARAM" ]; then
 	  java -jar "$JAR" extract Rebesky_ChickenHunt.bcql &> /dev/null
 	else
@@ -164,7 +174,7 @@ function main() {
 	cmp Rebesky_ChickenHunt/log_pid0_all.xes{,.xelf} || { redecho "Comparing the extracted data with the expected data failed! Leaving test environment as is for investigation" ; exit 2; }
 	cmp Rebesky_ChickenHunt/error.log{,.xelf} || { redecho "Comparing the extracted data with the expected data failed! Leaving test environment as is for investigation" ; exit 2; }
 	# Cleanup and test with safe batching mode
-	colorecho "Running safe bathing mode"
+	colorecho "Running safe batching mode"
 	rm -f Rebesky_ChickenHunt/{*.log,*.csv,*.xes}
 	sed -i '/^SET OUTPUT FOLDER/a SET EMISSION MODE "safe batching"' Rebesky_ChickenHunt.bcql
   if [ "$1" = "$SILENT_PARAM" ] || [ "$2" = "$SILENT_PARAM" ] || [ "$3" = "$SILENT_PARAM" ]; then
@@ -176,9 +186,11 @@ function main() {
 	cmp Rebesky_ChickenHunt/error.log{,.xelf} || { redecho "Comparing the extracted data with the expected data failed! Leaving test environment as is for investigation" ; exit 2; }
 	colorecho "Test successful"
 
+  #--------------------------------------------------------------------------------
+
 	colorecho "Testing Rebesky_Idex1"
 	# Test with default batching mode
-	colorecho "Running default bathing mode"
+	colorecho "Running default batching mode"
 	if [ "$1" = "$SILENT_PARAM" ] || [ "$2" = "$SILENT_PARAM" ] || [ "$3" = "$SILENT_PARAM" ]; then
 	  java -jar "$JAR" extract Rebesky_Idex1.bcql &> /dev/null
 	else
@@ -187,7 +199,7 @@ function main() {
 	cmp Rebesky_Idex1/Idex_calls_all.csv{,.xelf} || { redecho "Comparing the extracted data with the expected data failed! Leaving test environment as is for investigation" ; exit 2; }
 	cmp Rebesky_Idex1/error.log{,.xelf} || { redecho "Comparing the extracted data with the expected data failed! Leaving test environment as is for investigation" ; exit 2; }
 	# Cleanup and test with safe batching mode
-	colorecho "Running safe bathing mode"
+	colorecho "Running safe batching mode"
 	rm -f Rebesky_Idex1/{*.log,*.csv,*.xes}
 	sed -i '/^SET OUTPUT FOLDER/a SET EMISSION MODE "safe batching"' Rebesky_Idex1.bcql
   if [ "$1" = "$SILENT_PARAM" ] || [ "$2" = "$SILENT_PARAM" ] || [ "$3" = "$SILENT_PARAM" ]; then
@@ -199,9 +211,11 @@ function main() {
 	cmp Rebesky_Idex1/error.log{,.xelf} || { redecho "Comparing the extracted data with the expected data failed! Leaving test environment as is for investigation" ; exit 2; }
 	colorecho "Test successful"
 
+  #--------------------------------------------------------------------------------
+
 	colorecho "Testing HyperBasic"
 	# Test with default batching mode
-	colorecho "Running default bathing mode"
+	colorecho "Running default batching mode"
 	if [ "$1" = "$SILENT_PARAM" ] || [ "$2" = "$SILENT_PARAM" ] || [ "$3" = "$SILENT_PARAM" ]; then
 	  java -jar "$JAR" extract HyperBasic.bcql &> /dev/null
 	else
@@ -212,7 +226,7 @@ function main() {
 	cmp HyperBasic/payload_all.csv{,.xblf} || { redecho "Comparing the extracted data with the expected data failed! Leaving test environment as is for investigation" ; exit 2; }
 	cmp HyperBasic/error.log{,.xblf} || { redecho "Comparing the extracted data with the expected data failed! Leaving test environment as is for investigation" ; exit 2; }
 	# Cleanup and test with safe batching mode
-	colorecho "Running safe bathing mode"
+	colorecho "Running safe batching mode"
 	rm -f HyperBasic/{*.log,*.csv,*.xes}
 	sed -i '/^SET OUTPUT FOLDER/a SET EMISSION MODE "safe batching"' HyperBasic.bcql
   if [ "$1" = "$SILENT_PARAM" ] || [ "$2" = "$SILENT_PARAM" ] || [ "$3" = "$SILENT_PARAM" ]; then
@@ -226,9 +240,11 @@ function main() {
 	cmp HyperBasic/error.log{,.xblf} || { redecho "Comparing the extracted data with the expected data failed! Leaving test environment as is for investigation" ; exit 2; }
 	colorecho "Test successful"
 
+  #--------------------------------------------------------------------------------
+
 	colorecho "Testing HyperKitties"
 	# Test with default batching mode
-	colorecho "Running default bathing mode"
+	colorecho "Running default batching mode"
 	if [ "$1" = "$SILENT_PARAM" ] || [ "$2" = "$SILENT_PARAM" ] || [ "$3" = "$SILENT_PARAM" ]; then
 	  java -jar "$JAR" extract HyperKitties.bcql &> /dev/null
 	else
@@ -243,7 +259,7 @@ function main() {
 	cmp HyperKitties/Transfer_all.csv{,.xblf} || { redecho "Comparing the extracted data with the expected data failed! Leaving test environment as is for investigation" ; exit 2; }
 	cmp HyperKitties/error.log{,.xblf} || { redecho "Comparing the extracted data with the expected data failed! Leaving test environment as is for investigation" ; exit 2; }
 	# Cleanup and test with safe batching mode
-	colorecho "Running safe bathing mode"
+	colorecho "Running safe batching mode"
 	rm -f HyperKitties/{*.log,*.csv,*.xes}
 	sed -i '/^SET OUTPUT FOLDER/a SET EMISSION MODE "safe batching"' HyperKitties.bcql
   if [ "$1" = "$SILENT_PARAM" ] || [ "$2" = "$SILENT_PARAM" ] || [ "$3" = "$SILENT_PARAM" ]; then
@@ -261,9 +277,11 @@ function main() {
 	cmp HyperKitties/error.log{,.xblf} || { redecho "Comparing the extracted data with the expected data failed! Leaving test environment as is for investigation" ; exit 2; }
 	colorecho "Test successful"
 
+  #--------------------------------------------------------------------------------
+
 	colorecho "Testing CryptoKittiesAsHyper"
 	# Test with default batching mode
-	colorecho "Running default bathing mode"
+	colorecho "Running default batching mode"
 	if [ "$1" = "$SILENT_PARAM" ] || [ "$2" = "$SILENT_PARAM" ] || [ "$3" = "$SILENT_PARAM" ]; then
 	  java -jar "$JAR" extract CryptoKittiesAsHyper.bcql &> /dev/null
 	else
@@ -272,7 +290,7 @@ function main() {
 	cmp CryptoKittiesAsHyper/log_pid0_all.xes{,.xblf} || { redecho "Comparing the extracted data with the expected data failed! Leaving test environment as is for investigation" ; exit 2; }
 	cmp CryptoKittiesAsHyper/error.log{,.xblf} || { redecho "Comparing the extracted data with the expected data failed! Leaving test environment as is for investigation" ; exit 2; }
 	# Cleanup and test with safe batching mode
-	colorecho "Running safe bathing mode"
+	colorecho "Running safe batching mode"
 	rm -f CryptoKittiesAsHyper/{*.log,*.csv,*.xes}
 	sed -i '/^SET OUTPUT FOLDER/a SET EMISSION MODE "safe batching"' CryptoKittiesAsHyper.bcql
   if [ "$1" = "$SILENT_PARAM" ] || [ "$2" = "$SILENT_PARAM" ] || [ "$3" = "$SILENT_PARAM" ]; then
@@ -283,6 +301,8 @@ function main() {
 	cmp CryptoKittiesAsHyper/log_pid0_all.xes{,.xblf} || { redecho "Comparing the extracted data with the expected data failed! Leaving test environment as is for investigation" ; exit 2; }
 	cmp CryptoKittiesAsHyper/error.log{,.xblf} || { redecho "Comparing the extracted data with the expected data failed! Leaving test environment as is for investigation" ; exit 2; }
 	colorecho "Test successful"
+
+  #--------------------------------------------------------------------------------
 
 	colorecho "Testing AugurContractRegistry in streaming mode"
 	if [ "$1" = "$SILENT_PARAM" ] || [ "$2" = "$SILENT_PARAM" ] || [ "$3" = "$SILENT_PARAM" ]; then
@@ -311,6 +331,8 @@ function main() {
 	[ "$(find NetworkStatisticsStreaming/ | wc -l)" -eq 11 ] || { redecho "Streaming mode created too many files!" ; exit 2; }
 	colorecho "Test successful"
 
+  #--------------------------------------------------------------------------------
+
 	colorecho "Testing CryptoKitties in streaming mode"
 	if [ "$1" = "$SILENT_PARAM" ] || [ "$2" = "$SILENT_PARAM" ] || [ "$3" = "$SILENT_PARAM" ]; then
 	  java -jar "$JAR" extract CryptoKittiesStreaming.bcql &> /dev/null
@@ -338,6 +360,8 @@ function main() {
 	[ "$(find HyperBasicStreaming/ | wc -l)" -eq 11 ] || { redecho "Streaming mode created too many files!" ; exit 2; }
 	colorecho "Test successful"
 
+  #--------------------------------------------------------------------------------
+
 	colorecho "Testing FailingHyperKitties"
 	LAST_EXIT=0
 	if [ "$1" = "$SILENT_PARAM" ] || [ "$2" = "$SILENT_PARAM" ] || [ "$3" = "$SILENT_PARAM" ]; then
@@ -363,6 +387,8 @@ function main() {
   [ $LAST_EXIT -ne 1 ] && { redecho "The program did not return the correct error code" ; exit 2; }
 	grep 'Error when processing block number' FailingCryptoKitties/error.log || { redecho "Comparing the extracted data with the expected data failed! Leaving test environment as is for investigation" ; exit 2; }
 	colorecho "Test successful"
+
+  #--------------------------------------------------------------------------------
 
 	colorecho "All tests completed successfully"
 	cd "$LWD"
