@@ -28,11 +28,13 @@ function main() {
 	fi
 
 	colorecho "Setting up test environment"
-	mkdir -p "$ED"/{AugurContractRegistry,CryptoKitties,NetworkStatistics,Rebesky_Augur,Rebesky_ChickenHunt,Rebesky_Idex1,HyperBasic,HyperKitties,CryptoKittiesAsHyper,FailingHyperKitties,FailingCryptoKitties,hyperledger}
+	mkdir -p "$ED"/{,hyperledger}
 
   cp $CRED_DIR/* "$ED/hyperledger/"
 
   cp $BCQL_DIR/* "$ED/"
+
+  cp -r $XBLF_OUTPUTS_DIR/* "$ED/"
 
 	touch "$ED"/AugurContractRegistry/error.log.xelf
 	touch "$ED"/CryptoKitties/error.log.xelf
@@ -43,8 +45,10 @@ function main() {
 	touch "$ED"/HyperBasic/error.log.xblf
 	touch "$ED"/HyperKitties/error.log.xblf
 	touch "$ED"/CryptoKittiesAsHyper/error.log.xblf
-
-  cp -r $XBLF_OUTPUTS_DIR/* "$ED/"
+	touch "$ED"/AugurContractRegistryStreaming/error.log.xblf
+	touch "$ED"/NetworkStatisticsStreaming/error.log.xblf
+	touch "$ED"/CryptoKittiesStreaming/error.log.xblf
+	touch "$ED"/HyperBasicStreaming/error.log.xblf
 
   if [ ! "$1" = "$SKIP_BUILD_PARAM" ] && [ ! "$2" = "$SKIP_BUILD_PARAM" ] && [ ! "$3" = "$SKIP_BUILD_PARAM" ]; then
 	  colorecho "Building the BLF"
@@ -278,6 +282,60 @@ function main() {
   fi
 	cmp CryptoKittiesAsHyper/log_pid0_all.xes{,.xblf} || { redecho "Comparing the extracted data with the expected data failed! Leaving test environment as is for investigation" ; exit 2; }
 	cmp CryptoKittiesAsHyper/error.log{,.xblf} || { redecho "Comparing the extracted data with the expected data failed! Leaving test environment as is for investigation" ; exit 2; }
+	colorecho "Test successful"
+
+	colorecho "Testing AugurContractRegistry in streaming mode"
+	if [ "$1" = "$SILENT_PARAM" ] || [ "$2" = "$SILENT_PARAM" ] || [ "$3" = "$SILENT_PARAM" ]; then
+	  java -jar "$JAR" extract AugurContractRegistryStreaming.bcql &> /dev/null
+	else
+	  java -jar "$JAR" extract AugurContractRegistryStreaming.bcql
+  fi
+	cmp AugurContractRegistryStreaming/5926257.log{,.xblf} || { redecho "Comparing the extracted data with the expected data failed! Leaving test environment as is for investigation" ; exit 2; }
+	cmp AugurContractRegistryStreaming/5926270.log{,.xblf} || { redecho "Comparing the extracted data with the expected data failed! Leaving test environment as is for investigation" ; exit 2; }
+	cmp AugurContractRegistryStreaming/5926285.log{,.xblf} || { redecho "Comparing the extracted data with the expected data failed! Leaving test environment as is for investigation" ; exit 2; }
+	cmp AugurContractRegistryStreaming/error.log{,.xblf} || { redecho "Comparing the extracted data with the expected data failed! Leaving test environment as is for investigation" ; exit 2; }
+	[ "$(find AugurContractRegistryStreaming/ | wc -l)" -eq 9 ] || { redecho "Streaming mode created too many files!" ; exit 2; }
+	colorecho "Test successful"
+
+	colorecho "Testing NetworkStatistics in streaming mode"
+	if [ "$1" = "$SILENT_PARAM" ] || [ "$2" = "$SILENT_PARAM" ] || [ "$3" = "$SILENT_PARAM" ]; then
+	  java -jar "$JAR" extract NetworkStatisticsStreaming.bcql &> /dev/null
+	else
+	  java -jar "$JAR" extract NetworkStatisticsStreaming.bcql
+  fi
+	cmp NetworkStatisticsStreaming/NetworkStatistics_6000000.csv{,.xblf} || { redecho "Comparing the extracted data with the expected data failed! Leaving test environment as is for investigation" ; exit 2; }
+	cmp NetworkStatisticsStreaming/NetworkStatistics_6000001.csv{,.xblf} || { redecho "Comparing the extracted data with the expected data failed! Leaving test environment as is for investigation" ; exit 2; }
+	cmp NetworkStatisticsStreaming/NetworkStatistics_6000002.csv{,.xblf} || { redecho "Comparing the extracted data with the expected data failed! Leaving test environment as is for investigation" ; exit 2; }
+	cmp NetworkStatisticsStreaming/NetworkStatistics_6000003.csv{,.xblf} || { redecho "Comparing the extracted data with the expected data failed! Leaving test environment as is for investigation" ; exit 2; }
+	cmp NetworkStatisticsStreaming/error.log{,.xblf} || { redecho "Comparing the extracted data with the expected data failed! Leaving test environment as is for investigation" ; exit 2; }
+	[ "$(find NetworkStatisticsStreaming/ | wc -l)" -eq 11 ] || { redecho "Streaming mode created too many files!" ; exit 2; }
+	colorecho "Test successful"
+
+	colorecho "Testing CryptoKitties in streaming mode"
+	if [ "$1" = "$SILENT_PARAM" ] || [ "$2" = "$SILENT_PARAM" ] || [ "$3" = "$SILENT_PARAM" ]; then
+	  java -jar "$JAR" extract CryptoKittiesStreaming.bcql &> /dev/null
+	else
+	  java -jar "$JAR" extract CryptoKittiesStreaming.bcql
+  fi
+	cmp CryptoKittiesStreaming/log_pid0_6605100.xes{,.xblf} || { redecho "Comparing the extracted data with the expected data failed! Leaving test environment as is for investigation" ; exit 2; }
+	cmp CryptoKittiesStreaming/log_pid0_6605106.xes{,.xblf} || { redecho "Comparing the extracted data with the expected data failed! Leaving test environment as is for investigation" ; exit 2; }
+	cmp CryptoKittiesStreaming/log_pid0_6605107.xes{,.xblf} || { redecho "Comparing the extracted data with the expected data failed! Leaving test environment as is for investigation" ; exit 2; }
+	cmp CryptoKittiesStreaming/error.log{,.xblf} || { redecho "Comparing the extracted data with the expected data failed! Leaving test environment as is for investigation" ; exit 2; }
+	[ "$(find CryptoKittiesStreaming/ | wc -l)" -eq 9 ] || { redecho "Streaming mode created too many files!" ; exit 2; }
+	colorecho "Test successful"
+
+	colorecho "Testing HyperBasic in streaming mode"
+	if [ "$1" = "$SILENT_PARAM" ] || [ "$2" = "$SILENT_PARAM" ] || [ "$3" = "$SILENT_PARAM" ]; then
+	  java -jar "$JAR" extract HyperBasicStreaming.bcql &> /dev/null
+	else
+	  java -jar "$JAR" extract HyperBasicStreaming.bcql
+  fi
+	cmp HyperBasicStreaming/30.log{,.xblf} || { redecho "Comparing the extracted data with the expected data failed! Leaving test environment as is for investigation" ; exit 2; }
+	cmp HyperBasicStreaming/31.log{,.xblf} || { redecho "Comparing the extracted data with the expected data failed! Leaving test environment as is for investigation" ; exit 2; }
+	cmp HyperBasicStreaming/32.log{,.xblf} || { redecho "Comparing the extracted data with the expected data failed! Leaving test environment as is for investigation" ; exit 2; }
+	cmp HyperBasicStreaming/33.log{,.xblf} || { redecho "Comparing the extracted data with the expected data failed! Leaving test environment as is for investigation" ; exit 2; }
+	cmp HyperBasicStreaming/error.log{,.xblf} || { redecho "Comparing the extracted data with the expected data failed! Leaving test environment as is for investigation" ; exit 2; }
+	[ "$(find HyperBasicStreaming/ | wc -l)" -eq 11 ] || { redecho "Streaming mode created too many files!" ; exit 2; }
 	colorecho "Test successful"
 
 	colorecho "Testing FailingHyperKitties"
