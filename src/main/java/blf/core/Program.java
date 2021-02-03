@@ -31,13 +31,7 @@ public class Program {
             instruction.execute(state);
         }
 
-        try {
-            state.getWriters().writeAllData();
-        } catch (Throwable throwable) {
-            // TODO: remove the throw of Throwable or handle it inside the method where the Throwable is thrown
-            state.getExceptionHandler().handleExceptionAndDecideOnAbort(throwable.getMessage(), throwable);
-        }
-
+        state.getWriters().writeAllData();
         state.close();
     }
 

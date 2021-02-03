@@ -1,12 +1,11 @@
 package blf.core.instructions;
 
-import java.util.List;
-
-import blf.core.state.ProgramState;
-import blf.core.exceptions.ProgramException;
-import blf.core.values.ValueAccessor;
 import blf.core.parameters.XesParameter;
+import blf.core.state.ProgramState;
+import blf.core.values.ValueAccessor;
 import blf.core.writers.XesWriter;
+
+import java.util.List;
 
 /**
  * AddXesTraceInstruction
@@ -18,7 +17,7 @@ public class AddXesTraceInstruction extends AddXesElementInstruction {
     }
 
     @Override
-    protected void startElement(XesWriter writer, ProgramState state, String pid, String piid) throws ProgramException {
+    protected void startElement(XesWriter writer, ProgramState state, String pid, String piid) {
         writer.startTrace(pid, piid);
     }
 

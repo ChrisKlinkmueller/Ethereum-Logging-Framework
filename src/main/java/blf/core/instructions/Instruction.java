@@ -22,7 +22,7 @@ public abstract class Instruction {
 
         nestedInstructions.forEach(instruction -> {
             if (instruction == null) {
-                exceptionHandler.handleExceptionAndDecideOnAbort("Nested instruction can not be null.", new NullPointerException());
+                exceptionHandler.handleException("Nested instruction can not be null.", new NullPointerException());
             }
         });
 

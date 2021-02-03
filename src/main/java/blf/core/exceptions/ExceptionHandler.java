@@ -18,21 +18,23 @@ import java.util.logging.SimpleFormatter;
  * @see ProgramState
  */
 public class ExceptionHandler {
-    private static final Logger LOGGER = Logger.getLogger(ExceptionHandler.class.getName());
-    private final Logger errorLogger;
-    private boolean abortOnException = false;
 
     public static final String ERROR_LOG_FILENAME = "error.log";
 
+    private final Logger errorLogger;
+    private boolean abortOnException;
+
     public ExceptionHandler() {
         this.errorLogger = Logger.getLogger(ERROR_LOG_FILENAME);
+        this.abortOnException = false;
     }
 
     public void setAbortOnException(boolean abortOnException) {
         this.abortOnException = abortOnException;
     }
 
-    public void setOutputFolder(Path outputFolder) {
+    public void setErrorLogOutputFolder(Path outputFolder) {
+
         final Path errorLogFilePath = Paths.get(outputFolder.toFile().getAbsolutePath(), ERROR_LOG_FILENAME);
         final SimpleFormatter formatter = new SimpleFormatter();
         final FileHandler errorLogFileHandler;
@@ -40,8 +42,9 @@ public class ExceptionHandler {
         try {
             errorLogFileHandler = new FileHandler(errorLogFilePath.toString());
         } catch (IOException e) {
-            LOGGER.severe(String.format("Setting the output folder for ExceptionHandler failed: %s", e.getMessage()));
-            System.exit(1);
+            final String errMsg = String.format("Setting the output folder for ExceptionHandler failed: %s", e.getMessage());
+            this.handleException(errMsg, e);
+
             return;
         }
 
@@ -50,21 +53,26 @@ public class ExceptionHandler {
         errorLogFileHandler.setFormatter(formatter);
     }
 
-    public boolean handleExceptionAndDecideOnAbort(String message) {
-        this.errorLogger.log(Level.SEVERE, message);
-        return this.abortOnException;
+    public void handleException(String message) {
+        this.handleException(message, null);
     }
 
-    public boolean handleExceptionAndDecideOnAbort(String message, Throwable cause) {
-        this.errorLogger.log(Level.SEVERE, message, cause);
+    public void handleException(String message, Throwable cause) {
+        if (cause == null) {
+            this.errorLogger.severe(message);
+        } else {
+            this.errorLogger.log(Level.SEVERE, message, cause);
+        }
+
         if (this.abortOnException) {
-            System.out.printf(
-                "Program failed with the following message: %s For more details please check the error log %s.%n",
+            final String errorMsg = String.format(
+                "Program failed with the following message: %s. For more details please check the error log %s.%n",
                 message,
                 ERROR_LOG_FILENAME
             );
+
+            this.errorLogger.severe(errorMsg);
             System.exit(1);
         }
-        return false;
     }
 }

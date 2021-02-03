@@ -1,13 +1,12 @@
 package blf.blockchains.ethereum.variables;
 
+import blf.blockchains.ethereum.reader.EthereumDataReader;
+import blf.blockchains.ethereum.reader.EthereumTransaction;
+import blf.blockchains.ethereum.state.EthereumProgramState;
+import blf.core.values.Variable;
+
 import java.util.HashSet;
 import java.util.Set;
-
-import blf.blockchains.ethereum.reader.EthereumDataReader;
-import blf.blockchains.ethereum.state.EthereumProgramState;
-import blf.core.exceptions.ProgramException;
-import blf.blockchains.ethereum.reader.EthereumTransaction;
-import blf.core.values.Variable;
 
 /**
  * TransactionVariables
@@ -79,6 +78,6 @@ class EthereumTransactionVariables {
 
     @FunctionalInterface
     private interface ValueExtractor<T> {
-        Object extractValue(T entity) throws ProgramException;
+        Object extractValue(T entity);
     }
 }

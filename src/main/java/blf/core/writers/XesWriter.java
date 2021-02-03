@@ -1,39 +1,21 @@
 package blf.core.writers;
 
+import blf.core.exceptions.ExceptionHandler;
+import blf.util.TypeUtils;
+import io.reactivex.annotations.NonNull;
+import org.deckfour.xes.model.*;
+import org.deckfour.xes.model.impl.*;
+import org.deckfour.xes.out.XesXmlSerializer;
+
 import java.io.File;
 import java.io.FileOutputStream;
 import java.math.BigInteger;
-import java.util.Collections;
-import java.util.Date;
-import java.util.LinkedHashMap;
-import java.util.List;
-import java.util.Map;
-import java.util.Set;
+import java.util.*;
 import java.util.Map.Entry;
 import java.util.function.BiFunction;
 import java.util.logging.Logger;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
-
-import blf.core.exceptions.ProgramException;
-import blf.util.TypeUtils;
-import io.reactivex.annotations.NonNull;
-import org.deckfour.xes.model.XAttributable;
-import org.deckfour.xes.model.XAttribute;
-import org.deckfour.xes.model.XEvent;
-import org.deckfour.xes.model.XLog;
-import org.deckfour.xes.model.XTrace;
-import org.deckfour.xes.model.impl.XAttributeBooleanImpl;
-import org.deckfour.xes.model.impl.XAttributeContinuousImpl;
-import org.deckfour.xes.model.impl.XAttributeDiscreteImpl;
-import org.deckfour.xes.model.impl.XAttributeListImpl;
-import org.deckfour.xes.model.impl.XAttributeLiteralImpl;
-import org.deckfour.xes.model.impl.XAttributeMapImpl;
-import org.deckfour.xes.model.impl.XAttributeTimestampImpl;
-import org.deckfour.xes.model.impl.XEventImpl;
-import org.deckfour.xes.model.impl.XLogImpl;
-import org.deckfour.xes.model.impl.XTraceImpl;
-import org.deckfour.xes.out.XesXmlSerializer;
 
 /**
  * XesExporter
@@ -50,11 +32,16 @@ public class XesWriter extends DataWriter {
 
     private final Map<String, Map<String, XTrace>> traces;
     private final Map<String, Map<String, Map<String, XEvent>>> events;
+
+    private final ExceptionHandler exceptionHandler;
+
     private XAttributable element;
 
     public XesWriter() {
         this.traces = new LinkedHashMap<>();
         this.events = new LinkedHashMap<>();
+
+        this.exceptionHandler = new ExceptionHandler();
     }
 
     public void startTrace(String inputPid, String inputPiid) {
@@ -174,38 +161,41 @@ public class XesWriter extends DataWriter {
     }
 
     @Override
-    protected void writeState(String filenameSuffix) throws Throwable {
+    protected void writeState(String fileNameSuffix) {
         LOGGER.info("Xes export started.");
+
         // Before
         Map<String, Map<String, XTrace>> formerTraces = deepCopyTraces();
         Map<String, Map<String, Map<String, XEvent>>> formerEvents = deepCopyEvents();
-        // Modification of state
+
         final Map<String, XLog> logs = this.getLogs();
+
         // Restore of state
         this.traces.clear();
         this.events.clear();
         this.traces.putAll(formerTraces);
         this.events.putAll(formerEvents);
+
         try {
             final File folder = this.getOutputFolder().toAbsolutePath().toFile();
             final XesXmlSerializer serializer = new XesXmlSerializer();
             for (Entry<String, XLog> entry : logs.entrySet()) {
-                final String filename = String.format("log_%s_%s.xes", entry.getKey(), filenameSuffix);
+                final String filename = String.format("log_%s_%s.xes", entry.getKey(), fileNameSuffix);
                 final File file = new File(folder, filename);
-                try (final FileOutputStream outputStream = new FileOutputStream(file);) {
+                try (final FileOutputStream outputStream = new FileOutputStream(file)) {
                     serializer.serialize(entry.getValue(), outputStream);
                 }
             }
-        } catch (Exception t) {
-            LOGGER.info("Xes export finished unsuccessfully.");
-            final String message = "Error exporting data to XES.";
-            throw new ProgramException(message, t);
+        } catch (Exception e) {
+            final String errorMsg = "Error exporting data to XES.";
+            this.exceptionHandler.handleException(errorMsg, e);
         }
+
         LOGGER.info("Xes export finished.");
     }
 
     @Override
-    protected void deleteState() throws Throwable {
+    protected void deleteState() {
         this.events.clear();
         this.traces.clear();
         this.element = null;

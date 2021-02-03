@@ -86,7 +86,7 @@ public class HyperledgerBlockFilterInstruction extends BlockInstruction {
                 network.wait();
             } catch (InterruptedException err) {
                 String errorMsg = "Failed when iterating over blocks.";
-                exceptionHandler.handleExceptionAndDecideOnAbort(errorMsg, err);
+                exceptionHandler.handleException(errorMsg, err);
             }
         }
     }

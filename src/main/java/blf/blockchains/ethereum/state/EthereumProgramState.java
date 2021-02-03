@@ -1,23 +1,39 @@
 package blf.blockchains.ethereum.state;
 
-import blf.blockchains.ethereum.reader.*;
+import blf.blockchains.ethereum.reader.EthereumDataReader;
 import blf.blockchains.ethereum.variables.EthereumVariables;
 import blf.core.state.ProgramState;
 
-import java.util.logging.Logger;
-
 public class EthereumProgramState extends ProgramState {
-
-    private static final Logger LOGGER = Logger.getLogger(EthereumProgramState.class.getName());
 
     private final EthereumDataReader reader;
 
-    public String connectionUrl = "";
-    public String connectionIpcPath = "";
+    private String connectionUrl;
+    private String connectionIpcPath;
 
     public EthereumProgramState() {
         super(new EthereumVariables());
+
+        connectionUrl = "";
+        connectionIpcPath = "";
+
         this.reader = new EthereumDataReader();
+    }
+
+    public String getConnectionUrl() {
+        return connectionUrl;
+    }
+
+    public void setConnectionUrl(String connectionUrl) {
+        this.connectionUrl = connectionUrl;
+    }
+
+    public String getConnectionIpcPath() {
+        return connectionIpcPath;
+    }
+
+    public void setConnectionIpcPath(String connectionIpcPath) {
+        this.connectionIpcPath = connectionIpcPath;
     }
 
     public EthereumDataReader getReader() {

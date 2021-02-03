@@ -74,11 +74,11 @@ public class EthereumBlockFilterInstruction extends BlockInstruction {
         } catch (final Exception e) {
             // TODO (by Mykola Digtiar): handle this exception inside the method that throws it
             final String message = String.format("Error when processing block number '%s'", currentBlock.toString());
-            ethereumProgramState.getExceptionHandler().handleExceptionAndDecideOnAbort(message, e);
+            ethereumProgramState.getExceptionHandler().handleException(message, e);
         } catch (final Throwable throwable) {
             // TODO (by Mykola Digtiar): handle this exception inside the method that throws it
             final String message = String.format("Error when processing block number '%s'", currentBlock.toString());
-            ethereumProgramState.getExceptionHandler().handleExceptionAndDecideOnAbort(message, throwable);
+            ethereumProgramState.getExceptionHandler().handleException(message, throwable);
         } finally {
             ethereumProgramState.getReader().setCurrentBlock(null);
         }
@@ -110,7 +110,7 @@ public class EthereumBlockFilterInstruction extends BlockInstruction {
                         expectedBlockNumber.toString()
                     );
 
-                    ethereumProgramState.getExceptionHandler().handleExceptionAndDecideOnAbort(queryBlockNumberErrorMessage, throwable);
+                    ethereumProgramState.getExceptionHandler().handleException(queryBlockNumberErrorMessage, throwable);
                 }
 
                 if (newBlockAvailable) {

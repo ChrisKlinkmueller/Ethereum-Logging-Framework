@@ -68,7 +68,7 @@ public class HyperledgerTransactionFilterInstruction extends Instruction {
         BlockEvent currentBlock = hyperledgerProgramState.getCurrentBlock();
 
         if (currentBlock == null) {
-            exceptionHandler.handleExceptionAndDecideOnAbort("Expected block, received null", new NullPointerException());
+            exceptionHandler.handleException("Expected block, received null", new NullPointerException());
 
             return;
         }

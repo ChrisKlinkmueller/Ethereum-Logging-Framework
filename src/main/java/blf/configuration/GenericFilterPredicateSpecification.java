@@ -1,20 +1,21 @@
 package blf.configuration;
 
-import java.math.BigInteger;
-import java.util.function.BiPredicate;
-import java.util.function.IntPredicate;
-
-import blf.core.interfaces.Method;
-import blf.core.exceptions.ProgramException;
+import blf.core.exceptions.ExceptionHandler;
 import blf.core.interfaces.GenericFilterPredicate;
+import blf.core.interfaces.Method;
 import blf.core.values.ValueAccessor;
 import blf.library.types.ListOperations;
-import io.reactivex.annotations.NonNull;
+
+import java.math.BigInteger;
+import java.util.Objects;
+import java.util.function.BiPredicate;
+import java.util.function.IntPredicate;
 
 /**
  * GenericFilterSpecification
  */
 public class GenericFilterPredicateSpecification {
+    // TODO: this predicate parameter is not needed -> return GenericFilterPredicate directly from static methods
     private final GenericFilterPredicate predicate;
 
     private GenericFilterPredicateSpecification(GenericFilterPredicate predicate) {
@@ -48,23 +49,23 @@ public class GenericFilterPredicateSpecification {
         return new GenericFilterPredicateSpecification(state -> !predicate1.test(state));
     }
 
-    public static GenericFilterPredicateSpecification ofBooleanAccessor(@NonNull ValueAccessorSpecification valueSpecification) {
+    public static GenericFilterPredicateSpecification ofBooleanAccessor(ValueAccessorSpecification valueSpecification) {
         final ValueAccessor accessor = valueSpecification.getValueAccessor();
         return new GenericFilterPredicateSpecification(state -> (Boolean) accessor.getValue(state));
     }
 
     public static GenericFilterPredicateSpecification equals(
-        ValueAccessorSpecification valueSpecidication1,
-        ValueAccessorSpecification valueSpecidication2
+        ValueAccessorSpecification valueSpecification1,
+        ValueAccessorSpecification valueSpecification2
     ) {
-        return ofEqualityCheck(valueSpecidication1, valueSpecidication2, (val1, val2) -> val1 != null && val1.equals(val2));
+        return ofEqualityCheck(valueSpecification1, valueSpecification2, (val1, val2) -> val1 != null && val1.equals(val2));
     }
 
     public static GenericFilterPredicateSpecification notEquals(
-        ValueAccessorSpecification valueSpecidication1,
-        ValueAccessorSpecification valueSpecidication2
+        ValueAccessorSpecification valueSpecification1,
+        ValueAccessorSpecification valueSpecification2
     ) {
-        return ofEqualityCheck(valueSpecidication1, valueSpecidication2, (val1, val2) -> val1 == null ? val2 != null : !val1.equals(val2));
+        return ofEqualityCheck(valueSpecification1, valueSpecification2, (val1, val2) -> !Objects.equals(val1, val2));
     }
 
     private static GenericFilterPredicateSpecification ofEqualityCheck(
@@ -116,19 +117,36 @@ public class GenericFilterPredicateSpecification {
         ValueAccessorSpecification valueSpecification2,
         IntPredicate comparator
     ) {
-        assert valueSpecification1 != null;
-        assert valueSpecification2 != null;
+        final ExceptionHandler exceptionHandler = new ExceptionHandler();
+
+        if (valueSpecification1 == null) {
+            exceptionHandler.handleException("Value specification (first) is null.", new NullPointerException());
+            return new GenericFilterPredicateSpecification(state -> false);
+        }
+
+        if (valueSpecification2 == null) {
+            exceptionHandler.handleException("Value specification (second) is null.", new NullPointerException());
+            return new GenericFilterPredicateSpecification(state -> false);
+        }
+
         final ValueAccessor accessor1 = valueSpecification1.getValueAccessor();
         final ValueAccessor accessor2 = valueSpecification2.getValueAccessor();
+
         return new GenericFilterPredicateSpecification(state -> {
             final Object value1 = accessor1.getValue(state);
             if (value1 != null && !(value1 instanceof BigInteger)) {
-                throw new ProgramException(String.format("Value '%s' is not an BigInteger.", value1));
+                final String errorMsg = String.format("Value '%s' is not an BigInteger.", value1);
+                exceptionHandler.handleException(errorMsg);
+
+                return false;
             }
 
             final Object value2 = accessor2.getValue(state);
             if (value2 != null && !(value2 instanceof BigInteger)) {
-                throw new ProgramException(String.format("Value '%s' is not an BigInteger.", value2));
+                final String errorMsg = String.format("Value '%s' is not an BigInteger.", value2);
+                exceptionHandler.handleException(errorMsg);
+
+                return false;
             }
 
             return value1 != null && value2 != null && comparator.test(((BigInteger) value1).compareTo((BigInteger) value2));
@@ -140,7 +158,7 @@ public class GenericFilterPredicateSpecification {
         return new GenericFilterPredicateSpecification(createFilter(accessor2, accessor1, ListOperations::contains));
     }
 
-    private static final GenericFilterPredicate createFilter(
+    private static GenericFilterPredicate createFilter(
         ValueAccessorSpecification specification1,
         ValueAccessorSpecification specification2,
         Method method

@@ -1,17 +1,6 @@
 package blf.blockchains.ethereum.reader;
 
-import java.io.IOException;
-import java.math.BigInteger;
-import java.net.ConnectException;
-import java.net.URI;
-import java.net.URISyntaxException;
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Objects;
-import java.util.logging.Level;
-import java.util.logging.Logger;
-import java.util.stream.Collectors;
-
+import blf.core.exceptions.ExceptionHandler;
 import io.reactivex.annotations.NonNull;
 import org.web3j.abi.FunctionEncoder;
 import org.web3j.abi.FunctionReturnDecoder;
@@ -22,68 +11,82 @@ import org.web3j.protocol.Service;
 import org.web3j.protocol.Web3j;
 import org.web3j.protocol.core.DefaultBlockParameterNumber;
 import org.web3j.protocol.core.methods.request.EthFilter;
-import org.web3j.protocol.core.methods.response.Transaction;
-import org.web3j.protocol.core.methods.response.EthBlock;
-import org.web3j.protocol.core.methods.response.EthBlockNumber;
-import org.web3j.protocol.core.methods.response.EthCall;
-import org.web3j.protocol.core.methods.response.EthGetTransactionReceipt;
-import org.web3j.protocol.core.methods.response.EthLog;
-import org.web3j.protocol.core.methods.response.Log;
-import org.web3j.protocol.core.methods.response.TransactionReceipt;
+import org.web3j.protocol.core.methods.response.*;
 import org.web3j.protocol.core.methods.response.EthBlock.Block;
 import org.web3j.protocol.ipc.UnixIpcService;
 import org.web3j.protocol.ipc.WindowsIpcService;
 import org.web3j.protocol.websocket.WebSocketClient;
 import org.web3j.protocol.websocket.WebSocketService;
 
+import java.io.IOException;
+import java.math.BigInteger;
+import java.net.ConnectException;
+import java.net.URI;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Objects;
+import java.util.logging.Level;
+import java.util.logging.Logger;
+import java.util.stream.Collectors;
+
 /**
  * Web3jClient
  */
 public class Web3jClient implements EthereumClient {
     private static final Logger LOGGER = Logger.getLogger(Web3jClient.class.getName());
-    private static final String URL = "ws://localhost:8546/";
 
     private final Service service;
     private final WebSocketService wsService;
     private final Web3j web3j;
 
+    private final ExceptionHandler exceptionHandler;
+
     private Web3jClient(WebSocketService wsService) {
         this.wsService = wsService;
         this.service = null;
         this.web3j = Web3j.build(wsService);
+
+        this.exceptionHandler = new ExceptionHandler();
     }
 
     private Web3jClient(Service service) {
         this.service = service;
         this.wsService = null;
         this.web3j = Web3j.build(service);
+
+        this.exceptionHandler = new ExceptionHandler();
     }
 
-    public static Web3jClient connectWebsocket() throws URISyntaxException, ConnectException {
-        return connectWebsocket(URL);
-    }
-
-    public static Web3jClient connectWebsocket(@NonNull String url) throws URISyntaxException, ConnectException {
+    // TODO: probably not the best solution to have a static function -> rework to make it non-static
+    public static Web3jClient connectWebsocket(String url) {
+        final ExceptionHandler exceptionHandler = new ExceptionHandler();
 
         try {
             final WebSocketClient wsClient = new WebSocketClient(new URI(url));
             final WebSocketService wsService = new WebSocketService(wsClient, false);
+
             wsService.connect();
+
             return new Web3jClient(wsService);
-        } catch (URISyntaxException | ConnectException ex) {
-            final String message = String.format("Error when connecting to the ethereum client via Websocket with url '%s'.", url);
-            LOGGER.log(Level.SEVERE, message, ex);
-            throw ex;
+        } catch (Exception e) {
+            exceptionHandler.handleException(e.getMessage(), e);
         }
+
+        return null;
     }
 
-    public static Web3jClient connectIpc(@NonNull String path) throws ConnectException {
+    // TODO: probably not the best solution to have a static function -> rework to make it non-static
+    public static Web3jClient connectIpc(String path) {
+
+        final ExceptionHandler exceptionHandler = new ExceptionHandler();
 
         final Service service = createIpcService(path);
 
         if (service == null) {
-            final String message = String.format("Ipc connection not for %s operating system.", osName());
-            throw new ConnectException(message);
+            final String errorMsg = String.format("Ipc connection not for %s operating system.", osName());
+            exceptionHandler.handleException(errorMsg, new ConnectException());
+
+            return null;
         }
 
         return new Web3jClient(service);
@@ -128,19 +131,25 @@ public class Web3jClient implements EthereumClient {
         }
     }
 
-    public BigInteger queryBlockNumber() throws Throwable {
+    public BigInteger queryBlockNumber() {
+
+        final EthBlockNumber queryResult;
         try {
-            final EthBlockNumber queryResult = this.web3j.ethBlockNumber().send();
+            queryResult = this.web3j.ethBlockNumber().send();
+
             if (queryResult.hasError()) {
-                throw new IOException(queryResult.getError().getMessage());
-            } else {
-                return queryResult.getBlockNumber();
+                this.exceptionHandler.handleException(queryResult.getError().getMessage(), new IOException());
+
+                return null;
             }
-        } catch (IOException ex) {
-            final String message = "Error when retrieving the current block number.";
-            LOGGER.log(Level.SEVERE, message, ex);
-            throw ex;
+
+            return queryResult.getBlockNumber();
+
+        } catch (IOException e) {
+            this.exceptionHandler.handleException(e.getMessage(), e);
         }
+
+        return null;
     }
 
     @SuppressWarnings("all")
@@ -170,28 +179,36 @@ public class Web3jClient implements EthereumClient {
 
     public EthereumBlock queryBlockData(BigInteger blockNumber) throws IOException {
         final DefaultBlockParameterNumber number = new DefaultBlockParameterNumber(blockNumber);
-        try {
-            final EthBlock blockResult = this.web3j.ethGetBlockByNumber(number, true).send();
-            if (blockResult.hasError()) {
-                throw new IOException(blockResult.getError().getMessage());
-            }
 
-            final EthFilter filter = new EthFilter(number, number, new ArrayList<>());
-            final EthLog logResult = this.web3j.ethGetLogs(filter).send();
-            if (logResult.hasError()) {
-                throw new IOException(logResult.getError().getMessage());
-            }
+        final EthBlock blockResult = this.web3j.ethGetBlockByNumber(number, true).send();
+        if (blockResult.hasError()) {
+            this.exceptionHandler.handleException(blockResult.getError().getMessage(), new IOException());
 
-            return this.transformBlockResults(blockResult, logResult);
-        } catch (IOException ex) {
-            final String message = String.format("Error when retrieving the data for blocknumber '%s'.", blockNumber);
-            LOGGER.log(Level.SEVERE, message, ex);
-            throw ex;
+            return null;
         }
+
+        final EthFilter filter = new EthFilter(number, number, new ArrayList<>());
+        final EthLog logResult = this.web3j.ethGetLogs(filter).send();
+        if (logResult.hasError()) {
+            this.exceptionHandler.handleException(logResult.getError().getMessage(), new IOException());
+
+            return null;
+        }
+
+        return this.transformBlockResults(blockResult, logResult);
+
     }
 
-    TransactionReceipt queryTransactionReceipt(String hash) throws IOException {
-        final EthGetTransactionReceipt transactionReceipt = this.web3j.ethGetTransactionReceipt(hash).send();
+    TransactionReceipt queryTransactionReceipt(String hash) {
+        final EthGetTransactionReceipt transactionReceipt;
+        try {
+            transactionReceipt = this.web3j.ethGetTransactionReceipt(hash).send();
+        } catch (IOException e) {
+            this.exceptionHandler.handleException(e.getMessage(), e);
+
+            return null;
+        }
+
         return transactionReceipt.getResult();
     }
 

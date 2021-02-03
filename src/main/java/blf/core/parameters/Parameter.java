@@ -1,6 +1,6 @@
 package blf.core.parameters;
 
-import io.reactivex.annotations.NonNull;
+import blf.core.exceptions.ExceptionHandler;
 import org.web3j.abi.TypeReference;
 
 /**
@@ -9,18 +9,21 @@ import org.web3j.abi.TypeReference;
 public class Parameter {
     private final String name;
     private final TypeReference<?> type;
+    private final ExceptionHandler exceptionHandler;
 
     public Parameter(String solType, String name) {
         this(solType, name, false);
     }
 
-    public Parameter(String solType, @NonNull String name, boolean isIndexed) {
+    public Parameter(String solType, String name, boolean isIndexed) {
 
         TypeReference<?> typeOfParameter = this.createType(solType, isIndexed);
         assert typeOfParameter != null;
 
         this.type = typeOfParameter;
         this.name = name;
+
+        this.exceptionHandler = new ExceptionHandler();
     }
 
     public boolean isIndexed() {
@@ -38,7 +41,8 @@ public class Parameter {
     private TypeReference<?> createType(String solType, boolean isIndexed) {
         try {
             return TypeReference.makeTypeReference(solType, isIndexed, false);
-        } catch (ClassNotFoundException ex) {
+        } catch (ClassNotFoundException e) {
+            this.exceptionHandler.handleException(e.getMessage(), e);
             return null;
         }
 

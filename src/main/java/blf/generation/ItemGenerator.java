@@ -1,16 +1,16 @@
 package blf.generation;
 
+import blf.grammar.BcqlParser;
+import blf.library.compression.BitMapping;
+import blf.library.compression.ValueDictionary;
+import blf.parsing.InterpreterUtils;
+import blf.util.TypeUtils;
+
 import java.math.BigInteger;
 import java.util.List;
 import java.util.stream.Collectors;
 import java.util.stream.IntStream;
 import java.util.stream.Stream;
-
-import blf.library.compression.BitMapping;
-import blf.library.compression.ValueDictionary;
-import blf.parsing.InterpreterUtils;
-import blf.util.TypeUtils;
-import blf.grammar.BcqlParser;
 
 /**
  * BitMappingGenerator
@@ -90,7 +90,7 @@ public class ItemGenerator extends BaseGenerator {
             this.codeCollector.addCommentLine(
                 String.format("Line: %s, column: %s: %s", item.getLine(), item.getColumn(), item.getSpecification())
             );
-            item.messageStream().forEach(msg -> this.codeCollector.addCommentLine(msg));
+            item.messageStream().forEach(this.codeCollector::addCommentLine);
             this.codeCollector.addEmptyLine();
         }
     }
@@ -177,7 +177,7 @@ public class ItemGenerator extends BaseGenerator {
                 .map(
                     item -> String.format(
                         "%s %s",
-                        item.getTargetType() == "string" ? "string memory" : item.getTargetType(),
+                        item.getTargetType().equals("string") ? "string memory" : item.getTargetType(),
                         item.getTargetVariable()
                     )
                 )
@@ -197,7 +197,7 @@ public class ItemGenerator extends BaseGenerator {
     }
 
     private boolean containsValueDictForAttribute(String name) {
-        return this.itemStream(ValueDictionaryItem.class).filter(i -> i.getEncodedAttribute().equals(name)).count() != 0;
+        return this.itemStream(ValueDictionaryItem.class).anyMatch(i -> i.getEncodedAttribute().equals(name));
     }
 
     private Stream<ValueDictionaryItem> valueDicItemStream(String name) {

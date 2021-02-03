@@ -1,10 +1,9 @@
 package blf.core.parameters;
 
+import blf.core.exceptions.ExceptionHandler;
 import blf.core.state.ProgramState;
-import blf.core.exceptions.ProgramException;
 import blf.core.values.ValueAccessor;
 import blf.core.writers.XesWriter;
-import io.reactivex.annotations.NonNull;
 
 /**
  * XesParameter
@@ -16,70 +15,72 @@ public class XesParameter {
         this.attributeExporter = attributeExporter;
     }
 
-    public void exportAttribute(ProgramState state, XesWriter writer) throws ProgramException {
-        this.attributeExporter.exportValue(state, writer);
-    }
-
-    public static XesParameter boolParameter(@NonNull String name, @NonNull ValueAccessor accessor) {
+    public static XesParameter boolParameter(String name, ValueAccessor accessor) {
         return new XesParameter(exportValue(name, accessor, XesWriter::addBooleanValue));
     }
 
-    public static XesParameter boolListParameter(@NonNull String name, @NonNull ValueAccessor accessor) {
+    public static XesParameter boolListParameter(String name, ValueAccessor accessor) {
         return new XesParameter(exportValue(name, accessor, XesWriter::addBooleanList));
     }
 
-    public static XesParameter dateParameter(@NonNull String name, @NonNull ValueAccessor accessor) {
+    public static XesParameter dateParameter(String name, ValueAccessor accessor) {
         return new XesParameter(exportValue(name, accessor, XesWriter::addDateValue));
     }
 
-    public static XesParameter dateListParameter(@NonNull String name, @NonNull ValueAccessor accessor) {
+    public static XesParameter dateListParameter(String name, ValueAccessor accessor) {
         return new XesParameter(exportValue(name, accessor, XesWriter::addDateList));
     }
 
-    public static XesParameter floatParameter(@NonNull String name, @NonNull ValueAccessor accessor) {
+    public static XesParameter floatParameter(String name, ValueAccessor accessor) {
         return new XesParameter(exportValue(name, accessor, XesWriter::addFloatValue));
     }
 
-    public static XesParameter floatListParameter(@NonNull String name, @NonNull ValueAccessor accessor) {
+    public static XesParameter floatListParameter(String name, ValueAccessor accessor) {
         return new XesParameter(exportValue(name, accessor, XesWriter::addFloatList));
     }
 
-    public static XesParameter integerParameter(@NonNull String name, @NonNull ValueAccessor accessor) {
+    public static XesParameter integerParameter(String name, ValueAccessor accessor) {
         return new XesParameter(exportValue(name, accessor, XesWriter::addIntValue));
     }
 
-    public static XesParameter integerListParameter(@NonNull String name, @NonNull ValueAccessor accessor) {
+    public static XesParameter integerListParameter(String name, ValueAccessor accessor) {
         return new XesParameter(exportValue(name, accessor, XesWriter::addIntList));
     }
 
-    public static XesParameter stringParameter(@NonNull String name, @NonNull ValueAccessor accessor) {
+    public static XesParameter stringParameter(String name, ValueAccessor accessor) {
         return new XesParameter(exportValue(name, accessor, XesWriter::addStringValue));
     }
 
-    public static XesParameter stringListParameter(@NonNull String name, @NonNull ValueAccessor accessor) {
+    public static XesParameter stringListParameter(String name, ValueAccessor accessor) {
         return new XesParameter(exportValue(name, accessor, XesWriter::addStringList));
     }
 
     @SuppressWarnings("unchecked")
     public static <T> XesParameterExporter exportValue(String name, ValueAccessor accessor, XesWriterMethod<T> writerMethod) {
+        final ExceptionHandler exceptionHandler = new ExceptionHandler();
         return (state, writer) -> {
             try {
                 final T value = (T) accessor.getValue(state);
                 writerMethod.export(writer, name, value);
-            } catch (Exception cause) {
-                throw new ProgramException(String.format("Error exporting xes attribute '%s'.", name), cause);
+            } catch (Exception e) {
+                final String errorMsg = String.format("Error while exporting xes attribute '%s'.", name);
+                exceptionHandler.handleException(errorMsg, e);
             }
         };
     }
 
-    @FunctionalInterface
-    static interface XesParameterExporter {
-        public void exportValue(ProgramState state, XesWriter writer) throws ProgramException;
+    public void exportAttribute(ProgramState state, XesWriter writer) {
+        this.attributeExporter.exportValue(state, writer);
     }
 
     @FunctionalInterface
-    private static interface XesWriterMethod<T> {
-        public void export(XesWriter writer, String name, T value);
+    interface XesParameterExporter {
+        void exportValue(ProgramState state, XesWriter writer);
+    }
+
+    @FunctionalInterface
+    private interface XesWriterMethod<T> {
+        void export(XesWriter writer, String name, T value);
     }
 
 }

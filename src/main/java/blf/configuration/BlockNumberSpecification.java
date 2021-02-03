@@ -1,12 +1,11 @@
 package blf.configuration;
 
-import java.math.BigInteger;
-
-import blf.core.exceptions.ProgramException;
 import blf.core.interfaces.FilterPredicate;
 import blf.core.values.BlockchainVariables;
 import blf.core.values.ValueAccessor;
 import io.reactivex.annotations.NonNull;
+
+import java.math.BigInteger;
 
 /**
  * BlockNumberSpecification
@@ -48,14 +47,13 @@ public class BlockNumberSpecification {
         final Value endValue = new Value();
         return (state, blockNumber) -> {
             if (endValue.blockNumber == null) {
-                try {
-                    endValue.blockNumber = (BigInteger) accessor.getValue(state);
-                } catch (ProgramException ex) {
-                    final String message = "Error when retrieving the current block number.";
-                    state.getExceptionHandler().handleExceptionAndDecideOnAbort(message, ex);
-                    endValue.blockNumber = BigInteger.ZERO.subtract(BigInteger.ONE);
-                }
+                endValue.blockNumber = (BigInteger) accessor.getValue(state);
             }
+
+            if (endValue.blockNumber == null) {
+                return true;
+            }
+
             return endValue.blockNumber.compareTo(blockNumber) < 0;
         };
     }

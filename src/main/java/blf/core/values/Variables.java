@@ -1,12 +1,13 @@
 package blf.core.values;
 
-import blf.core.exceptions.ProgramException;
 import io.reactivex.annotations.NonNull;
 
 /**
  * Variables
  */
 public class Variables {
+
+    private Variables() {}
 
     public static ValueAccessor createValueAccessor(@NonNull String name, BlockchainVariables blockchainVariables) {
         final ValueAccessor accessor = blockchainVariables.getValueAccessor(name);
@@ -15,14 +16,21 @@ public class Variables {
         }
 
         return state -> {
-            if (!state.getValueStore().containsName(name)) {
-                throw new ProgramException(String.format("Variable '%s' does not exist.", name));
+            final boolean variableExists = state.getValueStore().containsName(name);
+            final Object variableValue = state.getValueStore().getValue(name);
+
+            if (!variableExists) {
+                final String errorMsg = String.format("Variable '%s' does not exist.", name);
+                state.getExceptionHandler().handleException(errorMsg, new Exception());
+
+                return null;
             }
-            return state.getValueStore().getValue(name);
+
+            return variableValue;
         };
     }
 
-    public static ValueMutator createValueMutator(@NonNull String name) {
+    public static ValueMutator createValueMutator(String name) {
         return (value, state) -> state.getValueStore().setValue(name, value);
     }
 }
