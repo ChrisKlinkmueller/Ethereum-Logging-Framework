@@ -177,7 +177,7 @@ public class ItemGenerator extends BaseGenerator {
                 .map(
                     item -> String.format(
                         "%s %s",
-                            item.getTargetType().equals("string") ? "string memory" : item.getTargetType(),
+                        item.getTargetType().equals("string") ? "string memory" : item.getTargetType(),
                         item.getTargetVariable()
                     )
                 )

@@ -143,13 +143,9 @@ public class CsvWriter extends DataWriter {
 
         } catch (Exception e) {
             this.exceptionHandler.handleException(exportErrorMsg, e);
-        } finally {
-            LOGGER.info(exportFinishInfoMsg);
-
-            this.tables.remove(tableName);
-            this.rowCounts.remove(tableName);
-            this.columnNames.remove(tableName);
         }
+
+        LOGGER.info(exportFinishInfoMsg);
     }
 
 }

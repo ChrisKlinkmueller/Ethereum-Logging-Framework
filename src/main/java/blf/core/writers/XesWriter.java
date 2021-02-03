@@ -163,6 +163,7 @@ public class XesWriter extends DataWriter {
     @Override
     protected void writeState(String fileNameSuffix) {
         LOGGER.info("Xes export started.");
+
         final Map<String, XLog> logs = this.getLogs();
         try {
             final File folder = this.getOutputFolder().toAbsolutePath().toFile();
@@ -177,11 +178,8 @@ public class XesWriter extends DataWriter {
         } catch (Exception e) {
             final String errorMsg = "Error exporting data to XES.";
             this.exceptionHandler.handleException(errorMsg, e);
-        } finally {
-            this.events.clear();
-            this.traces.clear();
-            this.element = null;
         }
+
         LOGGER.info("Xes export finished.");
     }
 
