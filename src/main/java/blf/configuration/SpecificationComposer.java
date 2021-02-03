@@ -4,13 +4,13 @@ import blf.blockchains.ethereum.instructions.EthereumLogEntryFilterInstruction;
 import blf.blockchains.ethereum.instructions.EthereumSmartContractFilterInstruction;
 import blf.blockchains.ethereum.instructions.EthereumTransactionFilterInstruction;
 import blf.core.Program;
+import blf.core.exceptions.ExceptionHandler;
 import blf.core.exceptions.ProgramException;
 import blf.core.instructions.GenericFilterInstruction;
 import blf.core.instructions.Instruction;
 import blf.core.state.ProgramState;
 import blf.core.values.ValueAccessor;
 import blf.core.values.ValueMutator;
-import io.reactivex.annotations.NonNull;
 
 import java.util.Arrays;
 import java.util.LinkedList;
@@ -22,37 +22,40 @@ import java.util.stream.Collectors;
  * SpecificationComposer
  */
 public class SpecificationComposer {
-    // TODO: remove the throw of BuildException
 
     public final Stack<FactoryState> states;
     public final Stack<List<Instruction>> instructionListsStack;
 
+    private final ExceptionHandler exceptionHandler;
+
     public SpecificationComposer() {
         this.instructionListsStack = new Stack<>();
         this.states = new Stack<>();
+
+        this.exceptionHandler = new ExceptionHandler();
     }
 
-    public void prepareProgramBuild() throws BuildException {
+    public void prepareProgramBuild() {
         this.prepareBuild(FactoryState.PROGRAM);
     }
 
-    public void prepareBlockRangeBuild() throws BuildException {
+    public void prepareBlockRangeBuild() {
         this.prepareBuild(FactoryState.BLOCK_RANGE_FILTER, FactoryState.PROGRAM);
     }
 
-    public void prepareTransactionFilterBuild() throws BuildException {
+    public void prepareTransactionFilterBuild() {
         this.prepareBuild(FactoryState.TRANSACTION_FILTER, FactoryState.BLOCK_RANGE_FILTER);
     }
 
-    public void prepareLogEntryFilterBuild() throws BuildException {
+    public void prepareLogEntryFilterBuild() {
         this.prepareBuild(FactoryState.LOG_ENTRY_FILTER, FactoryState.BLOCK_RANGE_FILTER, FactoryState.TRANSACTION_FILTER);
     }
 
-    public void prepareSmartContractFilterBuild() throws BuildException {
+    public void prepareSmartContractFilterBuild() {
         this.prepareBuild(FactoryState.SMART_CONTRACT_FILTER, FactoryState.BLOCK_RANGE_FILTER);
     }
 
-    public void prepareGenericFilterBuild() throws BuildException {
+    public void prepareGenericFilterBuild() {
         this.prepareBuild(
             FactoryState.GENERIC_FILTER,
             FactoryState.BLOCK_RANGE_FILTER,
@@ -63,44 +66,57 @@ public class SpecificationComposer {
         );
     }
 
-    private void prepareBuild(FactoryState newState, FactoryState... possibleCurrentStates) throws BuildException {
-        final boolean areStatesEmpty = this.states.isEmpty() && possibleCurrentStates.length == 0;
-        final boolean currentStatesMatches = !this.states.isEmpty()
+    private void prepareBuild(FactoryState newState, FactoryState... possibleCurrentStates) {
+        final boolean statesAreEmpty = this.states.isEmpty() && possibleCurrentStates.length == 0;
+        final boolean currentStatesMatch = !this.states.isEmpty()
             && Arrays.stream(possibleCurrentStates).anyMatch(s -> this.states.peek() == s);
 
-        if (!(areStatesEmpty || currentStatesMatches)) {
-            throw new BuildException(
-                possibleCurrentStates.length == 0
-                    ? String.format("A %s can only be build when no other filter is being build.", newState)
-                    : String.format(
-                        "A %s cannot be added to %s, but only to: %s.",
-                        newState,
-                        this.states.peek(),
-                        Arrays.stream(possibleCurrentStates).map(FactoryState::toString).collect(Collectors.joining(", "))
-                    )
+        if (statesAreEmpty || currentStatesMatch) {
+            this.states.push(newState);
+            this.instructionListsStack.add(new LinkedList<>());
+
+            return;
+        }
+
+        final String errorMsg;
+        if (possibleCurrentStates.length == 0) {
+            errorMsg = String.format("A %s can only be build when no other filter is being build.", newState);
+        } else {
+            errorMsg = String.format(
+                "A %s cannot be added to %s, but only to: %s.",
+                newState,
+                this.states.peek(),
+                Arrays.stream(possibleCurrentStates).map(FactoryState::toString).collect(Collectors.joining(", "))
             );
         }
 
-        this.states.push(newState);
-        this.instructionListsStack.add(new LinkedList<>());
+        this.exceptionHandler.handleException(errorMsg, new Exception());
     }
 
-    public Program buildProgram() throws BuildException {
-        if (this.states.peek() != FactoryState.PROGRAM) {
-            throw new BuildException(
-                String.format("Cannot build a program, when construction of %s has not been finished.", this.states.peek())
-            );
+    public Program buildProgram() {
+        final FactoryState statesPeek = this.states.peek();
+
+        if (statesPeek != FactoryState.PROGRAM) {
+            final String errorMsg = String.format("Cannot build a program, when construction of %s has not been finished.", statesPeek);
+            this.exceptionHandler.handleException(errorMsg, new Exception());
+
+            return null;
         }
 
         return new Program(this.instructionListsStack.peek());
     }
 
-    public void buildTransactionFilter(AddressListSpecification senders, AddressListSpecification recipients) throws BuildException {
+    public void buildTransactionFilter(AddressListSpecification senders, AddressListSpecification recipients) {
+        final FactoryState statesPeek = this.states.peek();
 
-        if (this.states.peek() != FactoryState.TRANSACTION_FILTER) {
-            throw new BuildException(
-                String.format("Cannot build a transaction filter, when construction of %s has not been finished.", this.states.peek())
+        if (statesPeek != FactoryState.TRANSACTION_FILTER) {
+            final String errorMsg = String.format(
+                "Cannot build a transaction filter, when construction of %s has not been finished.",
+                statesPeek
             );
+            this.exceptionHandler.handleException(errorMsg, new Exception());
+
+            return;
         }
 
         final EthereumTransactionFilterInstruction filter = new EthereumTransactionFilterInstruction(
@@ -112,13 +128,18 @@ public class SpecificationComposer {
         this.closeScope(filter);
     }
 
-    public void buildLogEntryFilter(@NonNull AddressListSpecification contracts, @NonNull LogEntrySignatureSpecification signature)
-        throws BuildException {
+    public void buildLogEntryFilter(AddressListSpecification contracts, LogEntrySignatureSpecification signature) {
 
-        if (this.states.peek() != FactoryState.LOG_ENTRY_FILTER) {
-            throw new BuildException(
-                String.format("Cannot build a log entry filter, when construction of %s has not been finished.", this.states.peek())
+        final FactoryState statesPeek = this.states.peek();
+
+        if (statesPeek != FactoryState.LOG_ENTRY_FILTER) {
+            final String errorMsg = String.format(
+                "Cannot build a log entry filter, when construction of %s has not been finished.",
+                statesPeek
             );
+            this.exceptionHandler.handleException(errorMsg, new Exception());
+
+            return;
         }
 
         final EthereumLogEntryFilterInstruction filter = new EthereumLogEntryFilterInstruction(
@@ -126,27 +147,40 @@ public class SpecificationComposer {
             signature.getSignature(),
             this.instructionListsStack.peek()
         );
+
         this.closeScope(filter);
     }
 
-    public void buildGenericFilter(@NonNull GenericFilterPredicateSpecification predicate) throws BuildException {
+    public void buildGenericFilter(GenericFilterPredicateSpecification predicate) {
 
-        if (this.states.peek() != FactoryState.GENERIC_FILTER) {
-            throw new BuildException(
-                String.format("Cannot build a generic filter, when construction of %s has not been finished.", this.states.peek())
+        final FactoryState statesPeek = this.states.peek();
+
+        if (statesPeek != FactoryState.GENERIC_FILTER) {
+            final String errorMsg = String.format(
+                "Cannot build a generic filter, when construction of %s has not been finished.",
+                statesPeek
             );
+            this.exceptionHandler.handleException(errorMsg, new Exception());
+
+            return;
         }
 
         final GenericFilterInstruction filter = new GenericFilterInstruction(predicate.getPredicate(), this.instructionListsStack.peek());
+
         this.closeScope(filter);
     }
 
-    public void buildSmartContractFilter(@NonNull SmartContractFilterSpecification specification) throws BuildException {
+    public void buildSmartContractFilter(SmartContractFilterSpecification specification) {
+        final FactoryState statesPeek = this.states.peek();
 
-        if (this.states.peek() != FactoryState.SMART_CONTRACT_FILTER) {
-            throw new BuildException(
-                String.format("Cannot build a smart contract filter, when construction of %s has not been finished.", this.states.peek())
+        if (statesPeek != FactoryState.SMART_CONTRACT_FILTER) {
+            final String errorMsg = String.format(
+                "Cannot build a smart contract filter, when construction of %s has not been finished.",
+                statesPeek
             );
+            this.exceptionHandler.handleException(errorMsg, new Exception());
+
+            return;
         }
 
         final EthereumSmartContractFilterInstruction filter = new EthereumSmartContractFilterInstruction(
@@ -154,6 +188,7 @@ public class SpecificationComposer {
             specification.getQueries(),
             this.instructionListsStack.peek()
         );
+
         this.closeScope(filter);
     }
 
@@ -167,16 +202,27 @@ public class SpecificationComposer {
 
     public void addInstruction(Instruction instruction) {
         if (this.instructionListsStack.isEmpty()) {
+            this.exceptionHandler.handleException("Stack of instructions is empty.", new NullPointerException());
+
             return;
         }
 
         this.instructionListsStack.peek().add(instruction);
     }
 
-    public void addInstruction(InstructionSpecification<?> instruction) throws BuildException {
+    public void addInstruction(InstructionSpecification<?> instruction) {
         if (instruction == null) {
-            throw new BuildException("Parameter instruction is null.", new NullPointerException());
+            this.exceptionHandler.handleException("Parameter instruction is null.", new NullPointerException());
+
+            return;
         }
+
+        if (this.instructionListsStack.isEmpty()) {
+            this.exceptionHandler.handleException("Stack of instructions is empty.", new NullPointerException());
+
+            return;
+        }
+
         this.instructionListsStack.peek().add(instruction.getInstruction());
     }
 
@@ -211,6 +257,8 @@ public class SpecificationComposer {
         SMART_CONTRACT_FILTER,
         GENERIC_FILTER;
 
+        private final ExceptionHandler exceptionHandler = new ExceptionHandler();
+
         @Override
         public String toString() {
             switch (this) {
@@ -227,7 +275,10 @@ public class SpecificationComposer {
                 case GENERIC_FILTER:
                     return "generic filter";
                 default:
-                    throw new IllegalArgumentException(String.format("FactoryState constant '%s' unknown.", this));
+                    final String errorMsg = String.format("FactoryState constant '%s' unknown.", this);
+                    exceptionHandler.handleException(errorMsg, new Exception());
+
+                    return "";
             }
         }
     }

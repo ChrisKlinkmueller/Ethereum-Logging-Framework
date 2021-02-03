@@ -9,7 +9,7 @@ public class EthereumConnectInstruction extends Instruction {
     public void execute(ProgramState state) {
         EthereumProgramState ethereumState = (EthereumProgramState) state;
 
-        ethereumState.getReader().connect(ethereumState.connectionUrl);
+        ethereumState.getReader().connect(ethereumState.getConnectionUrl());
     }
 
 }

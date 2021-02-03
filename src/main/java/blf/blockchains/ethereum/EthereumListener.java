@@ -40,13 +40,19 @@ public class EthereumListener extends BaseBlockchainListener {
             return;
         }
 
+        if (this.composer.instructionListsStack.isEmpty()) {
+            this.state.getExceptionHandler().handleException("The Stack of instructions lists is empty.", new Exception());
+
+            return;
+        }
+
         final String connectionInputParameter = TypeUtils.parseStringLiteral(literalText);
 
         if (ctx.KEY_IPC() != null) {
-            ethereumProgramState.connectionIpcPath = connectionInputParameter;
+            ethereumProgramState.setConnectionIpcPath(connectionInputParameter);
             this.composer.instructionListsStack.peek().add(new EthereumConnectIpcInstruction());
         } else {
-            ethereumProgramState.connectionUrl = connectionInputParameter;
+            ethereumProgramState.setConnectionUrl(connectionInputParameter);
             this.composer.instructionListsStack.peek().add(new EthereumConnectInstruction());
         }
     }
@@ -54,12 +60,7 @@ public class EthereumListener extends BaseBlockchainListener {
     @Override
     public void enterBlockFilter(BcqlParser.BlockFilterContext ctx) {
         LOGGER.info("Prepare block filter build");
-        try {
-            this.composer.prepareBlockRangeBuild();
-        } catch (BuildException e) {
-            final String errorMsg = String.format("Preparation of transaction filter build failed: %s", e.getMessage());
-            this.state.getExceptionHandler().handleException(errorMsg, new Exception());
-        }
+        this.composer.prepareBlockRangeBuild();
     }
 
     private void buildBlockFilter(BcqlParser.BlockFilterContext ctx) {
@@ -87,6 +88,12 @@ public class EthereumListener extends BaseBlockchainListener {
             return;
         }
 
+        if (this.composer.instructionListsStack.isEmpty()) {
+            this.state.getExceptionHandler().handleException("The Stack of instructions lists is empty.", new Exception());
+
+            return;
+        }
+
         final EthereumBlockFilterInstruction blockRange = new EthereumBlockFilterInstruction(
             from.getValueAccessor(),
             to.getStopCriterion(),
@@ -94,9 +101,7 @@ public class EthereumListener extends BaseBlockchainListener {
         );
 
         this.composer.instructionListsStack.pop();
-        if (!this.composer.instructionListsStack.isEmpty()) {
-            this.composer.instructionListsStack.peek().add(blockRange);
-        }
+        this.composer.instructionListsStack.peek().add(blockRange);
 
         this.composer.states.pop();
     }
@@ -130,48 +135,28 @@ public class EthereumListener extends BaseBlockchainListener {
     @Override
     public void enterTransactionFilter(BcqlParser.TransactionFilterContext ctx) {
         LOGGER.info("Prepare transaction filter build");
-        try {
-            this.composer.prepareTransactionFilterBuild();
-        } catch (BuildException e) {
-            final String errorMsg = String.format("Preparation of transaction filter build failed: %s", e.getMessage());
-            this.state.getExceptionHandler().handleException(errorMsg, new Exception());
-        }
+        this.composer.prepareTransactionFilterBuild();
     }
 
     private void buildTransactionFilter(BcqlParser.TransactionFilterContext ctx) {
         LOGGER.info("Build Transaction Filter");
-        try {
-            final AddressListSpecification senders = this.getAddressListSpecification(ctx.senders);
-            final AddressListSpecification recipients = this.getAddressListSpecification(ctx.recipients);
-            this.composer.buildTransactionFilter(senders, recipients);
-        } catch (BuildException e) {
-            final String errorMsg = String.format("Building transaction filter failed: %s", e.getMessage());
-            this.state.getExceptionHandler().handleException(errorMsg, new Exception());
-        }
+        final AddressListSpecification senders = this.getAddressListSpecification(ctx.senders);
+        final AddressListSpecification recipients = this.getAddressListSpecification(ctx.recipients);
+        this.composer.buildTransactionFilter(senders, recipients);
     }
 
     @Override
     public void enterLogEntryFilter(BcqlParser.LogEntryFilterContext ctx) {
         LOGGER.info("Prepare log entry filter build");
-
-        try {
-            this.composer.prepareLogEntryFilterBuild();
-        } catch (BuildException e) {
-            final String errorMsg = String.format("Preparation of log entry filter build failed: %s", e.getMessage());
-            this.state.getExceptionHandler().handleException(errorMsg, e);
-        }
+        this.composer.prepareLogEntryFilterBuild();
     }
 
     private void buildLogEntryFilter(BcqlParser.LogEntryFilterContext ctx) {
         LOGGER.info("Build log entry filter");
-        try {
-            final AddressListSpecification contracts = this.getAddressListSpecification(ctx.addressList());
-            final LogEntrySignatureSpecification signature = this.getLogEntrySignature(ctx.logEntrySignature());
-            this.composer.buildLogEntryFilter(contracts, signature);
-        } catch (BuildException e) {
-            final String errorMsg = String.format("Building log entry filter failed: %s", e.getMessage());
-            this.state.getExceptionHandler().handleException(errorMsg, e);
-        }
+
+        final AddressListSpecification contracts = this.getAddressListSpecification(ctx.addressList());
+        final LogEntrySignatureSpecification signature = this.getLogEntrySignature(ctx.logEntrySignature());
+        this.composer.buildLogEntryFilter(contracts, signature);
     }
 
     private AddressListSpecification getAddressListSpecification(BcqlParser.AddressListContext ctx) {
@@ -248,34 +233,24 @@ public class EthereumListener extends BaseBlockchainListener {
 
     @Override
     public void enterSmartContractFilter(BcqlParser.SmartContractFilterContext ctx) {
-        try {
-            this.composer.prepareSmartContractFilterBuild();
-        } catch (BuildException e) {
-            final String errorMsg = String.format("Preparation of smart contract filter build failed: %s", e.getMessage());
-            this.state.getExceptionHandler().handleException(errorMsg, e);
-        }
+        this.composer.prepareSmartContractFilterBuild();
     }
 
     private void buildSmartContractFilter(BcqlParser.SmartContractFilterContext ctx) {
-        try {
-            final ValueAccessorSpecification contractAddress = this.getValueAccessor(ctx.valueExpression());
+        final ValueAccessorSpecification contractAddress = this.getValueAccessor(ctx.valueExpression());
 
-            final List<SmartContractQuerySpecification> queries = new ArrayList<>();
-            for (BcqlParser.SmartContractQueryContext scQuery : ctx.smartContractQuery()) {
-                if (scQuery.publicFunctionQuery() != null) {
-                    queries.add(this.handlePublicFunctionQuery(scQuery.publicFunctionQuery()));
-                } else if (scQuery.publicVariableQuery() != null) {
-                    queries.add(this.handlePublicVariableQuery(scQuery.publicVariableQuery()));
-                } else {
-                    throw new UnsupportedOperationException();
-                }
+        final List<SmartContractQuerySpecification> queries = new ArrayList<>();
+        for (BcqlParser.SmartContractQueryContext scQuery : ctx.smartContractQuery()) {
+            if (scQuery.publicFunctionQuery() != null) {
+                queries.add(this.handlePublicFunctionQuery(scQuery.publicFunctionQuery()));
+            } else if (scQuery.publicVariableQuery() != null) {
+                queries.add(this.handlePublicVariableQuery(scQuery.publicVariableQuery()));
+            } else {
+                throw new UnsupportedOperationException();
             }
-
-            this.composer.buildSmartContractFilter(SmartContractFilterSpecification.of(contractAddress, queries));
-        } catch (BuildException e) {
-            final String errorMsg = String.format("Building smart contract filter failed: %s", e.getMessage());
-            this.state.getExceptionHandler().handleException(errorMsg, e);
         }
+
+        this.composer.buildSmartContractFilter(SmartContractFilterSpecification.of(contractAddress, queries));
     }
 
     private SmartContractQuerySpecification handlePublicFunctionQuery(BcqlParser.PublicFunctionQueryContext ctx) {

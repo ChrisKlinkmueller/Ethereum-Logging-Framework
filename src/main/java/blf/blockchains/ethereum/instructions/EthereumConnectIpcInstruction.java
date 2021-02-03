@@ -9,6 +9,6 @@ public class EthereumConnectIpcInstruction extends Instruction {
     public void execute(ProgramState state) {
         EthereumProgramState ethereumState = (EthereumProgramState) state;
 
-        ethereumState.getReader().connectIpc(ethereumState.connectionUrl);
+        ethereumState.getReader().connectIpc(ethereumState.getConnectionIpcPath());
     }
 }
