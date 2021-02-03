@@ -30,21 +30,9 @@ function main() {
 	colorecho "Setting up test environment"
 	mkdir -p "$ED"/{AugurContractRegistry,CryptoKitties,NetworkStatistics,Rebesky_Augur,Rebesky_ChickenHunt,Rebesky_Idex1,HyperBasic,HyperKitties,CryptoKittiesAsHyper,FailingHyperKitties,FailingCryptoKitties,hyperledger}
 
-	echo "$CRED_Connection" > "$ED"/hyperledger/connection-org1.yaml
-	echo "$CRED_Server_CRT" > "$ED"/hyperledger/server.crt
-	echo "$CRED_Server_KEY" > "$ED"/hyperledger/server.key
+  cp $CRED_DIR/* "$ED/hyperledger/"
 
-	echo "$MAN_AugurContractRegistry" > "$ED"/AugurContractRegistry.bcql
-	echo "$MAN_CryptoKitties" > "$ED"/CryptoKitties.bcql
-	echo "$MAN_NetworkStatistics" > "$ED"/NetworkStatistics.bcql
-	echo "$MAN_Rebesky_Augur" > "$ED"/Rebesky_Augur.bcql
-	echo "$MAN_Rebesky_ChickenHunt" > "$ED"/Rebesky_ChickenHunt.bcql
-	echo "$MAN_Rebesky_Idex1" > "$ED"/Rebesky_Idex1.bcql
-  echo "$MAN_HyperBasic" > "$ED"/HyperBasic.bcql
-  echo "$MAN_HyperKitties" > "$ED"/HyperKitties.bcql
-  echo "$MAN_CryptoKittiesAsHyper" > "$ED"/CryptoKittiesAsHyper.bcql
-  echo "$MAN_FailingHyperKitties" > "$ED"/FailingHyperKitties.bcql
-  echo "$MAN_FailingCryptoKitties" > "$ED"/FailingCryptoKitties.bcql
+  cp $BCQL_DIR/* "$ED/"
 
 	touch "$ED"/AugurContractRegistry/error.log.xelf
 	touch "$ED"/CryptoKitties/error.log.xelf
@@ -56,23 +44,7 @@ function main() {
 	touch "$ED"/HyperKitties/error.log.xblf
 	touch "$ED"/CryptoKittiesAsHyper/error.log.xblf
 
-	echo "$XELF_AugurContractRegistry" > "$ED"/AugurContractRegistry/all.log.xelf
-	echo "$XELF_CryptoKitties" > "$ED"/CryptoKitties/log_pid0_all.xes.xelf
-	echo "$XELF_NetworkStatistics" > "$ED"/NetworkStatistics/NetworkStatistics_all.csv.xelf
-	echo "$XELF_Rebesky_Augur" > "$ED"/Rebesky_Augur/log_pid0_all.xes.xelf
-	echo "$XELF_Rebesky_ChickenHunt" > "$ED"/Rebesky_ChickenHunt/log_pid0_all.xes.xelf
-	echo "$XELF_Rebesky_Idex1" > "$ED"/Rebesky_Idex1/Idex_calls_all.csv.xelf
-	echo "$XBLF_HyperBasic_all" > "$ED"/HyperBasic/all.log.xblf
-	echo "$XBLF_HyperBasic_log_testEvent" > "$ED"/HyperBasic/log_testEvent_all.xes.xblf
-	echo "$XBLF_HyperBasic_payload" > "$ED"/HyperBasic/payload_all.csv.xblf
-	echo "$XBLF_HyperKitties_all" > "$ED"/HyperKitties/all.log.xblf
-	echo "$XBLF_HyperKitties_Birth_all" > "$ED"/HyperKitties/Birth_all.csv.xblf
-	echo "$XBLF_HyperKitties_log_Birth_all" > "$ED"/HyperKitties/log_Birth_all.xes.xblf
-	echo "$XBLF_HyperKitties_log_Pregnant_all" > "$ED"/HyperKitties/log_Pregnant_all.xes.xblf
-	echo "$XBLF_HyperKitties_log_Transfer_all" > "$ED"/HyperKitties/log_Transfer_all.xes.xblf
-	echo "$XBLF_HyperKitties_Pregnant_all" > "$ED"/HyperKitties/Pregnant_all.csv.xblf
-	echo "$XBLF_HyperKitties_Transfer_all" > "$ED"/HyperKitties/Transfer_all.csv.xblf
-	echo "$XBLF_CryptoKittiesAsHyper_all" > "$ED"/CryptoKittiesAsHyper/log_pid0_all.xes.xblf
+  cp -r $XBLF_OUTPUTS_DIR/* "$ED/"
 
   if [ ! "$1" = "$SKIP_BUILD_PARAM" ] && [ ! "$2" = "$SKIP_BUILD_PARAM" ] && [ ! "$3" = "$SKIP_BUILD_PARAM" ]; then
 	  colorecho "Building the BLF"
@@ -350,68 +322,12 @@ ED="./extracted"
 JAR="$WD"/target/blf-cmd.jar
 
 # HyperLedger credentials
-CRED_Connection=$(cat "$SCRIPT_DIR/credentials/connection-org1.yaml")
-
-CRED_Server_CRT=$(cat "$SCRIPT_DIR/credentials/server.crt")
-
-CRED_Server_KEY=$(cat "$SCRIPT_DIR/credentials/server.key")
+CRED_DIR="$SCRIPT_DIR/credentials"
 
 # BCQL scripts
-MAN_AugurContractRegistry=$(cat "$SCRIPT_DIR"/bcql/AugurContractRegistry.bcql)
-
-MAN_CryptoKitties=$(cat "$SCRIPT_DIR"/bcql/CryptoKitties.bcql)
-
-MAN_NetworkStatistics=$(cat "$SCRIPT_DIR"/bcql/NetworkStatistics.bcql)
-
-MAN_Rebesky_Augur=$(cat "$SCRIPT_DIR"/bcql/Rebesky_Augur.bcql)
-
-MAN_Rebesky_ChickenHunt=$(cat "$SCRIPT_DIR"/bcql/Rebesky_ChickenHunt.bcql)
-
-MAN_Rebesky_Idex1=$(cat "$SCRIPT_DIR"/bcql/Rebesky_Idex1.bcql)
-
-MAN_HyperBasic=$(cat "$SCRIPT_DIR/bcql/HyperBasic.bcql")
-
-MAN_HyperKitties=$(cat "$SCRIPT_DIR/bcql/HyperKitties.bcql")
-
-MAN_CryptoKittiesAsHyper=$(cat "$SCRIPT_DIR/bcql/CryptoKittiesAsHyper.bcql")
-
-MAN_FailingHyperKitties=$(cat "$SCRIPT_DIR/bcql/FailingHyperKitties.bcql")
-
-MAN_FailingCryptoKitties=$(cat "$SCRIPT_DIR/bcql/FailingCryptoKitties.bcql")
+BCQL_DIR="$SCRIPT_DIR/bcql"
 
 # BCQL expected outputs
-XELF_AugurContractRegistry=$(cat "$SCRIPT_DIR"/outputs/AugurContractRegistry.o)
-
-XELF_CryptoKitties=$(cat "$SCRIPT_DIR"/outputs/CryptoKitties.o)
-
-XELF_NetworkStatistics=$(cat "$SCRIPT_DIR"/outputs/NetworkStatistics.o)
-
-XELF_Rebesky_Augur=$(cat "$SCRIPT_DIR"/outputs/Rebesky_Augur.o)
-
-XELF_Rebesky_ChickenHunt=$(cat "$SCRIPT_DIR"/outputs/Rebesky_ChickenHunt.o)
-
-XELF_Rebesky_Idex1=$(cat "$SCRIPT_DIR"/outputs/Rebesky_Idex1.o)
-
-XBLF_HyperBasic_all=$(cat "$SCRIPT_DIR/outputs/HyperBasic_all.o")
-
-XBLF_HyperBasic_log_testEvent=$(cat "$SCRIPT_DIR/outputs/HyperBasic_log_testEvent_all.o")
-
-XBLF_HyperBasic_payload=$(cat "$SCRIPT_DIR/outputs/HyperBasic_payload_all.o")
-
-XBLF_HyperKitties_all=$(cat "$SCRIPT_DIR/outputs/HyperKitties_all.o")
-
-XBLF_HyperKitties_Birth_all=$(cat "$SCRIPT_DIR/outputs/HyperKitties_Birth_all.o")
-
-XBLF_HyperKitties_log_Birth_all=$(cat "$SCRIPT_DIR/outputs/HyperKitties_log_Birth_all.o")
-
-XBLF_HyperKitties_log_Pregnant_all=$(cat "$SCRIPT_DIR/outputs/HyperKitties_log_Pregnant_all.o")
-
-XBLF_HyperKitties_log_Transfer_all=$(cat "$SCRIPT_DIR/outputs/HyperKitties_log_Transfer_all.o")
-
-XBLF_HyperKitties_Pregnant_all=$(cat "$SCRIPT_DIR/outputs/HyperKitties_Pregnant_all.o")
-
-XBLF_HyperKitties_Transfer_all=$(cat "$SCRIPT_DIR/outputs/HyperKitties_Transfer_all.o")
-
-XBLF_CryptoKittiesAsHyper_all=$(cat "$SCRIPT_DIR/outputs/CryptoKittiesAsHyper_log_pid0_all.o")
+XBLF_OUTPUTS_DIR="$SCRIPT_DIR/outputs"
 
 main "$@"
