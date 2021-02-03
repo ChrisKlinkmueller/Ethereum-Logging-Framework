@@ -1,6 +1,5 @@
 package blf.core.instructions;
 
-import blf.core.exceptions.ProgramException;
 import blf.core.state.ProgramState;
 import blf.core.values.ValueAccessor;
 import blf.core.writers.CsvColumn;
@@ -24,23 +23,18 @@ public class AddCsvRowInstruction extends Instruction {
 
     @Override
     public void execute(ProgramState state) {
-        try {
-            final CsvWriter writer = state.getWriters().getCsvWriter();
-            final String tbName;
-            tbName = (String) this.tableName.getValue(state);
+        final CsvWriter writer = state.getWriters().getCsvWriter();
+        final String tbName;
+        tbName = (String) this.tableName.getValue(state);
 
-            writer.beginRow(tbName);
+        writer.beginRow(tbName);
 
-            for (final CsvColumn column : columns) {
-                final Object value = column.getAccessor().getValue(state);
-                writer.addCell(tbName, column.getName(), value);
-            }
-
-            writer.endRow(tbName);
-        } catch (ProgramException e) {
-            // TODO: remove the throw of ProgramException
-            state.getExceptionHandler().handleException(e.getMessage(), e);
+        for (final CsvColumn column : columns) {
+            final Object value = column.getAccessor().getValue(state);
+            writer.addCell(tbName, column.getName(), value);
         }
+
+        writer.endRow(tbName);
     }
 
 }

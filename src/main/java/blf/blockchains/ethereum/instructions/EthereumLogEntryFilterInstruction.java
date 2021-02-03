@@ -5,7 +5,6 @@ import blf.blockchains.ethereum.reader.EthereumLogEntry;
 import blf.blockchains.ethereum.reader.EthereumTransaction;
 import blf.blockchains.ethereum.state.EthereumProgramState;
 import blf.core.exceptions.ExceptionHandler;
-import blf.core.exceptions.ProgramException;
 import blf.core.instructions.Instruction;
 import blf.core.interfaces.FilterPredicate;
 import blf.core.state.ProgramState;
@@ -77,7 +76,7 @@ public class EthereumLogEntryFilterInstruction extends Instruction {
         }
     }
 
-    private boolean isValidLogEntry(ProgramState state, EthereumLogEntry logEntry) throws ProgramException {
+    private boolean isValidLogEntry(ProgramState state, EthereumLogEntry logEntry) {
         return this.contractCriterion.test(state, logEntry.getAddress()) && this.signature.hasSignature(logEntry);
     }
 

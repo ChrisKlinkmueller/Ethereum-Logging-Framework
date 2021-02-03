@@ -1,6 +1,5 @@
 package blf.core.instructions;
 
-import blf.core.exceptions.ProgramException;
 import blf.core.state.ProgramState;
 import blf.core.values.ValueAccessor;
 import io.reactivex.annotations.NonNull;
@@ -27,11 +26,7 @@ public class AddLogLineInstruction extends Instruction {
     public void execute(ProgramState state) {
         final List<Object> values = new LinkedList<>();
         for (ValueAccessor va : this.valueAccessors) {
-            try {
-                values.add(va.getValue(state));
-            } catch (ProgramException e) {
-                state.getExceptionHandler().handleException("Error occurred.", e);
-            }
+            values.add(va.getValue(state));
         }
         state.getWriters().getLogWriter().addLogLine(values);
     }

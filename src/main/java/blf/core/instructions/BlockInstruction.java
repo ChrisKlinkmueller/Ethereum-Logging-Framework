@@ -1,15 +1,12 @@
 package blf.core.instructions;
 
-import blf.core.exceptions.ProgramException;
 import blf.core.state.ProgramState;
+import blf.core.writers.DataWriters;
 
 import java.math.BigInteger;
 import java.util.List;
 
 public class BlockInstruction extends Instruction {
-    protected BlockInstruction() {
-        super();
-    }
 
     protected BlockInstruction(final List<Instruction> nestedInstructions) {
         super(nestedInstructions);
@@ -17,17 +14,22 @@ public class BlockInstruction extends Instruction {
 
     @Override
     public void executeNestedInstructions(final ProgramState programState) {
-        try {
-            programState.getWriters()
-                .startNewBlock((BigInteger) programState.getBlockchainVariables().currentBlockNumberAccessor().getValue(programState));
-        } catch (ProgramException e) {
-            programState.getExceptionHandler().handleException(e.getMessage(), e);
+        BigInteger currentBlockNumber = (BigInteger) programState.getBlockchainVariables()
+            .currentBlockNumberAccessor()
+            .getValue(programState);
+
+        if (currentBlockNumber == null) {
+            programState.getExceptionHandler().handleException("Current block number is null.", new NullPointerException());
+
+            return;
         }
+
+        final DataWriters dataWriters = programState.getWriters();
+
+        dataWriters.startNewBlock(currentBlockNumber);
+
         super.executeNestedInstructions(programState);
-        try {
-            programState.getWriters().writeBlock();
-        } catch (Throwable throwable) {
-            programState.getExceptionHandler().handleException(throwable.getMessage(), throwable);
-        }
+
+        dataWriters.writeBlock();
     }
 }

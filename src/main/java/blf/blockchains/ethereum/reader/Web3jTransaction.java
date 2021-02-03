@@ -1,25 +1,29 @@
 package blf.blockchains.ethereum.reader;
 
-import java.math.BigInteger;
-import java.util.function.Function;
-
-import blf.core.exceptions.ProgramException;
-import io.reactivex.annotations.NonNull;
+import blf.core.exceptions.ExceptionHandler;
 import org.web3j.protocol.core.methods.response.Transaction;
 import org.web3j.protocol.core.methods.response.TransactionReceipt;
+
+import java.math.BigInteger;
+import java.util.function.Function;
 
 /**
  * Web3jTransaction
  */
 class Web3jTransaction extends EthereumTransaction {
     private final Transaction tx;
-    private TransactionReceipt receipt;
     private final Web3jClient client;
 
-    public Web3jTransaction(@NonNull final Web3jClient client, @NonNull final EthereumBlock block, @NonNull final Transaction tx) {
+    private final ExceptionHandler exceptionHandler;
+
+    private TransactionReceipt receipt;
+
+    public Web3jTransaction(final Web3jClient client, final EthereumBlock block, final Transaction tx) {
         this.tx = tx;
         this.setBlock(block);
         this.client = client;
+
+        this.exceptionHandler = new ExceptionHandler();
     }
 
     @Override
@@ -83,43 +87,46 @@ class Web3jTransaction extends EthereumTransaction {
     }
 
     @Override
-    public BigInteger getCumulativeGasUsed() throws ProgramException {
+    public BigInteger getCumulativeGasUsed() {
         return this.loadReceipt(TransactionReceipt::getCumulativeGasUsed);
     }
 
     @Override
-    public BigInteger getGasUsed() throws ProgramException {
+    public BigInteger getGasUsed() {
         return this.loadReceipt(TransactionReceipt::getGasUsed);
     }
 
     @Override
-    public String getContractAddress() throws ProgramException {
+    public String getContractAddress() {
         return this.loadReceipt(TransactionReceipt::getContractAddress);
     }
 
     @Override
-    public String getLogsBloom() throws ProgramException {
+    public String getLogsBloom() {
         return this.loadReceipt(TransactionReceipt::getLogsBloom);
     }
 
     @Override
-    public String getRoot() throws ProgramException {
+    public String getRoot() {
         return this.loadReceipt(TransactionReceipt::getRoot);
     }
 
     @Override
-    public String getStatus() throws ProgramException {
+    public String getStatus() {
         return this.loadReceipt(TransactionReceipt::getStatus);
     }
 
-    private <T> T loadReceipt(Function<TransactionReceipt, T> attributeAccessor) throws ProgramException {
+    private <T> T loadReceipt(Function<TransactionReceipt, T> attributeAccessor) {
         if (this.receipt == null) {
-            try {
-                this.receipt = this.client.queryTransactionReceipt(this.getHash());
-            } catch (Exception cause) {
-                throw new ProgramException(String.format("Error loading attributes for transaction '%s'.", this.getHash()), cause);
-            }
+            this.receipt = this.client.queryTransactionReceipt(this.getHash());
         }
+
+        if (this.receipt == null) {
+            this.exceptionHandler.handleException("The query transaction receipt is null.", new NullPointerException());
+
+            return null;
+        }
+
         return attributeAccessor.apply(this.receipt);
     }
 

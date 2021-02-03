@@ -1,6 +1,5 @@
 package blf.core.instructions;
 
-import blf.core.exceptions.ProgramException;
 import blf.core.parameters.XesParameter;
 import blf.core.state.ProgramState;
 import blf.core.values.ValueAccessor;
@@ -28,21 +27,18 @@ public abstract class AddXesElementInstruction extends Instruction {
     @Override
     public void execute(ProgramState state) {
         final XesWriter writer = state.getWriters().getXesWriter();
-        try {
-            this.startElement(writer, state, this.getId(state, this.pid), this.getId(state, this.piid));
 
-            for (XesParameter parameter : this.parameters) {
-                parameter.exportAttribute(state, writer);
-            }
-        } catch (ProgramException e) {
-            // TODO: remove throw of ProgramException
-            state.getExceptionHandler().handleException(e.getMessage(), e);
+        this.startElement(writer, state, this.getId(state, this.pid), this.getId(state, this.piid));
+
+        for (XesParameter parameter : this.parameters) {
+            parameter.exportAttribute(state, writer);
         }
+
     }
 
-    protected String getId(ProgramState state, ValueAccessor accessor) throws ProgramException {
+    protected String getId(ProgramState state, ValueAccessor accessor) {
         return accessor == null ? null : accessor.getValue(state).toString();
     }
 
-    protected abstract void startElement(XesWriter writer, ProgramState state, String pid, String piid) throws ProgramException;
+    protected abstract void startElement(XesWriter writer, ProgramState state, String pid, String piid);
 }

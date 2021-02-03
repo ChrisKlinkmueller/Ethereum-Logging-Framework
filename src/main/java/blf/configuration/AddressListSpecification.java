@@ -1,13 +1,12 @@
 package blf.configuration;
 
+import blf.core.exceptions.ExceptionHandler;
+import blf.core.interfaces.FilterPredicate;
+import blf.core.values.ValueAccessor;
+
 import java.util.Arrays;
 import java.util.List;
 import java.util.stream.Collectors;
-
-import blf.core.exceptions.ProgramException;
-import blf.core.interfaces.FilterPredicate;
-import blf.core.values.ValueAccessor;
-import io.reactivex.annotations.NonNull;
 
 /**
  * AddressListSpecification
@@ -24,15 +23,17 @@ public class AddressListSpecification {
         return this.addressCheck;
     }
 
-    public static AddressListSpecification ofAddress(@NonNull String expectedAddress) {
+    @SuppressWarnings("unused")
+    public static AddressListSpecification ofAddress(String expectedAddress) {
         return new AddressListSpecification((state, address) -> expectedAddress.equalsIgnoreCase(address));
     }
 
-    public static AddressListSpecification ofAddresses(@NonNull List<String> expectedAddresses) {
+    public static AddressListSpecification ofAddresses(List<String> expectedAddresses) {
         final List<String> lowerCaseAddresses = expectedAddresses.stream().map(String::toLowerCase).collect(Collectors.toList());
         return new AddressListSpecification((state, address) -> address != null && lowerCaseAddresses.contains(address.toLowerCase()));
     }
 
+    @SuppressWarnings("unused")
     public static AddressListSpecification ofAddresses(String... expectedAddresses) {
         return ofAddresses(Arrays.asList(expectedAddresses));
     }
@@ -45,23 +46,29 @@ public class AddressListSpecification {
         return new AddressListSpecification((state, address) -> address == null);
     }
 
-    public static AddressListSpecification ofVariableName(@NonNull String name) {
+    public static AddressListSpecification ofVariableName(String name) {
+        final ExceptionHandler exceptionHandler = new ExceptionHandler();
+
         final ValueAccessor accessor = ValueAccessor.createVariableAccessor(name);
         return new AddressListSpecification((state, address) -> {
             final Object value = accessor.getValue(state);
+
             if (value == null) {
                 return address == null;
-            } else if (value instanceof String) {
-                return address.equals(value);
-            } else if (List.class.isAssignableFrom(value.getClass())) {
-                try {
-                    return ((List<String>) value).contains(address);
-                } catch (Exception cause) {
-                    throw new ProgramException("Address list is not a string list.", cause);
-                }
-            } else {
-                return false;
             }
+
+            if (value instanceof String) {
+                return address.equals(value);
+            }
+
+            try {
+                // noinspection unchecked
+                return ((List<String>) value).contains(address);
+            } catch (Exception e) {
+                exceptionHandler.handleException("Address list is not a string list.", e);
+            }
+
+            return false;
         });
     }
 

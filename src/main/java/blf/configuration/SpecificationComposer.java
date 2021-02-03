@@ -5,7 +5,6 @@ import blf.blockchains.ethereum.instructions.EthereumSmartContractFilterInstruct
 import blf.blockchains.ethereum.instructions.EthereumTransactionFilterInstruction;
 import blf.core.Program;
 import blf.core.exceptions.ExceptionHandler;
-import blf.core.exceptions.ProgramException;
 import blf.core.instructions.GenericFilterInstruction;
 import blf.core.instructions.Instruction;
 import blf.core.state.ProgramState;
@@ -232,16 +231,13 @@ public class SpecificationComposer {
     }
 
     private Instruction createVariableAssignment(ValueMutator variable, ValueAccessor valueAccessor) {
-        // TODO: replace TmpInstruction declaration with smth meaningful
+        // TODO: replace TmpInstruction declaration with something meaningful
         class TmpInstruction extends Instruction {
             @Override
             public void execute(ProgramState programState) {
-                final Object value;
-                try {
-                    value = valueAccessor.getValue(programState);
+                final Object value = valueAccessor.getValue(programState);
+                if (variable != null) {
                     variable.setValue(value, programState);
-                } catch (ProgramException e) {
-                    programState.getExceptionHandler().handleException(e.getMessage(), e);
                 }
             }
         }

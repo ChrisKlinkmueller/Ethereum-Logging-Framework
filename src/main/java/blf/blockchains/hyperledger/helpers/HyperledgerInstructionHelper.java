@@ -2,7 +2,6 @@ package blf.blockchains.hyperledger.helpers;
 
 import blf.blockchains.hyperledger.state.HyperledgerProgramState;
 import blf.core.exceptions.ExceptionHandler;
-import blf.core.exceptions.ProgramException;
 import blf.core.values.ValueAccessor;
 import blf.grammar.BcqlParser;
 import blf.util.TypeUtils;
@@ -46,13 +45,11 @@ public interface HyperledgerInstructionHelper {
                 value = (String) accessor.getValue(hyperledgerProgramState);
             } catch (ClassCastException e) {
                 String errorMsg = String.format(
-                    "Variable '%s' in manifest file is not an instance of String.",
+                    "Variable '%s' in manifest file is not an instance of a String.",
                     addressListVariableNameCtx.getText()
                 );
 
                 hyperledgerProgramState.getExceptionHandler().handleException(errorMsg, e);
-            } catch (ProgramException e) {
-                hyperledgerProgramState.getExceptionHandler().handleException("Unexpected exception occurred.", e);
             }
 
             if (value != null) {
@@ -98,13 +95,11 @@ public interface HyperledgerInstructionHelper {
                 contractAddress = (String) valueAccessor.getValue(hyperledgerProgramState);
             } catch (ClassCastException e) {
                 String errorMsg = String.format(
-                    "Variable '%s' in manifest file is not an instance of String.",
+                    "Variable '%s' in manifest file is not an instance of a String.",
                     smartContractFilterCtx.contractAddress.getText()
                 );
 
                 exceptionHandler.handleException(errorMsg, e);
-            } catch (ProgramException e) {
-                exceptionHandler.handleException("Unexpected exception occurred while accessing a variable in the programState", e);
             }
         }
 
@@ -258,8 +253,6 @@ public interface HyperledgerInstructionHelper {
                 String errorMsg = String.format("Variable '%s' in manifest file is not an instance of Int.", fromBlockVariableName);
 
                 exceptionHandler.handleException(errorMsg, e);
-            } catch (ProgramException e) {
-                hyperledgerProgramState.getExceptionHandler().handleException("Unexpected exception occurred.", e);
             }
 
         } else {

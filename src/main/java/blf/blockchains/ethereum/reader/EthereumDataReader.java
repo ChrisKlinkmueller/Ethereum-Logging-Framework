@@ -3,8 +3,6 @@ package blf.blockchains.ethereum.reader;
 import blf.core.exceptions.ExceptionHandler;
 import blf.core.readers.DataReader;
 
-import java.net.ConnectException;
-import java.net.URISyntaxException;
 import java.util.stream.Stream;
 
 /**
@@ -33,32 +31,26 @@ public class EthereumDataReader extends DataReader<EthereumClient, EthereumBlock
     }
 
     public void connect(String url) {
-
         if (this.client != null) {
             exceptionHandler.handleException("Already connected to Ethereum node.");
             return;
         }
 
-        try {
-            this.client = Web3jClient.connectWebsocket(url);
-        } catch (ConnectException | URISyntaxException e) {
-            final String exceptionMsg = String.format("Error when connecting to Ethereum node via websocket using URL '%s'.", url);
-            this.exceptionHandler.handleException(exceptionMsg, e);
-        }
+        this.client = Web3jClient.connectWebsocket(url);
     }
 
+    @Override
     public void connectIpc(String path) {
         if (this.client != null) {
             this.exceptionHandler.handleException("Already connected to Ethereum node.", new NullPointerException());
+
+            return;
         }
 
-        try {
-            this.client = Web3jClient.connectIpc(path);
-        } catch (ConnectException e) {
-            this.exceptionHandler.handleException("Error when connecting to Ethereum node via ipc.", e);
-        }
+        this.client = Web3jClient.connectIpc(path);
     }
 
+    @Override
     public void close() {
         if (this.client != null) {
             this.client.close();

@@ -1,10 +1,10 @@
 package blf.library.compression;
 
+import blf.core.state.ProgramState;
+
 import java.math.BigInteger;
 import java.util.List;
-
-import blf.core.state.ProgramState;
-import blf.core.exceptions.ProgramException;
+import java.util.Objects;
 
 /**
  * ValueDictionary
@@ -12,57 +12,63 @@ import blf.core.exceptions.ProgramException;
 public class ValueDictionary {
     public static final String METHOD_NAME = "mapValue";
 
-    public static Object boolToBool(Object[] parameters, ProgramState state) throws ProgramException {
-        return mapValue(parameters, Boolean.class, Boolean.class);
+    private ValueDictionary() {}
+
+    public static Object boolToBool(Object[] parameters, ProgramState state) {
+        return mapValue(state, parameters, Boolean.class, Boolean.class);
     }
 
-    public static Object boolToInt(Object[] parameters, ProgramState state) throws ProgramException {
-        return mapValue(parameters, Boolean.class, BigInteger.class);
+    public static Object boolToInt(Object[] parameters, ProgramState state) {
+        return mapValue(state, parameters, Boolean.class, BigInteger.class);
     }
 
-    public static Object boolToString(Object[] parameters, ProgramState state) throws ProgramException {
-        return mapValue(parameters, Boolean.class, String.class);
+    public static Object boolToString(Object[] parameters, ProgramState state) {
+        return mapValue(state, parameters, Boolean.class, String.class);
     }
 
-    public static Object intToBool(Object[] parameters, ProgramState state) throws ProgramException {
-        return mapValue(parameters, BigInteger.class, Boolean.class);
+    public static Object intToBool(Object[] parameters, ProgramState state) {
+        return mapValue(state, parameters, BigInteger.class, Boolean.class);
     }
 
-    public static Object intToInt(Object[] parameters, ProgramState state) throws ProgramException {
-        return mapValue(parameters, BigInteger.class, BigInteger.class);
+    public static Object intToInt(Object[] parameters, ProgramState state) {
+        return mapValue(state, parameters, BigInteger.class, BigInteger.class);
     }
 
-    public static Object intToString(Object[] parameters, ProgramState state) throws ProgramException {
-        return mapValue(parameters, BigInteger.class, String.class);
+    public static Object intToString(Object[] parameters, ProgramState state) {
+        return mapValue(state, parameters, BigInteger.class, String.class);
     }
 
-    public static Object stringToBool(Object[] parameters, ProgramState state) throws ProgramException {
-        return mapValue(parameters, String.class, Boolean.class);
+    public static Object stringToBool(Object[] parameters, ProgramState state) {
+        return mapValue(state, parameters, String.class, Boolean.class);
     }
 
-    public static Object stringToInt(Object[] parameters, ProgramState state) throws ProgramException {
-        return mapValue(parameters, String.class, BigInteger.class);
+    public static Object stringToInt(Object[] parameters, ProgramState state) {
+        return mapValue(state, parameters, String.class, BigInteger.class);
     }
 
-    public static Object stringToString(Object[] parameters, ProgramState state) throws ProgramException {
-        return mapValue(parameters, String.class, String.class);
+    public static Object stringToString(Object[] parameters, ProgramState state) {
+        return mapValue(state, parameters, String.class, String.class);
     }
 
     @SuppressWarnings("all")
-    private static <S, T> Object mapValue(Object[] parameters, Class<S> sourceClass, Class<T> targetClass) throws ProgramException {
+    private static <S, T> Object mapValue(ProgramState state, Object[] parameters, Class<S> sourceClass, Class<T> targetClass) {
         if (!areValidParameters(parameters, sourceClass, targetClass)) {
-            final String message = String.format(
-                "Invalid parameters for mapping from %s to %s, expected '%s' but got '%s'",
+            final String errorMsg = String.format(
+                "Invalid parameters for mapping from %s to %s, expected '%s' but got '%s'.",
                 sourceClass,
                 targetClass
             );
-            throw new ProgramException(message);
+
+            state.getExceptionHandler().handleException(errorMsg, new Exception());
+
+            return null;
         }
 
         S value = (S) parameters[0];
         T defaultTarget = (T) parameters[1];
         List<S> sourceValues = (List<S>) parameters[2];
         List<T> targetValues = (List<T>) parameters[3];
+
         return mapValue(value, defaultTarget, sourceValues, targetValues);
     }
 
@@ -99,6 +105,6 @@ public class ValueDictionary {
     }
 
     private static <S> boolean valuesMatch(S value1, S value2) {
-        return value1 == null ? value2 == null : value1.equals(value2);
+        return Objects.equals(value1, value2);
     }
 }
