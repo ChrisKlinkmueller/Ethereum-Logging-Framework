@@ -164,7 +164,18 @@ public class XesWriter extends DataWriter {
     protected void writeState(String fileNameSuffix) {
         LOGGER.info("Xes export started.");
 
+        // Before
+        Map<String, Map<String, XTrace>> formerTraces = deepCopyTraces();
+        Map<String, Map<String, Map<String, XEvent>>> formerEvents = deepCopyEvents();
+
         final Map<String, XLog> logs = this.getLogs();
+
+        // Restore of state
+        this.traces.clear();
+        this.events.clear();
+        this.traces.putAll(formerTraces);
+        this.events.putAll(formerEvents);
+
         try {
             final File folder = this.getOutputFolder().toAbsolutePath().toFile();
             final XesXmlSerializer serializer = new XesXmlSerializer();
