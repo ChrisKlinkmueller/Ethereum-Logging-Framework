@@ -40,22 +40,7 @@
     </repository>
   </repositories>
 
-  <dependencyManagement>
-    <dependencies>
-
-      <!-- <dependency> -->
-      <!-- <groupId>org.junit</groupId> -->
-      <!-- <artifactId>junit-bom</artifactId> -->
-      <!-- <version>${junit.jupiter.version}</version> -->
-      <!-- <type>pom</type> -->
-      <!-- <scope>import</scope> -->
-      <!-- </dependency> -->
-
-    </dependencies>
-  </dependencyManagement>
-
   <dependencies>
-
     <!-- jackson -->
     <dependency>
       <groupId>com.fasterxml.jackson.core</groupId>
@@ -155,9 +140,7 @@
       <!-- Caution: There is a transitive dependency in the Hyperledger SDK. 
         Make sure that these versions match! -->
       <version>1.26</version>
-      <scope>test</scope>
     </dependency>
-
   </dependencies>
 
   <build>
