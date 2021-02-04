@@ -1,11 +1,10 @@
 package blf.configuration;
 
+import blf.core.instructions.MethodCallInstruction;
+
 import java.util.Arrays;
 import java.util.List;
 import java.util.stream.Collectors;
-
-import blf.core.instructions.MethodCallInstruction;
-import io.reactivex.annotations.NonNull;
 
 /**
  * MethodCallSpecification
@@ -33,9 +32,9 @@ public class MethodCallSpecification extends InstructionSpecification<MethodCall
     }
 
     public static MethodCallSpecification of(
-        @NonNull MethodSpecification specification,
+        MethodSpecification specification,
         ValueMutatorSpecification mutator,
-        @NonNull List<ValueAccessorSpecification> accessors
+        List<ValueAccessorSpecification> accessors
     ) {
         return new MethodCallSpecification(
             new MethodCallInstruction(

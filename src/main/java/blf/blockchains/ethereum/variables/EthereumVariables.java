@@ -1,16 +1,15 @@
 package blf.blockchains.ethereum.variables;
 
+import blf.blockchains.ethereum.state.EthereumProgramState;
+import blf.core.values.BlockchainVariables;
+import blf.core.values.ValueAccessor;
+import blf.core.values.Variable;
+
 import java.util.Map;
 import java.util.Set;
 import java.util.function.Function;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
-
-import blf.blockchains.ethereum.state.EthereumProgramState;
-import blf.core.exceptions.ProgramException;
-import blf.core.values.BlockchainVariables;
-import blf.core.values.Variable;
-import blf.core.values.ValueAccessor;
 
 /**
  * DataSourceAccessors
@@ -20,10 +19,12 @@ public class EthereumVariables implements BlockchainVariables {
     public ValueAccessor currentBlockNumberAccessor() {
         return state -> {
             try {
-                return ((EthereumProgramState) state).getReader().getClient().queryBlockNumber();
-            } catch (final Throwable error) {
-                throw new ProgramException("Error when retrieving the current block number.", error);
+                return ((EthereumProgramState) state).getReader().getCurrentBlock().getNumber();
+            } catch (Exception e) {
+                state.getExceptionHandler().handleException("Error when retrieving the current block number.", e);
             }
+
+            return null;
         };
     }
 

@@ -1,7 +1,6 @@
 package blf.core.values;
 
 import blf.core.state.ProgramState;
-import blf.core.exceptions.ProgramException;
 import io.reactivex.annotations.NonNull;
 
 /**
@@ -9,7 +8,7 @@ import io.reactivex.annotations.NonNull;
  */
 @FunctionalInterface
 public interface ValueAccessor {
-    Object getValue(ProgramState state) throws ProgramException;
+    Object getValue(ProgramState state);
 
     static ValueAccessor createLiteralAccessor(Object value) {
         return state -> value;

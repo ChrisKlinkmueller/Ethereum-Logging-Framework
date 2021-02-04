@@ -1,19 +1,19 @@
 package blf.blockchains.ethereum.classes;
 
-import java.math.BigInteger;
-import java.util.ArrayList;
-import java.util.List;
-import java.util.stream.Collectors;
-import java.util.stream.IntStream;
-
-import blf.blockchains.ethereum.state.EthereumProgramState;
-import blf.core.exceptions.ProgramException;
 import blf.blockchains.ethereum.reader.EthereumClient;
+import blf.blockchains.ethereum.state.EthereumProgramState;
+import blf.core.exceptions.ExceptionHandler;
 import blf.core.parameters.Parameter;
 import io.reactivex.annotations.NonNull;
 import org.web3j.abi.TypeDecoder;
 import org.web3j.abi.TypeReference;
 import org.web3j.abi.datatypes.Type;
+
+import java.math.BigInteger;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.stream.Collectors;
+import java.util.stream.IntStream;
 
 /**
  * PublicMemberQuery
@@ -35,9 +35,24 @@ public class EthereumPublicMemberQueryEthereum implements EthereumSmartContractQ
 
     @Override
     @SuppressWarnings("all")
-    public void query(String contract, EthereumProgramState state) throws ProgramException {
-        assert contract != null;
-        assert state != null;
+    public void query(String contract, EthereumProgramState state) {
+        final ExceptionHandler exceptionHandler = state.getExceptionHandler();
+
+        final String queryErrorMsg = String.format("Error querying members of smart contract %s.", contract);
+        final String contractNullErrorMsg = "Contract is null.";
+        final String stateNullErrorMsg = "State is null.";
+
+        if (contract == null || contract.isEmpty()) {
+            exceptionHandler.handleException(contractNullErrorMsg, new Exception());
+
+            return;
+        }
+
+        if (state == null) {
+            exceptionHandler.handleException(stateNullErrorMsg, new Exception());
+
+            return;
+        }
 
         try {
             final EthereumClient client = state.getReader().getClient();
@@ -47,7 +62,7 @@ public class EthereumPublicMemberQueryEthereum implements EthereumSmartContractQ
             final List<Type> values = client.queryPublicMember(contract, block, this.memberName, inputs, outputs);
             this.setValues(values, state);
         } catch (Throwable cause) {
-            throw new ProgramException(String.format("Error querying members of smart contract %s", contract), cause);
+            exceptionHandler.handleException(queryErrorMsg, cause);
         }
     }
 

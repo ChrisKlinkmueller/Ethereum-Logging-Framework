@@ -1,39 +1,21 @@
 package blf.core.writers;
 
+import blf.core.exceptions.ExceptionHandler;
+import blf.util.TypeUtils;
+import io.reactivex.annotations.NonNull;
+import org.deckfour.xes.model.*;
+import org.deckfour.xes.model.impl.*;
+import org.deckfour.xes.out.XesXmlSerializer;
+
 import java.io.File;
 import java.io.FileOutputStream;
 import java.math.BigInteger;
-import java.util.Collections;
-import java.util.Date;
-import java.util.LinkedHashMap;
-import java.util.List;
-import java.util.Map;
-import java.util.Set;
+import java.util.*;
 import java.util.Map.Entry;
 import java.util.function.BiFunction;
 import java.util.logging.Logger;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
-
-import blf.core.exceptions.ProgramException;
-import blf.util.TypeUtils;
-import io.reactivex.annotations.NonNull;
-import org.deckfour.xes.model.XAttributable;
-import org.deckfour.xes.model.XAttribute;
-import org.deckfour.xes.model.XEvent;
-import org.deckfour.xes.model.XLog;
-import org.deckfour.xes.model.XTrace;
-import org.deckfour.xes.model.impl.XAttributeBooleanImpl;
-import org.deckfour.xes.model.impl.XAttributeContinuousImpl;
-import org.deckfour.xes.model.impl.XAttributeDiscreteImpl;
-import org.deckfour.xes.model.impl.XAttributeListImpl;
-import org.deckfour.xes.model.impl.XAttributeLiteralImpl;
-import org.deckfour.xes.model.impl.XAttributeMapImpl;
-import org.deckfour.xes.model.impl.XAttributeTimestampImpl;
-import org.deckfour.xes.model.impl.XEventImpl;
-import org.deckfour.xes.model.impl.XLogImpl;
-import org.deckfour.xes.model.impl.XTraceImpl;
-import org.deckfour.xes.out.XesXmlSerializer;
 
 /**
  * XesExporter
@@ -50,11 +32,16 @@ public class XesWriter extends DataWriter {
 
     private final Map<String, Map<String, XTrace>> traces;
     private final Map<String, Map<String, Map<String, XEvent>>> events;
+
+    private final ExceptionHandler exceptionHandler;
+
     private XAttributable element;
 
     public XesWriter() {
         this.traces = new LinkedHashMap<>();
         this.events = new LinkedHashMap<>();
+
+        this.exceptionHandler = new ExceptionHandler();
     }
 
     public void startTrace(String inputPid, String inputPiid) {
@@ -174,29 +161,44 @@ public class XesWriter extends DataWriter {
     }
 
     @Override
-    protected void writeState(String filenameSuffix) throws Throwable {
+    protected void writeState(String fileNameSuffix) {
         LOGGER.info("Xes export started.");
+
+        // Before
+        Map<String, Map<String, XTrace>> formerTraces = deepCopyTraces();
+        Map<String, Map<String, Map<String, XEvent>>> formerEvents = deepCopyEvents();
+
         final Map<String, XLog> logs = this.getLogs();
+
+        // Restore of state
+        this.traces.clear();
+        this.events.clear();
+        this.traces.putAll(formerTraces);
+        this.events.putAll(formerEvents);
+
         try {
             final File folder = this.getOutputFolder().toAbsolutePath().toFile();
             final XesXmlSerializer serializer = new XesXmlSerializer();
             for (Entry<String, XLog> entry : logs.entrySet()) {
-                final String filename = String.format("log_%s_%s.xes", entry.getKey(), filenameSuffix);
+                final String filename = String.format("log_%s_%s.xes", entry.getKey(), fileNameSuffix);
                 final File file = new File(folder, filename);
-                try (final FileOutputStream outputStream = new FileOutputStream(file);) {
+                try (final FileOutputStream outputStream = new FileOutputStream(file)) {
                     serializer.serialize(entry.getValue(), outputStream);
                 }
             }
-        } catch (Exception t) {
-            LOGGER.info("Xes export finished unsuccessfully.");
-            final String message = "Error exporting data to XES.";
-            throw new ProgramException(message, t);
-        } finally {
-            this.events.clear();
-            this.traces.clear();
-            this.element = null;
+        } catch (Exception e) {
+            final String errorMsg = "Error exporting data to XES.";
+            this.exceptionHandler.handleException(errorMsg, e);
         }
+
         LOGGER.info("Xes export finished.");
+    }
+
+    @Override
+    protected void deleteState() {
+        this.events.clear();
+        this.traces.clear();
+        this.element = null;
     }
 
     private Map<String, XLog> getLogs() {
@@ -226,6 +228,36 @@ public class XesWriter extends DataWriter {
             .entrySet()
             .stream()
             .forEach(entry -> trace.add(entry.getValue()));
+    }
+
+    private Map<String, Map<String, XTrace>> deepCopyTraces() {
+        Map<String, Map<String, XTrace>> clonedTraces = new LinkedHashMap<>();
+        for (Entry<String, Map<String, XTrace>> entries0 : this.traces.entrySet()) {
+            Map<String, XTrace> clonedValue = new LinkedHashMap<>();
+            for (Entry<String, XTrace> entries1 : entries0.getValue().entrySet()) {
+                XTrace value1 = new XTraceImpl(entries1.getValue().getAttributes());
+                clonedValue.put(entries1.getKey(), value1);
+            }
+            clonedTraces.put(entries0.getKey(), clonedValue);
+        }
+        return clonedTraces;
+    }
+
+    private Map<String, Map<String, Map<String, XEvent>>> deepCopyEvents() {
+        Map<String, Map<String, Map<String, XEvent>>> clonedEvents = new LinkedHashMap<>();
+        for (Entry<String, Map<String, Map<String, XEvent>>> entries0 : this.events.entrySet()) {
+            Map<String, Map<String, XEvent>> clonedValue0 = new LinkedHashMap<>();
+            for (Entry<String, Map<String, XEvent>> entries1 : entries0.getValue().entrySet()) {
+                Map<String, XEvent> clonedValue1 = new LinkedHashMap<>();
+                for (Entry<String, XEvent> entries2 : entries1.getValue().entrySet()) {
+                    XEvent clonedEvent = new XEventImpl(entries2.getValue().getAttributes());
+                    clonedValue1.put(entries2.getKey(), clonedEvent);
+                }
+                clonedValue0.put(entries1.getKey(), clonedValue1);
+            }
+            clonedEvents.put(entries0.getKey(), clonedValue0);
+        }
+        return clonedEvents;
     }
 
     public static final String BOOLEAN_TYPE = "xs:boolean";

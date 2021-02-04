@@ -1,8 +1,5 @@
 package blf.core.readers;
 
-import blf.core.exceptions.ProgramException;
-import io.reactivex.annotations.NonNull;
-
 public abstract class DataReader<T1, T2, T3, T4> {
     protected T1 client;
     protected T2 currentBlock;
@@ -37,9 +34,9 @@ public abstract class DataReader<T1, T2, T3, T4> {
         this.currentLogEntry = currentLogEntry;
     }
 
-    public void connect(@NonNull Object[] parameters) throws ProgramException {}
+    public void connect(Object[] parameters) {}
 
-    public void connectIpc(@NonNull String path) throws ProgramException {}
+    public void connectIpc(String path) {}
 
     public void close() {}
 }

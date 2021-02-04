@@ -1,18 +1,20 @@
 package blf.blockchains.ethereum.reader;
 
 import blf.core.exceptions.ExceptionHandler;
-import blf.core.exceptions.ProgramException;
 import blf.core.readers.DataReader;
-import io.reactivex.annotations.NonNull;
 
-import java.net.ConnectException;
-import java.net.URISyntaxException;
 import java.util.stream.Stream;
 
 /**
  * EthereumSources
  */
 public class EthereumDataReader extends DataReader<EthereumClient, EthereumBlock, EthereumTransaction, EthereumLogEntry> {
+
+    private final ExceptionHandler exceptionHandler;
+
+    public EthereumDataReader() {
+        exceptionHandler = new ExceptionHandler();
+    }
 
     public Stream<EthereumTransaction> transactionStream() {
         return this.currentBlock == null ? Stream.empty() : this.currentBlock.transactionStream();
@@ -29,33 +31,26 @@ public class EthereumDataReader extends DataReader<EthereumClient, EthereumBlock
     }
 
     public void connect(String url) {
-        final ExceptionHandler exceptionHandler = new ExceptionHandler();
-
         if (this.client != null) {
-            exceptionHandler.handleExceptionAndDecideOnAbort("Already connected to Ethereum node.");
+            exceptionHandler.handleException("Already connected to Ethereum node.");
             return;
         }
 
-        try {
-            this.client = Web3jClient.connectWebsocket(url);
-        } catch (ConnectException | URISyntaxException e) {
-            final String exceptionMsg = String.format("Error when connecting to Ethereum node via websocket using URL '%s'.", url);
-            exceptionHandler.handleExceptionAndDecideOnAbort(exceptionMsg, e);
-        }
+        this.client = Web3jClient.connectWebsocket(url);
     }
 
-    public void connectIpc(@NonNull String path) throws ProgramException {
+    @Override
+    public void connectIpc(String path) {
         if (this.client != null) {
-            throw new ProgramException("Already connected to Ethereum node.");
+            this.exceptionHandler.handleException("Already connected to Ethereum node.", new NullPointerException());
+
+            return;
         }
 
-        try {
-            this.client = Web3jClient.connectIpc(path);
-        } catch (ConnectException e) {
-            throw new ProgramException("Error when connecting to Ethereum node via ipc.", e);
-        }
+        this.client = Web3jClient.connectIpc(path);
     }
 
+    @Override
     public void close() {
         if (this.client != null) {
             this.client.close();

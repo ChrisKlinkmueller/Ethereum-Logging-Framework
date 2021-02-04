@@ -1,6 +1,6 @@
 package blf.core.writers;
 
-import io.reactivex.annotations.NonNull;
+import blf.configuration.EmissionSettings;
 
 import java.math.BigInteger;
 import java.nio.file.Path;
@@ -35,21 +35,27 @@ public class DataWriters {
         return this.csvWriter;
     }
 
-    public void setOutputFolder(@NonNull Path folderPath) {
+    public void setOutputFolder(Path folderPath) {
         Arrays.stream(this.writers).forEach(e -> e.setOutputFolder(folderPath));
+    }
+
+    public void setEmissionMode(EmissionSettings.EmissionMode emissionMode) {
+        for (DataWriter ex : this.writers) {
+            ex.setEmissionMode(emissionMode);
+        }
     }
 
     public void startNewBlock(BigInteger blockNumber) {
         Arrays.stream(this.writers).forEach(e -> e.startBlock(blockNumber));
     }
 
-    public void writeBlock() throws Throwable {
+    public void writeBlock() {
         for (DataWriter ex : this.writers) {
             ex.endBlock();
         }
     }
 
-    public void writeAllData() throws Throwable {
+    public void writeAllData() {
         for (DataWriter ex : this.writers) {
             ex.endProgram();
         }

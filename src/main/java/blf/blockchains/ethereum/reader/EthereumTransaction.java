@@ -5,9 +5,6 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.stream.Stream;
 
-import blf.core.exceptions.ProgramException;
-import io.reactivex.annotations.NonNull;
-
 /**
  * EthereumTransaction
  */
@@ -35,14 +32,16 @@ public abstract class EthereumTransaction {
         return this.block.getNumber();
     }
 
-    public void addLog(@NonNull EthereumLogEntry log) {
+    public void addLog(EthereumLogEntry log) {
         this.logs.add(log);
     }
 
+    @SuppressWarnings("unused")
     public int logCount() {
         return this.logs.size();
     }
 
+    @SuppressWarnings("unused")
     public EthereumLogEntry getLog(int index) {
         return this.logs.get(index);
     }
@@ -51,13 +50,14 @@ public abstract class EthereumTransaction {
         return this.logs.stream();
     }
 
-    public Boolean isSuccessful() throws ProgramException {
+    public Boolean isSuccessful() {
         final String status = this.getStatus();
+
         if (status == null) {
             return false;
-        } else {
-            return status.equals("0x1");
         }
+
+        return status.equals("0x1");
     }
 
     public abstract String getFrom();
@@ -84,15 +84,15 @@ public abstract class EthereumTransaction {
 
     public abstract BigInteger getValue();
 
-    public abstract BigInteger getCumulativeGasUsed() throws ProgramException;
+    public abstract BigInteger getCumulativeGasUsed();
 
-    public abstract BigInteger getGasUsed() throws ProgramException;
+    public abstract BigInteger getGasUsed();
 
-    public abstract String getContractAddress() throws ProgramException;
+    public abstract String getContractAddress();
 
-    public abstract String getLogsBloom() throws ProgramException;
+    public abstract String getLogsBloom();
 
-    public abstract String getRoot() throws ProgramException;
+    public abstract String getRoot();
 
-    public abstract String getStatus() throws ProgramException;
+    public abstract String getStatus();
 }

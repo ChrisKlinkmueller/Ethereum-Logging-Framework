@@ -4,13 +4,14 @@ import blf.blockchains.ethereum.classes.EthereumLogEntrySignature;
 import blf.blockchains.ethereum.reader.EthereumLogEntry;
 import blf.blockchains.ethereum.reader.EthereumTransaction;
 import blf.blockchains.ethereum.state.EthereumProgramState;
-import blf.core.exceptions.ProgramException;
+import blf.core.exceptions.ExceptionHandler;
 import blf.core.instructions.Instruction;
 import blf.core.interfaces.FilterPredicate;
 import blf.core.state.ProgramState;
 import io.reactivex.annotations.NonNull;
 
 import java.util.Arrays;
+import java.util.LinkedList;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -21,6 +22,8 @@ import java.util.stream.Collectors;
 public class EthereumLogEntryFilterInstruction extends Instruction {
     private final FilterPredicate<String> contractCriterion;
     private final EthereumLogEntrySignature signature;
+
+    private final ExceptionHandler exceptionHandler;
 
     public EthereumLogEntryFilterInstruction(
         FilterPredicate<String> contractCriterion,
@@ -38,23 +41,20 @@ public class EthereumLogEntryFilterInstruction extends Instruction {
         super(instructions);
         this.contractCriterion = contractCriterion;
         this.signature = signature;
+
+        this.exceptionHandler = new ExceptionHandler();
     }
 
     @Override
     public void execute(ProgramState state) {
-        final List<EthereumLogEntry> logEntries;
-        try {
-            logEntries = this.getEntries(state);
-            for (EthereumLogEntry logEntry : logEntries) {
-                processLogEntry(state, logEntry);
-            }
-        } catch (ProgramException e) {
-            // TODO: Remove ProgramException exception throw
-            state.getExceptionHandler().handleExceptionAndDecideOnAbort("Unexpected exception occurred.", e);
+        final List<EthereumLogEntry> logEntries = this.getEntries(state);
+
+        for (EthereumLogEntry logEntry : logEntries) {
+            processLogEntry(state, logEntry);
         }
     }
 
-    private void processLogEntry(ProgramState state, EthereumLogEntry logEntry) throws ProgramException {
+    private void processLogEntry(ProgramState state, EthereumLogEntry logEntry) {
         final EthereumProgramState ethereumProgramState = (EthereumProgramState) state;
 
         try {
@@ -70,20 +70,17 @@ public class EthereumLogEntryFilterInstruction extends Instruction {
                 logEntry.getTransactionIndex(),
                 logEntry.getBlockNumber()
             );
-            final boolean abort = state.getExceptionHandler().handleExceptionAndDecideOnAbort(message, cause);
-            if (abort) {
-                throw new ProgramException(message, cause);
-            }
+            state.getExceptionHandler().handleException(message, cause);
         } finally {
             ethereumProgramState.getReader().setCurrentTransaction(null);
         }
     }
 
-    private boolean isValidLogEntry(ProgramState state, EthereumLogEntry logEntry) throws ProgramException {
+    private boolean isValidLogEntry(ProgramState state, EthereumLogEntry logEntry) {
         return this.contractCriterion.test(state, logEntry.getAddress()) && this.signature.hasSignature(logEntry);
     }
 
-    private List<EthereumLogEntry> getEntries(ProgramState state) throws ProgramException {
+    private List<EthereumLogEntry> getEntries(ProgramState state) {
         final EthereumProgramState ethereumProgramState = (EthereumProgramState) state;
 
         if (ethereumProgramState.getReader().getCurrentTransaction() != null) {
@@ -95,10 +92,13 @@ public class EthereumLogEntryFilterInstruction extends Instruction {
                 .flatMap(EthereumTransaction::logStream)
                 .collect(Collectors.toList());
         } else {
-            throw new ProgramException(
-                "Log entries can only be extracted from blocks or transactions, but there is no open block or transaction."
+            this.exceptionHandler.handleException(
+                "Log entries can only be extracted from blocks or transactions, but there is no open block or transaction.",
+                new Exception()
             );
         }
+
+        return new LinkedList<>();
     }
 
 }

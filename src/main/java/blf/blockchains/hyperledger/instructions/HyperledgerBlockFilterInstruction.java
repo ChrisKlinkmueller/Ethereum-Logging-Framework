@@ -3,6 +3,7 @@ package blf.blockchains.hyperledger.instructions;
 import blf.blockchains.hyperledger.helpers.HyperledgerInstructionHelper;
 import blf.blockchains.hyperledger.state.HyperledgerProgramState;
 import blf.core.exceptions.ExceptionHandler;
+import blf.core.instructions.BlockInstruction;
 import blf.core.instructions.Instruction;
 import blf.core.state.ProgramState;
 import blf.core.values.ValueStore;
@@ -21,7 +22,7 @@ import static blf.blockchains.hyperledger.variables.HyperledgerBlockVariables.*;
 /**
  * This class handles the 'BLOCKS (fromBlock) (toBlock)' filter of the .bcql file.
  */
-public class HyperledgerBlockFilterInstruction extends Instruction {
+public class HyperledgerBlockFilterInstruction extends BlockInstruction {
 
     private final BcqlParser.BlockFilterContext blockCtx;
 
@@ -92,7 +93,7 @@ public class HyperledgerBlockFilterInstruction extends Instruction {
                 network.wait();
             } catch (InterruptedException err) {
                 String errorMsg = "Failed when iterating over blocks.";
-                exceptionHandler.handleExceptionAndDecideOnAbort(errorMsg, err);
+                exceptionHandler.handleException(errorMsg, err);
             }
         }
     }
