@@ -19,6 +19,8 @@ import java.util.stream.Collectors;
 
 public interface HyperledgerInstructionHelper {
 
+    public static final BigInteger CURRENT_BLOCK = BigInteger.valueOf(-1);
+
     static List<String> parseAddressListCtx(HyperledgerProgramState hyperledgerProgramState, BcqlParser.AddressListContext addressListCtx) {
 
         if (addressListCtx == null) {
@@ -230,7 +232,7 @@ public interface HyperledgerInstructionHelper {
         }
 
         if (currentKey != null) {
-            return null;
+            return CURRENT_BLOCK;
         }
 
         final BcqlParser.LiteralContext literalCtx = valueExpressionCtx.literal();
