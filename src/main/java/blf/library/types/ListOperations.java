@@ -1,5 +1,6 @@
 package blf.library.types;
 
+import blf.core.exceptions.ExceptionHandler;
 import blf.core.state.ProgramState;
 import io.reactivex.functions.BiFunction;
 
@@ -61,7 +62,7 @@ public class ListOperations {
     @SuppressWarnings("unchecked")
     private static <T> T operate(ProgramState state, Object[] parameters, BiFunction<List<Object>, Object, T> operation) {
         if (!areValidParameters(parameters)) {
-            state.getExceptionHandler().handleException("Invalid parameters for method call.", new Exception());
+            ExceptionHandler.getInstance().handleException("Invalid parameters for method call.", new Exception());
 
             return null;
         }
@@ -72,7 +73,7 @@ public class ListOperations {
         try {
             return operation.apply(operand1, operand2);
         } catch (Exception e) {
-            state.getExceptionHandler().handleException("Error executing method call.", e);
+            ExceptionHandler.getInstance().handleException("Error executing method call.", e);
         }
 
         return null;

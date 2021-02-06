@@ -3,7 +3,6 @@ package blf.blockchains.hyperledger;
 import blf.blockchains.hyperledger.instructions.*;
 import blf.blockchains.hyperledger.state.HyperledgerProgramState;
 import blf.configuration.BaseBlockchainListener;
-import blf.core.exceptions.ExceptionHandler;
 import blf.grammar.BcqlParser;
 import blf.parsing.VariableExistenceListener;
 import blf.util.TypeUtils;
@@ -23,17 +22,12 @@ import java.util.logging.Logger;
 public class HyperledgerListener extends BaseBlockchainListener {
 
     private final Logger logger;
-    @SuppressWarnings("FieldCanBeLocal")
-    private final HyperledgerProgramState hyperledgerProgramState;
-    private final ExceptionHandler exceptionHandler;
 
     public HyperledgerListener(VariableExistenceListener analyzer) {
         super(analyzer);
 
         this.state = new HyperledgerProgramState();
-        this.hyperledgerProgramState = (HyperledgerProgramState) this.state;
         this.logger = Logger.getLogger(HyperledgerListener.class.getName());
-        this.exceptionHandler = hyperledgerProgramState.getExceptionHandler();
     }
 
     /**

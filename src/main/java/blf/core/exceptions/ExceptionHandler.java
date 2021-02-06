@@ -21,12 +21,22 @@ public class ExceptionHandler {
 
     public static final String ERROR_LOG_FILENAME = "error.log";
 
+    private static ExceptionHandler instance;
+
     private final Logger errorLogger;
     private boolean abortOnException;
 
-    public ExceptionHandler() {
+    private ExceptionHandler() {
         this.errorLogger = Logger.getLogger(ERROR_LOG_FILENAME);
         this.abortOnException = false;
+    }
+
+    public static ExceptionHandler getInstance() {
+        if (instance == null) {
+            instance = new ExceptionHandler();
+        }
+
+        return instance;
     }
 
     public void setAbortOnException(boolean abortOnException) {

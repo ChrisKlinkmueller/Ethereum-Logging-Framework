@@ -10,12 +10,6 @@ import java.util.stream.Stream;
  */
 public class EthereumDataReader extends DataReader<EthereumClient, EthereumBlock, EthereumTransaction, EthereumLogEntry> {
 
-    private final ExceptionHandler exceptionHandler;
-
-    public EthereumDataReader() {
-        exceptionHandler = new ExceptionHandler();
-    }
-
     public Stream<EthereumTransaction> transactionStream() {
         return this.currentBlock == null ? Stream.empty() : this.currentBlock.transactionStream();
     }
@@ -32,7 +26,8 @@ public class EthereumDataReader extends DataReader<EthereumClient, EthereumBlock
 
     public void connect(String url) {
         if (this.client != null) {
-            exceptionHandler.handleException("Already connected to Ethereum node.");
+            ExceptionHandler.getInstance().handleException("Already connected to Ethereum node.");
+
             return;
         }
 
@@ -42,7 +37,7 @@ public class EthereumDataReader extends DataReader<EthereumClient, EthereumBlock
     @Override
     public void connectIpc(String path) {
         if (this.client != null) {
-            this.exceptionHandler.handleException("Already connected to Ethereum node.", new NullPointerException());
+            ExceptionHandler.getInstance().handleException("Already connected to Ethereum node.", new NullPointerException());
 
             return;
         }

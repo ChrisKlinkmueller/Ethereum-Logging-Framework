@@ -39,9 +39,6 @@ public class HyperledgerBlockFilterInstruction extends BlockInstruction {
     @Override
     public void execute(final ProgramState state) {
 
-        // init exception handler
-        ExceptionHandler exceptionHandler = state.getExceptionHandler();
-
         final HyperledgerProgramState hyperledgerProgramState = (HyperledgerProgramState) state;
         final ValueStore valueStore = hyperledgerProgramState.getValueStore();
 
@@ -69,8 +66,9 @@ public class HyperledgerBlockFilterInstruction extends BlockInstruction {
 
                 hyperledgerProgramState.setCurrentBlockNumber(currentBlockNumber);
 
-                String infoMsg = currentBlockNumber.toString();
-                this.logger.info("Extracting block number: " + infoMsg);
+                String infoMsg = String.format("Extracting block number: %s", currentBlockNumber.toString());
+                this.logger.info(infoMsg);
+
                 hyperledgerProgramState.setCurrentBlock(blockEvent);
 
                 this.executeNestedInstructions(hyperledgerProgramState);
@@ -93,7 +91,7 @@ public class HyperledgerBlockFilterInstruction extends BlockInstruction {
                 network.wait();
             } catch (InterruptedException err) {
                 String errorMsg = "Failed when iterating over blocks.";
-                exceptionHandler.handleException(errorMsg, err);
+                ExceptionHandler.getInstance().handleException(errorMsg, err);
             }
         }
     }

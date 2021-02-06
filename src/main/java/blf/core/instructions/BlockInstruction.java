@@ -1,5 +1,6 @@
 package blf.core.instructions;
 
+import blf.core.exceptions.ExceptionHandler;
 import blf.core.state.ProgramState;
 import blf.core.writers.DataWriters;
 
@@ -19,7 +20,7 @@ public class BlockInstruction extends Instruction {
             .getValue(programState);
 
         if (currentBlockNumber == null) {
-            programState.getExceptionHandler().handleException("Current block number is null.", new NullPointerException());
+            ExceptionHandler.getInstance().handleException("Current block number is null.", new NullPointerException());
 
             return;
         }

@@ -34,7 +34,6 @@ import java.util.logging.Logger;
 public class HyperledgerConnectInstruction extends Instruction {
 
     private final Logger logger;
-    private ExceptionHandler exceptionHandler;
 
     private final String networkConfigFilePath;
     private final String serverKeyFilePath;
@@ -60,8 +59,6 @@ public class HyperledgerConnectInstruction extends Instruction {
 
     @Override
     public void execute(ProgramState state) {
-        // init exception handler
-        this.exceptionHandler = state.getExceptionHandler();
 
         final HyperledgerProgramState hyperledgerProgramState = (HyperledgerProgramState) state;
 
@@ -105,17 +102,14 @@ public class HyperledgerConnectInstruction extends Instruction {
         try (InputStream inStream = new FileInputStream(serverCrtFilePath)) {
             certificate = (X509Certificate) CertificateFactory.getInstance("X509").generateCertificate(inStream);
         } catch (FileNotFoundException e) {
-            this.exceptionHandler.handleException(
-                String.format("Unable to read certificate from provided file %s", networkConfigFilePath),
-                e
-            );
+            ExceptionHandler.getInstance()
+                .handleException(String.format("Unable to read certificate from provided file %s", networkConfigFilePath), e);
         } catch (CertificateException e) {
-            this.exceptionHandler.handleException(String.format("No correct certificate provided at path: %s.", serverCrtFilePath), e);
+            ExceptionHandler.getInstance()
+                .handleException(String.format("No correct certificate provided at path: %s.", serverCrtFilePath), e);
         } catch (IOException e) {
-            this.exceptionHandler.handleException(
-                String.format("Input error when trying to read from certificate file %s", serverCrtFilePath),
-                e
-            );
+            ExceptionHandler.getInstance()
+                .handleException(String.format("Input error when trying to read from certificate file %s", serverCrtFilePath), e);
         }
 
         // Get private key from file.
@@ -139,28 +133,27 @@ public class HyperledgerConnectInstruction extends Instruction {
 
             privateKey = keyFactory.generatePrivate(keySpec);
         } catch (NoSuchFileException e) {
-            this.exceptionHandler.handleException(String.format("Private key file does not exist on path '%s'", serverKeyFilePath), e);
+            ExceptionHandler.getInstance()
+                .handleException(String.format("Private key file does not exist on path '%s'", serverKeyFilePath), e);
         } catch (IOException e) {
-            this.exceptionHandler.handleException(
-                String.format("Input error when trying to read from private key file: %s.", serverKeyFilePath),
-                e
-            );
+            ExceptionHandler.getInstance()
+                .handleException(String.format("Input error when trying to read from private key file: %s.", serverKeyFilePath), e);
         } catch (NoSuchAlgorithmException e) {
-            this.exceptionHandler.handleException("Provided algorithm not found.", e);
+            ExceptionHandler.getInstance().handleException("Provided algorithm not found.", e);
         } catch (InvalidKeySpecException e) {
-            this.exceptionHandler.handleException("Provided key spec is invalid.", e);
+            ExceptionHandler.getInstance().handleException("Provided key spec is invalid.", e);
         } catch (Exception e) {
-            this.exceptionHandler.handleException("Unhandled exception has occurred.", e);
+            ExceptionHandler.getInstance().handleException("Unhandled exception has occurred.", e);
         }
 
         if (certificate == null) {
-            this.exceptionHandler.handleException("Variable 'certificate' is null.", new NullPointerException());
+            ExceptionHandler.getInstance().handleException("Variable 'certificate' is null.", new NullPointerException());
 
             return null;
         }
 
         if (privateKey == null) {
-            this.exceptionHandler.handleException("Variable 'privateKey' is null.", new NullPointerException());
+            ExceptionHandler.getInstance().handleException("Variable 'privateKey' is null.", new NullPointerException());
 
             return null;
         }
@@ -172,7 +165,8 @@ public class HyperledgerConnectInstruction extends Instruction {
                 .identity(Identities.newX509Identity(mspName, certificate, privateKey))
                 .networkConfig(networkConfigFile);
         } catch (IOException e) {
-            this.exceptionHandler.handleException(String.format("Unable to read network config from file %s", networkConfigFile), e);
+            ExceptionHandler.getInstance()
+                .handleException(String.format("Unable to read network config from file %s", networkConfigFile), e);
         }
 
         if (builder == null) {
@@ -198,13 +192,13 @@ public class HyperledgerConnectInstruction extends Instruction {
         logger.info(infoMsg);
 
         if (gateway == null) {
-            this.exceptionHandler.handleException("Variable 'gateway' is null.", new NullPointerException());
+            ExceptionHandler.getInstance().handleException("Variable 'gateway' is null.", new NullPointerException());
 
             return null;
         }
 
         if (channel == null) {
-            this.exceptionHandler.handleException("Variable 'channel' is null.", new NullPointerException());
+            ExceptionHandler.getInstance().handleException("Variable 'channel' is null.", new NullPointerException());
 
             return null;
         }

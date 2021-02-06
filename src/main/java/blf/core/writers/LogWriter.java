@@ -21,12 +21,8 @@ public class LogWriter extends DataWriter {
 
     private final List<String> lines;
 
-    private final ExceptionHandler exceptionHandler;
-
     public LogWriter() {
         this.lines = new LinkedList<>();
-
-        this.exceptionHandler = new ExceptionHandler();
     }
 
     public void addLogLine(@NonNull List<Object> itemParts) {
@@ -43,7 +39,7 @@ public class LogWriter extends DataWriter {
             LOGGER.info("Log export started.");
 
             if (fileNameSuffix == null) {
-                this.exceptionHandler.handleException(fileNameSuffixNullErrorMsg, new NullPointerException());
+                ExceptionHandler.getInstance().handleException(fileNameSuffixNullErrorMsg, new NullPointerException());
             }
 
             final Path outputPath = Paths.get(this.getOutputFolder().toString(), String.format("%s.log", fileNameSuffix));
@@ -61,7 +57,7 @@ public class LogWriter extends DataWriter {
                 }
 
             } catch (Exception e) {
-                this.exceptionHandler.handleException(logLineWriteErrorMsg, e);
+                ExceptionHandler.getInstance().handleException(logLineWriteErrorMsg, e);
             }
             LOGGER.info("Log export finished.");
         }

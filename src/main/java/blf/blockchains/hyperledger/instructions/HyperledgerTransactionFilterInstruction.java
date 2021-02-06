@@ -51,8 +51,6 @@ public class HyperledgerTransactionFilterInstruction extends Instruction {
      */
     @Override
     public void execute(ProgramState state) {
-        // init exception handler
-        ExceptionHandler exceptionHandler = state.getExceptionHandler();
 
         HyperledgerProgramState hyperledgerProgramState = (HyperledgerProgramState) state;
 
@@ -68,7 +66,7 @@ public class HyperledgerTransactionFilterInstruction extends Instruction {
         BlockEvent currentBlock = hyperledgerProgramState.getCurrentBlock();
 
         if (currentBlock == null) {
-            exceptionHandler.handleException("Expected block, received null", new NullPointerException());
+            ExceptionHandler.getInstance().handleException("Expected block, received null", new NullPointerException());
 
             return;
         }

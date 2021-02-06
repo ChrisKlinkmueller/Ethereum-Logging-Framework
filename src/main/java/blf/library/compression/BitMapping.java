@@ -1,5 +1,6 @@
 package blf.library.compression;
 
+import blf.core.exceptions.ExceptionHandler;
 import blf.core.state.ProgramState;
 
 import java.math.BigInteger;
@@ -35,7 +36,7 @@ public class BitMapping {
 
             return mapBits(value, from, to, values);
         } catch (Exception e) {
-            state.getExceptionHandler().handleException("Error when executing bitmapping.", e);
+            ExceptionHandler.getInstance().handleException("Error when executing bitmapping.", e);
         }
 
         return null;

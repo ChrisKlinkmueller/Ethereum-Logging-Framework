@@ -25,13 +25,9 @@ public class SpecificationComposer {
     public final Stack<FactoryState> states;
     public final Stack<List<Instruction>> instructionListsStack;
 
-    private final ExceptionHandler exceptionHandler;
-
     public SpecificationComposer() {
         this.instructionListsStack = new Stack<>();
         this.states = new Stack<>();
-
-        this.exceptionHandler = new ExceptionHandler();
     }
 
     public void prepareProgramBuild() {
@@ -89,7 +85,7 @@ public class SpecificationComposer {
             );
         }
 
-        this.exceptionHandler.handleException(errorMsg, new Exception());
+        ExceptionHandler.getInstance().handleException(errorMsg, new Exception());
     }
 
     public Program buildProgram() {
@@ -97,7 +93,7 @@ public class SpecificationComposer {
 
         if (statesPeek != FactoryState.PROGRAM) {
             final String errorMsg = String.format("Cannot build a program, when construction of %s has not been finished.", statesPeek);
-            this.exceptionHandler.handleException(errorMsg, new Exception());
+            ExceptionHandler.getInstance().handleException(errorMsg, new Exception());
 
             return null;
         }
@@ -113,7 +109,7 @@ public class SpecificationComposer {
                 "Cannot build a transaction filter, when construction of %s has not been finished.",
                 statesPeek
             );
-            this.exceptionHandler.handleException(errorMsg, new Exception());
+            ExceptionHandler.getInstance().handleException(errorMsg, new Exception());
 
             return;
         }
@@ -136,7 +132,7 @@ public class SpecificationComposer {
                 "Cannot build a log entry filter, when construction of %s has not been finished.",
                 statesPeek
             );
-            this.exceptionHandler.handleException(errorMsg, new Exception());
+            ExceptionHandler.getInstance().handleException(errorMsg, new Exception());
 
             return;
         }
@@ -159,7 +155,7 @@ public class SpecificationComposer {
                 "Cannot build a generic filter, when construction of %s has not been finished.",
                 statesPeek
             );
-            this.exceptionHandler.handleException(errorMsg, new Exception());
+            ExceptionHandler.getInstance().handleException(errorMsg, new Exception());
 
             return;
         }
@@ -177,7 +173,7 @@ public class SpecificationComposer {
                 "Cannot build a smart contract filter, when construction of %s has not been finished.",
                 statesPeek
             );
-            this.exceptionHandler.handleException(errorMsg, new Exception());
+            ExceptionHandler.getInstance().handleException(errorMsg, new Exception());
 
             return;
         }
@@ -201,7 +197,7 @@ public class SpecificationComposer {
 
     public void addInstruction(Instruction instruction) {
         if (this.instructionListsStack.isEmpty()) {
-            this.exceptionHandler.handleException("Stack of instructions is empty.", new NullPointerException());
+            ExceptionHandler.getInstance().handleException("Stack of instructions is empty.", new NullPointerException());
 
             return;
         }
@@ -211,13 +207,13 @@ public class SpecificationComposer {
 
     public void addInstruction(InstructionSpecification<?> instruction) {
         if (instruction == null) {
-            this.exceptionHandler.handleException("Parameter instruction is null.", new NullPointerException());
+            ExceptionHandler.getInstance().handleException("Parameter instruction is null.", new NullPointerException());
 
             return;
         }
 
         if (this.instructionListsStack.isEmpty()) {
-            this.exceptionHandler.handleException("Stack of instructions is empty.", new NullPointerException());
+            ExceptionHandler.getInstance().handleException("Stack of instructions is empty.", new NullPointerException());
 
             return;
         }
@@ -253,8 +249,6 @@ public class SpecificationComposer {
         SMART_CONTRACT_FILTER,
         GENERIC_FILTER;
 
-        private final ExceptionHandler exceptionHandler = new ExceptionHandler();
-
         @Override
         public String toString() {
             switch (this) {
@@ -272,7 +266,7 @@ public class SpecificationComposer {
                     return "generic filter";
                 default:
                     final String errorMsg = String.format("FactoryState constant '%s' unknown.", this);
-                    exceptionHandler.handleException(errorMsg, new Exception());
+                    ExceptionHandler.getInstance().handleException(errorMsg, new Exception());
 
                     return "";
             }

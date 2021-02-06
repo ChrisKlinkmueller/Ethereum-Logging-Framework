@@ -36,20 +36,19 @@ public class EthereumPublicMemberQueryEthereum implements EthereumSmartContractQ
     @Override
     @SuppressWarnings("all")
     public void query(String contract, EthereumProgramState state) {
-        final ExceptionHandler exceptionHandler = state.getExceptionHandler();
 
         final String queryErrorMsg = String.format("Error querying members of smart contract %s.", contract);
         final String contractNullErrorMsg = "Contract is null.";
         final String stateNullErrorMsg = "State is null.";
 
         if (contract == null || contract.isEmpty()) {
-            exceptionHandler.handleException(contractNullErrorMsg, new Exception());
+            ExceptionHandler.getInstance().handleException(contractNullErrorMsg, new Exception());
 
             return;
         }
 
         if (state == null) {
-            exceptionHandler.handleException(stateNullErrorMsg, new Exception());
+            ExceptionHandler.getInstance().handleException(stateNullErrorMsg, new Exception());
 
             return;
         }
@@ -62,7 +61,7 @@ public class EthereumPublicMemberQueryEthereum implements EthereumSmartContractQ
             final List<Type> values = client.queryPublicMember(contract, block, this.memberName, inputs, outputs);
             this.setValues(values, state);
         } catch (Throwable cause) {
-            exceptionHandler.handleException(queryErrorMsg, cause);
+            ExceptionHandler.getInstance().handleException(queryErrorMsg, cause);
         }
     }
 

@@ -57,14 +57,13 @@ public class XesParameter {
 
     @SuppressWarnings("unchecked")
     public static <T> XesParameterExporter exportValue(String name, ValueAccessor accessor, XesWriterMethod<T> writerMethod) {
-        final ExceptionHandler exceptionHandler = new ExceptionHandler();
         return (state, writer) -> {
             try {
                 final T value = (T) accessor.getValue(state);
                 writerMethod.export(writer, name, value);
             } catch (Exception e) {
                 final String errorMsg = String.format("Error while exporting xes attribute '%s'.", name);
-                exceptionHandler.handleException(errorMsg, e);
+                ExceptionHandler.getInstance().handleException(errorMsg, e);
             }
         };
     }

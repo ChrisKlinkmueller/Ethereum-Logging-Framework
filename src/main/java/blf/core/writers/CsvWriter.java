@@ -24,8 +24,6 @@ public class CsvWriter extends DataWriter {
     private final Map<String, List<String>> columnNames;
     private final Map<String, Integer> rowCounts;
 
-    private final ExceptionHandler exceptionHandler;
-
     private String delimiter;
 
     public CsvWriter() {
@@ -33,8 +31,6 @@ public class CsvWriter extends DataWriter {
         this.tables = new HashMap<>();
         this.rowCounts = new HashMap<>();
         this.columnNames = new HashMap<>();
-
-        this.exceptionHandler = new ExceptionHandler();
     }
 
     public void setDelimiter(@NonNull String delimiter) {
@@ -104,11 +100,11 @@ public class CsvWriter extends DataWriter {
         LOGGER.info(exportStartInfoMsg);
 
         if (fileNameSuffix == null) {
-            this.exceptionHandler.handleException(fileNameSuffixNullErrorMsg, new NullPointerException());
+            ExceptionHandler.getInstance().handleException(fileNameSuffixNullErrorMsg, new NullPointerException());
         }
 
         if (tableName == null) {
-            this.exceptionHandler.handleException(tableNameNullErrorMsg, new NullPointerException());
+            ExceptionHandler.getInstance().handleException(tableNameNullErrorMsg, new NullPointerException());
         }
 
         final Path path = Paths.get(this.getOutputFolder().toString(), String.format("%s_%s.csv", tableName, fileNameSuffix));
@@ -142,7 +138,7 @@ public class CsvWriter extends DataWriter {
             }
 
         } catch (Exception e) {
-            this.exceptionHandler.handleException(exportErrorMsg, e);
+            ExceptionHandler.getInstance().handleException(exportErrorMsg, e);
         }
 
         LOGGER.info(exportFinishInfoMsg);

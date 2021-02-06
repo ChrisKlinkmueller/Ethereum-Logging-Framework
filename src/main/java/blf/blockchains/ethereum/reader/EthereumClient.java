@@ -1,20 +1,20 @@
 package blf.blockchains.ethereum.reader;
 
-import java.math.BigInteger;
-import java.util.List;
-
 import org.web3j.abi.TypeReference;
 import org.web3j.abi.datatypes.Type;
+
+import java.math.BigInteger;
+import java.util.List;
 
 /**
  * EthereumClient
  */
 public interface EthereumClient {
-    public void close();
+    void close();
 
-    public BigInteger queryBlockNumber() throws Throwable;
+    BigInteger queryBlockNumber();
 
-    public EthereumBlock queryBlockData(BigInteger blockNumber) throws Throwable;
+    EthereumBlock queryBlockData(BigInteger blockNumber);
 
     @SuppressWarnings("all")
     public List<Type> queryPublicMember(

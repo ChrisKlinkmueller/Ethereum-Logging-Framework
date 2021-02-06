@@ -47,7 +47,6 @@ public class AddressListSpecification {
     }
 
     public static AddressListSpecification ofVariableName(String name) {
-        final ExceptionHandler exceptionHandler = new ExceptionHandler();
 
         final ValueAccessor accessor = ValueAccessor.createVariableAccessor(name);
         return new AddressListSpecification((state, address) -> {
@@ -65,7 +64,7 @@ public class AddressListSpecification {
                 // noinspection unchecked
                 return ((List<String>) value).contains(address);
             } catch (Exception e) {
-                exceptionHandler.handleException("Address list is not a string list.", e);
+                ExceptionHandler.getInstance().handleException("Address list is not a string list.", e);
             }
 
             return false;

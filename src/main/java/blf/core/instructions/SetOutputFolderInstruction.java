@@ -1,5 +1,6 @@
 package blf.core.instructions;
 
+import blf.core.exceptions.ExceptionHandler;
 import blf.core.state.ProgramState;
 
 import java.nio.file.Path;
@@ -15,14 +16,14 @@ public class SetOutputFolderInstruction extends Instruction {
         final Path outputFolder = Path.of(state.outputFolderPath);
         if (!outputFolder.toFile().exists()) {
             final String exceptionMsg = String.format("Folder '%s' does not exist.", outputFolder.toString());
-            state.getExceptionHandler().handleException(exceptionMsg);
+            ExceptionHandler.getInstance().handleException(exceptionMsg);
         }
 
         try {
-            state.getExceptionHandler().setErrorLogOutputFolder(outputFolder);
+            ExceptionHandler.getInstance().setErrorLogOutputFolder(outputFolder);
             state.getWriters().setOutputFolder(outputFolder);
         } catch (Exception cause) {
-            state.getExceptionHandler().handleException("Error when setting the output folder.", cause);
+            ExceptionHandler.getInstance().handleException("Error when setting the output folder.", cause);
         }
     }
 }
