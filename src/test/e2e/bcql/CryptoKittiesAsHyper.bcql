@@ -1,3 +1,5 @@
+SET EXCEPTION HANDLING PARAMS false "./CryptoKittiesAsHyper"
+
 SET BLOCKCHAIN "Hyperledger"
 
 SET CONNECTION {

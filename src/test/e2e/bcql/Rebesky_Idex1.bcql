@@ -1,5 +1,7 @@
 // Author: Martin Rebesky
 
+SET EXCEPTION HANDLING PARAMS false "./Rebesky_Idex1"
+
 SET BLOCKCHAIN "Ethereum"
 
 SET CONNECTION "ws://localhost:8546/"

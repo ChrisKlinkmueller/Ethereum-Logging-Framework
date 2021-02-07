@@ -1,3 +1,5 @@
+SET EXCEPTION HANDLING PARAMS false "./CryptoKitties"
+
 SET BLOCKCHAIN "Ethereum"
 
 SET CONNECTION "ws://localhost:8546/"

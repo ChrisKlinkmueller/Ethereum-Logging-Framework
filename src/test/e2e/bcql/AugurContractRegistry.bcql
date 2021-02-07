@@ -1,3 +1,5 @@
+SET EXCEPTION HANDLING PARAMS false "./AugurContractRegistry"
+
 // use SET BLOCKCHAIN to specify target Blockchain network
 SET BLOCKCHAIN "Ethereum"
 

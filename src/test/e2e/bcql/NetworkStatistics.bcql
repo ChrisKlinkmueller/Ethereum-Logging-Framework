@@ -1,3 +1,5 @@
+SET EXCEPTION HANDLING PARAMS false "./NetworkStatistics"
+
 SET BLOCKCHAIN "Ethereum"
 
 SET CONNECTION "ws://localhost:8546/"

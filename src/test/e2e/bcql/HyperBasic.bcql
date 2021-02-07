@@ -1,5 +1,7 @@
 // Author: Tobias Petrich
 
+SET EXCEPTION HANDLING PARAMS false "./HyperBasic"
+
 SET BLOCKCHAIN "Hyperledger"
 
 SET CONNECTION {
