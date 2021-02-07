@@ -24,8 +24,8 @@ import BcqlUtil, BcqlLexemes;
  *  statements and the explicit EOF defines that the entire file is parsed. */
 
 document
-    : blockchain connection outputFolder (emissionMode)? (abortOnException)? statement* EOF
-    | blockchain outputFolder connection (emissionMode)? (abortOnException)? statement* EOF
+    : (exceptionHandlingParams)? blockchain connection outputFolder (emissionMode)? statement* EOF
+    | (exceptionHandlingParams)? blockchain outputFolder connection (emissionMode)? statement* EOF
     ;
 
 
@@ -43,15 +43,19 @@ outputFolder
     : KEY_SET KEY_OUTPUT_FOLDER literal
     ;
 
+exceptionHandlingParams
+    : KEY_SET KEY_EXCEPTION_HANDLING_PARAMS BOOLEAN_LITERAL STRING_LITERAL? STRING_LITERAL?
+    ;
+
 
 emissionMode
     : KEY_SET KEY_EMISSION_MODE literal
     ;
 
 
-abortOnException
-    : KEY_ABORT_ON_EXCEPTION BOOLEAN_LITERAL
-    ;
+//abortOnException
+//    : KEY_ABORT_ON_EXCEPTION BOOLEAN_LITERAL
+//    ;
 
 /** A statement is parsed to a scope, an expressionStatement or an emitStatement. */
 

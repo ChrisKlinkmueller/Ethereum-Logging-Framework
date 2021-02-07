@@ -64,8 +64,9 @@ public abstract class BaseBlockchainListener extends BcqlBaseListener {
         final String literalText = literal.getText();
 
         if (literal.STRING_LITERAL() == null) {
-            LOGGER.severe("SET OUTPUT FOLDER parameter should be a String");
-            System.exit(1);
+            ExceptionHandler.getInstance().handleException("SET OUTPUT FOLDER parameter should be a String.", new NullPointerException());
+
+            return;
         }
 
         this.state.outputFolderPath = TypeUtils.parseStringLiteral(literalText);
@@ -75,31 +76,55 @@ public abstract class BaseBlockchainListener extends BcqlBaseListener {
 
     @Override
     public void enterEmissionMode(BcqlParser.EmissionModeContext ctx) {
-        if (ctx != null) {
-            if (ctx.literal().STRING_LITERAL() == null) {
-                LOGGER.severe("EMISSION MODE parameter should be a String");
-                System.exit(1);
-            }
+        if (ctx == null) {
+            ExceptionHandler.getInstance().handleException("EmissionModeContext is null.", new NullPointerException());
 
-            final String emissionMode = ctx.literal().getText().replace("\"", "").toLowerCase();
-            final Map<String, EmissionSettings.EmissionMode> emissionModeMap = EmissionSettings.getEmissionModeMap();
-
-            if (!emissionModeMap.containsKey(emissionMode)) {
-                LOGGER.severe("EMISSION MODE parameter should be either \"default batching\", \"safe batching\" or \"streaming\"");
-                System.exit(1);
-            }
-
-            this.state.setEmissionMode(emissionModeMap.get(emissionMode));
+            return;
         }
+
+        final BcqlParser.LiteralContext emissionModeLiteralCtx = ctx.literal();
+
+        if (emissionModeLiteralCtx.STRING_LITERAL() == null) {
+            ExceptionHandler.getInstance().handleException("EMISSION MODE parameter should be a String.", new NullPointerException());
+
+            return;
+        }
+
+        final String emissionModeStringLiteral = emissionModeLiteralCtx.STRING_LITERAL().getText();
+        final String emissionMode = TypeUtils.parseStringLiteral(emissionModeStringLiteral);
+        final Map<String, EmissionSettings.EmissionMode> emissionModeMap = EmissionSettings.getEmissionModeMap();
+
+        if (!emissionModeMap.containsKey(emissionMode)) {
+            ExceptionHandler.getInstance()
+                .handleException(
+                    "EMISSION MODE parameter should be either \"default batching\", \"safe batching\" or \"streaming\".",
+                    new Exception()
+                );
+
+            return;
+        }
+
+        this.state.setEmissionMode(emissionModeMap.get(emissionMode));
     }
 
-    @Override
-    public void enterAbortOnException(BcqlParser.AbortOnExceptionContext ctx) {
-        if (ctx != null) {
-            boolean abortionFlag = Boolean.parseBoolean(ctx.BOOLEAN_LITERAL().getText());
-            ExceptionHandler.getInstance().setAbortOnException(abortionFlag);
-        }
-    }
+    // @Override
+    // public void enterAbortOnException(BcqlParser.AbortOnExceptionContext ctx) {
+    // if (ctx == null) {
+    // ExceptionHandler.getInstance().handleException("AbortOnExceptionContext is null.", new NullPointerException());
+    //
+    // return;
+    // }
+    //
+    // if (ctx.BOOLEAN_LITERAL() == null) {
+    // ExceptionHandler.getInstance().handleException("EMISSION MODE parameter should be a Boolean.", new NullPointerException());
+    //
+    // return;
+    // }
+    //
+    // boolean abortionFlag = Boolean.parseBoolean(ctx.BOOLEAN_LITERAL().getText());
+    //
+    // ExceptionHandler.getInstance().setAbortOnException(abortionFlag);
+    // }
 
     @Override
     public void exitDocument(BcqlParser.DocumentContext ctx) {

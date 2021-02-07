@@ -1,11 +1,7 @@
 package blf.util;
 
-import java.util.LinkedList;
-import java.util.List;
-import java.util.Map;
-import java.util.function.BiConsumer;
-
 import blf.configuration.BaseBlockchainListener;
+import blf.core.exceptions.ExceptionHandler;
 import blf.grammar.BcqlBaseListener;
 import blf.grammar.BcqlListener;
 import blf.grammar.BcqlParser.*;
@@ -13,6 +9,11 @@ import org.antlr.v4.runtime.ParserRuleContext;
 import org.antlr.v4.runtime.tree.ErrorNode;
 import org.antlr.v4.runtime.tree.ParseTreeWalker;
 import org.antlr.v4.runtime.tree.TerminalNode;
+
+import java.util.LinkedList;
+import java.util.List;
+import java.util.Map;
+import java.util.function.BiConsumer;
 
 /**
  * Forwards callbacks from ParseTreeWalker to every added BcqlListener.
@@ -129,6 +130,49 @@ public class RootListener implements BcqlListener {
     }
 
     @Override
+    public void enterExceptionHandlingParams(ExceptionHandlingParamsContext ctx) {
+        this.notifyListener(BcqlListener::enterExceptionHandlingParams, ctx);
+    }
+
+    @Override
+    public void exitExceptionHandlingParams(ExceptionHandlingParamsContext ctx) {
+        // this is because this method is called twice
+        // because this listener is appended twice
+        if (ExceptionHandler.getInstance().isInititalized) {
+            return;
+        }
+
+        // no need to null check here since the grammar will throw an error before actual execution
+        final String abortOnExceptionBoolLiteral = ctx.BOOLEAN_LITERAL().getText();
+
+        final boolean abortOnException = TypeUtils.parseBoolLiteral(abortOnExceptionBoolLiteral);
+
+        if (ctx.STRING_LITERAL().isEmpty()) {
+            ExceptionHandler.getInstance().init(abortOnException);
+
+            return;
+        }
+
+        final String errorLogOutputFolderPathStringLiteral = ctx.STRING_LITERAL(0).getText();
+
+        final String errorLogOutputFolderPathString = TypeUtils.parseStringLiteral(errorLogOutputFolderPathStringLiteral);
+
+        if (ctx.STRING_LITERAL().size() < 2) {
+            ExceptionHandler.getInstance().init(abortOnException, errorLogOutputFolderPathString);
+
+            return;
+        }
+
+        final String errorLogFileNameStringLiteral = ctx.STRING_LITERAL(1).getText();
+
+        final String errorLogFileName = TypeUtils.parseStringLiteral(errorLogFileNameStringLiteral);
+
+        ExceptionHandler.getInstance().init(abortOnException, errorLogOutputFolderPathString, errorLogFileName);
+
+        this.notifyListener(BcqlListener::exitExceptionHandlingParams, ctx);
+    }
+
+    @Override
     public void enterEmissionMode(EmissionModeContext ctx) {
         this.notifyListener(BcqlListener::enterEmissionMode, ctx);
     }
@@ -136,16 +180,6 @@ public class RootListener implements BcqlListener {
     @Override
     public void exitEmissionMode(EmissionModeContext ctx) {
         this.notifyListener(BcqlListener::exitEmissionMode, ctx);
-    }
-
-    @Override
-    public void enterAbortOnException(AbortOnExceptionContext ctx) {
-        this.notifyListener(BcqlListener::enterAbortOnException, ctx);
-    }
-
-    @Override
-    public void exitAbortOnException(AbortOnExceptionContext ctx) {
-        this.notifyListener(BcqlListener::exitAbortOnException, ctx);
     }
 
     @Override

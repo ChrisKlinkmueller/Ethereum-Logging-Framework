@@ -1,4 +1,5 @@
 // Author: Paul Beck
+SET EXCEPTION HANDLING PARAMS true "./FailingHyperKitties"
 
 SET BLOCKCHAIN "Hyperledger"
 
@@ -11,8 +12,6 @@ SET CONNECTION {
 }
 
 SET OUTPUT FOLDER "./FailingHyperKitties"
-
-ABORT ON EXCEPTION true
 
 BLOCKS (32) (91) {
    LOG ENTRIES ("kitties") (Birth(string a)) {
