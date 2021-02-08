@@ -1,16 +1,35 @@
 package blf;
 
-import org.junit.jupiter.api.Assertions;
+import org.junit.jupiter.api.*;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.Arguments;
 import org.junit.jupiter.params.provider.MethodSource;
 
 import java.io.ByteArrayInputStream;
+import java.io.File;
+import java.io.IOException;
+import java.nio.file.Files;
+import java.nio.file.Path;
 import java.util.*;
 import java.util.stream.Stream;
 
 class ValidatorSemanticTest {
     static final private Validator validator = new Validator();
+
+    @BeforeEach
+    public void setup() {
+        File testDir = new File("./test_output");
+        if (!testDir.exists()) {
+            testDir.mkdirs();
+        }
+    }
+
+    @AfterEach
+    public void teardown() throws IOException {
+        Path pathToBeDeleted = new File("./test_output").toPath();
+
+        Files.walk(pathToBeDeleted).sorted(Comparator.reverseOrder()).map(Path::toFile).forEach(File::delete);
+    }
 
     static List<BcqlProcessingError> validate(String script) {
         try {
