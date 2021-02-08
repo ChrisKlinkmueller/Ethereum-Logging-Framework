@@ -1,8 +1,8 @@
 // Author: Tobias Petrich
 
-SET EXCEPTION HANDLING PARAMS false "./HyperKitties"
-
 SET BLOCKCHAIN "Hyperledger"
+
+SET OUTPUT FOLDER "./HyperKitties"
 
 SET CONNECTION {
    "hyperledger/connection-org1.yaml",
@@ -11,8 +11,6 @@ SET CONNECTION {
    "Org1MSP",
    "mychannel"
 }
-
-SET OUTPUT FOLDER "./HyperKitties"
 
 BLOCKS (32) (91) {
    LOG ENTRIES ("kitties") (Birth(string owner, int newKittenID, int matronID, int sireID, int genes)) {

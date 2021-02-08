@@ -8,6 +8,7 @@ import blf.grammar.BcqlBaseListener;
 import blf.grammar.BcqlParser;
 import blf.parsing.InterpreterUtils;
 import blf.parsing.VariableExistenceListener;
+import blf.util.ListenerHelper;
 import blf.util.TypeUtils;
 
 import java.util.*;
@@ -60,12 +61,8 @@ public abstract class BaseBlockchainListener extends BcqlBaseListener {
 
     @Override
     public void enterOutputFolder(BcqlParser.OutputFolderContext ctx) {
-        final BcqlParser.LiteralContext literal = ctx.literal();
-        final String literalText = literal.getText();
-
-        if (literal.STRING_LITERAL() == null) {
-            ExceptionHandler.getInstance().handleException("SET OUTPUT FOLDER parameter should be a String.", new NullPointerException());
-
+        final String literalText = ListenerHelper.getOutputFolderLiteral(ctx);
+        if (literalText == null) {
             return;
         }
 
@@ -107,24 +104,24 @@ public abstract class BaseBlockchainListener extends BcqlBaseListener {
         this.state.setEmissionMode(emissionModeMap.get(emissionMode));
     }
 
-    // @Override
-    // public void enterAbortOnException(BcqlParser.AbortOnExceptionContext ctx) {
-    // if (ctx == null) {
-    // ExceptionHandler.getInstance().handleException("AbortOnExceptionContext is null.", new NullPointerException());
-    //
-    // return;
-    // }
-    //
-    // if (ctx.BOOLEAN_LITERAL() == null) {
-    // ExceptionHandler.getInstance().handleException("EMISSION MODE parameter should be a Boolean.", new NullPointerException());
-    //
-    // return;
-    // }
-    //
-    // boolean abortionFlag = Boolean.parseBoolean(ctx.BOOLEAN_LITERAL().getText());
-    //
-    // ExceptionHandler.getInstance().setAbortOnException(abortionFlag);
-    // }
+    @Override
+    public void enterAbortOnException(BcqlParser.AbortOnExceptionContext ctx) {
+        if (ctx == null) {
+            ExceptionHandler.getInstance().handleException("AbortOnExceptionContext is null.", new NullPointerException());
+
+            return;
+        }
+
+        if (ctx.BOOLEAN_LITERAL() == null) {
+            ExceptionHandler.getInstance().handleException("EMISSION MODE parameter should be a Boolean.", new NullPointerException());
+
+            return;
+        }
+
+        boolean abortionFlag = Boolean.parseBoolean(ctx.BOOLEAN_LITERAL().getText());
+
+        ExceptionHandler.getInstance().setAbortOnException(abortionFlag);
+    }
 
     @Override
     public void exitDocument(BcqlParser.DocumentContext ctx) {

@@ -1,8 +1,8 @@
 // Author: Tobias Petrich
 
-SET EXCEPTION HANDLING PARAMS false "./HyperBasic"
-
 SET BLOCKCHAIN "Hyperledger"
+
+SET OUTPUT FOLDER "./HyperBasic"
 
 SET CONNECTION {
    "hyperledger/connection-org1.yaml",
@@ -11,8 +11,6 @@ SET CONNECTION {
    "Org1MSP",
    "mychannel"
 }
-
-SET OUTPUT FOLDER "./HyperBasic"
 
 int blockNumberFrom = 0;
 int blockNumberTo = 55;

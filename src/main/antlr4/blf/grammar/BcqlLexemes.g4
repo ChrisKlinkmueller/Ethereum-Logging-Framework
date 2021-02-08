@@ -7,11 +7,11 @@ lexer grammar BcqlLexemes;
 KEY_SET: S E T;                                                     // helper keyword for settings
 KEY_BLOCKCHAIN: B L O C K C H A I N;                                // initiates the blockchain parameter setting
 KEY_OUTPUT_FOLDER: O U T P U T ' ' F O L D E R;                     // initiates the output parameter setting
-KEY_EXCEPTION_HANDLING_PARAMS: E X C E P T I O N ' ' H A N D L I N G ' ' P A R A M S;      // initiates the error output parameter setting
 KEY_CONNECTION: C O N N E C T I O N;                                // initiates the connection setting
 KEY_IPC: I P C;                                                     // initiates the inter process communication setting
 KEY_EMISSION_MODE: E M I S S I O N ' ' M O D E;                     // initiates the emission mode setting
 KEY_ABORT_ON_EXCEPTION: A B O R T ' ' O N ' ' E X C E P T I O N;    // initiates the boolean flag for exception handling
+KEY_ERROR_OUTPUT: E R R O R ' ' O U T P U T; // initiates the output parameter setting
 
 KEY_BLOCK_RANGE : B L O C K S;                          // initiates a blockFilter
 KEY_TRANSACTIONS : T R A N S A C T I O N S;             // initiates a transactionFilter

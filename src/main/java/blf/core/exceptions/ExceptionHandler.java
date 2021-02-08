@@ -5,10 +5,7 @@ import blf.core.state.ProgramState;
 import java.io.IOException;
 import java.nio.file.Path;
 import java.nio.file.Paths;
-import java.util.logging.FileHandler;
-import java.util.logging.Level;
-import java.util.logging.Logger;
-import java.util.logging.SimpleFormatter;
+import java.util.logging.*;
 
 /**
  * This class is responsible for handling all of the exceptions that happen during runtime.
@@ -27,10 +24,17 @@ public class ExceptionHandler {
     private static ExceptionHandler instance;
 
     private boolean abortOnException;
-    public boolean isInititalized;
+    private String outputFolder;
+    private String errorLogFileName;
+    private FileHandler errorLogFileHandler;
+    private boolean isInititalized;
 
     private ExceptionHandler() {
         this.isInititalized = false;
+        this.abortOnException = DEFAULT_ABORT_ON_EXCEPTION;
+        this.outputFolder = DEFAULT_ERROR_LOG_OUTPUT_FOLDER;
+        this.errorLogFileName = DEFAULT_ERROR_LOG_FILENAME;
+        this.errorLogFileHandler = null;
     }
 
     public static ExceptionHandler getInstance() {
@@ -41,36 +45,42 @@ public class ExceptionHandler {
         return instance;
     }
 
-    public void init(boolean abortOnException) {
-        this.init(abortOnException, DEFAULT_ERROR_LOG_OUTPUT_FOLDER, DEFAULT_ERROR_LOG_FILENAME);
-    }
-
-    public void init(boolean abortOnException, String outputFolder) {
-        this.init(abortOnException, outputFolder, DEFAULT_ERROR_LOG_FILENAME);
-    }
-
-    public void init(boolean abortOnException, String outputFolder, String errorLogFileName) {
+    public void setAbortOnException(boolean abortOnException) {
         this.abortOnException = abortOnException;
+    }
 
-        final Path outputFolderPath = Path.of(outputFolder);
+    public void setOutputFolder(String outputFolder) {
+        this.outputFolder = outputFolder.replaceAll("(?:^\")|(?:\"$)", "");
+    }
 
-        final Path errorLogFilePath = Paths.get(outputFolderPath.toFile().getAbsolutePath(), errorLogFileName);
+    public void setOutputFilename(String errorLogFileName) {
+        this.errorLogFileName = errorLogFileName.replaceAll("(?:^\")|(?:\"$)", "");
+    }
+
+    public void initializeLoggerHandler() {
+        // do not set up the logger handler multiple times
+        // as a result of this, initializeLoggerHandler should be called when all parameters are definitely set
+        // right now, this point in time is RootListener.enterConnection
+        if (this.isInititalized) {
+            return;
+        }
+
+        final Path outputFolderPath = Path.of(this.outputFolder);
+
+        final Path errorLogFilePath = Paths.get(outputFolderPath.toFile().getPath(), this.errorLogFileName);
         final SimpleFormatter formatter = new SimpleFormatter();
-        final FileHandler errorLogFileHandler;
 
         try {
-            errorLogFileHandler = new FileHandler(errorLogFilePath.toString());
-            errorLogFileHandler.setFormatter(formatter);
+            this.errorLogFileHandler = new FileHandler(errorLogFilePath.toString());
+            this.errorLogFileHandler.setFormatter(formatter);
         } catch (IOException e) {
             final String errMsg = String.format("Setting the output folder for ExceptionHandler failed: %s", e);
             LOGGER.severe(errMsg);
 
             System.exit(1);
-
-            return;
         }
 
-        LOGGER.addHandler(errorLogFileHandler);
+        LOGGER.addHandler(this.errorLogFileHandler);
 
         this.isInititalized = true;
     }
@@ -82,7 +92,8 @@ public class ExceptionHandler {
     public void handleException(String message, Throwable cause) {
 
         if (!isInititalized) {
-            this.init(DEFAULT_ABORT_ON_EXCEPTION, DEFAULT_ERROR_LOG_OUTPUT_FOLDER, DEFAULT_ERROR_LOG_FILENAME);
+            // setting the handler with the default values from the constructor
+            this.initializeLoggerHandler();
         }
 
         if (cause == null) {

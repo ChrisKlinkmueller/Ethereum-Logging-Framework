@@ -1,8 +1,10 @@
 // Author: Tobias Petrich
 
-SET EXCEPTION HANDLING PARAMS false "./HyperBasicStreaming"
-
 SET BLOCKCHAIN "Hyperledger"
+
+SET OUTPUT FOLDER "./HyperBasicStreaming"
+
+SET EMISSION MODE "streaming"
 
 SET CONNECTION {
    "hyperledger/connection-org1.yaml",
@@ -11,10 +13,6 @@ SET CONNECTION {
    "Org1MSP",
    "mychannel"
 }
-
-SET OUTPUT FOLDER "./HyperBasicStreaming"
-
-SET EMISSION MODE "streaming"
 
 int blockNumberFrom = 30;
 int blockNumberTo = 33;

@@ -28,7 +28,7 @@ function main() {
 	fi
 
 	colorecho "Setting up test environment"
-	mkdir -p "$ED"/{,hyperledger,FailingHyperKitties,FailingCryptoKitties}
+	mkdir -p "$ED"/{,hyperledger,FailingHyperKitties,FailingCryptoKitties,NetworkStatisticsExternalError,NetworkStatisticsExternalErrorAndName}
 
   cp $CRED_DIR/* "$ED/hyperledger/"
 
@@ -49,6 +49,8 @@ function main() {
 	touch "$ED"/NetworkStatisticsStreaming/error.log.xblf
 	touch "$ED"/CryptoKittiesStreaming/error.log.xblf
 	touch "$ED"/HyperBasicStreaming/error.log.xblf
+	touch "$ED"/NetworkStatisticsExternalError/error.log.xblf
+	touch "$ED"/NetworkStatisticsExternalErrorAndName/customErrorName.log.xblf
 
   if [ ! "$1" = "$SKIP_BUILD_PARAM" ] && [ ! "$2" = "$SKIP_BUILD_PARAM" ] && [ ! "$3" = "$SKIP_BUILD_PARAM" ]; then
 	  colorecho "Building the BLF"
@@ -85,254 +87,256 @@ function main() {
 	cmp AugurContractRegistry/all.log{,.xelf} || { redecho "Comparing the extracted data with the expected data failed! Leaving test environment as is for investigation" ; exit 2; }
 	cmp AugurContractRegistry/error.log{,.xelf} || { redecho "Comparing the extracted data with the expected data failed! Leaving test environment as is for investigation" ; exit 2; }
 	colorecho "Test successful"
-
-  #--------------------------------------------------------------------------------
-
-	colorecho "Testing CryptoKitties"
-	# Test with default batching mode
-	colorecho "Running default batching mode"
-  if [ "$1" = "$SILENT_PARAM" ] || [ "$2" = "$SILENT_PARAM" ] || [ "$3" = "$SILENT_PARAM" ]; then
-	  java -jar "$JAR" extract CryptoKitties.bcql &> /dev/null
-	else
-	  java -jar "$JAR" extract CryptoKitties.bcql
-  fi
-	cmp CryptoKitties/log_pid0_all.xes{,.xelf} || { redecho "Comparing the extracted data with the expected data failed! Leaving test environment as is for investigation" ; exit 2; }
-	cmp CryptoKitties/error.log{,.xelf} || { redecho "Comparing the extracted data with the expected data failed! Leaving test environment as is for investigation" ; exit 2; }
-	# Cleanup and test with safe batching mode
-	colorecho "Running safe batching mode"
-	rm -f CryptoKitties/{*.log,*.csv,*.xes}
-	sed -i '/^SET OUTPUT FOLDER/a SET EMISSION MODE "safe batching"' CryptoKitties.bcql
-  if [ "$1" = "$SILENT_PARAM" ] || [ "$2" = "$SILENT_PARAM" ] || [ "$3" = "$SILENT_PARAM" ]; then
-	  java -jar "$JAR" extract CryptoKitties.bcql &> /dev/null
-	else
-	  java -jar "$JAR" extract CryptoKitties.bcql
-  fi
-	cmp CryptoKitties/log_pid0_all.xes{,.xelf} || { redecho "Comparing the extracted data with the expected data failed! Leaving test environment as is for investigation" ; exit 2; }
-	cmp CryptoKitties/error.log{,.xelf} || { redecho "Comparing the extracted data with the expected data failed! Leaving test environment as is for investigation" ; exit 2; }
-	colorecho "Test successful"
-
-  #--------------------------------------------------------------------------------
-
-	colorecho "Testing NetworkStatistics"
-	# Test with default batching mode
-	colorecho "Running default batching mode"
-  if [ "$1" = "$SILENT_PARAM" ] || [ "$2" = "$SILENT_PARAM" ] || [ "$3" = "$SILENT_PARAM" ]; then
-	  java -jar "$JAR" extract NetworkStatistics.bcql &> /dev/null
-	else
-	  java -jar "$JAR" extract NetworkStatistics.bcql
-  fi
-	cmp NetworkStatistics/NetworkStatistics_all.csv{,.xelf} || { redecho "Comparing the extracted data with the expected data failed! Leaving test environment as is for investigation" ; exit 2; }
-	cmp NetworkStatistics/error.log{,.xelf} || { redecho "Comparing the extracted data with the expected data failed! Leaving test environment as is for investigation" ; exit 2; }
-	# Cleanup and test with safe batching mode
-	colorecho "Running safe batching mode"
-	rm -f NetworkStatistics/{*.log,*.csv,*.xes}
-	sed -i '/^SET OUTPUT FOLDER/a SET EMISSION MODE "safe batching"' NetworkStatistics.bcql
-  if [ "$1" = "$SILENT_PARAM" ] || [ "$2" = "$SILENT_PARAM" ] || [ "$3" = "$SILENT_PARAM" ]; then
-	  java -jar "$JAR" extract NetworkStatistics.bcql &> /dev/null
-	else
-	  java -jar "$JAR" extract NetworkStatistics.bcql
-  fi
-	cmp NetworkStatistics/NetworkStatistics_all.csv{,.xelf} || { redecho "Comparing the extracted data with the expected data failed! Leaving test environment as is for investigation" ; exit 2; }
-	cmp NetworkStatistics/error.log{,.xelf} || { redecho "Comparing the extracted data with the expected data failed! Leaving test environment as is for investigation" ; exit 2; }
-	colorecho "Test successful"
-
-  #--------------------------------------------------------------------------------
-
-	colorecho "Testing Rebesky_Augur"
-	# Test with default batching mode
-	colorecho "Running default batching mode"
-	if [ "$1" = "$SILENT_PARAM" ] || [ "$2" = "$SILENT_PARAM" ] || [ "$3" = "$SILENT_PARAM" ]; then
-	  java -jar "$JAR" extract Rebesky_Augur.bcql &> /dev/null
-	else
-	  java -jar "$JAR" extract Rebesky_Augur.bcql
-  fi
-	cmp Rebesky_Augur/log_pid0_all.xes{,.xelf} || { redecho "Comparing the extracted data with the expected data failed! Leaving test environment as is for investigation" ; exit 2; }
-	cmp Rebesky_Augur/error.log{,.xelf} || { redecho "Comparing the extracted data with the expected data failed! Leaving test environment as is for investigation" ; exit 2; }
-	# Cleanup and test with safe batching mode
-	colorecho "Running safe batching mode"
-	rm -f Rebesky_Augur/{*.log,*.csv,*.xes}
-	sed -i '/^SET OUTPUT FOLDER/a SET EMISSION MODE "safe batching"' Rebesky_Augur.bcql
-  if [ "$1" = "$SILENT_PARAM" ] || [ "$2" = "$SILENT_PARAM" ] || [ "$3" = "$SILENT_PARAM" ]; then
-	  java -jar "$JAR" extract Rebesky_Augur.bcql &> /dev/null
-	else
-	  java -jar "$JAR" extract Rebesky_Augur.bcql
-  fi
-	cmp Rebesky_Augur/log_pid0_all.xes{,.xelf} || { redecho "Comparing the extracted data with the expected data failed! Leaving test environment as is for investigation" ; exit 2; }
-	cmp Rebesky_Augur/error.log{,.xelf} || { redecho "Comparing the extracted data with the expected data failed! Leaving test environment as is for investigation" ; exit 2; }
-	colorecho "Test successful"
-
-  #--------------------------------------------------------------------------------
-
-	colorecho "Testing Rebesky_ChickenHunt"
-	# Test with default batching mode
-	colorecho "Running default batching mode"
-	if [ "$1" = "$SILENT_PARAM" ] || [ "$2" = "$SILENT_PARAM" ] || [ "$3" = "$SILENT_PARAM" ]; then
-	  java -jar "$JAR" extract Rebesky_ChickenHunt.bcql &> /dev/null
-	else
-	  java -jar "$JAR" extract Rebesky_ChickenHunt.bcql
-  fi
-	cmp Rebesky_ChickenHunt/log_pid0_all.xes{,.xelf} || { redecho "Comparing the extracted data with the expected data failed! Leaving test environment as is for investigation" ; exit 2; }
-	cmp Rebesky_ChickenHunt/error.log{,.xelf} || { redecho "Comparing the extracted data with the expected data failed! Leaving test environment as is for investigation" ; exit 2; }
-	# Cleanup and test with safe batching mode
-	colorecho "Running safe batching mode"
-	rm -f Rebesky_ChickenHunt/{*.log,*.csv,*.xes}
-	sed -i '/^SET OUTPUT FOLDER/a SET EMISSION MODE "safe batching"' Rebesky_ChickenHunt.bcql
-  if [ "$1" = "$SILENT_PARAM" ] || [ "$2" = "$SILENT_PARAM" ] || [ "$3" = "$SILENT_PARAM" ]; then
-	  java -jar "$JAR" extract Rebesky_ChickenHunt.bcql &> /dev/null
-	else
-	  java -jar "$JAR" extract Rebesky_ChickenHunt.bcql
-  fi
-	cmp Rebesky_ChickenHunt/log_pid0_all.xes{,.xelf} || { redecho "Comparing the extracted data with the expected data failed! Leaving test environment as is for investigation" ; exit 2; }
-	cmp Rebesky_ChickenHunt/error.log{,.xelf} || { redecho "Comparing the extracted data with the expected data failed! Leaving test environment as is for investigation" ; exit 2; }
-	colorecho "Test successful"
-
-  #--------------------------------------------------------------------------------
-
-	colorecho "Testing Rebesky_Idex1"
-	# Test with default batching mode
-	colorecho "Running default batching mode"
-	if [ "$1" = "$SILENT_PARAM" ] || [ "$2" = "$SILENT_PARAM" ] || [ "$3" = "$SILENT_PARAM" ]; then
-	  java -jar "$JAR" extract Rebesky_Idex1.bcql &> /dev/null
-	else
-	  java -jar "$JAR" extract Rebesky_Idex1.bcql
-  fi
-	cmp Rebesky_Idex1/Idex_calls_all.csv{,.xelf} || { redecho "Comparing the extracted data with the expected data failed! Leaving test environment as is for investigation" ; exit 2; }
-	cmp Rebesky_Idex1/error.log{,.xelf} || { redecho "Comparing the extracted data with the expected data failed! Leaving test environment as is for investigation" ; exit 2; }
-	# Cleanup and test with safe batching mode
-	colorecho "Running safe batching mode"
-	rm -f Rebesky_Idex1/{*.log,*.csv,*.xes}
-	sed -i '/^SET OUTPUT FOLDER/a SET EMISSION MODE "safe batching"' Rebesky_Idex1.bcql
-  if [ "$1" = "$SILENT_PARAM" ] || [ "$2" = "$SILENT_PARAM" ] || [ "$3" = "$SILENT_PARAM" ]; then
-	  java -jar "$JAR" extract Rebesky_Idex1.bcql &> /dev/null
-	else
-	  java -jar "$JAR" extract Rebesky_Idex1.bcql
-  fi
-	cmp Rebesky_Idex1/Idex_calls_all.csv{,.xelf} || { redecho "Comparing the extracted data with the expected data failed! Leaving test environment as is for investigation" ; exit 2; }
-	cmp Rebesky_Idex1/error.log{,.xelf} || { redecho "Comparing the extracted data with the expected data failed! Leaving test environment as is for investigation" ; exit 2; }
-	colorecho "Test successful"
-
-  #--------------------------------------------------------------------------------
-
-	colorecho "Testing HyperBasic"
-	# Test with default batching mode
-	colorecho "Running default batching mode"
-	if [ "$1" = "$SILENT_PARAM" ] || [ "$2" = "$SILENT_PARAM" ] || [ "$3" = "$SILENT_PARAM" ]; then
-	  java -jar "$JAR" extract HyperBasic.bcql &> /dev/null
-	else
-	  java -jar "$JAR" extract HyperBasic.bcql
-  fi
-	cmp HyperBasic/all.log{,.xblf} || { redecho "Comparing the extracted data with the expected data failed! Leaving test environment as is for investigation" ; exit 2; }
-	cmp HyperBasic/log_testEvent_all.xes{,.xblf} || { redecho "Comparing the extracted data with the expected data failed! Leaving test environment as is for investigation" ; exit 2; }
-	cmp HyperBasic/payload_all.csv{,.xblf} || { redecho "Comparing the extracted data with the expected data failed! Leaving test environment as is for investigation" ; exit 2; }
-	cmp HyperBasic/error.log{,.xblf} || { redecho "Comparing the extracted data with the expected data failed! Leaving test environment as is for investigation" ; exit 2; }
-	# Cleanup and test with safe batching mode
-	colorecho "Running safe batching mode"
-	rm -f HyperBasic/{*.log,*.csv,*.xes}
-	sed -i '/^SET OUTPUT FOLDER/a SET EMISSION MODE "safe batching"' HyperBasic.bcql
-  if [ "$1" = "$SILENT_PARAM" ] || [ "$2" = "$SILENT_PARAM" ] || [ "$3" = "$SILENT_PARAM" ]; then
-	  java -jar "$JAR" extract HyperBasic.bcql &> /dev/null
-	else
-	  java -jar "$JAR" extract HyperBasic.bcql
-  fi
-	cmp HyperBasic/all.log{,.xblf} || { redecho "Comparing the extracted data with the expected data failed! Leaving test environment as is for investigation" ; exit 2; }
-	cmp HyperBasic/log_testEvent_all.xes{,.xblf} || { redecho "Comparing the extracted data with the expected data failed! Leaving test environment as is for investigation" ; exit 2; }
-	cmp HyperBasic/payload_all.csv{,.xblf} || { redecho "Comparing the extracted data with the expected data failed! Leaving test environment as is for investigation" ; exit 2; }
-	cmp HyperBasic/error.log{,.xblf} || { redecho "Comparing the extracted data with the expected data failed! Leaving test environment as is for investigation" ; exit 2; }
-	colorecho "Test successful"
-
-  #--------------------------------------------------------------------------------
-
-	colorecho "Testing HyperKitties"
-	# Test with default batching mode
-	colorecho "Running default batching mode"
-	if [ "$1" = "$SILENT_PARAM" ] || [ "$2" = "$SILENT_PARAM" ] || [ "$3" = "$SILENT_PARAM" ]; then
-	  java -jar "$JAR" extract HyperKitties.bcql &> /dev/null
-	else
-	  java -jar "$JAR" extract HyperKitties.bcql
-  fi
-	cmp HyperKitties/all.log{,.xblf} || { redecho "Comparing the extracted data with the expected data failed! Leaving test environment as is for investigation" ; exit 2; }
-	cmp HyperKitties/Birth_all.csv{,.xblf} || { redecho "Comparing the extracted data with the expected data failed! Leaving test environment as is for investigation" ; exit 2; }
-	cmp HyperKitties/log_Birth_all.xes{,.xblf} || { redecho "Comparing the extracted data with the expected data failed! Leaving test environment as is for investigation" ; exit 2; }
-	cmp HyperKitties/log_Pregnant_all.xes{,.xblf} || { redecho "Comparing the extracted data with the expected data failed! Leaving test environment as is for investigation" ; exit 2; }
-	cmp HyperKitties/log_Transfer_all.xes{,.xblf} || { redecho "Comparing the extracted data with the expected data failed! Leaving test environment as is for investigation" ; exit 2; }
-	cmp HyperKitties/Pregnant_all.csv{,.xblf} || { redecho "Comparing the extracted data with the expected data failed! Leaving test environment as is for investigation" ; exit 2; }
-	cmp HyperKitties/Transfer_all.csv{,.xblf} || { redecho "Comparing the extracted data with the expected data failed! Leaving test environment as is for investigation" ; exit 2; }
-	cmp HyperKitties/error.log{,.xblf} || { redecho "Comparing the extracted data with the expected data failed! Leaving test environment as is for investigation" ; exit 2; }
-	# Cleanup and test with safe batching mode
-	colorecho "Running safe batching mode"
-	rm -f HyperKitties/{*.log,*.csv,*.xes}
-	sed -i '/^SET OUTPUT FOLDER/a SET EMISSION MODE "safe batching"' HyperKitties.bcql
-  if [ "$1" = "$SILENT_PARAM" ] || [ "$2" = "$SILENT_PARAM" ] || [ "$3" = "$SILENT_PARAM" ]; then
-	  java -jar "$JAR" extract HyperKitties.bcql &> /dev/null
-	else
-	  java -jar "$JAR" extract HyperKitties.bcql
-  fi
-	cmp HyperKitties/all.log{,.xblf} || { redecho "Comparing the extracted data with the expected data failed! Leaving test environment as is for investigation" ; exit 2; }
-	cmp HyperKitties/Birth_all.csv{,.xblf} || { redecho "Comparing the extracted data with the expected data failed! Leaving test environment as is for investigation" ; exit 2; }
-	cmp HyperKitties/log_Birth_all.xes{,.xblf} || { redecho "Comparing the extracted data with the expected data failed! Leaving test environment as is for investigation" ; exit 2; }
-	cmp HyperKitties/log_Pregnant_all.xes{,.xblf} || { redecho "Comparing the extracted data with the expected data failed! Leaving test environment as is for investigation" ; exit 2; }
-	cmp HyperKitties/log_Transfer_all.xes{,.xblf} || { redecho "Comparing the extracted data with the expected data failed! Leaving test environment as is for investigation" ; exit 2; }
-	cmp HyperKitties/Pregnant_all.csv{,.xblf} || { redecho "Comparing the extracted data with the expected data failed! Leaving test environment as is for investigation" ; exit 2; }
-	cmp HyperKitties/Transfer_all.csv{,.xblf} || { redecho "Comparing the extracted data with the expected data failed! Leaving test environment as is for investigation" ; exit 2; }
-	cmp HyperKitties/error.log{,.xblf} || { redecho "Comparing the extracted data with the expected data failed! Leaving test environment as is for investigation" ; exit 2; }
-	colorecho "Test successful"
-
-  #--------------------------------------------------------------------------------
-
-	colorecho "Testing CryptoKittiesAsHyper"
-	# Test with default batching mode
-	colorecho "Running default batching mode"
-	if [ "$1" = "$SILENT_PARAM" ] || [ "$2" = "$SILENT_PARAM" ] || [ "$3" = "$SILENT_PARAM" ]; then
-	  java -jar "$JAR" extract CryptoKittiesAsHyper.bcql &> /dev/null
-	else
-	  java -jar "$JAR" extract CryptoKittiesAsHyper.bcql
-  fi
-	cmp CryptoKittiesAsHyper/log_pid0_all.xes{,.xblf} || { redecho "Comparing the extracted data with the expected data failed! Leaving test environment as is for investigation" ; exit 2; }
-	cmp CryptoKittiesAsHyper/error.log{,.xblf} || { redecho "Comparing the extracted data with the expected data failed! Leaving test environment as is for investigation" ; exit 2; }
-	# Cleanup and test with safe batching mode
-	colorecho "Running safe batching mode"
-	rm -f CryptoKittiesAsHyper/{*.log,*.csv,*.xes}
-	sed -i '/^SET OUTPUT FOLDER/a SET EMISSION MODE "safe batching"' CryptoKittiesAsHyper.bcql
-  if [ "$1" = "$SILENT_PARAM" ] || [ "$2" = "$SILENT_PARAM" ] || [ "$3" = "$SILENT_PARAM" ]; then
-	  java -jar "$JAR" extract CryptoKittiesAsHyper.bcql &> /dev/null
-	else
-	  java -jar "$JAR" extract CryptoKittiesAsHyper.bcql
-  fi
-	cmp CryptoKittiesAsHyper/log_pid0_all.xes{,.xblf} || { redecho "Comparing the extracted data with the expected data failed! Leaving test environment as is for investigation" ; exit 2; }
-	cmp CryptoKittiesAsHyper/error.log{,.xblf} || { redecho "Comparing the extracted data with the expected data failed! Leaving test environment as is for investigation" ; exit 2; }
-	colorecho "Test successful"
-
-  #--------------------------------------------------------------------------------
-
-	colorecho "Testing AugurContractRegistry in streaming mode"
-	if [ "$1" = "$SILENT_PARAM" ] || [ "$2" = "$SILENT_PARAM" ] || [ "$3" = "$SILENT_PARAM" ]; then
-	  java -jar "$JAR" extract AugurContractRegistryStreaming.bcql &> /dev/null
-	else
-	  java -jar "$JAR" extract AugurContractRegistryStreaming.bcql
-  fi
-	cmp AugurContractRegistryStreaming/5926257.log{,.xblf} || { redecho "Comparing the extracted data with the expected data failed! Leaving test environment as is for investigation" ; exit 2; }
-	cmp AugurContractRegistryStreaming/5926270.log{,.xblf} || { redecho "Comparing the extracted data with the expected data failed! Leaving test environment as is for investigation" ; exit 2; }
-	cmp AugurContractRegistryStreaming/5926285.log{,.xblf} || { redecho "Comparing the extracted data with the expected data failed! Leaving test environment as is for investigation" ; exit 2; }
-	cmp AugurContractRegistryStreaming/error.log{,.xblf} || { redecho "Comparing the extracted data with the expected data failed! Leaving test environment as is for investigation" ; exit 2; }
-	[ "$(find AugurContractRegistryStreaming/ | wc -l)" -eq 9 ] || { redecho "Streaming mode created too many files!" ; exit 2; }
-	colorecho "Test successful"
-
-	colorecho "Testing NetworkStatistics in streaming mode"
-	if [ "$1" = "$SILENT_PARAM" ] || [ "$2" = "$SILENT_PARAM" ] || [ "$3" = "$SILENT_PARAM" ]; then
-	  java -jar "$JAR" extract NetworkStatisticsStreaming.bcql &> /dev/null
-	else
-	  java -jar "$JAR" extract NetworkStatisticsStreaming.bcql
-  fi
-	cmp NetworkStatisticsStreaming/NetworkStatistics_6000000.csv{,.xblf} || { redecho "Comparing the extracted data with the expected data failed! Leaving test environment as is for investigation" ; exit 2; }
-	cmp NetworkStatisticsStreaming/NetworkStatistics_6000001.csv{,.xblf} || { redecho "Comparing the extracted data with the expected data failed! Leaving test environment as is for investigation" ; exit 2; }
-	cmp NetworkStatisticsStreaming/NetworkStatistics_6000002.csv{,.xblf} || { redecho "Comparing the extracted data with the expected data failed! Leaving test environment as is for investigation" ; exit 2; }
-	cmp NetworkStatisticsStreaming/NetworkStatistics_6000003.csv{,.xblf} || { redecho "Comparing the extracted data with the expected data failed! Leaving test environment as is for investigation" ; exit 2; }
-	cmp NetworkStatisticsStreaming/error.log{,.xblf} || { redecho "Comparing the extracted data with the expected data failed! Leaving test environment as is for investigation" ; exit 2; }
-	[ "$(find NetworkStatisticsStreaming/ | wc -l)" -eq 11 ] || { redecho "Streaming mode created too many files!" ; exit 2; }
-	colorecho "Test successful"
-
-  #--------------------------------------------------------------------------------
-
+#
+#  #--------------------------------------------------------------------------------
+#
+#	colorecho "Testing CryptoKitties"
+#	# Test with default batching mode
+#	colorecho "Running default batching mode"
+#  if [ "$1" = "$SILENT_PARAM" ] || [ "$2" = "$SILENT_PARAM" ] || [ "$3" = "$SILENT_PARAM" ]; then
+#	  java -jar "$JAR" extract CryptoKitties.bcql &> /dev/null
+#	else
+#	  java -jar "$JAR" extract CryptoKitties.bcql
+#  fi
+#	cmp CryptoKitties/log_pid0_all.xes{,.xelf} || { redecho "Comparing the extracted data with the expected data failed! Leaving test environment as is for investigation" ; exit 2; }
+#	cmp CryptoKitties/error.log{,.xelf} || { redecho "Comparing the extracted data with the expected data failed! Leaving test environment as is for investigation" ; exit 2; }
+#	# Cleanup and test with safe batching mode
+#	colorecho "Running safe batching mode"
+#	rm -f CryptoKitties/{*.log,*.csv,*.xes}
+#	sed -i '/^SET OUTPUT FOLDER/a SET EMISSION MODE "safe batching"' CryptoKitties.bcql
+#  if [ "$1" = "$SILENT_PARAM" ] || [ "$2" = "$SILENT_PARAM" ] || [ "$3" = "$SILENT_PARAM" ]; then
+#	  java -jar "$JAR" extract CryptoKitties.bcql &> /dev/null
+#	else
+#	  java -jar "$JAR" extract CryptoKitties.bcql
+#  fi
+#	cmp CryptoKitties/log_pid0_all.xes{,.xelf} || { redecho "Comparing the extracted data with the expected data failed! Leaving test environment as is for investigation" ; exit 2; }
+#	cmp CryptoKitties/error.log{,.xelf} || { redecho "Comparing the extracted data with the expected data failed! Leaving test environment as is for investigation" ; exit 2; }
+#	colorecho "Test successful"
+#
+#  #--------------------------------------------------------------------------------
+#
+#	colorecho "Testing NetworkStatistics"
+#	# Test with default batching mode
+#	colorecho "Running default batching mode"
+#  if [ "$1" = "$SILENT_PARAM" ] || [ "$2" = "$SILENT_PARAM" ] || [ "$3" = "$SILENT_PARAM" ]; then
+#	  java -jar "$JAR" extract NetworkStatistics.bcql &> /dev/null
+#	else
+#	  java -jar "$JAR" extract NetworkStatistics.bcql
+#  fi
+#	cmp NetworkStatistics/NetworkStatistics_all.csv{,.xelf} || { redecho "Comparing the extracted data with the expected data failed! Leaving test environment as is for investigation" ; exit 2; }
+#	cmp NetworkStatistics/error.log{,.xelf} || { redecho "Comparing the extracted data with the expected data failed! Leaving test environment as is for investigation" ; exit 2; }
+#	# Cleanup and test with safe batching mode
+#	colorecho "Running safe batching mode"
+#	rm -f NetworkStatistics/{*.log,*.csv,*.xes}
+#	sed -i '/^SET OUTPUT FOLDER/a SET EMISSION MODE "safe batching"' NetworkStatistics.bcql
+#  if [ "$1" = "$SILENT_PARAM" ] || [ "$2" = "$SILENT_PARAM" ] || [ "$3" = "$SILENT_PARAM" ]; then
+#	  java -jar "$JAR" extract NetworkStatistics.bcql &> /dev/null
+#	else
+#	  java -jar "$JAR" extract NetworkStatistics.bcql
+#  fi
+#	cmp NetworkStatistics/NetworkStatistics_all.csv{,.xelf} || { redecho "Comparing the extracted data with the expected data failed! Leaving test environment as is for investigation" ; exit 2; }
+#	cmp NetworkStatistics/error.log{,.xelf} || { redecho "Comparing the extracted data with the expected data failed! Leaving test environment as is for investigation" ; exit 2; }
+#	colorecho "Test successful"
+#
+#  #--------------------------------------------------------------------------------
+#
+#	colorecho "Testing Rebesky_Augur"
+#	# Test with default batching mode
+#	colorecho "Running default batching mode"
+#	if [ "$1" = "$SILENT_PARAM" ] || [ "$2" = "$SILENT_PARAM" ] || [ "$3" = "$SILENT_PARAM" ]; then
+#	  java -jar "$JAR" extract Rebesky_Augur.bcql &> /dev/null
+#	else
+#	  java -jar "$JAR" extract Rebesky_Augur.bcql
+#  fi
+#	cmp Rebesky_Augur/log_pid0_all.xes{,.xelf} || { redecho "Comparing the extracted data with the expected data failed! Leaving test environment as is for investigation" ; exit 2; }
+#	cmp Rebesky_Augur/error.log{,.xelf} || { redecho "Comparing the extracted data with the expected data failed! Leaving test environment as is for investigation" ; exit 2; }
+#	# Cleanup and test with safe batching mode
+#	colorecho "Running safe batching mode"
+#	rm -f Rebesky_Augur/{*.log,*.csv,*.xes}
+#	sed -i '/^SET OUTPUT FOLDER/a SET EMISSION MODE "safe batching"' Rebesky_Augur.bcql
+#  if [ "$1" = "$SILENT_PARAM" ] || [ "$2" = "$SILENT_PARAM" ] || [ "$3" = "$SILENT_PARAM" ]; then
+#	  java -jar "$JAR" extract Rebesky_Augur.bcql &> /dev/null
+#	else
+#	  java -jar "$JAR" extract Rebesky_Augur.bcql
+#  fi
+#	cmp Rebesky_Augur/log_pid0_all.xes{,.xelf} || { redecho "Comparing the extracted data with the expected data failed! Leaving test environment as is for investigation" ; exit 2; }
+#	cmp Rebesky_Augur/error.log{,.xelf} || { redecho "Comparing the extracted data with the expected data failed! Leaving test environment as is for investigation" ; exit 2; }
+#	colorecho "Test successful"
+#
+#  #--------------------------------------------------------------------------------
+#
+#	colorecho "Testing Rebesky_ChickenHunt"
+#	# Test with default batching mode
+#	colorecho "Running default batching mode"
+#	if [ "$1" = "$SILENT_PARAM" ] || [ "$2" = "$SILENT_PARAM" ] || [ "$3" = "$SILENT_PARAM" ]; then
+#	  java -jar "$JAR" extract Rebesky_ChickenHunt.bcql &> /dev/null
+#	else
+#	  java -jar "$JAR" extract Rebesky_ChickenHunt.bcql
+#  fi
+#	cmp Rebesky_ChickenHunt/log_pid0_all.xes{,.xelf} || { redecho "Comparing the extracted data with the expected data failed! Leaving test environment as is for investigation" ; exit 2; }
+#	cmp Rebesky_ChickenHunt/error.log{,.xelf} || { redecho "Comparing the extracted data with the expected data failed! Leaving test environment as is for investigation" ; exit 2; }
+#	# Cleanup and test with safe batching mode
+#	colorecho "Running safe batching mode"
+#	rm -f Rebesky_ChickenHunt/{*.log,*.csv,*.xes}
+#	sed -i '/^SET OUTPUT FOLDER/a SET EMISSION MODE "safe batching"' Rebesky_ChickenHunt.bcql
+#  if [ "$1" = "$SILENT_PARAM" ] || [ "$2" = "$SILENT_PARAM" ] || [ "$3" = "$SILENT_PARAM" ]; then
+#	  java -jar "$JAR" extract Rebesky_ChickenHunt.bcql &> /dev/null
+#	else
+#	  java -jar "$JAR" extract Rebesky_ChickenHunt.bcql
+#  fi
+#	cmp Rebesky_ChickenHunt/log_pid0_all.xes{,.xelf} || { redecho "Comparing the extracted data with the expected data failed! Leaving test environment as is for investigation" ; exit 2; }
+#	cmp Rebesky_ChickenHunt/error.log{,.xelf} || { redecho "Comparing the extracted data with the expected data failed! Leaving test environment as is for investigation" ; exit 2; }
+#	colorecho "Test successful"
+#
+#  #--------------------------------------------------------------------------------
+#
+#	colorecho "Testing Rebesky_Idex1"
+#	# Test with default batching mode
+#	colorecho "Running default batching mode"
+#	if [ "$1" = "$SILENT_PARAM" ] || [ "$2" = "$SILENT_PARAM" ] || [ "$3" = "$SILENT_PARAM" ]; then
+#	  java -jar "$JAR" extract Rebesky_Idex1.bcql &> /dev/null
+#	else
+#	  java -jar "$JAR" extract Rebesky_Idex1.bcql
+#  fi
+#	cmp Rebesky_Idex1/Idex_calls_all.csv{,.xelf} || { redecho "Comparing the extracted data with the expected data failed! Leaving test environment as is for investigation" ; exit 2; }
+#	cmp Rebesky_Idex1/error.log{,.xelf} || { redecho "Comparing the extracted data with the expected data failed! Leaving test environment as is for investigation" ; exit 2; }
+#	# Cleanup and test with safe batching mode
+#	colorecho "Running safe batching mode"
+#	rm -f Rebesky_Idex1/{*.log,*.csv,*.xes}
+#	sed -i '/^SET OUTPUT FOLDER/a SET EMISSION MODE "safe batching"' Rebesky_Idex1.bcql
+#  if [ "$1" = "$SILENT_PARAM" ] || [ "$2" = "$SILENT_PARAM" ] || [ "$3" = "$SILENT_PARAM" ]; then
+#	  java -jar "$JAR" extract Rebesky_Idex1.bcql &> /dev/null
+#	else
+#	  java -jar "$JAR" extract Rebesky_Idex1.bcql
+#  fi
+#	cmp Rebesky_Idex1/Idex_calls_all.csv{,.xelf} || { redecho "Comparing the extracted data with the expected data failed! Leaving test environment as is for investigation" ; exit 2; }
+#	cmp Rebesky_Idex1/error.log{,.xelf} || { redecho "Comparing the extracted data with the expected data failed! Leaving test environment as is for investigation" ; exit 2; }
+#	colorecho "Test successful"
+#
+#  #--------------------------------------------------------------------------------
+#
+#	colorecho "Testing HyperBasic"
+#	# Test with default batching mode
+#	colorecho "Running default batching mode"
+#	if [ "$1" = "$SILENT_PARAM" ] || [ "$2" = "$SILENT_PARAM" ] || [ "$3" = "$SILENT_PARAM" ]; then
+#	  java -jar "$JAR" extract HyperBasic.bcql &> /dev/null
+#	else
+#	  java -jar "$JAR" extract HyperBasic.bcql
+#  fi
+#	cmp HyperBasic/all.log{,.xblf} || { redecho "Comparing the extracted data with the expected data failed! Leaving test environment as is for investigation" ; exit 2; }
+#	cmp HyperBasic/log_testEvent_all.xes{,.xblf} || { redecho "Comparing the extracted data with the expected data failed! Leaving test environment as is for investigation" ; exit 2; }
+#	cmp HyperBasic/payload_all.csv{,.xblf} || { redecho "Comparing the extracted data with the expected data failed! Leaving test environment as is for investigation" ; exit 2; }
+#	cmp HyperBasic/error.log{,.xblf} || { redecho "Comparing the extracted data with the expected data failed! Leaving test environment as is for investigation" ; exit 2; }
+#	# Cleanup and test with safe batching mode
+#	colorecho "Running safe batching mode"
+#	rm -f HyperBasic/{*.log,*.csv,*.xes}
+#	sed -i '/^SET OUTPUT FOLDER/a SET EMISSION MODE "safe batching"' HyperBasic.bcql
+#  if [ "$1" = "$SILENT_PARAM" ] || [ "$2" = "$SILENT_PARAM" ] || [ "$3" = "$SILENT_PARAM" ]; then
+#	  java -jar "$JAR" extract HyperBasic.bcql &> /dev/null
+#	else
+#	  java -jar "$JAR" extract HyperBasic.bcql
+#  fi
+#	cmp HyperBasic/all.log{,.xblf} || { redecho "Comparing the extracted data with the expected data failed! Leaving test environment as is for investigation" ; exit 2; }
+#	cmp HyperBasic/log_testEvent_all.xes{,.xblf} || { redecho "Comparing the extracted data with the expected data failed! Leaving test environment as is for investigation" ; exit 2; }
+#	cmp HyperBasic/payload_all.csv{,.xblf} || { redecho "Comparing the extracted data with the expected data failed! Leaving test environment as is for investigation" ; exit 2; }
+#	cmp HyperBasic/error.log{,.xblf} || { redecho "Comparing the extracted data with the expected data failed! Leaving test environment as is for investigation" ; exit 2; }
+#	colorecho "Test successful"
+#
+#  #--------------------------------------------------------------------------------
+#
+#	colorecho "Testing HyperKitties"
+#	# Test with default batching mode
+#	colorecho "Running default batching mode"
+#	if [ "$1" = "$SILENT_PARAM" ] || [ "$2" = "$SILENT_PARAM" ] || [ "$3" = "$SILENT_PARAM" ]; then
+#	  java -jar "$JAR" extract HyperKitties.bcql &> /dev/null
+#	else
+#	  java -jar "$JAR" extract HyperKitties.bcql
+#  fi
+#	cmp HyperKitties/all.log{,.xblf} || { redecho "Comparing the extracted data with the expected data failed! Leaving test environment as is for investigation" ; exit 2; }
+#	cmp HyperKitties/Birth_all.csv{,.xblf} || { redecho "Comparing the extracted data with the expected data failed! Leaving test environment as is for investigation" ; exit 2; }
+#	cmp HyperKitties/log_Birth_all.xes{,.xblf} || { redecho "Comparing the extracted data with the expected data failed! Leaving test environment as is for investigation" ; exit 2; }
+#	cmp HyperKitties/log_Pregnant_all.xes{,.xblf} || { redecho "Comparing the extracted data with the expected data failed! Leaving test environment as is for investigation" ; exit 2; }
+#	cmp HyperKitties/log_Transfer_all.xes{,.xblf} || { redecho "Comparing the extracted data with the expected data failed! Leaving test environment as is for investigation" ; exit 2; }
+#	cmp HyperKitties/Pregnant_all.csv{,.xblf} || { redecho "Comparing the extracted data with the expected data failed! Leaving test environment as is for investigation" ; exit 2; }
+#	cmp HyperKitties/Transfer_all.csv{,.xblf} || { redecho "Comparing the extracted data with the expected data failed! Leaving test environment as is for investigation" ; exit 2; }
+#	cmp HyperKitties/error.log{,.xblf} || { redecho "Comparing the extracted data with the expected data failed! Leaving test environment as is for investigation" ; exit 2; }
+#	# Cleanup and test with safe batching mode
+#	colorecho "Running safe batching mode"
+#	rm -f HyperKitties/{*.log,*.csv,*.xes}
+#	sed -i '/^SET OUTPUT FOLDER/a SET EMISSION MODE "safe batching"' HyperKitties.bcql
+#  if [ "$1" = "$SILENT_PARAM" ] || [ "$2" = "$SILENT_PARAM" ] || [ "$3" = "$SILENT_PARAM" ]; then
+#	  java -jar "$JAR" extract HyperKitties.bcql &> /dev/null
+#	else
+#	  java -jar "$JAR" extract HyperKitties.bcql
+#  fi
+#	cmp HyperKitties/all.log{,.xblf} || { redecho "Comparing the extracted data with the expected data failed! Leaving test environment as is for investigation" ; exit 2; }
+#	cmp HyperKitties/Birth_all.csv{,.xblf} || { redecho "Comparing the extracted data with the expected data failed! Leaving test environment as is for investigation" ; exit 2; }
+#	cmp HyperKitties/log_Birth_all.xes{,.xblf} || { redecho "Comparing the extracted data with the expected data failed! Leaving test environment as is for investigation" ; exit 2; }
+#	cmp HyperKitties/log_Pregnant_all.xes{,.xblf} || { redecho "Comparing the extracted data with the expected data failed! Leaving test environment as is for investigation" ; exit 2; }
+#	cmp HyperKitties/log_Transfer_all.xes{,.xblf} || { redecho "Comparing the extracted data with the expected data failed! Leaving test environment as is for investigation" ; exit 2; }
+#	cmp HyperKitties/Pregnant_all.csv{,.xblf} || { redecho "Comparing the extracted data with the expected data failed! Leaving test environment as is for investigation" ; exit 2; }
+#	cmp HyperKitties/Transfer_all.csv{,.xblf} || { redecho "Comparing the extracted data with the expected data failed! Leaving test environment as is for investigation" ; exit 2; }
+#	cmp HyperKitties/error.log{,.xblf} || { redecho "Comparing the extracted data with the expected data failed! Leaving test environment as is for investigation" ; exit 2; }
+#	colorecho "Test successful"
+#
+#  #--------------------------------------------------------------------------------
+#
+#	colorecho "Testing CryptoKittiesAsHyper"
+#	# Test with default batching mode
+#	colorecho "Running default batching mode"
+#	if [ "$1" = "$SILENT_PARAM" ] || [ "$2" = "$SILENT_PARAM" ] || [ "$3" = "$SILENT_PARAM" ]; then
+#	  java -jar "$JAR" extract CryptoKittiesAsHyper.bcql &> /dev/null
+#	else
+#	  java -jar "$JAR" extract CryptoKittiesAsHyper.bcql
+#  fi
+#	cmp CryptoKittiesAsHyper/log_pid0_all.xes{,.xblf} || { redecho "Comparing the extracted data with the expected data failed! Leaving test environment as is for investigation" ; exit 2; }
+#	cmp CryptoKittiesAsHyper/error.log{,.xblf} || { redecho "Comparing the extracted data with the expected data failed! Leaving test environment as is for investigation" ; exit 2; }
+#	# Cleanup and test with safe batching mode
+#	colorecho "Running safe batching mode"
+#	rm -f CryptoKittiesAsHyper/{*.log,*.csv,*.xes}
+#	sed -i '/^SET OUTPUT FOLDER/a SET EMISSION MODE "safe batching"' CryptoKittiesAsHyper.bcql
+#  if [ "$1" = "$SILENT_PARAM" ] || [ "$2" = "$SILENT_PARAM" ] || [ "$3" = "$SILENT_PARAM" ]; then
+#	  java -jar "$JAR" extract CryptoKittiesAsHyper.bcql &> /dev/null
+#	else
+#	  java -jar "$JAR" extract CryptoKittiesAsHyper.bcql
+#  fi
+#	cmp CryptoKittiesAsHyper/log_pid0_all.xes{,.xblf} || { redecho "Comparing the extracted data with the expected data failed! Leaving test environment as is for investigation" ; exit 2; }
+#	cmp CryptoKittiesAsHyper/error.log{,.xblf} || { redecho "Comparing the extracted data with the expected data failed! Leaving test environment as is for investigation" ; exit 2; }
+#	colorecho "Test successful"
+#
+#  #--------------------------------------------------------------------------------
+#
+#	colorecho "Testing AugurContractRegistry in streaming mode"
+#	if [ "$1" = "$SILENT_PARAM" ] || [ "$2" = "$SILENT_PARAM" ] || [ "$3" = "$SILENT_PARAM" ]; then
+#	  java -jar "$JAR" extract AugurContractRegistryStreaming.bcql &> /dev/null
+#	else
+#	  java -jar "$JAR" extract AugurContractRegistryStreaming.bcql
+#  fi
+#	cmp AugurContractRegistryStreaming/5926257.log{,.xblf} || { redecho "Comparing the extracted data with the expected data failed! Leaving test environment as is for investigation" ; exit 2; }
+#	cmp AugurContractRegistryStreaming/5926270.log{,.xblf} || { redecho "Comparing the extracted data with the expected data failed! Leaving test environment as is for investigation" ; exit 2; }
+#	cmp AugurContractRegistryStreaming/5926285.log{,.xblf} || { redecho "Comparing the extracted data with the expected data failed! Leaving test environment as is for investigation" ; exit 2; }
+#	cmp AugurContractRegistryStreaming/error.log{,.xblf} || { redecho "Comparing the extracted data with the expected data failed! Leaving test environment as is for investigation" ; exit 2; }
+#	[ "$(find AugurContractRegistryStreaming/ | wc -l)" -eq 9 ] || { redecho "Streaming mode created too many files!" ; exit 2; }
+#	colorecho "Test successful"
+#
+#  #--------------------------------------------------------------------------------
+#
+#	colorecho "Testing NetworkStatistics in streaming mode"
+#	if [ "$1" = "$SILENT_PARAM" ] || [ "$2" = "$SILENT_PARAM" ] || [ "$3" = "$SILENT_PARAM" ]; then
+#	  java -jar "$JAR" extract NetworkStatisticsStreaming.bcql &> /dev/null
+#	else
+#	  java -jar "$JAR" extract NetworkStatisticsStreaming.bcql
+#  fi
+#	cmp NetworkStatisticsStreaming/NetworkStatistics_6000000.csv{,.xblf} || { redecho "Comparing the extracted data with the expected data failed! Leaving test environment as is for investigation" ; exit 2; }
+#	cmp NetworkStatisticsStreaming/NetworkStatistics_6000001.csv{,.xblf} || { redecho "Comparing the extracted data with the expected data failed! Leaving test environment as is for investigation" ; exit 2; }
+#	cmp NetworkStatisticsStreaming/NetworkStatistics_6000002.csv{,.xblf} || { redecho "Comparing the extracted data with the expected data failed! Leaving test environment as is for investigation" ; exit 2; }
+#	cmp NetworkStatisticsStreaming/NetworkStatistics_6000003.csv{,.xblf} || { redecho "Comparing the extracted data with the expected data failed! Leaving test environment as is for investigation" ; exit 2; }
+#	cmp NetworkStatisticsStreaming/error.log{,.xblf} || { redecho "Comparing the extracted data with the expected data failed! Leaving test environment as is for investigation" ; exit 2; }
+#	[ "$(find NetworkStatisticsStreaming/ | wc -l)" -eq 11 ] || { redecho "Streaming mode created too many files!" ; exit 2; }
+#	colorecho "Test successful"
+#
+#  #--------------------------------------------------------------------------------
+#
 	colorecho "Testing CryptoKitties in streaming mode"
 	if [ "$1" = "$SILENT_PARAM" ] || [ "$2" = "$SILENT_PARAM" ] || [ "$3" = "$SILENT_PARAM" ]; then
 	  java -jar "$JAR" extract CryptoKittiesStreaming.bcql &> /dev/null
@@ -345,6 +349,8 @@ function main() {
 	cmp CryptoKittiesStreaming/error.log{,.xblf} || { redecho "Comparing the extracted data with the expected data failed! Leaving test environment as is for investigation" ; exit 2; }
 	[ "$(find CryptoKittiesStreaming/ | wc -l)" -eq 9 ] || { redecho "Streaming mode created too many files!" ; exit 2; }
 	colorecho "Test successful"
+
+  #--------------------------------------------------------------------------------
 
 	colorecho "Testing HyperBasic in streaming mode"
 	if [ "$1" = "$SILENT_PARAM" ] || [ "$2" = "$SILENT_PARAM" ] || [ "$3" = "$SILENT_PARAM" ]; then
@@ -375,6 +381,8 @@ function main() {
 	grep 'JSON object does not contain key: a' FailingHyperKitties/error.log || { redecho "Comparing the extracted data with the expected data failed! Leaving test environment as is for investigation" ; exit 2; }
 	colorecho "Test successful"
 
+  #--------------------------------------------------------------------------------
+
 	colorecho "Testing FailingCryptoKitties"
 	LAST_EXIT=0
 	if [ "$1" = "$SILENT_PARAM" ] || [ "$2" = "$SILENT_PARAM" ] || [ "$3" = "$SILENT_PARAM" ]; then
@@ -386,6 +394,30 @@ function main() {
   fi
   [ $LAST_EXIT -ne 1 ] && { redecho "The program did not return the correct error code" ; exit 2; }
 	grep 'Failed to connect to WebSocket' FailingCryptoKitties/error.log || { redecho "Comparing the extracted data with the expected data failed! Leaving test environment as is for investigation" ; exit 2; }
+	colorecho "Test successful"
+
+  #--------------------------------------------------------------------------------
+
+	colorecho "Testing NetworkStatistics with external output folder"
+	if [ "$1" = "$SILENT_PARAM" ] || [ "$2" = "$SILENT_PARAM" ] || [ "$3" = "$SILENT_PARAM" ]; then
+	  java -jar "$JAR" extract NetworkStatisticsErrorFolder.bcql &> /dev/null
+	else
+	  java -jar "$JAR" extract NetworkStatisticsErrorFolder.bcql
+  fi
+	cmp NetworkStatisticsExternalError/error.log{,.xblf} || { redecho "Comparing the extracted data with the expected data failed! Leaving test environment as is for investigation" ; exit 2; }
+	[ "$(find NetworkStatisticsExternalError/ | wc -l)" -eq 3 ] || { redecho "More than just the error file was created in the external error output folder!" ; exit 2; }
+	colorecho "Test successful"
+
+  #--------------------------------------------------------------------------------
+
+	colorecho "Testing NetworkStatistics with external output folder and name"
+	if [ "$1" = "$SILENT_PARAM" ] || [ "$2" = "$SILENT_PARAM" ] || [ "$3" = "$SILENT_PARAM" ]; then
+	  java -jar "$JAR" extract NetworkStatisticsErrorFolderAndName.bcql &> /dev/null
+	else
+	  java -jar "$JAR" extract NetworkStatisticsErrorFolderAndName.bcql
+  fi
+	cmp NetworkStatisticsExternalErrorAndName/customErrorName.log{,.xblf} || { redecho "Comparing the extracted data with the expected data failed! Leaving test environment as is for investigation" ; exit 2; }
+	[ "$(find NetworkStatisticsExternalErrorAndName/ | wc -l)" -eq 3 ] || { redecho "More than just the error file was created in the external error output folder!" ; exit 2; }
 	colorecho "Test successful"
 
   #--------------------------------------------------------------------------------

@@ -20,7 +20,6 @@ public class SetOutputFolderInstruction extends Instruction {
         }
 
         try {
-            // ExceptionHandler.getInstance().setErrorLogOutputFolder(outputFolder);
             state.getWriters().setOutputFolder(outputFolder);
         } catch (Exception cause) {
             ExceptionHandler.getInstance().handleException("Error when setting the output folder.", cause);

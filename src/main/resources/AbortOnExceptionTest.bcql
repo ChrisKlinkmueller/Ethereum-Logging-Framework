@@ -1,7 +1,10 @@
 // Author: Tom Knoche
-SET EXCEPTION HANDLING PARAMS true "./test_output"
 
 SET BLOCKCHAIN "Hyperledger"
+
+SET OUTPUT FOLDER "./test_output"
+
+SET ABORT ON EXCEPTION true
 
 SET CONNECTION {
    "hyperledger/connection-org1.yaml",
@@ -10,8 +13,6 @@ SET CONNECTION {
    "Org1MSP",
    "mychannel"
 }
-
-SET OUTPUT FOLDER "./test_output"
 
 BLOCKS (32) (91) {
    LOG ENTRIES ("kitties") (Birth(string a)) {

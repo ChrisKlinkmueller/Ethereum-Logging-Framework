@@ -1,6 +1,6 @@
-SET EXCEPTION HANDLING PARAMS false "./CryptoKittiesAsHyper"
-
 SET BLOCKCHAIN "Hyperledger"
+
+SET OUTPUT FOLDER "./CryptoKittiesAsHyper"
 
 SET CONNECTION {
    "hyperledger/connection-org1.yaml",
@@ -9,8 +9,6 @@ SET CONNECTION {
    "Org1MSP",
    "mychannel"
 }
-
-SET OUTPUT FOLDER "./CryptoKittiesAsHyper"
 
 int[] kitties = newIntArray();
 BLOCKS (32) (91) {

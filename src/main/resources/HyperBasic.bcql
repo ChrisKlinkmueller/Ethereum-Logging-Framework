@@ -2,6 +2,8 @@
 
 SET BLOCKCHAIN "Hyperledger"
 
+SET OUTPUT FOLDER "./test_output"
+
 SET CONNECTION {
    "hyperledger/connection-org1.yaml",
    "hyperledger/server.key",
@@ -9,8 +11,6 @@ SET CONNECTION {
    "Org1MSP",
    "mychannel"
 }
-
-SET OUTPUT FOLDER "./test_output"
 
 int blockNumberFrom = 0;
 int blockNumberTo = 55;
