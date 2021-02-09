@@ -1,0 +1,66 @@
+// Author: Tom Knoche
+
+SET BLOCKCHAIN "Ethereum"
+SET CONNECTION "ws://localhost:8546/"
+SET OUTPUT FOLDER "./test_output"
+
+EMIT LOG LINE ("CAPABILITIES FROM PREVIOUS VERSION (ELF 1.0)");
+EMIT LOG LINE ("");
+
+int sum = add(3, 3);
+int product = multiply(3, 3);
+int difference = subtract(6, 3);
+int quotient = divide(6, 3);
+
+EMIT LOG LINE ("3 + 3 = 6 | ", sum);
+EMIT LOG LINE ("3 * 3 = 9 | ", product);
+EMIT LOG LINE ("6 - 3 = 3 | ", difference);
+EMIT LOG LINE ("6 / 3 = 2 | ", quotient);
+
+EMIT LOG LINE ("====================================================================================");
+
+address[] addressList = {0x0, 0x1};
+int[] intList = {0, 1};
+
+bool containsAddressTrue = contains(addressList, 0x1);
+bool containsAddressFalse = contains(addressList, 0x2);
+bool containsIntTrue = contains(intList, 1);
+bool containsIntFalse = contains(intList, 2);
+
+EMIT LOG LINE ("addressList is {0x0, 0x1} | ", addressList);
+EMIT LOG LINE ("addressList contains 0x1: true | ", containsAddressTrue);
+EMIT LOG LINE ("addressList contains 0x2: false | ", containsAddressFalse);
+EMIT LOG LINE ("intList is {0, 1} | ", intList);
+EMIT LOG LINE ("intList contains 1: true | ", containsIntTrue);
+EMIT LOG LINE ("intList contains 2: false | ", containsIntFalse);
+
+add(addressList, 0x2);
+add(intList, 2);
+
+EMIT LOG LINE ("addressList added by 0x2 is {0x0, 0x1, 0x2} | ", addressList);
+EMIT LOG LINE ("intList added by 2 is {0, 1, 2} | ", intList);
+
+remove(addressList, 0x2);
+
+EMIT LOG LINE ("addressList removed by 0x2 is again {0x0, 0x1} | ", addressList);
+
+EMIT LOG LINE ("====================================================================================");
+
+int[] intList1 = {0, 1, 1, 0, 1};
+int[] intList2 = {2, 1, 1, 2, 1};
+
+int value1 = mapValue(0,0,intList1,intList2);
+
+EMIT LOG LINE ("value1 is ", value1);
+
+int value2 = mapValue(0,0,intList1,intList2);
+
+EMIT LOG LINE ("value2 is ", value2);
+
+EMIT LOG LINE ("");
+EMIT LOG LINE ("CAPABILITIES ADDED IN BLF");
+EMIT LOG LINE ("");
+
+clear(addressList);
+
+EMIT LOG LINE ("addressList cleared is {} | ", addressList);
