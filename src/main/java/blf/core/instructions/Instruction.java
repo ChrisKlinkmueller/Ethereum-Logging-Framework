@@ -18,11 +18,10 @@ public abstract class Instruction {
     }
 
     protected Instruction(final List<Instruction> nestedInstructions) {
-        final ExceptionHandler exceptionHandler = new ExceptionHandler();
 
         nestedInstructions.forEach(instruction -> {
             if (instruction == null) {
-                exceptionHandler.handleException("Nested instruction can not be null.", new NullPointerException());
+                ExceptionHandler.getInstance().handleException("Nested instruction can not be null.", new NullPointerException());
             }
         });
 

@@ -5,6 +5,7 @@ import blf.blockchains.ethereum.instructions.EthereumConnectInstruction;
 import blf.blockchains.ethereum.instructions.EthereumConnectIpcInstruction;
 import blf.blockchains.ethereum.state.EthereumProgramState;
 import blf.configuration.*;
+import blf.core.exceptions.ExceptionHandler;
 import blf.grammar.BcqlParser;
 import blf.parsing.VariableExistenceListener;
 import blf.util.TypeUtils;
@@ -34,14 +35,14 @@ public class EthereumListener extends BaseBlockchainListener {
         final String literalText = ctx.literal().getText();
 
         if (literal.STRING_LITERAL() == null) {
-            this.state.getExceptionHandler()
-                .handleException("Ethereum SET CONNECTION parameter should be a String", new NullPointerException());
+            ExceptionHandler.getInstance()
+                .handleException("Ethereum SET CONNECTION parameter should be a String.", new NullPointerException());
 
             return;
         }
 
         if (this.composer.instructionListsStack.isEmpty()) {
-            this.state.getExceptionHandler().handleException("The Stack of instructions lists is empty.", new Exception());
+            ExceptionHandler.getInstance().handleException("The Stack of instructions lists is empty.", new Exception());
 
             return;
         }
@@ -70,26 +71,26 @@ public class EthereumListener extends BaseBlockchainListener {
         BlockNumberSpecification to = this.getBlockNumberSpecification(ctx.to);
 
         if (this.composer.states.peek() != SpecificationComposer.FactoryState.BLOCK_RANGE_FILTER) {
-            this.state.getExceptionHandler()
+            ExceptionHandler.getInstance()
                 .handleException("Cannot build a block filter, when construction of %s has not been finished.", new Exception());
 
             return;
         }
 
         if (from == null) {
-            this.state.getExceptionHandler().handleException("The FROM BlockNumberSpecification is null.", new NullPointerException());
+            ExceptionHandler.getInstance().handleException("The FROM BlockNumberSpecification is null.", new NullPointerException());
 
             return;
         }
 
         if (to == null) {
-            this.state.getExceptionHandler().handleException("The TO BlockNumberSpecification is null.", new NullPointerException());
+            ExceptionHandler.getInstance().handleException("The TO BlockNumberSpecification is null.", new NullPointerException());
 
             return;
         }
 
         if (this.composer.instructionListsStack.isEmpty()) {
-            this.state.getExceptionHandler().handleException("The Stack of instructions lists is empty.", new Exception());
+            ExceptionHandler.getInstance().handleException("The Stack of instructions lists is empty.", new Exception());
 
             return;
         }
@@ -126,7 +127,7 @@ public class EthereumListener extends BaseBlockchainListener {
             return BlockNumberSpecification.ofContinuous();
         }
 
-        this.state.getExceptionHandler()
+        ExceptionHandler.getInstance()
             .handleException("Block number specification failed: unsupported variable declaration.", new Exception());
 
         return null;
@@ -228,7 +229,7 @@ public class EthereumListener extends BaseBlockchainListener {
             return;
         }
 
-        this.state.getExceptionHandler().handleException(filterTypeNotSupportedMsg, new Exception());
+        ExceptionHandler.getInstance().handleException(filterTypeNotSupportedMsg, new Exception());
     }
 
     @Override
@@ -283,7 +284,7 @@ public class EthereumListener extends BaseBlockchainListener {
             return TypedValueAccessorSpecification.of(ctx.solType().getText(), this.getLiteral(ctx.literal()));
         }
 
-        this.state.getExceptionHandler()
+        ExceptionHandler.getInstance()
             .handleException(
                 "Creation of typed value accessor failed: Unsupported way of defining typed value accessors.",
                 new Exception()

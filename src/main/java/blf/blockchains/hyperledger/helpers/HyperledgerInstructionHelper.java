@@ -19,7 +19,7 @@ import java.util.stream.Collectors;
 
 public interface HyperledgerInstructionHelper {
 
-    public static final BigInteger CURRENT_BLOCK = BigInteger.valueOf(-1);
+    BigInteger CURRENT_BLOCK = BigInteger.valueOf(-1);
 
     static List<String> parseAddressListCtx(HyperledgerProgramState hyperledgerProgramState, BcqlParser.AddressListContext addressListCtx) {
 
@@ -51,7 +51,7 @@ public interface HyperledgerInstructionHelper {
                     addressListVariableNameCtx.getText()
                 );
 
-                hyperledgerProgramState.getExceptionHandler().handleException(errorMsg, e);
+                ExceptionHandler.getInstance().handleException(errorMsg, e);
             }
 
             if (value != null) {
@@ -74,7 +74,7 @@ public interface HyperledgerInstructionHelper {
         }
 
         if (addressNames == null) {
-            hyperledgerProgramState.getExceptionHandler().handleException("Variable 'addressNames' is null.", new NullPointerException());
+            ExceptionHandler.getInstance().handleException("Variable 'addressNames' is null.", new NullPointerException());
         }
 
         return addressNames;
@@ -84,8 +84,6 @@ public interface HyperledgerInstructionHelper {
         HyperledgerProgramState hyperledgerProgramState,
         BcqlParser.SmartContractFilterContext smartContractFilterCtx
     ) {
-
-        final ExceptionHandler exceptionHandler = hyperledgerProgramState.getExceptionHandler();
 
         String contractAddress = null;
 
@@ -101,7 +99,7 @@ public interface HyperledgerInstructionHelper {
                     smartContractFilterCtx.contractAddress.getText()
                 );
 
-                exceptionHandler.handleException(errorMsg, e);
+                ExceptionHandler.getInstance().handleException(errorMsg, e);
             }
         }
 
@@ -182,14 +180,13 @@ public interface HyperledgerInstructionHelper {
         BcqlParser.LogEntryFilterContext logEntryCtx
     ) {
 
-        final ExceptionHandler exceptionHandler = hyperledgerProgramState.getExceptionHandler();
         final BcqlParser.AddressListContext addressListCtx = logEntryCtx.addressList();
         final BcqlParser.LogEntrySignatureContext logEntrySignatureCtx = logEntryCtx.logEntrySignature();
 
         List<BcqlParser.LogEntryParameterContext> logEntryParameterContextList = logEntrySignatureCtx.logEntryParameter();
 
         if (logEntryParameterContextList == null) {
-            exceptionHandler.handleException("Variable 'logEntryParameterContextList' is null.", new NullPointerException());
+            ExceptionHandler.getInstance().handleException("Variable 'logEntryParameterContextList' is null.", new NullPointerException());
 
             logEntryParameterContextList = new LinkedList<>();
         }
@@ -238,8 +235,6 @@ public interface HyperledgerInstructionHelper {
         final BcqlParser.LiteralContext literalCtx = valueExpressionCtx.literal();
         final BcqlParser.VariableNameContext variableNameCtx = valueExpressionCtx.variableName();
 
-        final ExceptionHandler exceptionHandler = hyperledgerProgramState.getExceptionHandler();
-
         BigInteger blockNumber = null;
         if (literalCtx != null && literalCtx.INT_LITERAL() != null) {
             // Normal int
@@ -254,15 +249,16 @@ public interface HyperledgerInstructionHelper {
             } catch (NumberFormatException e) {
                 String errorMsg = String.format("Variable '%s' in manifest file is not an instance of Int.", fromBlockVariableName);
 
-                exceptionHandler.handleException(errorMsg, e);
+                ExceptionHandler.getInstance().handleException(errorMsg, e);
             }
 
         } else {
             // Fallback
-            exceptionHandler.handleException(
-                "Hyperledger BLOCKS (`from`)() parameter should be an Integer or a valid variable name.",
-                new NullPointerException()
-            );
+            ExceptionHandler.getInstance()
+                .handleException(
+                    "Hyperledger BLOCKS (`from`)() parameter should be an Integer or a valid variable name.",
+                    new NullPointerException()
+                );
         }
 
         return blockNumber;

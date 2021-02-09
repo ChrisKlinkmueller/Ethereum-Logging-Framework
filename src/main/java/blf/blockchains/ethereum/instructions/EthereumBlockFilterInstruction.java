@@ -49,39 +49,28 @@ public class EthereumBlockFilterInstruction extends BlockInstruction {
     public void execute(final ProgramState state) {
         final EthereumProgramState ethereumProgramState = (EthereumProgramState) state;
 
-        BigInteger currentBlock = BigInteger.ZERO;
-        try {
-            currentBlock = (BigInteger) fromBlock.getValue(ethereumProgramState);
+        BigInteger currentBlock = (BigInteger) fromBlock.getValue(ethereumProgramState);
 
-            while (!this.stopCriteria.test(ethereumProgramState, currentBlock)) {
+        while (!this.stopCriteria.test(ethereumProgramState, currentBlock)) {
 
-                this.waitUntilBlockExists(ethereumProgramState, currentBlock);
+            this.waitUntilBlockExists(ethereumProgramState, currentBlock);
 
-                final EthereumBlock block = ethereumProgramState.getReader().getClient().queryBlockData(currentBlock);
+            final EthereumBlock block = ethereumProgramState.getReader().getClient().queryBlockData(currentBlock);
 
-                final String blockProcessingStartMessage = String.format("Processing of block %s started", currentBlock);
-                final String blockProcessingFinishMessage = String.format("Processing of block %s finished", currentBlock);
+            final String blockProcessingStartMessage = String.format("Processing of block %s started", currentBlock);
+            final String blockProcessingFinishMessage = String.format("Processing of block %s finished", currentBlock);
 
-                LOGGER.info(blockProcessingStartMessage);
+            LOGGER.info(blockProcessingStartMessage);
 
-                ethereumProgramState.getReader().setCurrentBlock(block);
-                this.executeNestedInstructions(ethereumProgramState);
+            ethereumProgramState.getReader().setCurrentBlock(block);
+            this.executeNestedInstructions(ethereumProgramState);
 
-                LOGGER.info(blockProcessingFinishMessage);
+            LOGGER.info(blockProcessingFinishMessage);
 
-                currentBlock = currentBlock.add(BigInteger.ONE);
-            }
-        } catch (final Exception e) {
-            // TODO (by Mykola Digtiar): handle this exception inside the method that throws it
-            final String message = String.format("Error when processing block number '%s'", currentBlock.toString());
-            ethereumProgramState.getExceptionHandler().handleException(message, e);
-        } catch (final Throwable throwable) {
-            // TODO (by Mykola Digtiar): handle this exception inside the method that throws it
-            final String message = String.format("Error when processing block number '%s'", currentBlock.toString());
-            ethereumProgramState.getExceptionHandler().handleException(message, throwable);
-        } finally {
-            ethereumProgramState.getReader().setCurrentBlock(null);
+            currentBlock = currentBlock.add(BigInteger.ONE);
         }
+
+        ethereumProgramState.getReader().setCurrentBlock(null);
     }
 
     /**
@@ -98,20 +87,11 @@ public class EthereumBlockFilterInstruction extends BlockInstruction {
         timer.scheduleAtFixedRate(new TimerTask() {
             @Override
             public void run() {
-                boolean newBlockAvailable = false;
-                try {
-                    // queryBlockNumber().compareTo(expectedBlockNumber) is >= 0 iff queryBlockNumber() >= expectedBlockNumber
-                    newBlockAvailable = ethereumProgramState.getReader().getClient().queryBlockNumber().compareTo(expectedBlockNumber) >= 0;
-                } catch (Throwable throwable) {
-                    // TODO (by Mykola Digtiar): the exception should be handled in queryBlockNumber() method
-
-                    final String queryBlockNumberErrorMessage = String.format(
-                        "An error occurred while querying the block with number '%s'",
-                        expectedBlockNumber.toString()
-                    );
-
-                    ethereumProgramState.getExceptionHandler().handleException(queryBlockNumberErrorMessage, throwable);
-                }
+                // queryBlockNumber().compareTo(expectedBlockNumber) is >= 0 iff queryBlockNumber() >= expectedBlockNumber
+                boolean newBlockAvailable = ethereumProgramState.getReader()
+                    .getClient()
+                    .queryBlockNumber()
+                    .compareTo(expectedBlockNumber) >= 0;
 
                 if (newBlockAvailable) {
                     timer.cancel();

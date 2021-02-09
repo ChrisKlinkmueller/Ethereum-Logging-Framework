@@ -1,5 +1,6 @@
 package blf.library.compression;
 
+import blf.core.exceptions.ExceptionHandler;
 import blf.core.state.ProgramState;
 
 import java.math.BigInteger;
@@ -59,7 +60,7 @@ public class ValueDictionary {
                 targetClass
             );
 
-            state.getExceptionHandler().handleException(errorMsg, new Exception());
+            ExceptionHandler.getInstance().handleException(errorMsg, new Exception());
 
             return null;
         }

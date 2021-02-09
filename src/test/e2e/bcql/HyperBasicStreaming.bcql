@@ -2,6 +2,10 @@
 
 SET BLOCKCHAIN "Hyperledger"
 
+SET OUTPUT FOLDER "./HyperBasicStreaming"
+
+SET EMISSION MODE "streaming"
+
 SET CONNECTION {
    "hyperledger/connection-org1.yaml",
    "hyperledger/server.key",
@@ -9,10 +13,6 @@ SET CONNECTION {
    "Org1MSP",
    "mychannel"
 }
-
-SET OUTPUT FOLDER "./HyperBasicStreaming"
-
-SET EMISSION MODE "streaming"
 
 int blockNumberFrom = 30;
 int blockNumberTo = 33;

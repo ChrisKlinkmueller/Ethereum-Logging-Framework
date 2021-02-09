@@ -1,6 +1,7 @@
 package blf.blockchains.ethereum.variables;
 
 import blf.blockchains.ethereum.state.EthereumProgramState;
+import blf.core.exceptions.ExceptionHandler;
 import blf.core.values.BlockchainVariables;
 import blf.core.values.ValueAccessor;
 import blf.core.values.Variable;
@@ -21,7 +22,7 @@ public class EthereumVariables implements BlockchainVariables {
             try {
                 return ((EthereumProgramState) state).getReader().getCurrentBlock().getNumber();
             } catch (Exception e) {
-                state.getExceptionHandler().handleException("Error when retrieving the current block number.", e);
+                ExceptionHandler.getInstance().handleException("Error when retrieving the current block number.", e);
             }
 
             return null;

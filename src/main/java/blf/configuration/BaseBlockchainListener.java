@@ -1,12 +1,14 @@
 package blf.configuration;
 
 import blf.core.Program;
+import blf.core.exceptions.ExceptionHandler;
 import blf.core.instructions.SetOutputFolderInstruction;
 import blf.core.state.ProgramState;
 import blf.grammar.BcqlBaseListener;
 import blf.grammar.BcqlParser;
 import blf.parsing.InterpreterUtils;
 import blf.parsing.VariableExistenceListener;
+import blf.util.ListenerHelper;
 import blf.util.TypeUtils;
 
 import java.util.*;
@@ -59,12 +61,9 @@ public abstract class BaseBlockchainListener extends BcqlBaseListener {
 
     @Override
     public void enterOutputFolder(BcqlParser.OutputFolderContext ctx) {
-        final BcqlParser.LiteralContext literal = ctx.literal();
-        final String literalText = literal.getText();
-
-        if (literal.STRING_LITERAL() == null) {
-            LOGGER.severe("SET OUTPUT FOLDER parameter should be a String");
-            System.exit(1);
+        final String literalText = ListenerHelper.getOutputFolderLiteral(ctx);
+        if (literalText == null) {
+            return;
         }
 
         this.state.outputFolderPath = TypeUtils.parseStringLiteral(literalText);
@@ -74,30 +73,54 @@ public abstract class BaseBlockchainListener extends BcqlBaseListener {
 
     @Override
     public void enterEmissionMode(BcqlParser.EmissionModeContext ctx) {
-        if (ctx != null) {
-            if (ctx.literal().STRING_LITERAL() == null) {
-                LOGGER.severe("EMISSION MODE parameter should be a String");
-                System.exit(1);
-            }
+        if (ctx == null) {
+            ExceptionHandler.getInstance().handleException("EmissionModeContext is null.", new NullPointerException());
 
-            final String emissionMode = ctx.literal().getText().replace("\"", "").toLowerCase();
-            final Map<String, EmissionSettings.EmissionMode> emissionModeMap = EmissionSettings.getEmissionModeMap();
-
-            if (!emissionModeMap.containsKey(emissionMode)) {
-                LOGGER.severe("EMISSION MODE parameter should be either \"default batching\", \"safe batching\" or \"streaming\"");
-                System.exit(1);
-            }
-
-            this.state.setEmissionMode(emissionModeMap.get(emissionMode));
+            return;
         }
+
+        final BcqlParser.LiteralContext emissionModeLiteralCtx = ctx.literal();
+
+        if (emissionModeLiteralCtx.STRING_LITERAL() == null) {
+            ExceptionHandler.getInstance().handleException("EMISSION MODE parameter should be a String.", new NullPointerException());
+
+            return;
+        }
+
+        final String emissionModeStringLiteral = emissionModeLiteralCtx.STRING_LITERAL().getText();
+        final String emissionMode = TypeUtils.parseStringLiteral(emissionModeStringLiteral);
+        final Map<String, EmissionSettings.EmissionMode> emissionModeMap = EmissionSettings.getEmissionModeMap();
+
+        if (!emissionModeMap.containsKey(emissionMode)) {
+            ExceptionHandler.getInstance()
+                .handleException(
+                    "EMISSION MODE parameter should be either \"default batching\", \"safe batching\" or \"streaming\".",
+                    new Exception()
+                );
+
+            return;
+        }
+
+        this.state.setEmissionMode(emissionModeMap.get(emissionMode));
     }
 
     @Override
     public void enterAbortOnException(BcqlParser.AbortOnExceptionContext ctx) {
-        if (ctx != null) {
-            boolean abortionFlag = Boolean.parseBoolean(ctx.BOOLEAN_LITERAL().getText());
-            this.state.getExceptionHandler().setAbortOnException(abortionFlag);
+        if (ctx == null) {
+            ExceptionHandler.getInstance().handleException("AbortOnExceptionContext is null.", new NullPointerException());
+
+            return;
         }
+
+        if (ctx.BOOLEAN_LITERAL() == null) {
+            ExceptionHandler.getInstance().handleException("EMISSION MODE parameter should be a Boolean.", new NullPointerException());
+
+            return;
+        }
+
+        boolean abortionFlag = Boolean.parseBoolean(ctx.BOOLEAN_LITERAL().getText());
+
+        ExceptionHandler.getInstance().setAbortOnException(abortionFlag);
     }
 
     @Override
@@ -171,7 +194,7 @@ public abstract class BaseBlockchainListener extends BcqlBaseListener {
             return;
         }
 
-        this.state.getExceptionHandler()
+        ExceptionHandler.getInstance()
             .handleException("Adding variable assignment failed: This type of value definition is not supported.", new Exception());
     }
 
@@ -194,7 +217,7 @@ public abstract class BaseBlockchainListener extends BcqlBaseListener {
         final MethodSpecification method = MethodSpecification.of(ctx.methodName.getText(), parameterTypes);
 
         if (method == null) {
-            this.state.getExceptionHandler()
+            ExceptionHandler.getInstance()
                 .handleException("Adding method call failed: Method specification is null.", new NullPointerException());
 
             return;
@@ -266,7 +289,7 @@ public abstract class BaseBlockchainListener extends BcqlBaseListener {
                     break;
                 default:
                     final String errorMsg = String.format("Xes type '%s' not supported", varCtx.xesTypes().getText());
-                    this.state.getExceptionHandler().handleException(errorMsg, new Exception());
+                    ExceptionHandler.getInstance().handleException(errorMsg, new Exception());
 
                     parameter = null;
             }
@@ -290,7 +313,8 @@ public abstract class BaseBlockchainListener extends BcqlBaseListener {
             return this.getLiteral(ctx.literal());
         }
 
-        this.state.getExceptionHandler().handleException("This value accessor specification is not supported.", new Exception());
+        ExceptionHandler.getInstance().handleException("This value accessor specification is not supported.", new Exception());
+
         return null;
     }
 
@@ -336,7 +360,7 @@ public abstract class BaseBlockchainListener extends BcqlBaseListener {
         }
 
         final String errorMsg = String.format("Determination of literal type failed: Cannot determine type for literal %s.", ctx.getText());
-        this.state.getExceptionHandler().handleException(errorMsg, new Exception());
+        ExceptionHandler.getInstance().handleException(errorMsg, new Exception());
 
         return null;
     }
@@ -369,7 +393,7 @@ public abstract class BaseBlockchainListener extends BcqlBaseListener {
             return ValueAccessorSpecification.stringLiteral(literal);
         }
 
-        this.state.getExceptionHandler().handleException(errorMsg, new Exception());
+        ExceptionHandler.getInstance().handleException(errorMsg, new Exception());
 
         return null;
     }
@@ -379,7 +403,7 @@ public abstract class BaseBlockchainListener extends BcqlBaseListener {
         final String errorMsg = String.format("Unsupported type: '%s'.", type);
 
         if (!TypeUtils.isArrayType(type)) {
-            this.state.getExceptionHandler().handleException(errorMsg, new Exception());
+            ExceptionHandler.getInstance().handleException(errorMsg, new Exception());
 
             return null;
         }
@@ -404,7 +428,7 @@ public abstract class BaseBlockchainListener extends BcqlBaseListener {
             return ValueAccessorSpecification.stringArrayLiteral(literal);
         }
 
-        this.state.getExceptionHandler().handleException(errorMsg, new Exception());
+        ExceptionHandler.getInstance().handleException(errorMsg, new Exception());
 
         return null;
     }
@@ -434,17 +458,17 @@ public abstract class BaseBlockchainListener extends BcqlBaseListener {
         final String errorMsg = "Parse tree error: binary boolean expression requires boolean predicates.";
 
         if (this.genericFilterPredicates.size() < 2) {
-            this.state.getExceptionHandler()
+            ExceptionHandler.getInstance()
                 .handleException("Parse tree error: binary boolean expression requires at least two predicates.", new Exception());
         }
 
         if (!(this.genericFilterPredicates.peek() instanceof GenericFilterPredicateSpecification)) {
-            this.state.getExceptionHandler().handleException(errorMsg, new Exception());
+            ExceptionHandler.getInstance().handleException(errorMsg, new Exception());
         }
         final GenericFilterPredicateSpecification predicate1 = (GenericFilterPredicateSpecification) this.genericFilterPredicates.pop();
 
         if (!(this.genericFilterPredicates.peek() instanceof GenericFilterPredicateSpecification)) {
-            this.state.getExceptionHandler().handleException(errorMsg, new Exception());
+            ExceptionHandler.getInstance().handleException(errorMsg, new Exception());
         }
 
         final GenericFilterPredicateSpecification predicate2 = (GenericFilterPredicateSpecification) this.genericFilterPredicates.pop();
@@ -460,21 +484,21 @@ public abstract class BaseBlockchainListener extends BcqlBaseListener {
         }
 
         if (this.genericFilterPredicates.size() < 2) {
-            this.state.getExceptionHandler().handleException("Parse tree does not contain enough expressions.", new Exception());
+            ExceptionHandler.getInstance().handleException("Parse tree does not contain enough expressions.", new Exception());
 
             return;
         }
 
         final Object value2 = this.genericFilterPredicates.pop();
         if (!(value2 instanceof ValueAccessorSpecification)) {
-            this.state.getExceptionHandler().handleException("Can only compare values, but not boolean expressions.", new Exception());
+            ExceptionHandler.getInstance().handleException("Can only compare values, but not boolean expressions.", new Exception());
 
             return;
         }
 
         final Object value1 = this.genericFilterPredicates.pop();
         if (!(value1 instanceof ValueAccessorSpecification)) {
-            this.state.getExceptionHandler().handleException("Can only compare values, but not boolean expressions.", new Exception());
+            ExceptionHandler.getInstance().handleException("Can only compare values, but not boolean expressions.", new Exception());
 
             return;
         }
@@ -507,7 +531,7 @@ public abstract class BaseBlockchainListener extends BcqlBaseListener {
                 break;
             default:
                 final String errorMsg = String.format("Comparator %s not supported.", ctx.comparators().getText());
-                this.state.getExceptionHandler().handleException(errorMsg, new Exception());
+                ExceptionHandler.getInstance().handleException(errorMsg, new Exception());
         }
 
         this.genericFilterPredicates.push(predicate);
@@ -527,7 +551,7 @@ public abstract class BaseBlockchainListener extends BcqlBaseListener {
 
         if (!(valueExpression instanceof GenericFilterPredicateSpecification)) {
             final String errorMsg = String.format("GenericFilterPredicateSpecification required, but was %s.", valueExpression.getClass());
-            this.state.getExceptionHandler().handleException(errorMsg, new Exception());
+            ExceptionHandler.getInstance().handleException(errorMsg, new Exception());
 
             return;
         }
@@ -552,7 +576,7 @@ public abstract class BaseBlockchainListener extends BcqlBaseListener {
         LOGGER.info("Build generic filter");
 
         if (this.genericFilterPredicates.size() != 1) {
-            state.getExceptionHandler().handleException("Error in boolean expression tree.", new Exception());
+            ExceptionHandler.getInstance().handleException("Error in boolean expression tree.", new Exception());
         }
 
         final Object predicate = this.genericFilterPredicates.pop();
@@ -576,6 +600,6 @@ public abstract class BaseBlockchainListener extends BcqlBaseListener {
             "Building generic filter failed: Unsupported type for specification of generic filter predicates: %s",
             predicate.getClass()
         );
-        state.getExceptionHandler().handleException(errorMsg, new Exception());
+        ExceptionHandler.getInstance().handleException(errorMsg, new Exception());
     }
 }

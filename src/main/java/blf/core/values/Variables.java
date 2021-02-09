@@ -1,5 +1,6 @@
 package blf.core.values;
 
+import blf.core.exceptions.ExceptionHandler;
 import io.reactivex.annotations.NonNull;
 
 /**
@@ -21,7 +22,7 @@ public class Variables {
 
             if (!variableExists) {
                 final String errorMsg = String.format("Variable '%s' does not exist.", name);
-                state.getExceptionHandler().handleException(errorMsg, new Exception());
+                ExceptionHandler.getInstance().handleException(errorMsg, new Exception());
 
                 return null;
             }

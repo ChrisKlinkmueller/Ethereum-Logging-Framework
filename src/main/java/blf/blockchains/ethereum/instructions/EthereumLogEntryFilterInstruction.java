@@ -23,8 +23,6 @@ public class EthereumLogEntryFilterInstruction extends Instruction {
     private final FilterPredicate<String> contractCriterion;
     private final EthereumLogEntrySignature signature;
 
-    private final ExceptionHandler exceptionHandler;
-
     public EthereumLogEntryFilterInstruction(
         FilterPredicate<String> contractCriterion,
         EthereumLogEntrySignature signature,
@@ -41,8 +39,6 @@ public class EthereumLogEntryFilterInstruction extends Instruction {
         super(instructions);
         this.contractCriterion = contractCriterion;
         this.signature = signature;
-
-        this.exceptionHandler = new ExceptionHandler();
     }
 
     @Override
@@ -70,7 +66,7 @@ public class EthereumLogEntryFilterInstruction extends Instruction {
                 logEntry.getTransactionIndex(),
                 logEntry.getBlockNumber()
             );
-            state.getExceptionHandler().handleException(message, cause);
+            ExceptionHandler.getInstance().handleException(message, cause);
         } finally {
             ethereumProgramState.getReader().setCurrentTransaction(null);
         }
@@ -92,10 +88,11 @@ public class EthereumLogEntryFilterInstruction extends Instruction {
                 .flatMap(EthereumTransaction::logStream)
                 .collect(Collectors.toList());
         } else {
-            this.exceptionHandler.handleException(
-                "Log entries can only be extracted from blocks or transactions, but there is no open block or transaction.",
-                new Exception()
-            );
+            ExceptionHandler.getInstance()
+                .handleException(
+                    "Log entries can only be extracted from blocks or transactions, but there is no open block or transaction.",
+                    new Exception()
+                );
         }
 
         return new LinkedList<>();

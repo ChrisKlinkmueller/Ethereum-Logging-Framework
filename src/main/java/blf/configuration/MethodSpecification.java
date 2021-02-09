@@ -32,11 +32,10 @@ public class MethodSpecification {
 
     public static MethodSpecification of(String name, List<String> parameterTypes) {
         final Method method = Library.INSTANCE.findMethod(name, parameterTypes);
-        final ExceptionHandler exceptionHandler = new ExceptionHandler();
 
         if (method == null) {
             final String errorMsg = String.format("%s(%s)", name, String.join(",", parameterTypes));
-            exceptionHandler.handleException(errorMsg, new NullPointerException());
+            ExceptionHandler.getInstance().handleException(errorMsg, new NullPointerException());
 
             return null;
         }

@@ -39,27 +39,20 @@ public class Web3jClient implements EthereumClient {
     private final WebSocketService wsService;
     private final Web3j web3j;
 
-    private final ExceptionHandler exceptionHandler;
-
     private Web3jClient(WebSocketService wsService) {
         this.wsService = wsService;
         this.service = null;
         this.web3j = Web3j.build(wsService);
-
-        this.exceptionHandler = new ExceptionHandler();
     }
 
     private Web3jClient(Service service) {
         this.service = service;
         this.wsService = null;
         this.web3j = Web3j.build(service);
-
-        this.exceptionHandler = new ExceptionHandler();
     }
 
     // TODO: probably not the best solution to have a static function -> rework to make it non-static
     public static Web3jClient connectWebsocket(String url) {
-        final ExceptionHandler exceptionHandler = new ExceptionHandler();
 
         try {
             final WebSocketClient wsClient = new WebSocketClient(new URI(url));
@@ -69,7 +62,7 @@ public class Web3jClient implements EthereumClient {
 
             return new Web3jClient(wsService);
         } catch (Exception e) {
-            exceptionHandler.handleException(e.getMessage(), e);
+            ExceptionHandler.getInstance().handleException(e.getMessage(), e);
         }
 
         return null;
@@ -78,13 +71,11 @@ public class Web3jClient implements EthereumClient {
     // TODO: probably not the best solution to have a static function -> rework to make it non-static
     public static Web3jClient connectIpc(String path) {
 
-        final ExceptionHandler exceptionHandler = new ExceptionHandler();
-
         final Service service = createIpcService(path);
 
         if (service == null) {
             final String errorMsg = String.format("Ipc connection not for %s operating system.", osName());
-            exceptionHandler.handleException(errorMsg, new ConnectException());
+            ExceptionHandler.getInstance().handleException(errorMsg, new ConnectException());
 
             return null;
         }
@@ -138,7 +129,7 @@ public class Web3jClient implements EthereumClient {
             queryResult = this.web3j.ethBlockNumber().send();
 
             if (queryResult.hasError()) {
-                this.exceptionHandler.handleException(queryResult.getError().getMessage(), new IOException());
+                ExceptionHandler.getInstance().handleException(queryResult.getError().getMessage(), new IOException());
 
                 return null;
             }
@@ -146,7 +137,7 @@ public class Web3jClient implements EthereumClient {
             return queryResult.getBlockNumber();
 
         } catch (IOException e) {
-            this.exceptionHandler.handleException(e.getMessage(), e);
+            ExceptionHandler.getInstance().handleException(e.getMessage(), e);
         }
 
         return null;
@@ -177,20 +168,37 @@ public class Web3jClient implements EthereumClient {
         );
     }
 
-    public EthereumBlock queryBlockData(BigInteger blockNumber) throws IOException {
+    public EthereumBlock queryBlockData(BigInteger blockNumber) {
         final DefaultBlockParameterNumber number = new DefaultBlockParameterNumber(blockNumber);
 
-        final EthBlock blockResult = this.web3j.ethGetBlockByNumber(number, true).send();
+        final EthBlock blockResult;
+        try {
+            blockResult = this.web3j.ethGetBlockByNumber(number, true).send();
+        } catch (IOException e) {
+            ExceptionHandler.getInstance().handleException(e.getMessage(), e);
+
+            return null;
+        }
+
         if (blockResult.hasError()) {
-            this.exceptionHandler.handleException(blockResult.getError().getMessage(), new IOException());
+            ExceptionHandler.getInstance().handleException(blockResult.getError().getMessage(), new IOException());
 
             return null;
         }
 
         final EthFilter filter = new EthFilter(number, number, new ArrayList<>());
-        final EthLog logResult = this.web3j.ethGetLogs(filter).send();
+
+        final EthLog logResult;
+        try {
+            logResult = this.web3j.ethGetLogs(filter).send();
+        } catch (IOException e) {
+            ExceptionHandler.getInstance().handleException(e.getMessage(), e);
+
+            return null;
+        }
+
         if (logResult.hasError()) {
-            this.exceptionHandler.handleException(logResult.getError().getMessage(), new IOException());
+            ExceptionHandler.getInstance().handleException(logResult.getError().getMessage(), new IOException());
 
             return null;
         }
@@ -204,7 +212,7 @@ public class Web3jClient implements EthereumClient {
         try {
             transactionReceipt = this.web3j.ethGetTransactionReceipt(hash).send();
         } catch (IOException e) {
-            this.exceptionHandler.handleException(e.getMessage(), e);
+            ExceptionHandler.getInstance().handleException(e.getMessage(), e);
 
             return null;
         }

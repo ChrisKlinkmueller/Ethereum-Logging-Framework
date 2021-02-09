@@ -14,16 +14,12 @@ class Web3jTransaction extends EthereumTransaction {
     private final Transaction tx;
     private final Web3jClient client;
 
-    private final ExceptionHandler exceptionHandler;
-
     private TransactionReceipt receipt;
 
     public Web3jTransaction(final Web3jClient client, final EthereumBlock block, final Transaction tx) {
         this.tx = tx;
         this.setBlock(block);
         this.client = client;
-
-        this.exceptionHandler = new ExceptionHandler();
     }
 
     @Override
@@ -122,7 +118,7 @@ class Web3jTransaction extends EthereumTransaction {
         }
 
         if (this.receipt == null) {
-            this.exceptionHandler.handleException("The query transaction receipt is null.", new NullPointerException());
+            ExceptionHandler.getInstance().handleException("The query transaction receipt is null.", new NullPointerException());
 
             return null;
         }
