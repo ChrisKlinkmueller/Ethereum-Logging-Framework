@@ -46,12 +46,16 @@ int[] intList1 = {0, 1};
 int[] intList2 = {2, 1};
 
 int value1 = mapValue(0,0,intList1,intList2);
-
-EMIT LOG LINE ("ValueDictionary for various types:      mapValue(0,0,{0, 1},{2, 1}) is ", value1);
-
 int value2 = mapValue(1,1,intList1,intList2);
 
+EMIT LOG LINE ("ValueDictionary for various types:      mapValue(0,0,{0, 1},{2, 1}) is ", value1);
 EMIT LOG LINE ("ValueDictionary for various types:      mapValue(1,1,{0, 1},{2, 1}) is ", value2);
+
+int value3 = mapBits(1,0,1,intList1);
+int value4 = mapBits(0,1,0,intList2);
+
+EMIT LOG LINE ("BitMapping for various types:           mapBits(1,0,1,{0, 1}) is ", value3);
+EMIT LOG LINE ("BitMapping for various types:           mapBits(0,1,0,{2, 1}) is ", value4);
 
 EMIT LOG LINE ("========================================================================================================================");
 EMIT LOG LINE ("");
