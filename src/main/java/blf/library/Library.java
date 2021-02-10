@@ -53,21 +53,25 @@ public class Library {
             this.addMethod(new MethodSignature("add", null, TYPE_BOOLLIST, TYPE_BOOL), ListOperations::addElement);
             this.addMethod(new MethodSignature("remove", null, TYPE_BOOLLIST, TYPE_BOOL), ListOperations::removeElement);
             this.addMethod(new MethodSignature("clear", null, TYPE_BOOLLIST), ListOperations::clear);
+            this.addMethod(new MethodSignature("get", TYPE_BOOL, TYPE_BOOLLIST, TYPE_INT), ListOperations::get);
 
             this.addMethod(new MethodSignature("contains", TYPE_BOOL, TYPE_INTLIST, TYPE_INT), ListOperations::contains);
             this.addMethod(new MethodSignature("add", null, TYPE_INTLIST, TYPE_INT), ListOperations::addElement);
             this.addMethod(new MethodSignature("remove", null, TYPE_INTLIST, TYPE_INT), ListOperations::removeElement);
             this.addMethod(new MethodSignature("clear", null, TYPE_INTLIST), ListOperations::clear);
+            this.addMethod(new MethodSignature("get", TYPE_INT, TYPE_INTLIST, TYPE_INT), ListOperations::get);
 
             this.addMethod(new MethodSignature("contains", TYPE_BOOL, TYPE_STRINGLIST, TYPE_STRING), ListOperations::contains);
             this.addMethod(new MethodSignature("add", null, TYPE_STRINGLIST, TYPE_STRING), ListOperations::addElement);
             this.addMethod(new MethodSignature("remove", null, TYPE_STRINGLIST, TYPE_STRING), ListOperations::removeElement);
             this.addMethod(new MethodSignature("clear", null, TYPE_STRINGLIST), ListOperations::clear);
+            this.addMethod(new MethodSignature("get", TYPE_STRING, TYPE_STRINGLIST, TYPE_INT), ListOperations::get);
 
             this.addMethod(new MethodSignature("contains", TYPE_BOOL, TYPE_ADDRESSLIST, TYPE_ADDRESS), ListOperations::contains);
             this.addMethod(new MethodSignature("add", null, TYPE_ADDRESSLIST, TYPE_ADDRESS), ListOperations::addElement);
             this.addMethod(new MethodSignature("remove", null, TYPE_ADDRESSLIST, TYPE_ADDRESS), ListOperations::removeElement);
             this.addMethod(new MethodSignature("clear", null, TYPE_ADDRESSLIST), ListOperations::clear);
+            this.addMethod(new MethodSignature("get", TYPE_ADDRESS, TYPE_ADDRESSLIST, TYPE_INT), ListOperations::get);
 
 
             this.addMethod(ValueDictionary::boolToBool, TYPE_BOOL, ValueDictionary.METHOD_NAME, TYPE_BOOL, TYPE_BOOL, TYPE_BOOLLIST, TYPE_BOOLLIST);

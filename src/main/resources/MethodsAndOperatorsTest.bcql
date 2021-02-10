@@ -83,8 +83,18 @@ EMIT LOG LINE ("ListOperation remove for int[]:         {0, 1, 2} removed by 2 i
 EMIT LOG LINE ("ListOperation remove for bool[]:        {true, false, true} removed by true is ", boolList);
 EMIT LOG LINE ("ListOperation remove for string[]:      {Ethereum, Hyperledger, Bitcoin} removed by Bitcoin is ", stringList);
 
-clear(intList);
+address v1 = get(addressList, 1);
+int v2 = get(intList, 1);
+bool v3 = get(boolList, 1);
+string v4 = get(stringList, 1);
+
+EMIT LOG LINE ("ListOperation get for address[]:        get index 1 of {0x0, 0x1} is ", v1);
+EMIT LOG LINE ("ListOperation get for int[]:            get index 1 of {0, 1} is ", v2);
+EMIT LOG LINE ("ListOperation get for bool[]:           get index 1 of {false, true} is ", v3);
+EMIT LOG LINE ("ListOperation get for string[]:         get index 1 of {Ethereum, Hyperledger} is ", v4);
+
 clear(addressList);
+clear(intList);
 clear(boolList);
 clear(stringList);
 
@@ -92,3 +102,5 @@ EMIT LOG LINE ("ListOperation clear for address[]:      {0x0, 0x1} cleared is ",
 EMIT LOG LINE ("ListOperation clear for int[]:          {0, 1} cleared is ", intList);
 EMIT LOG LINE ("ListOperation clear for bool[]:         {false, true} cleared is ", boolList);
 EMIT LOG LINE ("ListOperation clear for string[]:       {Ethereum, Hyperledger} cleared is ", stringList);
+
+EMIT LOG LINE ("========================================================================================================================");

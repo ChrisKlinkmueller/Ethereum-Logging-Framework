@@ -3,6 +3,7 @@ package blf.library.types;
 import blf.core.state.ProgramState;
 import io.reactivex.functions.BiFunction;
 
+import java.math.BigInteger;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.function.Function;
@@ -57,6 +58,10 @@ public class ListOperations {
 
     public static Boolean contains(Object[] parameters, ProgramState state) {
         return operateBiFunction(state, parameters, List::contains);
+    }
+
+    public static Object get(Object[] parameters, ProgramState state) {
+        return operateBiFunction(state, parameters, (list, value) -> list.get(((BigInteger) value).intValue()));
     }
 
     @SuppressWarnings("unchecked")
