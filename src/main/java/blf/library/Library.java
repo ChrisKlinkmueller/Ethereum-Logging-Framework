@@ -32,14 +32,6 @@ public class Library {
     private static final String TYPE_STRINGLIST = "string[]";
     private static final String TYPE_ADDRESSLIST = "address[]";
 
-    private static final Map<String, String> TYPE_MAPPING = Map.of(
-            TYPE_BOOL, TYPE_BOOLLIST,
-            TYPE_INT, TYPE_INTLIST,
-            TYPE_BYTE, TYPE_BYTELIST,
-            TYPE_STRING, TYPE_STRINGLIST,
-            TYPE_ADDRESS, TYPE_ADDRESSLIST
-    );
-
     private final Map<String, List<LibraryEntry>> registeredMethods;
 
     private Library() {
@@ -51,18 +43,32 @@ public class Library {
             this.addMethod(new MethodSignature("subtract", TYPE_INT, TYPE_INT, TYPE_INT), IntegerOperations::subtract);
             this.addMethod(new MethodSignature("divide", TYPE_INT, TYPE_INT, TYPE_INT), IntegerOperations::divide);
 
-            for(Map.Entry<String, String> TYPE_Pair: TYPE_MAPPING.entrySet()) {
-                this.addMethod(new MethodSignature("contains", TYPE_BOOL, TYPE_Pair.getValue(), TYPE_Pair.getKey()), ListOperations::contains);
-                this.addMethod(new MethodSignature("add", null, TYPE_Pair.getValue(), TYPE_Pair.getKey()), ListOperations::addElement);
-                this.addMethod(new MethodSignature("remove", null, TYPE_Pair.getValue(), TYPE_Pair.getKey()), ListOperations::removeElement);
-                this.addMethod(new MethodSignature("clear", null, TYPE_Pair.getValue()), ListOperations::clear);
-            }
-
             this.addMethod(ListOperations::newAddressArray, TYPE_ADDRESSLIST, "newAddressArray");
             this.addMethod(ListOperations::newBoolArray, TYPE_BOOLLIST, "newBoolArray");
             this.addMethod(ListOperations::newByteArray, TYPE_BYTELIST, "newByteArray");
             this.addMethod(ListOperations::newIntArray, TYPE_INTLIST, "newIntArray");
             this.addMethod(ListOperations::newStringArray, TYPE_STRINGLIST, "newStringArray");
+
+            this.addMethod(new MethodSignature("contains", TYPE_BOOL, TYPE_BOOLLIST, TYPE_BOOL), ListOperations::contains);
+            this.addMethod(new MethodSignature("add", null, TYPE_BOOLLIST, TYPE_BOOL), ListOperations::addElement);
+            this.addMethod(new MethodSignature("remove", null, TYPE_BOOLLIST, TYPE_BOOL), ListOperations::removeElement);
+            this.addMethod(new MethodSignature("clear", null, TYPE_BOOLLIST), ListOperations::clear);
+
+            this.addMethod(new MethodSignature("contains", TYPE_BOOL, TYPE_INTLIST, TYPE_INT), ListOperations::contains);
+            this.addMethod(new MethodSignature("add", null, TYPE_INTLIST, TYPE_INT), ListOperations::addElement);
+            this.addMethod(new MethodSignature("remove", null, TYPE_INTLIST, TYPE_INT), ListOperations::removeElement);
+            this.addMethod(new MethodSignature("clear", null, TYPE_INTLIST), ListOperations::clear);
+
+            this.addMethod(new MethodSignature("contains", TYPE_BOOL, TYPE_STRINGLIST, TYPE_STRING), ListOperations::contains);
+            this.addMethod(new MethodSignature("add", null, TYPE_STRINGLIST, TYPE_STRING), ListOperations::addElement);
+            this.addMethod(new MethodSignature("remove", null, TYPE_STRINGLIST, TYPE_STRING), ListOperations::removeElement);
+            this.addMethod(new MethodSignature("clear", null, TYPE_STRINGLIST), ListOperations::clear);
+
+            this.addMethod(new MethodSignature("contains", TYPE_BOOL, TYPE_ADDRESSLIST, TYPE_ADDRESS), ListOperations::contains);
+            this.addMethod(new MethodSignature("add", null, TYPE_ADDRESSLIST, TYPE_ADDRESS), ListOperations::addElement);
+            this.addMethod(new MethodSignature("remove", null, TYPE_ADDRESSLIST, TYPE_ADDRESS), ListOperations::removeElement);
+            this.addMethod(new MethodSignature("clear", null, TYPE_ADDRESSLIST), ListOperations::clear);
+
 
             this.addMethod(ValueDictionary::boolToBool, TYPE_BOOL, ValueDictionary.METHOD_NAME, TYPE_BOOL, TYPE_BOOL, TYPE_BOOLLIST, TYPE_BOOLLIST);
             this.addMethod(ValueDictionary::stringToBool, TYPE_BOOL, ValueDictionary.METHOD_NAME, TYPE_BYTE, TYPE_BOOL, TYPE_BYTELIST, TYPE_BOOLLIST);
@@ -84,6 +90,7 @@ public class Library {
             this.addMethod(BitMapping::mapBitsToString, TYPE_BYTE, BitMapping.METHOD_NAME, TYPE_INT, TYPE_INT, TYPE_INT, TYPE_BYTELIST);
             this.addMethod(BitMapping::mapBitsToInt, TYPE_INT, BitMapping.METHOD_NAME, TYPE_INT, TYPE_INT, TYPE_INT, TYPE_INTLIST);
             this.addMethod(BitMapping::mapBitsToBool, TYPE_BOOL, BitMapping.METHOD_NAME, TYPE_INT, TYPE_INT, TYPE_INT, TYPE_BOOLLIST);
+
         } catch (LibraryException e) {
             e.printStackTrace();
         }
