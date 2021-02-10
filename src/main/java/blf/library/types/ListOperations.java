@@ -36,36 +36,48 @@ public class ListOperations {
     }
 
     public static Object addElement(Object[] parameters, ProgramState state) {
-        return operateBiFunction(state, parameters, (list, value) -> {
+        return operate(state, parameters, (list, value) -> {
             list.add(value);
             return list;
         });
     }
 
     public static Object removeElement(Object[] parameters, ProgramState state) {
-        return operateBiFunction(state, parameters, (list, value) -> {
+        return operate(state, parameters, (list, value) -> {
             list.remove(value);
             return list;
         });
     }
 
     public static Object clear(Object[] parameters, ProgramState state) {
-        return operateFunction(state, parameters, (list) -> {
+        return operate(state, parameters, (list) -> {
             list.clear();
             return list;
         });
     }
 
     public static Boolean contains(Object[] parameters, ProgramState state) {
-        return operateBiFunction(state, parameters, List::contains);
+        return operate(state, parameters, List::contains);
     }
 
     public static Object get(Object[] parameters, ProgramState state) {
-        return operateBiFunction(state, parameters, (list, value) -> list.get(((BigInteger) value).intValue()));
+        return operate(state, parameters, (list, value) -> list.get(((BigInteger) value).intValue()));
+    }
+
+    public static BigInteger reduceToSum(Object[] parameters, ProgramState state) {
+        return operate(state, parameters, (list)  -> list.stream().map(num -> (BigInteger) num).reduce(BigInteger::add).get());
+    }
+
+    public static BigInteger reduceToProduct(Object[] parameters, ProgramState state) {
+        return operate(state, parameters, (list)  -> list.stream().map(num -> (BigInteger) num).reduce(BigInteger::multiply).get());
+    }
+
+    public static String reduceToString(Object[] parameters, ProgramState state) {
+        return operate(state, parameters, (list)  -> list.stream().map(e -> e.toString()).reduce("", String::concat));
     }
 
     @SuppressWarnings("unchecked")
-    private static <T> T operateFunction(ProgramState state, Object[] parameters, Function<List<Object>, T> operation) {
+    private static <T> T operate(ProgramState state, Object[] parameters, Function<List<Object>, T> operation) {
         if (!areValidParametersFunction(parameters)) {
             state.getExceptionHandler().handleException("Invalid parameters for method call.", new Exception());
 
@@ -84,7 +96,7 @@ public class ListOperations {
     }
 
     @SuppressWarnings("unchecked")
-    private static <T> T operateBiFunction(ProgramState state, Object[] parameters, BiFunction<List<Object>, Object, T> operation) {
+    private static <T> T operate(ProgramState state, Object[] parameters, BiFunction<List<Object>, Object, T> operation) {
         if (!areValidParametersBiFunction(parameters)) {
             state.getExceptionHandler().handleException("Invalid parameters for method call.", new Exception());
 

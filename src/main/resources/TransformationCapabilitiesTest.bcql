@@ -1,0 +1,141 @@
+// Author: Tom Knoche
+
+SET BLOCKCHAIN "Ethereum"
+SET CONNECTION "ws://localhost:8546/"
+SET OUTPUT FOLDER "./test_output"
+
+EMIT LOG LINE ("");
+EMIT LOG LINE ("                                   TRANSFORMATION CAPABILITIES FROM PREVIOUS VERSION");
+EMIT LOG LINE ("");
+EMIT LOG LINE ("========================================================================================================================");
+EMIT LOG LINE ("INTEGER OPERATIONS");
+EMIT LOG LINE ("");
+
+int sum = add(3, 3);
+int product = multiply(3, 3);
+int difference = subtract(6, 3);
+int quotient = divide(6, 3);
+
+EMIT LOG LINE ("Addition:                                   3 + 3 = ", sum);
+EMIT LOG LINE ("Multiplication:                             6 - 3 = ", difference);
+EMIT LOG LINE ("Substraction:                               3 * 3 = ", product);
+EMIT LOG LINE ("Division:                                   6 / 3 = ", quotient);
+
+EMIT LOG LINE ("");
+EMIT LOG LINE ("========================================================================================================================");
+EMIT LOG LINE ("LIST OPERATIONS");
+EMIT LOG LINE ("");
+
+address[] addressList = {0x0, 0x1};
+int[] intList = {0, 1};
+
+bool containsAddressTrue = contains(addressList, 0x1);
+bool containsIntFalse = contains(intList, 2);
+
+EMIT LOG LINE ("ListOperation contain for address[]:        ", addressList, " contains 0x1 is ", containsAddressTrue);
+EMIT LOG LINE ("ListOperation contain for int[]:            ", intList, " contains 2 is ", containsIntFalse);
+EMIT LOG LINE ("");
+
+add(addressList, 0x2);
+add(intList, 2);
+
+EMIT LOG LINE ("ListOperation add for address[]:            {0x0, 0x1} added by 0x2 is ", addressList);
+EMIT LOG LINE ("ListOperation add for int[]:                {0, 1} added by 2 is ", intList);
+EMIT LOG LINE ("");
+
+remove(addressList, 0x2);
+
+EMIT LOG LINE ("ListOperation remove for address[]:         {0x0, 0x1, 0x2} removed by 0x2 is ", addressList);
+
+EMIT LOG LINE ("");
+EMIT LOG LINE ("========================================================================================================================");
+EMIT LOG LINE ("COMPRESSION OPERATIONS");
+EMIT LOG LINE ("");
+
+int[] intList1 = {0, 1};
+int[] intList2 = {2, 1};
+
+int value1 = mapValue(0,0,intList1,intList2);
+int value2 = mapValue(1,1,intList1,intList2);
+
+EMIT LOG LINE ("ValueDictionary for various types:          mapValue(0,0,{0, 1},{2, 1}) is ", value1);
+EMIT LOG LINE ("ValueDictionary for various types:          mapValue(1,1,{0, 1},{2, 1}) is ", value2);
+EMIT LOG LINE ("");
+
+int value3 = mapBits(1,0,1,intList1);
+int value4 = mapBits(0,1,0,intList2);
+
+EMIT LOG LINE ("BitMapping for various types:               mapBits(1,0,1,{0, 1}) is ", value3);
+EMIT LOG LINE ("BitMapping for various types:               mapBits(0,1,0,{2, 1}) is ", value4);
+
+EMIT LOG LINE ("");
+EMIT LOG LINE ("========================================================================================================================");
+EMIT LOG LINE ("");
+EMIT LOG LINE ("                                       TRANSFORMATION CAPABILITIES ADDED IN BLF");
+EMIT LOG LINE ("");
+EMIT LOG LINE ("========================================================================================================================");
+EMIT LOG LINE ("EXTENDED LIST OPERATIONS TO OTHER LIST TYPES");
+EMIT LOG LINE ("");
+
+bool[] boolList = {true, false};
+string[] stringList = {"Ethereum", "Hyperledger"};
+
+bool containsBoolTrue = contains(boolList, false);
+bool containsStringFalse = contains(stringList, "Bitcoin");
+
+EMIT LOG LINE ("ListOperation contain for bool[]:           ", boolList, " contains false is ", containsBoolTrue);
+EMIT LOG LINE ("ListOperation contain for string[]:         ", stringList, " contains Bitcoin is ", containsStringFalse);
+EMIT LOG LINE ("");
+
+add(boolList, true);
+add(stringList, "Bitcoin");
+
+EMIT LOG LINE ("ListOperation add for bool[]:               {true, false} added true is ", boolList);
+EMIT LOG LINE ("ListOperation add for string[]:             {Ethereum, Hyperledger} added Bitcoin is ", stringList);
+EMIT LOG LINE ("");
+
+remove(intList, 2);
+remove(boolList, true);
+remove(stringList, "Bitcoin");
+
+EMIT LOG LINE ("ListOperation remove for int[]:             {0, 1, 2} removed 2 is ", intList);
+EMIT LOG LINE ("ListOperation remove for bool[]:            {true, false, true} removed true is ", boolList);
+EMIT LOG LINE ("ListOperation remove for string[]:          {Ethereum, Hyperledger, Bitcoin} removed Bitcoin is ", stringList);
+
+
+EMIT LOG LINE ("");
+EMIT LOG LINE ("========================================================================================================================");
+EMIT LOG LINE ("NEW LIST OPERATIONS");
+EMIT LOG LINE ("");
+
+address v1 = get(addressList, 1);
+int v2 = get(intList, 1);
+bool v3 = get(boolList, 1);
+string v4 = get(stringList, 1);
+
+EMIT LOG LINE ("ListOperation get for address[]:            get index 1 of {0x0, 0x1} is ", v1);
+EMIT LOG LINE ("ListOperation get for int[]:                get index 1 of {0, 1} is ", v2);
+EMIT LOG LINE ("ListOperation get for bool[]:               get index 1 of {false, true} is ", v3);
+EMIT LOG LINE ("ListOperation get for string[]:             get index 1 of {Ethereum, Hyperledger} is ", v4);
+EMIT LOG LINE ("");
+
+clear(addressList);
+clear(intList);
+clear(boolList);
+clear(stringList);
+
+EMIT LOG LINE ("ListOperation clear for address[]:          {0x0, 0x1} cleared is ", addressList);
+EMIT LOG LINE ("ListOperation clear for int[]:              {0, 1} cleared is ", intList);
+EMIT LOG LINE ("ListOperation clear for bool[]:             {false, true} cleared is ", boolList);
+EMIT LOG LINE ("ListOperation clear for string[]:           {Ethereum, Hyperledger} cleared is ", stringList);
+EMIT LOG LINE ("");
+
+int[] intList3 = {2, 3, 4, 5};
+string[] stringList1 = {"Hello ", "BLF"};
+int v5 = reduceToSum(intList3);
+int v6 = reduceToProduct(intList3);
+string v7 = reduceToString(stringList1);
+
+EMIT LOG LINE ("ListOperation reduceToSum for int[]:        {2, 3, 4, 5} reduced to sum is ", v5);
+EMIT LOG LINE ("ListOperation reduceToProduct for int[]:    {2, 3, 4, 5} reduced to product is ", v6);
+EMIT LOG LINE ("ListOperation reduceToString for string[]:  {Hello , BLF} reduced to string is ", v7);

@@ -49,24 +49,31 @@ public class Library {
             this.addMethod(ListOperations::newIntArray, TYPE_INTLIST, "newIntArray");
             this.addMethod(ListOperations::newStringArray, TYPE_STRINGLIST, "newStringArray");
 
+            // Boolean List Operations
             this.addMethod(new MethodSignature("contains", TYPE_BOOL, TYPE_BOOLLIST, TYPE_BOOL), ListOperations::contains);
             this.addMethod(new MethodSignature("add", null, TYPE_BOOLLIST, TYPE_BOOL), ListOperations::addElement);
             this.addMethod(new MethodSignature("remove", null, TYPE_BOOLLIST, TYPE_BOOL), ListOperations::removeElement);
             this.addMethod(new MethodSignature("clear", null, TYPE_BOOLLIST), ListOperations::clear);
             this.addMethod(new MethodSignature("get", TYPE_BOOL, TYPE_BOOLLIST, TYPE_INT), ListOperations::get);
 
+            // Integer List Operations
             this.addMethod(new MethodSignature("contains", TYPE_BOOL, TYPE_INTLIST, TYPE_INT), ListOperations::contains);
             this.addMethod(new MethodSignature("add", null, TYPE_INTLIST, TYPE_INT), ListOperations::addElement);
             this.addMethod(new MethodSignature("remove", null, TYPE_INTLIST, TYPE_INT), ListOperations::removeElement);
             this.addMethod(new MethodSignature("clear", null, TYPE_INTLIST), ListOperations::clear);
             this.addMethod(new MethodSignature("get", TYPE_INT, TYPE_INTLIST, TYPE_INT), ListOperations::get);
+            this.addMethod(new MethodSignature("reduceToSum", TYPE_INT, TYPE_INTLIST), ListOperations::reduceToSum);
+            this.addMethod(new MethodSignature("reduceToProduct", TYPE_INT, TYPE_INTLIST), ListOperations::reduceToProduct);
 
+            // String List Operations
             this.addMethod(new MethodSignature("contains", TYPE_BOOL, TYPE_STRINGLIST, TYPE_STRING), ListOperations::contains);
             this.addMethod(new MethodSignature("add", null, TYPE_STRINGLIST, TYPE_STRING), ListOperations::addElement);
             this.addMethod(new MethodSignature("remove", null, TYPE_STRINGLIST, TYPE_STRING), ListOperations::removeElement);
             this.addMethod(new MethodSignature("clear", null, TYPE_STRINGLIST), ListOperations::clear);
             this.addMethod(new MethodSignature("get", TYPE_STRING, TYPE_STRINGLIST, TYPE_INT), ListOperations::get);
+            this.addMethod(new MethodSignature("reduceToString", TYPE_STRING, TYPE_STRINGLIST), ListOperations::reduceToString);
 
+            // Address List Operations
             this.addMethod(new MethodSignature("contains", TYPE_BOOL, TYPE_ADDRESSLIST, TYPE_ADDRESS), ListOperations::contains);
             this.addMethod(new MethodSignature("add", null, TYPE_ADDRESSLIST, TYPE_ADDRESS), ListOperations::addElement);
             this.addMethod(new MethodSignature("remove", null, TYPE_ADDRESSLIST, TYPE_ADDRESS), ListOperations::removeElement);
