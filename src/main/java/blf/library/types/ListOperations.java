@@ -50,7 +50,7 @@ public class ListOperations {
     }
 
     public static Object clear(Object[] parameters, ProgramState state) {
-        return operate(state, parameters, (list) -> {
+        return operate(state, parameters, list -> {
             list.clear();
             return list;
         });
@@ -65,15 +65,15 @@ public class ListOperations {
     }
 
     public static BigInteger reduceToSum(Object[] parameters, ProgramState state) {
-        return operate(state, parameters, (list)  -> list.stream().map(num -> (BigInteger) num).reduce(BigInteger::add).get());
+        return operate(state, parameters, list  -> list.stream().map(num -> (BigInteger) num).reduce(BigInteger::add).get());
     }
 
     public static BigInteger reduceToProduct(Object[] parameters, ProgramState state) {
-        return operate(state, parameters, (list)  -> list.stream().map(num -> (BigInteger) num).reduce(BigInteger::multiply).get());
+        return operate(state, parameters, list  -> list.stream().map(num -> (BigInteger) num).reduce(BigInteger::multiply).get());
     }
 
     public static String reduceToString(Object[] parameters, ProgramState state) {
-        return operate(state, parameters, (list)  -> list.stream().map(e -> e.toString()).reduce("", String::concat));
+        return operate(state, parameters, list  -> list.stream().map(Object::toString).reduce("", String::concat));
     }
 
     @SuppressWarnings("unchecked")
