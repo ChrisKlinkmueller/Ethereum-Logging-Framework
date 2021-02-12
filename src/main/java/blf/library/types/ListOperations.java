@@ -65,15 +65,15 @@ public class ListOperations {
     }
 
     public static BigInteger reduceToSum(Object[] parameters, ProgramState state) {
-        return operate(state, parameters, list  -> list.stream().map(num -> (BigInteger) num).reduce(BigInteger::add).get());
+        return operate(state, parameters, list -> list.stream().map(num -> (BigInteger) num).reduce(BigInteger::add).get());
     }
 
     public static BigInteger reduceToProduct(Object[] parameters, ProgramState state) {
-        return operate(state, parameters, list  -> list.stream().map(num -> (BigInteger) num).reduce(BigInteger::multiply).get());
+        return operate(state, parameters, list -> list.stream().map(num -> (BigInteger) num).reduce(BigInteger::multiply).get());
     }
 
     public static String reduceToString(Object[] parameters, ProgramState state) {
-        return operate(state, parameters, list  -> list.stream().map(Object::toString).reduce("", String::concat));
+        return operate(state, parameters, list -> list.stream().map(Object::toString).reduce("", String::concat));
     }
 
     @SuppressWarnings("unchecked")
@@ -117,9 +117,9 @@ public class ListOperations {
 
     private static boolean areValidParametersFunction(Object[] parameters) {
         return parameters != null
-                && parameters.length == 1
-                && parameters[0] != null
-                && List.class.isAssignableFrom(parameters[0].getClass());
+            && parameters.length == 1
+            && parameters[0] != null
+            && List.class.isAssignableFrom(parameters[0].getClass());
 
     }
 

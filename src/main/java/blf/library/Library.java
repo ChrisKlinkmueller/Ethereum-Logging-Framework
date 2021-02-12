@@ -20,7 +20,7 @@ import blf.library.util.ReaderOperations;
  * <p>
  * The type constants instantiated in the beginning of this file correspond to the types defined in the grammar files of
  * the parser generator ANTLR4. The Java type implication does not match in every case, e.g. TYPE_INT/"int" is a BigInteger
- * or TYPE_INTLIST/"int[]" is a List<BigInteger> as parameter or return value in the methods.
+ * or TYPE_INTLIST/"int[]" is a List&lt;BigInteger&gt; as parameter or return value in the methods.
  * <p>
  * For more information look into the "Transformation Capabilities" segment in the wiki or check out and run the manifest
  * file "TransformationCapabilities.bcql".
@@ -29,7 +29,6 @@ import blf.library.util.ReaderOperations;
 public class Library {
     private static final Logger LOGGER = Logger.getLogger(Library.class.getName());
     public static final Library INSTANCE = new Library();
-
 
     private static final String TYPE_BOOL = "bool";
     private static final String TYPE_INT = "int";
@@ -58,8 +57,14 @@ public class Library {
             // String Operations
             this.addMethod(new MethodSignature("split", TYPE_STRINGLIST, TYPE_STRING, TYPE_STRING), StringOperations::split);
             this.addMethod(new MethodSignature("match", TYPE_BOOL, TYPE_STRING, TYPE_STRING), StringOperations::matches);
-            this.addMethod(new MethodSignature("replaceFirst", TYPE_STRING, TYPE_STRING, TYPE_STRING, TYPE_STRING), StringOperations::replaceFirst);
-            this.addMethod(new MethodSignature("replaceAll", TYPE_STRING, TYPE_STRING, TYPE_STRING, TYPE_STRING), StringOperations::replaceAll);
+            this.addMethod(
+                new MethodSignature("replaceFirst", TYPE_STRING, TYPE_STRING, TYPE_STRING, TYPE_STRING),
+                StringOperations::replaceFirst
+            );
+            this.addMethod(
+                new MethodSignature("replaceAll", TYPE_STRING, TYPE_STRING, TYPE_STRING, TYPE_STRING),
+                StringOperations::replaceAll
+            );
             this.addMethod(new MethodSignature("length", TYPE_INT, TYPE_STRING), StringOperations::length);
 
             // Boolean List Operations
@@ -104,22 +109,150 @@ public class Library {
             this.addMethod(new MethodSignature("readIn", TYPE_STRINGLIST, TYPE_STRING), ReaderOperations::readIn);
 
             // Compression Operations (Only used in the Ethereum Generator)
-            this.addMethod(ValueDictionary::boolToBool, TYPE_BOOL, ValueDictionary.METHOD_NAME, TYPE_BOOL, TYPE_BOOL, TYPE_BOOLLIST, TYPE_BOOLLIST);
-            this.addMethod(ValueDictionary::stringToBool, TYPE_BOOL, ValueDictionary.METHOD_NAME, TYPE_BYTE, TYPE_BOOL, TYPE_BYTELIST, TYPE_BOOLLIST);
-            this.addMethod(ValueDictionary::intToBool, TYPE_BOOL, ValueDictionary.METHOD_NAME, TYPE_INT, TYPE_BOOL, TYPE_INTLIST, TYPE_BOOLLIST);
-            this.addMethod(ValueDictionary::stringToBool, TYPE_BOOL, ValueDictionary.METHOD_NAME, TYPE_STRING, TYPE_BOOL, TYPE_STRINGLIST, TYPE_BOOLLIST);
-            this.addMethod(ValueDictionary::boolToString, TYPE_BYTE, ValueDictionary.METHOD_NAME, TYPE_BOOL, TYPE_BYTE, TYPE_BOOLLIST, TYPE_BYTELIST);
-            this.addMethod(ValueDictionary::stringToString, TYPE_BYTE, ValueDictionary.METHOD_NAME, TYPE_BYTE, TYPE_BYTE, TYPE_BYTELIST, TYPE_BYTELIST);
-            this.addMethod(ValueDictionary::intToString, TYPE_BYTE, ValueDictionary.METHOD_NAME, TYPE_INT, TYPE_BYTE, TYPE_INTLIST, TYPE_BYTELIST);
-            this.addMethod(ValueDictionary::stringToString, TYPE_BYTE, ValueDictionary.METHOD_NAME, TYPE_STRING, TYPE_BYTE, TYPE_STRINGLIST, TYPE_BYTELIST);
-            this.addMethod(ValueDictionary::boolToInt, TYPE_INT, ValueDictionary.METHOD_NAME, TYPE_BOOL, TYPE_INT, TYPE_BOOLLIST, TYPE_INTLIST);
-            this.addMethod(ValueDictionary::stringToInt, TYPE_INT, ValueDictionary.METHOD_NAME, TYPE_BYTE, TYPE_INT, TYPE_BYTELIST, TYPE_INTLIST);
-            this.addMethod(ValueDictionary::intToInt, TYPE_INT, ValueDictionary.METHOD_NAME, TYPE_INT, TYPE_INT, TYPE_INTLIST, TYPE_INTLIST);
-            this.addMethod(ValueDictionary::stringToInt, TYPE_INT, ValueDictionary.METHOD_NAME, TYPE_STRING, TYPE_INT, TYPE_STRINGLIST, TYPE_INTLIST);
-            this.addMethod(ValueDictionary::boolToString, TYPE_STRING, ValueDictionary.METHOD_NAME, TYPE_BOOL, TYPE_STRING, TYPE_BOOLLIST, TYPE_STRINGLIST);
-            this.addMethod(ValueDictionary::stringToString, TYPE_STRING, ValueDictionary.METHOD_NAME, TYPE_BYTE, TYPE_STRING, TYPE_BYTELIST, TYPE_STRINGLIST);
-            this.addMethod(ValueDictionary::intToString, TYPE_STRING, ValueDictionary.METHOD_NAME, TYPE_INT, TYPE_STRING, TYPE_INTLIST, TYPE_STRINGLIST);
-            this.addMethod(ValueDictionary::stringToString, TYPE_STRING, ValueDictionary.METHOD_NAME, TYPE_STRING, TYPE_STRING, TYPE_STRINGLIST, TYPE_STRINGLIST);
+            this.addMethod(
+                ValueDictionary::boolToBool,
+                TYPE_BOOL,
+                ValueDictionary.METHOD_NAME,
+                TYPE_BOOL,
+                TYPE_BOOL,
+                TYPE_BOOLLIST,
+                TYPE_BOOLLIST
+            );
+            this.addMethod(
+                ValueDictionary::stringToBool,
+                TYPE_BOOL,
+                ValueDictionary.METHOD_NAME,
+                TYPE_BYTE,
+                TYPE_BOOL,
+                TYPE_BYTELIST,
+                TYPE_BOOLLIST
+            );
+            this.addMethod(
+                ValueDictionary::intToBool,
+                TYPE_BOOL,
+                ValueDictionary.METHOD_NAME,
+                TYPE_INT,
+                TYPE_BOOL,
+                TYPE_INTLIST,
+                TYPE_BOOLLIST
+            );
+            this.addMethod(
+                ValueDictionary::stringToBool,
+                TYPE_BOOL,
+                ValueDictionary.METHOD_NAME,
+                TYPE_STRING,
+                TYPE_BOOL,
+                TYPE_STRINGLIST,
+                TYPE_BOOLLIST
+            );
+            this.addMethod(
+                ValueDictionary::boolToString,
+                TYPE_BYTE,
+                ValueDictionary.METHOD_NAME,
+                TYPE_BOOL,
+                TYPE_BYTE,
+                TYPE_BOOLLIST,
+                TYPE_BYTELIST
+            );
+            this.addMethod(
+                ValueDictionary::stringToString,
+                TYPE_BYTE,
+                ValueDictionary.METHOD_NAME,
+                TYPE_BYTE,
+                TYPE_BYTE,
+                TYPE_BYTELIST,
+                TYPE_BYTELIST
+            );
+            this.addMethod(
+                ValueDictionary::intToString,
+                TYPE_BYTE,
+                ValueDictionary.METHOD_NAME,
+                TYPE_INT,
+                TYPE_BYTE,
+                TYPE_INTLIST,
+                TYPE_BYTELIST
+            );
+            this.addMethod(
+                ValueDictionary::stringToString,
+                TYPE_BYTE,
+                ValueDictionary.METHOD_NAME,
+                TYPE_STRING,
+                TYPE_BYTE,
+                TYPE_STRINGLIST,
+                TYPE_BYTELIST
+            );
+            this.addMethod(
+                ValueDictionary::boolToInt,
+                TYPE_INT,
+                ValueDictionary.METHOD_NAME,
+                TYPE_BOOL,
+                TYPE_INT,
+                TYPE_BOOLLIST,
+                TYPE_INTLIST
+            );
+            this.addMethod(
+                ValueDictionary::stringToInt,
+                TYPE_INT,
+                ValueDictionary.METHOD_NAME,
+                TYPE_BYTE,
+                TYPE_INT,
+                TYPE_BYTELIST,
+                TYPE_INTLIST
+            );
+            this.addMethod(
+                ValueDictionary::intToInt,
+                TYPE_INT,
+                ValueDictionary.METHOD_NAME,
+                TYPE_INT,
+                TYPE_INT,
+                TYPE_INTLIST,
+                TYPE_INTLIST
+            );
+            this.addMethod(
+                ValueDictionary::stringToInt,
+                TYPE_INT,
+                ValueDictionary.METHOD_NAME,
+                TYPE_STRING,
+                TYPE_INT,
+                TYPE_STRINGLIST,
+                TYPE_INTLIST
+            );
+            this.addMethod(
+                ValueDictionary::boolToString,
+                TYPE_STRING,
+                ValueDictionary.METHOD_NAME,
+                TYPE_BOOL,
+                TYPE_STRING,
+                TYPE_BOOLLIST,
+                TYPE_STRINGLIST
+            );
+            this.addMethod(
+                ValueDictionary::stringToString,
+                TYPE_STRING,
+                ValueDictionary.METHOD_NAME,
+                TYPE_BYTE,
+                TYPE_STRING,
+                TYPE_BYTELIST,
+                TYPE_STRINGLIST
+            );
+            this.addMethod(
+                ValueDictionary::intToString,
+                TYPE_STRING,
+                ValueDictionary.METHOD_NAME,
+                TYPE_INT,
+                TYPE_STRING,
+                TYPE_INTLIST,
+                TYPE_STRINGLIST
+            );
+            this.addMethod(
+                ValueDictionary::stringToString,
+                TYPE_STRING,
+                ValueDictionary.METHOD_NAME,
+                TYPE_STRING,
+                TYPE_STRING,
+                TYPE_STRINGLIST,
+                TYPE_STRINGLIST
+            );
             this.addMethod(BitMapping::mapBitsToString, TYPE_STRING, BitMapping.METHOD_NAME, TYPE_INT, TYPE_INT, TYPE_INT, TYPE_STRINGLIST);
             this.addMethod(BitMapping::mapBitsToString, TYPE_BYTE, BitMapping.METHOD_NAME, TYPE_INT, TYPE_INT, TYPE_INT, TYPE_BYTELIST);
             this.addMethod(BitMapping::mapBitsToInt, TYPE_INT, BitMapping.METHOD_NAME, TYPE_INT, TYPE_INT, TYPE_INT, TYPE_INTLIST);

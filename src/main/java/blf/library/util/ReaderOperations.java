@@ -24,7 +24,7 @@ public class ReaderOperations {
 
         try (BufferedReader br = new BufferedReader(new FileReader(fileName))) {
             String line;
-            while((line = br.readLine()) != null) {
+            while ((line = br.readLine()) != null) {
                 output.add(line);
             }
             return output;

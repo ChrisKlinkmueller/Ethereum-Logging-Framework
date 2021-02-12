@@ -19,9 +19,11 @@ public class StringOperations {
     private StringOperations() {}
 
     public static List<String> split(Object[] parameters, ProgramState state) {
-        return operate(state, parameters, (string, value)  -> Stream.of((string).split(value))
-                    .map (String::new)
-                    .collect(Collectors.toList()));
+        return operate(
+            state,
+            parameters,
+            (string, value) -> Stream.of((string).split(value)).map(String::new).collect(Collectors.toList())
+        );
     }
 
     public static Boolean matches(Object[] parameters, ProgramState state) {
@@ -29,14 +31,14 @@ public class StringOperations {
     }
 
     public static BigInteger length(Object[] parameters, ProgramState state) {
-        return operate(state, parameters, string  -> BigInteger.valueOf(string.length()));
+        return operate(state, parameters, string -> BigInteger.valueOf(string.length()));
     }
 
-    public static String replaceFirst (Object[] parameters, ProgramState state) {
+    public static String replaceFirst(Object[] parameters, ProgramState state) {
         return operate(state, parameters, String::replaceFirst);
     }
 
-    public static String replaceAll (Object[] parameters, ProgramState state) {
+    public static String replaceAll(Object[] parameters, ProgramState state) {
         return operate(state, parameters, String::replaceAll);
     }
 
@@ -97,24 +99,19 @@ public class StringOperations {
     }
 
     private static boolean areValidParametersFunction(Object[] parameters) {
-        return parameters != null
-                && parameters.length == 1
-                && parameters[0] instanceof String;
+        return parameters != null && parameters.length == 1 && parameters[0] instanceof String;
     }
 
     private static boolean areValidParametersBiFunction(Object[] parameters) {
-        return parameters != null
-                && parameters.length == 2
-                && parameters[0] instanceof String
-                && parameters[1] instanceof String;
+        return parameters != null && parameters.length == 2 && parameters[0] instanceof String && parameters[1] instanceof String;
     }
 
     private static boolean areValidParametersTriFunction(Object[] parameters) {
         return parameters != null
-                && parameters.length == 3
-                && parameters[0] instanceof String
-                && parameters[1] instanceof String
-                && parameters[2] instanceof String;
+            && parameters.length == 3
+            && parameters[0] instanceof String
+            && parameters[1] instanceof String
+            && parameters[2] instanceof String;
     }
 
 }
