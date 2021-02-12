@@ -2,13 +2,13 @@ package blf.library.types;
 
 import java.math.BigInteger;
 import java.util.List;
-import java.util.Objects;
 import java.util.function.BiFunction;
 import java.util.function.Function;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
 import blf.core.state.ProgramState;
+import blf.library.util.TriFunction;
 
 /**
  * IntegerOperations, serves mostly as a wrapper around {@link java.math.BigInteger} operations.
@@ -117,15 +117,4 @@ public class StringOperations {
                 && parameters[2] instanceof String;
     }
 
-    @FunctionalInterface
-    interface TriFunction<A,B,C,R> {
-
-        R apply(A a, B b, C c);
-
-        default <V> TriFunction<A, B, C, V> andThen(
-                Function<? super R, ? extends V> after) {
-            Objects.requireNonNull(after);
-            return (A a, B b, C c) -> after.apply(apply(a, b, c));
-        }
-    }
 }

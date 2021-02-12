@@ -14,9 +14,18 @@ import blf.library.types.StringOperations;
 import blf.library.util.ReaderOperations;
 
 /**
- * Library of methods and operators, which can be used in the manifest file.
- *
+ * Library of methods and operators, which can be used in the manifest file. These methods and operators serve mainly for
+ * transformation purposes to prepare or process given data. They do not provide access to any blockchain related logging
+ * data.
+ * <p>
+ * The type constants instantiated in the beginning of this file correspond to the types defined in the grammar files of
+ * the parser generator ANTLR4. The Java type implication does not match in every case, e.g. TYPE_INT/"int" is a BigInteger
+ * or TYPE_INTLIST/"int[]" is a List<BigInteger> as parameter or return value in the methods.
+ * <p>
+ * For more information look into the "Transformation Capabilities" segment in the wiki or check out and run the manifest
+ * file "TransformationCapabilities.bcql".
  */
+
 public class Library {
     private static final Logger LOGGER = Logger.getLogger(Library.class.getName());
     public static final Library INSTANCE = new Library();

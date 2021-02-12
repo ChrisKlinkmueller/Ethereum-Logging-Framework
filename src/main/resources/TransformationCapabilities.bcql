@@ -16,7 +16,7 @@ int product = multiply(3, 3);
 int difference = subtract(6, 3);
 int quotient = divide(6, 3);
 
-EMIT LOG LINE ("add for int:                                 3 + 3 = ", sum);
+EMIT LOG LINE ("add for int:                                3 + 3 = ", sum);
 EMIT LOG LINE ("multiply for int:                           6 - 3 = ", difference);
 EMIT LOG LINE ("subtract for int:                           3 * 3 = ", product);
 EMIT LOG LINE ("divide for int:                             6 / 3 = ", quotient);
