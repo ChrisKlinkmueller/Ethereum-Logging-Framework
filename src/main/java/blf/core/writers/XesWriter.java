@@ -33,15 +33,11 @@ public class XesWriter extends DataWriter {
     private final Map<String, Map<String, XTrace>> traces;
     private final Map<String, Map<String, Map<String, XEvent>>> events;
 
-    private final ExceptionHandler exceptionHandler;
-
     private XAttributable element;
 
     public XesWriter() {
         this.traces = new LinkedHashMap<>();
         this.events = new LinkedHashMap<>();
-
-        this.exceptionHandler = new ExceptionHandler();
     }
 
     public void startTrace(String inputPid, String inputPiid) {
@@ -188,7 +184,7 @@ public class XesWriter extends DataWriter {
             }
         } catch (Exception e) {
             final String errorMsg = "Error exporting data to XES.";
-            this.exceptionHandler.handleException(errorMsg, e);
+            ExceptionHandler.getInstance().handleException(errorMsg, e);
         }
 
         LOGGER.info("Xes export finished.");
@@ -225,9 +221,7 @@ public class XesWriter extends DataWriter {
     private void addEventsToLog(XTrace trace, String pid, String piid) {
         this.events.getOrDefault(pid, new LinkedHashMap<>())
             .getOrDefault(piid, new LinkedHashMap<>())
-            .entrySet()
-            .stream()
-            .forEach(entry -> trace.add(entry.getValue()));
+            .forEach((key, value) -> trace.add(value));
     }
 
     private Map<String, Map<String, XTrace>> deepCopyTraces() {

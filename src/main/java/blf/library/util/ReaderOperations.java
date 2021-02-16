@@ -1,5 +1,6 @@
 package blf.library.util;
 
+import blf.core.exceptions.ExceptionHandler;
 import blf.core.state.ProgramState;
 
 import java.io.BufferedReader;
@@ -14,7 +15,7 @@ public class ReaderOperations {
 
     public static List<String> readIn(Object[] parameters, ProgramState state) {
         if (!(parameters != null && parameters.length == 1 && parameters[0] instanceof String)) {
-            state.getExceptionHandler().handleException("Invalid parameters for method call.", new Exception());
+            ExceptionHandler.getInstance().handleException("Invalid parameters for method call.", new Exception());
 
             return List.of();
         }
@@ -29,9 +30,9 @@ public class ReaderOperations {
             }
             return output;
         } catch (IOException e) {
-            state.getExceptionHandler().handleException("Error when trying to read in a file.", e);
+            ExceptionHandler.getInstance().handleException("Error when trying to read in a file.", e);
         } catch (Exception e) {
-            state.getExceptionHandler().handleException("Error executing method call.", e);
+            ExceptionHandler.getInstance().handleException("Error executing method call.", e);
         }
 
         return List.of();

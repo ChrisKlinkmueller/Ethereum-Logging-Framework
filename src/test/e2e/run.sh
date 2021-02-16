@@ -28,7 +28,7 @@ function main() {
 	fi
 
 	colorecho "Setting up test environment"
-	mkdir -p "$ED"/{,hyperledger,FailingHyperKitties,FailingCryptoKitties}
+	mkdir -p "$ED"/{,hyperledger,FailingHyperKitties,FailingCryptoKitties,NetworkStatisticsExternalError,NetworkStatisticsExternalErrorAndName}
 
   cp $CRED_DIR/* "$ED/hyperledger/"
 
@@ -50,6 +50,8 @@ function main() {
 	touch "$ED"/CryptoKittiesStreaming/error.log.xblf
 	touch "$ED"/HyperBasicStreaming/error.log.xblf
 	touch "$ED"/TransformationCapabilities/error.log.xblf
+	touch "$ED"/NetworkStatisticsExternalError/error.log.xblf
+	touch "$ED"/NetworkStatisticsExternalErrorAndName/customErrorName.log.xblf
 
   if [ ! "$1" = "$SKIP_BUILD_PARAM" ] && [ ! "$2" = "$SKIP_BUILD_PARAM" ] && [ ! "$3" = "$SKIP_BUILD_PARAM" ]; then
 	  colorecho "Building the BLF"
@@ -318,6 +320,8 @@ function main() {
 	[ "$(find AugurContractRegistryStreaming/ | wc -l)" -eq 9 ] || { redecho "Streaming mode created too many files!" ; exit 2; }
 	colorecho "Test successful"
 
+  #--------------------------------------------------------------------------------
+
 	colorecho "Testing NetworkStatistics in streaming mode"
 	if [ "$1" = "$SILENT_PARAM" ] || [ "$2" = "$SILENT_PARAM" ] || [ "$3" = "$SILENT_PARAM" ]; then
 	  java -jar "$JAR" extract NetworkStatisticsStreaming.bcql &> /dev/null
@@ -346,6 +350,8 @@ function main() {
 	cmp CryptoKittiesStreaming/error.log{,.xblf} || { redecho "Comparing the extracted data with the expected data failed! Leaving test environment as is for investigation" ; exit 2; }
 	[ "$(find CryptoKittiesStreaming/ | wc -l)" -eq 9 ] || { redecho "Streaming mode created too many files!" ; exit 2; }
 	colorecho "Test successful"
+
+  #--------------------------------------------------------------------------------
 
 	colorecho "Testing HyperBasic in streaming mode"
 	if [ "$1" = "$SILENT_PARAM" ] || [ "$2" = "$SILENT_PARAM" ] || [ "$3" = "$SILENT_PARAM" ]; then
@@ -376,6 +382,8 @@ function main() {
 	grep 'JSON object does not contain key: a' FailingHyperKitties/error.log || { redecho "Comparing the extracted data with the expected data failed! Leaving test environment as is for investigation" ; exit 2; }
 	colorecho "Test successful"
 
+  #--------------------------------------------------------------------------------
+
 	colorecho "Testing FailingCryptoKitties"
 	LAST_EXIT=0
 	if [ "$1" = "$SILENT_PARAM" ] || [ "$2" = "$SILENT_PARAM" ] || [ "$3" = "$SILENT_PARAM" ]; then
@@ -386,7 +394,31 @@ function main() {
 	  LAST_EXIT=$?
   fi
   [ $LAST_EXIT -ne 1 ] && { redecho "The program did not return the correct error code" ; exit 2; }
-	grep 'Error when processing block number' FailingCryptoKitties/error.log || { redecho "Comparing the extracted data with the expected data failed! Leaving test environment as is for investigation" ; exit 2; }
+	grep 'Failed to connect to WebSocket' FailingCryptoKitties/error.log || { redecho "Comparing the extracted data with the expected data failed! Leaving test environment as is for investigation" ; exit 2; }
+	colorecho "Test successful"
+
+  #--------------------------------------------------------------------------------
+
+	colorecho "Testing NetworkStatistics with external output folder"
+	if [ "$1" = "$SILENT_PARAM" ] || [ "$2" = "$SILENT_PARAM" ] || [ "$3" = "$SILENT_PARAM" ]; then
+	  java -jar "$JAR" extract NetworkStatisticsErrorFolder.bcql &> /dev/null
+	else
+	  java -jar "$JAR" extract NetworkStatisticsErrorFolder.bcql
+  fi
+	cmp NetworkStatisticsExternalError/error.log{,.xblf} || { redecho "Comparing the extracted data with the expected data failed! Leaving test environment as is for investigation" ; exit 2; }
+	[ "$(find NetworkStatisticsExternalError/ | wc -l)" -eq 3 ] || { redecho "More than just the error file was created in the external error output folder!" ; exit 2; }
+	colorecho "Test successful"
+
+  #--------------------------------------------------------------------------------
+
+	colorecho "Testing NetworkStatistics with external output folder and name"
+	if [ "$1" = "$SILENT_PARAM" ] || [ "$2" = "$SILENT_PARAM" ] || [ "$3" = "$SILENT_PARAM" ]; then
+	  java -jar "$JAR" extract NetworkStatisticsErrorFolderAndName.bcql &> /dev/null
+	else
+	  java -jar "$JAR" extract NetworkStatisticsErrorFolderAndName.bcql
+  fi
+	cmp NetworkStatisticsExternalErrorAndName/customErrorName.log{,.xblf} || { redecho "Comparing the extracted data with the expected data failed! Leaving test environment as is for investigation" ; exit 2; }
+	[ "$(find NetworkStatisticsExternalErrorAndName/ | wc -l)" -eq 3 ] || { redecho "More than just the error file was created in the external error output folder!" ; exit 2; }
 	colorecho "Test successful"
 
   #--------------------------------------------------------------------------------

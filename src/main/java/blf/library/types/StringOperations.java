@@ -7,6 +7,7 @@ import java.util.function.Function;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
+import blf.core.exceptions.ExceptionHandler;
 import blf.core.state.ProgramState;
 import blf.library.util.TriFunction;
 
@@ -44,7 +45,7 @@ public class StringOperations {
 
     private static <T> T operate(ProgramState state, Object[] parameters, Function<String, T> operation) {
         if (!areValidParametersFunction(parameters)) {
-            state.getExceptionHandler().handleException("Invalid parameters for method call.", new Exception());
+            ExceptionHandler.getInstance().handleException("Invalid parameters for method call.", new Exception());
 
             return null;
         }
@@ -54,7 +55,7 @@ public class StringOperations {
         try {
             return operation.apply(operand);
         } catch (Exception e) {
-            state.getExceptionHandler().handleException("Error executing method call.", e);
+            ExceptionHandler.getInstance().handleException("Error executing method call.", e);
         }
 
         return null;
@@ -62,7 +63,7 @@ public class StringOperations {
 
     private static <T> T operate(ProgramState state, Object[] parameters, BiFunction<String, String, T> operation) {
         if (!areValidParametersBiFunction(parameters)) {
-            state.getExceptionHandler().handleException("Invalid parameters for method call.", new Exception());
+            ExceptionHandler.getInstance().handleException("Invalid parameters for method call.", new Exception());
 
             return null;
         }
@@ -72,7 +73,7 @@ public class StringOperations {
         try {
             return operation.apply(operand1, operand2);
         } catch (Exception e) {
-            state.getExceptionHandler().handleException("Error executing method call.", e);
+            ExceptionHandler.getInstance().handleException("Error executing method call.", e);
         }
 
         return null;
@@ -80,7 +81,7 @@ public class StringOperations {
 
     private static <T> T operate(ProgramState state, Object[] parameters, TriFunction<String, String, String, T> operation) {
         if (!areValidParametersTriFunction(parameters)) {
-            state.getExceptionHandler().handleException("Invalid parameters for method call.", new Exception());
+            ExceptionHandler.getInstance().handleException("Invalid parameters for method call.", new Exception());
 
             return null;
         }
@@ -92,7 +93,7 @@ public class StringOperations {
         try {
             return operation.apply(operand1, operand2, operand3);
         } catch (Exception e) {
-            state.getExceptionHandler().handleException("Error executing method call.", e);
+            ExceptionHandler.getInstance().handleException("Error executing method call.", e);
         }
 
         return null;

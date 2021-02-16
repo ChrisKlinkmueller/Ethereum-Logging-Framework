@@ -2,6 +2,8 @@
 
 SET BLOCKCHAIN "Hyperledger"
 
+SET OUTPUT FOLDER "./test_output"
+
 SET CONNECTION {
    "hyperledger/connection-org1.yaml",
    "hyperledger/server.key",
@@ -9,8 +11,6 @@ SET CONNECTION {
    "Org1MSP",
    "channel"
 }
-
-SET OUTPUT FOLDER "./test_output"
 
 BLOCKS (1) (5) {
    LOG ENTRIES ("smartContractName") (eventName(int inId, string stringId)) {

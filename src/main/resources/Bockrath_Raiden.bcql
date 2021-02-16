@@ -3,8 +3,8 @@
 
 SET BLOCKCHAIN "Ethereum"
 
-SET CONNECTION "ws://localhost:8546/"
 SET OUTPUT FOLDER "./test_output"
+SET CONNECTION "ws://localhost:8546/"
 
 //main contract. 759 tx
 BLOCKS (9838608) (10186597) {

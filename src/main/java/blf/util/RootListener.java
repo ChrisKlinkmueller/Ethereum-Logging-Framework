@@ -1,11 +1,7 @@
 package blf.util;
 
-import java.util.LinkedList;
-import java.util.List;
-import java.util.Map;
-import java.util.function.BiConsumer;
-
 import blf.configuration.BaseBlockchainListener;
+import blf.core.exceptions.ExceptionHandler;
 import blf.grammar.BcqlBaseListener;
 import blf.grammar.BcqlListener;
 import blf.grammar.BcqlParser.*;
@@ -13,6 +9,12 @@ import org.antlr.v4.runtime.ParserRuleContext;
 import org.antlr.v4.runtime.tree.ErrorNode;
 import org.antlr.v4.runtime.tree.ParseTreeWalker;
 import org.antlr.v4.runtime.tree.TerminalNode;
+
+import java.util.LinkedList;
+import java.util.List;
+import java.util.Map;
+import java.util.function.BiConsumer;
+import java.util.logging.Logger;
 
 /**
  * Forwards callbacks from ParseTreeWalker to every added BcqlListener.
@@ -92,9 +94,9 @@ public class RootListener implements BcqlListener {
         BaseBlockchainListener targetBlockchainListener = blockchainListeners.get(blockchainKey);
 
         if (targetBlockchainListener == null) {
-            // TODO: LOGGER pls -> exit program
-
-            return;
+            final Logger logger = Logger.getLogger(RootListener.class.getName());
+            logger.severe(String.format("The blockchain %s is not supported by the BLF!", blockchainKey));
+            System.exit(1);
         }
 
         this.listeners.add(targetBlockchainListener);
@@ -109,23 +111,30 @@ public class RootListener implements BcqlListener {
     }
 
     @Override
-    public void enterConnection(ConnectionContext ctx) {
-        this.notifyListener(BcqlListener::enterConnection, ctx);
-    }
-
-    @Override
-    public void exitConnection(ConnectionContext ctx) {
-        this.notifyListener(BcqlListener::exitConnection, ctx);
-    }
-
-    @Override
     public void enterOutputFolder(OutputFolderContext ctx) {
+        String literalText = ListenerHelper.getOutputFolderLiteral(ctx);
+        if (literalText == null) {
+            return;
+        }
+
+        ExceptionHandler.getInstance().setOutputFolder(literalText);
+
         this.notifyListener(BcqlListener::enterOutputFolder, ctx);
     }
 
     @Override
     public void exitOutputFolder(OutputFolderContext ctx) {
         this.notifyListener(BcqlListener::exitOutputFolder, ctx);
+    }
+
+    @Override
+    public void enterOptionalParams(OptionalParamsContext ctx) {
+        this.notifyListener(BcqlListener::enterOptionalParams, ctx);
+    }
+
+    @Override
+    public void exitOptionalParams(OptionalParamsContext ctx) {
+        this.notifyListener(BcqlListener::exitOptionalParams, ctx);
     }
 
     @Override
@@ -139,6 +148,11 @@ public class RootListener implements BcqlListener {
     }
 
     @Override
+    public void enterErrorOutput(ErrorOutputContext ctx) {
+        this.notifyListener(BcqlListener::enterErrorOutput, ctx);
+    }
+
+    @Override
     public void enterAbortOnException(AbortOnExceptionContext ctx) {
         this.notifyListener(BcqlListener::enterAbortOnException, ctx);
     }
@@ -146,6 +160,39 @@ public class RootListener implements BcqlListener {
     @Override
     public void exitAbortOnException(AbortOnExceptionContext ctx) {
         this.notifyListener(BcqlListener::exitAbortOnException, ctx);
+    }
+
+    @Override
+    public void exitErrorOutput(ErrorOutputContext ctx) {
+        // we already know that we have at least one string literal, otherwise the grammar parser would have complained
+        final String errorLogOutputFolderPathStringLiteral = ctx.STRING_LITERAL(0).getText();
+
+        final String errorLogOutputFolderPathString = TypeUtils.parseStringLiteral(errorLogOutputFolderPathStringLiteral);
+
+        ExceptionHandler.getInstance().setOutputFolder(errorLogOutputFolderPathString);
+
+        if (ctx.STRING_LITERAL().size() < 2) {
+            return;
+        }
+
+        final String errorLogFileNameStringLiteral = ctx.STRING_LITERAL(1).getText();
+
+        final String errorLogFileName = TypeUtils.parseStringLiteral(errorLogFileNameStringLiteral);
+
+        ExceptionHandler.getInstance().setOutputFilename(errorLogFileName);
+
+        this.notifyListener(BcqlListener::exitErrorOutput, ctx);
+    }
+
+    @Override
+    public void enterConnection(ConnectionContext ctx) {
+        ExceptionHandler.getInstance().initializeLoggerHandler();
+        this.notifyListener(BcqlListener::enterConnection, ctx);
+    }
+
+    @Override
+    public void exitConnection(ConnectionContext ctx) {
+        this.notifyListener(BcqlListener::exitConnection, ctx);
     }
 
     @Override

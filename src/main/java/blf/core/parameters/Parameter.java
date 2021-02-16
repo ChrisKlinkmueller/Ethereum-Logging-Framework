@@ -9,7 +9,6 @@ import org.web3j.abi.TypeReference;
 public class Parameter {
     private final String name;
     private final TypeReference<?> type;
-    private final ExceptionHandler exceptionHandler;
 
     public Parameter(String solType, String name) {
         this(solType, name, false);
@@ -22,8 +21,6 @@ public class Parameter {
 
         this.type = typeOfParameter;
         this.name = name;
-
-        this.exceptionHandler = new ExceptionHandler();
     }
 
     public boolean isIndexed() {
@@ -42,7 +39,7 @@ public class Parameter {
         try {
             return TypeReference.makeTypeReference(solType, isIndexed, false);
         } catch (ClassNotFoundException e) {
-            this.exceptionHandler.handleException(e.getMessage(), e);
+            ExceptionHandler.getInstance().handleException(e.getMessage(), e);
             return null;
         }
 

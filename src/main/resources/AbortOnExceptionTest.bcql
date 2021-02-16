@@ -2,6 +2,10 @@
 
 SET BLOCKCHAIN "Hyperledger"
 
+SET OUTPUT FOLDER "./test_output"
+
+SET ABORT ON EXCEPTION true
+
 SET CONNECTION {
    "hyperledger/connection-org1.yaml",
    "hyperledger/server.key",
@@ -9,10 +13,6 @@ SET CONNECTION {
    "Org1MSP",
    "mychannel"
 }
-
-SET OUTPUT FOLDER "./test_output"
-
-ABORT ON EXCEPTION true
 
 BLOCKS (32) (91) {
    LOG ENTRIES ("kitties") (Birth(string a)) {

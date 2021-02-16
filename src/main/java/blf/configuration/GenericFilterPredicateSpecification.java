@@ -117,15 +117,16 @@ public class GenericFilterPredicateSpecification {
         ValueAccessorSpecification valueSpecification2,
         IntPredicate comparator
     ) {
-        final ExceptionHandler exceptionHandler = new ExceptionHandler();
 
         if (valueSpecification1 == null) {
-            exceptionHandler.handleException("Value specification (first) is null.", new NullPointerException());
+            ExceptionHandler.getInstance().handleException("Value specification (first) is null.", new NullPointerException());
+
             return new GenericFilterPredicateSpecification(state -> false);
         }
 
         if (valueSpecification2 == null) {
-            exceptionHandler.handleException("Value specification (second) is null.", new NullPointerException());
+            ExceptionHandler.getInstance().handleException("Value specification (second) is null.", new NullPointerException());
+
             return new GenericFilterPredicateSpecification(state -> false);
         }
 
@@ -136,7 +137,7 @@ public class GenericFilterPredicateSpecification {
             final Object value1 = accessor1.getValue(state);
             if (value1 != null && !(value1 instanceof BigInteger)) {
                 final String errorMsg = String.format("Value '%s' is not an BigInteger.", value1);
-                exceptionHandler.handleException(errorMsg);
+                ExceptionHandler.getInstance().handleException(errorMsg);
 
                 return false;
             }
@@ -144,7 +145,7 @@ public class GenericFilterPredicateSpecification {
             final Object value2 = accessor2.getValue(state);
             if (value2 != null && !(value2 instanceof BigInteger)) {
                 final String errorMsg = String.format("Value '%s' is not an BigInteger.", value2);
-                exceptionHandler.handleException(errorMsg);
+                ExceptionHandler.getInstance().handleException(errorMsg);
 
                 return false;
             }
