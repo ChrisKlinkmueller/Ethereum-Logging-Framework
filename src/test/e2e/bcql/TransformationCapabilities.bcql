@@ -1,8 +1,8 @@
 // Author: Tom Knoche
 
 SET BLOCKCHAIN "Ethereum"
-SET CONNECTION "ws://localhost:8546/"
 SET OUTPUT FOLDER "./TransformationCapabilities"
+SET CONNECTION "ws://nonex:8546/"
 
 EMIT LOG LINE ("");
 EMIT LOG LINE ("                                   TRANSFORMATION CAPABILITIES FROM PREVIOUS VERSION");

@@ -49,7 +49,6 @@ function main() {
 	touch "$ED"/NetworkStatisticsStreaming/error.log.xblf
 	touch "$ED"/CryptoKittiesStreaming/error.log.xblf
 	touch "$ED"/HyperBasicStreaming/error.log.xblf
-	touch "$ED"/TransformationCapabilities/error.log.xblf
 	touch "$ED"/NetworkStatisticsExternalError/error.log.xblf
 	touch "$ED"/NetworkStatisticsExternalErrorAndName/customErrorName.log.xblf
 
@@ -433,7 +432,6 @@ function main() {
 	  LAST_EXIT=$?
   fi
 	cmp TransformationCapabilities/all.log{,.xblf} || { redecho "Comparing the extracted data with the expected data failed! Leaving test environment as is for investigation" ; exit 2; }
-	cmp TransformationCapabilities/error.log{,.xblf} || { redecho "Comparing the extracted data with the expected data failed! Leaving test environment as is for investigation" ; exit 2; }
 	colorecho "Test successful"
 
   #--------------------------------------------------------------------------------
