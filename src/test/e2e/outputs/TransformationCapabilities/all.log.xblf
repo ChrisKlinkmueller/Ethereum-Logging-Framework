@@ -1,0 +1,78 @@
+
+                                   TRANSFORMATION CAPABILITIES FROM PREVIOUS VERSION
+
+========================================================================================================================
+INTEGER OPERATIONS
+
+add for int:                                3 + 3 = 6
+multiply for int:                           6 - 3 = 3
+subtract for int:                           3 * 3 = 9
+divide for int:                             6 / 3 = 2
+
+========================================================================================================================
+LIST OPERATIONS
+
+contain for address[]:                      {0x0, 0x1} contains 0x1 is true
+contain for int[]:                          {0, 1} contains 2 is false
+
+add for address[]:                          {0x0, 0x1} added by 0x2 is {0x0, 0x1, 0x2}
+add for int[]:                              {0, 1} added by 2 is {0, 1, 2}
+
+remove for address[]:                       {0x0, 0x1, 0x2} removed by 0x2 is {0x0, 0x1}
+
+========================================================================================================================
+COMPRESSION OPERATIONS
+
+ValueDictionary for various types:          mapValue(0,0,{0, 1},{2, 1}) is 2
+ValueDictionary for various types:          mapValue(1,1,{0, 1},{2, 1}) is 1
+
+BitMapping for various types:               mapBits(1,0,1,{0, 1}) is 1
+BitMapping for various types:               mapBits(0,1,0,{2, 1}) is 2
+
+========================================================================================================================
+
+                                       TRANSFORMATION CAPABILITIES ADDED IN BLF
+
+========================================================================================================================
+EXTENDED LIST OPERATIONS TO OTHER LIST TYPES
+
+contain for bool[]:                         {true, false} contains false is true
+contain for string[]:                       {Ethereum, Hyperledger} contains Bitcoin is false
+
+add for bool[]:                             {true, false} added true is {true, false, true}
+add for string[]:                           {Ethereum, Hyperledger} added Bitcoin is {Ethereum, Hyperledger, Bitcoin}
+
+remove for int[]:                           {0, 1, 2} removed 2 is {0, 1}
+remove for bool[]:                          {true, false, true} removed true is {false, true}
+remove for string[]:                        {Ethereum, Hyperledger, Bitcoin} removed Bitcoin is {Ethereum, Hyperledger}
+
+========================================================================================================================
+NEW LIST OPERATIONS
+
+get for address[]:                          get index 1 of {0x0, 0x1} is 0x1
+get for int[]:                              get index 1 of {0, 1} is 1
+get for bool[]:                             get index 1 of {false, true} is true
+get for string[]:                           get index 1 of {Ethereum, Hyperledger} is Hyperledger
+
+clear for address[]:                        {0x0, 0x1} cleared is {}
+clear for int[]:                            {0, 1} cleared is {}
+clear for bool[]:                           {false, true} cleared is {}
+clear for string[]:                         {Ethereum, Hyperledger} cleared is {}
+
+reduceToSum for int[]:                      {2, 3, 4, 5} reduced to sum is 14
+reduceToProduct for int[]:                  {2, 3, 4, 5} reduced to product is 120
+reduceToString for string[]:                {Hello , BLF} reduced to string is Hello BLF
+
+========================================================================================================================
+STRING OPERATIONS
+
+split for string:                           0;1;2;3 split to string[] is {0, 1, 2, 3}
+length for string:                          0;1;2;3 length in int is 7
+match for string:                           0;1;2;3 matched for 1;2 is true
+replaceFirst for string:                    0;1;2;3 replaced first ; is 0,1;2;3
+replaceAll for string:                      0;1;2;3 replaced all ; is 0,1,2,3
+
+========================================================================================================================
+READER OPERATIONS
+
+readIn a file per line into string[]:       The first line of the TransformationCapabilities.bcql is // Author: Tom Knoche

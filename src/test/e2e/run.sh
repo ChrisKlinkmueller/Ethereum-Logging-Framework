@@ -49,6 +49,7 @@ function main() {
 	touch "$ED"/NetworkStatisticsStreaming/error.log.xblf
 	touch "$ED"/CryptoKittiesStreaming/error.log.xblf
 	touch "$ED"/HyperBasicStreaming/error.log.xblf
+	touch "$ED"/TransformationCapabilities/error.log.xblf
 
   if [ ! "$1" = "$SKIP_BUILD_PARAM" ] && [ ! "$2" = "$SKIP_BUILD_PARAM" ] && [ ! "$3" = "$SKIP_BUILD_PARAM" ]; then
 	  colorecho "Building the BLF"
@@ -390,6 +391,20 @@ function main() {
 
   #--------------------------------------------------------------------------------
 
+	colorecho "Testing TransformationCapabilities"
+	LAST_EXIT=0
+	if [ "$1" = "$SILENT_PARAM" ] || [ "$2" = "$SILENT_PARAM" ] || [ "$3" = "$SILENT_PARAM" ]; then
+	  java -jar "$JAR" extract TransformationCapabilities.bcql &> /dev/null
+	  LAST_EXIT=$?
+	else
+	  java -jar "$JAR" extract TransformationCapabilities.bcql
+	  LAST_EXIT=$?
+  fi
+	cmp TransformationCapabilities/all.log{,.xblf} || { redecho "Comparing the extracted data with the expected data failed! Leaving test environment as is for investigation" ; exit 2; }
+	cmp TransformationCapabilities/error.log{,.xblf} || { redecho "Comparing the extracted data with the expected data failed! Leaving test environment as is for investigation" ; exit 2; }
+	colorecho "Test successful"
+
+  #--------------------------------------------------------------------------------
 	colorecho "All tests completed successfully"
 	cd "$LWD"
 	if [ ! "$1" = "$AUTO_PARAM" ] && [ ! "$2" = "$AUTO_PARAM" ] && [ ! "$3" = "$AUTO_PARAM" ]; then
