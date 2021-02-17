@@ -1,9 +1,9 @@
 // Author: Martin Rebesky
 
-SET BLOCKCHAIN "Ethereum"
+SET BLOCKCHAIN "Ethereum";
 
-SET OUTPUT FOLDER "./test_output"
-SET CONNECTION "ws://localhost:8546/"
+SET OUTPUT FOLDER "./test_output";
+SET CONNECTION "ws://localhost:8546/";
 
 address augur = 0x75228DcE4D82566d93068A8D5d49435216551599;
 

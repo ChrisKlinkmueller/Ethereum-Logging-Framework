@@ -1,9 +1,9 @@
-SET BLOCKCHAIN "Ethereum"
+SET BLOCKCHAIN "Ethereum";
 
-SET OUTPUT FOLDER "./NetworkStatisticsStreaming"
-SET EMISSION MODE "streaming"
+SET OUTPUT FOLDER "./NetworkStatisticsStreaming";
+SET EMISSION MODE "streaming";
 
-SET CONNECTION "ws://localhost:8546/"
+SET CONNECTION "ws://localhost:8546/";
 
 BLOCKS (6000000) (6000003) {
     int totalCost = 0;

@@ -1,8 +1,8 @@
-SET BLOCKCHAIN "Ethereum"
+SET BLOCKCHAIN "Ethereum";
 
-SET OUTPUT FOLDER "./NetworkStatistics"
-SET ERROR OUTPUT "./NetworkStatisticsExternalErrorAndName" "customErrorName.log"
-SET CONNECTION "ws://localhost:8546/"
+SET OUTPUT FOLDER "./NetworkStatistics";
+SET ERROR OUTPUT "./NetworkStatisticsExternalErrorAndName" "customErrorName.log";
+SET CONNECTION "ws://localhost:8546/";
 
 BLOCKS (6000000) (6000050) {
     int totalCost = 0;

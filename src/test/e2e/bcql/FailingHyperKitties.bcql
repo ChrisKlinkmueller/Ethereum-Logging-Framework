@@ -1,9 +1,9 @@
 // Author: Paul Beck
-SET BLOCKCHAIN "Hyperledger"
+SET BLOCKCHAIN "Hyperledger";
 
-SET OUTPUT FOLDER "./FailingHyperKitties"
+SET OUTPUT FOLDER "./FailingHyperKitties";
 
-SET ABORT ON EXCEPTION true
+SET ABORT ON EXCEPTION true;
 
 SET CONNECTION {
    "hyperledger/connection-org1.yaml",
@@ -11,7 +11,7 @@ SET CONNECTION {
    "hyperledger/server.crt",
    "Org1MSP",
    "mychannel"
-}
+};
 
 BLOCKS (32) (91) {
    LOG ENTRIES ("kitties") (Birth(string a)) {

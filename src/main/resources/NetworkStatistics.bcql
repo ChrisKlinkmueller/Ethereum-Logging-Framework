@@ -1,7 +1,7 @@
-SET BLOCKCHAIN "Ethereum"
+SET BLOCKCHAIN "Ethereum";
 
-SET OUTPUT FOLDER "./test_output"
-SET CONNECTION "ws://localhost:8546/"
+SET OUTPUT FOLDER "./test_output";
+SET CONNECTION "ws://localhost:8546/";
 
 BLOCKS (6000000) (6010000) {
     int totalCost = 0;

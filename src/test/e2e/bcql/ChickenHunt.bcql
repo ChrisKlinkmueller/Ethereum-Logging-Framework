@@ -1,9 +1,9 @@
 // Author: Martin Rebesky
 
-SET BLOCKCHAIN "Ethereum"
+SET BLOCKCHAIN "Ethereum";
 
-SET OUTPUT FOLDER "./Rebesky_ChickenHunt"
-SET CONNECTION "ws://localhost:8546/"
+SET OUTPUT FOLDER "./Rebesky_ChickenHunt";
+SET CONNECTION "ws://localhost:8546/";
 
 address chickenContract = 0x1eD3d2c916cab00631cce4b08a7F880d4Badae94;
 
