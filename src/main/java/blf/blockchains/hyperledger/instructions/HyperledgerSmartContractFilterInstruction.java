@@ -10,10 +10,7 @@ import blf.core.state.ProgramState;
 import blf.grammar.BcqlParser;
 import org.apache.commons.codec.binary.Base64;
 import org.hyperledger.fabric.sdk.*;
-import org.hyperledger.fabric.sdk.exception.CryptoException;
-import org.hyperledger.fabric.sdk.exception.InvalidArgumentException;
-import org.hyperledger.fabric.sdk.exception.NetworkConfigurationException;
-import org.hyperledger.fabric.sdk.exception.ProposalException;
+import org.hyperledger.fabric.sdk.identity.X509Enrollment;
 import org.hyperledger.fabric.sdk.security.CryptoSuite;
 
 import java.io.*;
@@ -32,7 +29,9 @@ import java.security.cert.X509Certificate;
 import java.security.spec.InvalidKeySpecException;
 import java.security.spec.PKCS8EncodedKeySpec;
 import java.util.Collection;
+import java.util.HashSet;
 import java.util.List;
+import java.util.Set;
 import java.util.logging.Logger;
 
 public class HyperledgerSmartContractFilterInstruction extends Instruction {
@@ -60,7 +59,7 @@ public class HyperledgerSmartContractFilterInstruction extends Instruction {
 
         UserContext userContext = new UserContext();
         userContext.setAffiliation("Org1");
-        userContext.setName("ca-org1");
+        userContext.setName("User1");
 
         String certificate = null;
         try {
@@ -105,6 +104,13 @@ public class HyperledgerSmartContractFilterInstruction extends Instruction {
         userContext.setEnrollment(caEnrollment);
         userContext.setMspId("Org1MSP");
 
+        X509Enrollment x509Enrollment = new X509Enrollment(privateKey, certificate);
+        userContext.setEnrollment(x509Enrollment);
+        userContext.setAccount("User1@org1.example.com");
+        HashSet<String> roles = new HashSet<>();
+        roles.add("Reader");
+        userContext.setRoles(roles);
+
         CryptoSuite cryptoSuite = null;
         try {
             cryptoSuite = CryptoSuite.Factory.getCryptoSuite();
@@ -136,15 +142,20 @@ public class HyperledgerSmartContractFilterInstruction extends Instruction {
         NetworkConfig networkConfig = null;
         Channel channel = null;
         try {
-            networkConfig = NetworkConfig.fromYamlFile(new File("hyperledger/connection-org1.yaml"));
+            networkConfig = NetworkConfig.fromYamlFile(new File("hyperledger/connection-org1-channel.yaml"));
             channel = hfClient.loadChannelFromConfig("mychannel", networkConfig);
+            channel.initialize();
         } catch (IOException e) {
             e.printStackTrace();
         } catch (NetworkConfigurationException e) {
             e.printStackTrace();
         } catch (InvalidArgumentException e) {
             e.printStackTrace();
+        } catch (TransactionException e) {
+            e.printStackTrace();
         }
+
+        channel = ((HyperledgerProgramState) state).getNetwork().getChannel();
 
         ChaincodeID ccid = ChaincodeID.newBuilder().setName("basic").build(); // What chaincode ID has our chaincode??
         // peer chaincode install -n <this is your chaincode id>??
@@ -152,8 +163,9 @@ public class HyperledgerSmartContractFilterInstruction extends Instruction {
         QueryByChaincodeRequest queryRequest = hfClient.newQueryProposalRequest();
         queryRequest.setChaincodeID(ccid); // ChaincodeId object as created in Invoke block
         queryRequest.setFcn("GetAllAssets"); // Chaincode function name for querying the blocks
+        queryRequest.setUserContext(userContext);
 
-        String[] arguments = {"GetAllAssets"}; // Arguments that the above functions take
+        String[] arguments = { "GetAllAssets" }; // Arguments that the above functions take
         if (arguments != null) queryRequest.setArgs(arguments);
         // Query the chaincode
         Collection<ProposalResponse> queryResponse = null;
