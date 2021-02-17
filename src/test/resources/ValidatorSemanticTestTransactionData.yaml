@@ -5,9 +5,9 @@ The testData is an array that contains the script that should be run and the err
 
 
 scriptPrefix: "
-SET BLOCKCHAIN \"Ethereum\"
-SET OUTPUT FOLDER \"./test_output\"
-SET CONNECTION \"ws://localhost:0000/\"
+SET BLOCKCHAIN \"Ethereum\";
+SET OUTPUT FOLDER \"./test_output\";
+SET CONNECTION \"ws://localhost:0000/\";
 "
 
 testData:
