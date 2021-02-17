@@ -16,6 +16,6 @@ string contractAddress = "kitties";
 
 BLOCKS (32) (91) {
 	SMART CONTRACT (contractAddress) (string owner = OwnerOf(uint64 5)) {
-			EMIT LOG LINE ("Kitty 5 owner is ", owner);
-		}
+		EMIT LOG LINE ("Kitty 5 owner is ", owner);
 	}
+}
