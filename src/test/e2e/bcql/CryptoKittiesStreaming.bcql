@@ -1,9 +1,9 @@
-SET BLOCKCHAIN "Ethereum"
+SET BLOCKCHAIN "Ethereum";
 
-SET OUTPUT FOLDER "./CryptoKittiesStreaming"
-SET EMISSION MODE "streaming"
+SET OUTPUT FOLDER "./CryptoKittiesStreaming";
+SET EMISSION MODE "streaming";
 
-SET CONNECTION "ws://localhost:8546/"
+SET CONNECTION "ws://localhost:8546/";
 
 int[] kitties = newIntArray();
 BLOCKS (6605100) (6605107) {

@@ -1,9 +1,9 @@
 // Author: Hendrik Bockrath
 
-SET BLOCKCHAIN "Ethereum"
+SET BLOCKCHAIN "Ethereum";
 
-SET OUTPUT FOLDER "./test_output"
-SET CONNECTION "ws://localhost:8546/"
+SET OUTPUT FOLDER "./test_output";
+SET CONNECTION "ws://localhost:8546/";
 
 BLOCKS (10310000) (10310100) {
     LOG ENTRIES (0x5acc84a3e955bdd76467d3348077d003f00ffb97) (

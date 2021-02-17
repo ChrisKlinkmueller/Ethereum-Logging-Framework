@@ -29,17 +29,17 @@ document
 
 
 blockchain
-    : KEY_SET KEY_BLOCKCHAIN literal
+    : KEY_SET KEY_BLOCKCHAIN literal ';'
     ;
 
 
 connection
-    : KEY_SET (KEY_IPC)? KEY_CONNECTION literal
+    : KEY_SET (KEY_IPC)? KEY_CONNECTION literal ';'
     ;
 
 
 outputFolder
-    : KEY_SET KEY_OUTPUT_FOLDER literal
+    : KEY_SET KEY_OUTPUT_FOLDER literal ';'
     ;
 
 
@@ -50,15 +50,15 @@ optionalParams
     ;
 
 errorOutput
-    : KEY_SET KEY_ERROR_OUTPUT STRING_LITERAL STRING_LITERAL?
+    : KEY_SET KEY_ERROR_OUTPUT STRING_LITERAL STRING_LITERAL? ';'
     ;
 
 emissionMode
-    : KEY_SET KEY_EMISSION_MODE literal
+    : KEY_SET KEY_EMISSION_MODE literal ';'
     ;
 
 abortOnException
-    : KEY_SET KEY_ABORT_ON_EXCEPTION BOOLEAN_LITERAL
+    : KEY_SET KEY_ABORT_ON_EXCEPTION BOOLEAN_LITERAL ';'
     ;
 
 /** A statement is parsed to a scope, an expressionStatement or an emitStatement. */

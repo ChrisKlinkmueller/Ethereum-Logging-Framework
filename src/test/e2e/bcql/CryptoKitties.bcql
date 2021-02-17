@@ -1,7 +1,7 @@
-SET BLOCKCHAIN "Ethereum"
+SET BLOCKCHAIN "Ethereum";
 
-SET OUTPUT FOLDER "./CryptoKitties"
-SET CONNECTION "ws://localhost:8546/"
+SET OUTPUT FOLDER "./CryptoKitties";
+SET CONNECTION "ws://localhost:8546/";
 
 int[] kitties = newIntArray();
 BLOCKS (6605100) (6606100) {

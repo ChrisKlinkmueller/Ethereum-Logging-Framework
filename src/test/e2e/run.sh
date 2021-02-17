@@ -78,7 +78,7 @@ function main() {
 	# Cleanup and test with safe batching mode
 	colorecho "Running safe batching mode"
 	rm -f AugurContractRegistry/{*.log,*.csv,*.xes}
-	sed -i '/^SET OUTPUT FOLDER/a SET EMISSION MODE "safe batching"' AugurContractRegistry.bcql
+	sed -i '/^SET OUTPUT FOLDER/a SET EMISSION MODE "safe batching";' AugurContractRegistry.bcql
   if [ "$1" = "$SILENT_PARAM" ] || [ "$2" = "$SILENT_PARAM" ] || [ "$3" = "$SILENT_PARAM" ]; then
 	  java -jar "$JAR" extract AugurContractRegistry.bcql &> /dev/null
 	else
@@ -103,7 +103,7 @@ function main() {
 	# Cleanup and test with safe batching mode
 	colorecho "Running safe batching mode"
 	rm -f CryptoKitties/{*.log,*.csv,*.xes}
-	sed -i '/^SET OUTPUT FOLDER/a SET EMISSION MODE "safe batching"' CryptoKitties.bcql
+	sed -i '/^SET OUTPUT FOLDER/a SET EMISSION MODE "safe batching";' CryptoKitties.bcql
   if [ "$1" = "$SILENT_PARAM" ] || [ "$2" = "$SILENT_PARAM" ] || [ "$3" = "$SILENT_PARAM" ]; then
 	  java -jar "$JAR" extract CryptoKitties.bcql &> /dev/null
 	else
@@ -128,7 +128,7 @@ function main() {
 	# Cleanup and test with safe batching mode
 	colorecho "Running safe batching mode"
 	rm -f NetworkStatistics/{*.log,*.csv,*.xes}
-	sed -i '/^SET OUTPUT FOLDER/a SET EMISSION MODE "safe batching"' NetworkStatistics.bcql
+	sed -i '/^SET OUTPUT FOLDER/a SET EMISSION MODE "safe batching";' NetworkStatistics.bcql
   if [ "$1" = "$SILENT_PARAM" ] || [ "$2" = "$SILENT_PARAM" ] || [ "$3" = "$SILENT_PARAM" ]; then
 	  java -jar "$JAR" extract NetworkStatistics.bcql &> /dev/null
 	else
@@ -153,7 +153,7 @@ function main() {
 	# Cleanup and test with safe batching mode
 	colorecho "Running safe batching mode"
 	rm -f Rebesky_Augur/{*.log,*.csv,*.xes}
-	sed -i '/^SET OUTPUT FOLDER/a SET EMISSION MODE "safe batching"' Rebesky_Augur.bcql
+	sed -i '/^SET OUTPUT FOLDER/a SET EMISSION MODE "safe batching";' Rebesky_Augur.bcql
   if [ "$1" = "$SILENT_PARAM" ] || [ "$2" = "$SILENT_PARAM" ] || [ "$3" = "$SILENT_PARAM" ]; then
 	  java -jar "$JAR" extract Rebesky_Augur.bcql &> /dev/null
 	else
@@ -178,7 +178,7 @@ function main() {
 	# Cleanup and test with safe batching mode
 	colorecho "Running safe batching mode"
 	rm -f Rebesky_ChickenHunt/{*.log,*.csv,*.xes}
-	sed -i '/^SET OUTPUT FOLDER/a SET EMISSION MODE "safe batching"' Rebesky_ChickenHunt.bcql
+	sed -i '/^SET OUTPUT FOLDER/a SET EMISSION MODE "safe batching";' Rebesky_ChickenHunt.bcql
   if [ "$1" = "$SILENT_PARAM" ] || [ "$2" = "$SILENT_PARAM" ] || [ "$3" = "$SILENT_PARAM" ]; then
 	  java -jar "$JAR" extract Rebesky_ChickenHunt.bcql &> /dev/null
 	else
@@ -203,7 +203,7 @@ function main() {
 	# Cleanup and test with safe batching mode
 	colorecho "Running safe batching mode"
 	rm -f Rebesky_Idex1/{*.log,*.csv,*.xes}
-	sed -i '/^SET OUTPUT FOLDER/a SET EMISSION MODE "safe batching"' Rebesky_Idex1.bcql
+	sed -i '/^SET OUTPUT FOLDER/a SET EMISSION MODE "safe batching";' Rebesky_Idex1.bcql
   if [ "$1" = "$SILENT_PARAM" ] || [ "$2" = "$SILENT_PARAM" ] || [ "$3" = "$SILENT_PARAM" ]; then
 	  java -jar "$JAR" extract Rebesky_Idex1.bcql &> /dev/null
 	else
@@ -230,7 +230,7 @@ function main() {
 	# Cleanup and test with safe batching mode
 	colorecho "Running safe batching mode"
 	rm -f HyperBasic/{*.log,*.csv,*.xes}
-	sed -i '/^SET OUTPUT FOLDER/a SET EMISSION MODE "safe batching"' HyperBasic.bcql
+	sed -i '/^SET OUTPUT FOLDER/a SET EMISSION MODE "safe batching";' HyperBasic.bcql
   if [ "$1" = "$SILENT_PARAM" ] || [ "$2" = "$SILENT_PARAM" ] || [ "$3" = "$SILENT_PARAM" ]; then
 	  java -jar "$JAR" extract HyperBasic.bcql &> /dev/null
 	else
@@ -263,7 +263,7 @@ function main() {
 	# Cleanup and test with safe batching mode
 	colorecho "Running safe batching mode"
 	rm -f HyperKitties/{*.log,*.csv,*.xes}
-	sed -i '/^SET OUTPUT FOLDER/a SET EMISSION MODE "safe batching"' HyperKitties.bcql
+	sed -i '/^SET OUTPUT FOLDER/a SET EMISSION MODE "safe batching";' HyperKitties.bcql
   if [ "$1" = "$SILENT_PARAM" ] || [ "$2" = "$SILENT_PARAM" ] || [ "$3" = "$SILENT_PARAM" ]; then
 	  java -jar "$JAR" extract HyperKitties.bcql &> /dev/null
 	else
@@ -294,7 +294,7 @@ function main() {
 	# Cleanup and test with safe batching mode
 	colorecho "Running safe batching mode"
 	rm -f CryptoKittiesAsHyper/{*.log,*.csv,*.xes}
-	sed -i '/^SET OUTPUT FOLDER/a SET EMISSION MODE "safe batching"' CryptoKittiesAsHyper.bcql
+	sed -i '/^SET OUTPUT FOLDER/a SET EMISSION MODE "safe batching";' CryptoKittiesAsHyper.bcql
   if [ "$1" = "$SILENT_PARAM" ] || [ "$2" = "$SILENT_PARAM" ] || [ "$3" = "$SILENT_PARAM" ]; then
 	  java -jar "$JAR" extract CryptoKittiesAsHyper.bcql &> /dev/null
 	else

@@ -1,6 +1,6 @@
-SET BLOCKCHAIN "Hyperledger"
+SET BLOCKCHAIN "Hyperledger";
 
-SET OUTPUT FOLDER "./CryptoKittiesAsHyper"
+SET OUTPUT FOLDER "./CryptoKittiesAsHyper";
 
 SET CONNECTION {
    "hyperledger/connection-org1.yaml",
@@ -8,7 +8,7 @@ SET CONNECTION {
    "hyperledger/server.crt",
    "Org1MSP",
    "mychannel"
-}
+};
 
 int[] kitties = newIntArray();
 BLOCKS (32) (91) {

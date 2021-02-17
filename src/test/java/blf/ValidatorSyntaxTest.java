@@ -16,7 +16,8 @@ import java.util.List;
 class ValidatorSyntaxTest {
 
     static private BcqlInterpreter interpreter;
-    final static String p = "SET BLOCKCHAIN \"Ethereum\" \nSET OUTPUT FOLDER \"./test_output\"\nSET CONNECTION \"ws://localhost:0000/\" ";
+    final static String p =
+        "SET BLOCKCHAIN \"Ethereum\"; \nSET OUTPUT FOLDER \"./test_output\";\nSET CONNECTION \"ws://localhost:0000/\"; ";
 
     @BeforeAll
     static void setup() {

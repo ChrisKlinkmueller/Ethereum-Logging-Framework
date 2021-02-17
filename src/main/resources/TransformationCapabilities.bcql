@@ -1,8 +1,8 @@
 // Author: Tom Knoche
 
-SET BLOCKCHAIN "Ethereum"
-SET CONNECTION "ws://localhost:8546/"
-SET OUTPUT FOLDER "./test_output"
+SET BLOCKCHAIN "Ethereum";
+SET CONNECTION "ws://localhost:8546/";
+SET OUTPUT FOLDER "./test_output";
 
 EMIT LOG LINE ("");
 EMIT LOG LINE ("                                   TRANSFORMATION CAPABILITIES FROM PREVIOUS VERSION");

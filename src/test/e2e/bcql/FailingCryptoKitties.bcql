@@ -1,8 +1,8 @@
-SET BLOCKCHAIN "Ethereum"
+SET BLOCKCHAIN "Ethereum";
 
-SET OUTPUT FOLDER "./FailingCryptoKitties"
-SET ABORT ON EXCEPTION true
-SET CONNECTION "ex://nothing"
+SET OUTPUT FOLDER "./FailingCryptoKitties";
+SET ABORT ON EXCEPTION true;
+SET CONNECTION "ex://nothing";
 
 BLOCKS (6605100) (6605110) {
     LOG ENTRIES (0x06012c8cf97BEaD5deAe237070F9587f8E7A266d) (NonExistent(string a)) {

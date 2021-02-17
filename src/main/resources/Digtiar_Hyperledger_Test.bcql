@@ -1,8 +1,8 @@
 // Author: Mykola Digtiar
 
-SET BLOCKCHAIN "Hyperledger"
+SET BLOCKCHAIN "Hyperledger";
 
-SET OUTPUT FOLDER "./test_output"
+SET OUTPUT FOLDER "./test_output";
 
 SET CONNECTION {
    "hyperledger/connection-org1.yaml",
@@ -10,7 +10,7 @@ SET CONNECTION {
    "hyperledger/server.crt",
    "Org1MSP",
    "channel"
-}
+};
 
 BLOCKS (1) (5) {
    LOG ENTRIES ("smartContractName") (eventName(int inId, string stringId)) {

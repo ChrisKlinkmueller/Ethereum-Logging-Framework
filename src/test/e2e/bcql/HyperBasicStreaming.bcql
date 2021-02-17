@@ -1,10 +1,10 @@
 // Author: Tobias Petrich
 
-SET BLOCKCHAIN "Hyperledger"
+SET BLOCKCHAIN "Hyperledger";
 
-SET OUTPUT FOLDER "./HyperBasicStreaming"
+SET OUTPUT FOLDER "./HyperBasicStreaming";
 
-SET EMISSION MODE "streaming"
+SET EMISSION MODE "streaming";
 
 SET CONNECTION {
    "hyperledger/connection-org1.yaml",
@@ -12,7 +12,7 @@ SET CONNECTION {
    "hyperledger/server.crt",
    "Org1MSP",
    "mychannel"
-}
+};
 
 int blockNumberFrom = 30;
 int blockNumberTo = 33;
