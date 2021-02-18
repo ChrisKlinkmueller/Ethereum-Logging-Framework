@@ -40,6 +40,17 @@ public class HyperledgerProgramState extends ProgramState {
         this.network = network;
     }
 
+    // ======= msp name ======
+    private String mspName;
+
+    public String getMspName() {
+        return mspName;
+    }
+
+    public void setMspName(String mspName) {
+        this.mspName = mspName;
+    }
+
     // ****************************************************
     // HyperledgerBlockFilterInstruction
     // ****************************************************

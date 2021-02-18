@@ -1,10 +1,10 @@
 package blf.blockchains.hyperledger.instructions;
 
+import blf.blockchains.hyperledger.helpers.HyperledgerInstructionHelper;
 import blf.blockchains.hyperledger.state.HyperledgerProgramState;
 import blf.core.exceptions.ExceptionHandler;
 import blf.core.instructions.Instruction;
 import blf.core.state.ProgramState;
-import org.apache.commons.codec.binary.Base64;
 import org.hyperledger.fabric.gateway.Gateway;
 import org.hyperledger.fabric.gateway.Identities;
 import org.hyperledger.fabric.gateway.Network;
@@ -13,19 +13,12 @@ import java.io.FileInputStream;
 import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.io.InputStream;
-import java.nio.charset.Charset;
-import java.nio.file.Files;
-import java.nio.file.NoSuchFileException;
 import java.nio.file.Path;
 import java.nio.file.Paths;
-import java.security.KeyFactory;
-import java.security.NoSuchAlgorithmException;
 import java.security.PrivateKey;
 import java.security.cert.CertificateException;
 import java.security.cert.CertificateFactory;
 import java.security.cert.X509Certificate;
-import java.security.spec.InvalidKeySpecException;
-import java.security.spec.PKCS8EncodedKeySpec;
 import java.util.logging.Logger;
 
 /**
@@ -64,10 +57,11 @@ public class HyperledgerConnectInstruction extends Instruction {
 
         final Gateway gateway = this.buildGateway(this.networkConfigFilePath, this.serverKeyFilePath, this.serverCrtFilePath, this.mspName);
 
-        final Network network = this.buildNetwork(gateway, channel);
+        final Network network = this.buildNetwork(gateway, this.channel);
 
         hyperledgerProgramState.setGateway(gateway);
         hyperledgerProgramState.setNetwork(network);
+        hyperledgerProgramState.setMspName(this.mspName);
     }
 
     /**
@@ -113,38 +107,7 @@ public class HyperledgerConnectInstruction extends Instruction {
         }
 
         // Get private key from file.
-        PrivateKey privateKey = null;
-        try {
-            Path serverKeyPath = Paths.get(serverKeyFilePath);
-
-            byte[] serverKeyBytes = Files.readAllBytes(serverKeyPath);
-
-            String key = new String(serverKeyBytes, Charset.defaultCharset());
-
-            String privateKeyPEM = key.replace("-----BEGIN PRIVATE KEY-----", "")
-                .replaceAll(System.lineSeparator(), "")
-                .replace("-----END PRIVATE KEY-----", "");
-
-            byte[] base64EncodedPrivateKey = Base64.decodeBase64(privateKeyPEM);
-
-            KeyFactory keyFactory = KeyFactory.getInstance("EC");
-
-            PKCS8EncodedKeySpec keySpec = new PKCS8EncodedKeySpec(base64EncodedPrivateKey);
-
-            privateKey = keyFactory.generatePrivate(keySpec);
-        } catch (NoSuchFileException e) {
-            ExceptionHandler.getInstance()
-                .handleException(String.format("Private key file does not exist on path '%s'", serverKeyFilePath), e);
-        } catch (IOException e) {
-            ExceptionHandler.getInstance()
-                .handleException(String.format("Input error when trying to read from private key file: %s.", serverKeyFilePath), e);
-        } catch (NoSuchAlgorithmException e) {
-            ExceptionHandler.getInstance().handleException("Provided algorithm not found.", e);
-        } catch (InvalidKeySpecException e) {
-            ExceptionHandler.getInstance().handleException("Provided key spec is invalid.", e);
-        } catch (Exception e) {
-            ExceptionHandler.getInstance().handleException("Unhandled exception has occurred.", e);
-        }
+        PrivateKey privateKey = HyperledgerInstructionHelper.readPrivateKeyFromFile(serverKeyFilePath);
 
         if (certificate == null) {
             ExceptionHandler.getInstance().handleException("Variable 'certificate' is null.", new NullPointerException());

@@ -9,9 +9,21 @@ import org.antlr.v4.runtime.misc.Pair;
 import org.antlr.v4.runtime.misc.Triple;
 import org.antlr.v4.runtime.tree.ParseTree;
 import org.antlr.v4.runtime.tree.TerminalNode;
+import org.apache.commons.codec.binary.Base64;
 
+import java.io.IOException;
 import java.math.BigInteger;
+import java.nio.charset.Charset;
 import java.nio.charset.StandardCharsets;
+import java.nio.file.Files;
+import java.nio.file.NoSuchFileException;
+import java.nio.file.Path;
+import java.nio.file.Paths;
+import java.security.KeyFactory;
+import java.security.NoSuchAlgorithmException;
+import java.security.PrivateKey;
+import java.security.spec.InvalidKeySpecException;
+import java.security.spec.PKCS8EncodedKeySpec;
 import java.util.Collections;
 import java.util.LinkedList;
 import java.util.List;
@@ -274,5 +286,41 @@ public interface HyperledgerInstructionHelper {
             hexChars[j * 2 + 1] = hexArray[v & 0x0F];
         }
         return new String(hexChars, StandardCharsets.UTF_8);
+    }
+
+    static PrivateKey readPrivateKeyFromFile(String path) {
+        PrivateKey privateKey = null;
+        try {
+            Path serverKeyPath = Paths.get(path);
+
+            byte[] serverKeyBytes = Files.readAllBytes(serverKeyPath);
+
+            String key = new String(serverKeyBytes, Charset.defaultCharset());
+
+            String privateKeyPEM = key.replace("-----BEGIN PRIVATE KEY-----", "")
+                .replaceAll(System.lineSeparator(), "")
+                .replace("-----END PRIVATE KEY-----", "");
+
+            byte[] base64EncodedPrivateKey = Base64.decodeBase64(privateKeyPEM);
+
+            KeyFactory keyFactory = KeyFactory.getInstance("EC");
+
+            PKCS8EncodedKeySpec keySpec = new PKCS8EncodedKeySpec(base64EncodedPrivateKey);
+
+            privateKey = keyFactory.generatePrivate(keySpec);
+        } catch (NoSuchFileException e) {
+            ExceptionHandler.getInstance().handleException(String.format("Private key file does not exist on path '%s'", path), e);
+        } catch (IOException e) {
+            ExceptionHandler.getInstance()
+                .handleException(String.format("Input error when trying to read from private key file: %s.", path), e);
+        } catch (NoSuchAlgorithmException e) {
+            ExceptionHandler.getInstance().handleException("Provided algorithm not found.", e);
+        } catch (InvalidKeySpecException e) {
+            ExceptionHandler.getInstance().handleException("Provided key spec is invalid.", e);
+        } catch (Exception e) {
+            ExceptionHandler.getInstance().handleException("Unhandled exception has occurred.", e);
+        }
+
+        return privateKey;
     }
 }
