@@ -1,28 +1,36 @@
 package blf.blockchains.hyperledger.helpers;
 
-import org.antlr.v4.runtime.misc.Pair;
-
-import java.util.LinkedList;
-import java.util.List;
+/**
+ * A helper class to store the parsed parameters for a Hyperledger query as they are performed in the
+ * HyperledgerSmartContractFilterInstruction.
+ *
+ */
 
 public class HyperledgerQueryParameters {
-    private final List<Pair<String, String>> outputParameters;
+    private final String[] outputParameters;
     private final String methodName;
-    private final List<Pair<String, String>> inputParameters;
+    private final String[] inputParameters;
 
-    public HyperledgerQueryParameters(
-        List<Pair<String, String>> outputParameters,
-        String methodName,
-        List<Pair<String, String>> inputParameters
-    ) {
+    /**
+     * Constructs the HyperledgerQueryParameters Class for a PublicFunctionQuery.
+     *
+     * @param outputParameters      Output parameters as defined in the manifest.
+     * @param methodName            Method name as defined in the manifest.
+     * @param inputParameters       Input parameters as defined in the manifest.
+     */
+    public HyperledgerQueryParameters(String[] outputParameters, String methodName, String[] inputParameters) {
         this.outputParameters = outputParameters;
         this.methodName = methodName;
         this.inputParameters = inputParameters;
     }
 
-    public HyperledgerQueryParameters(Pair<String, String> outputVariable) {
-        this.outputParameters = new LinkedList<>();
-        outputParameters.add(outputVariable);
+    /**
+     * Constructs the HyperledgerQueryParameters Class for a PublicVariableQuery.
+     *
+     * @param outputParameters      Output parameters as defined in the manifest.
+     */
+    public HyperledgerQueryParameters(String[] outputParameters) {
+        this.outputParameters = outputParameters;
         this.methodName = null;
         this.inputParameters = null;
     }
@@ -31,11 +39,11 @@ public class HyperledgerQueryParameters {
         return methodName;
     }
 
-    public List<Pair<String, String>> getOutputParameters() {
+    public String[] getOutputParameters() {
         return outputParameters;
     }
 
-    public List<Pair<String, String>> getInputParameters() {
+    public String[] getInputParameters() {
         return inputParameters;
     }
 }

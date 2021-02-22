@@ -10,6 +10,8 @@ import org.antlr.v4.runtime.misc.Triple;
 import org.antlr.v4.runtime.tree.ParseTree;
 import org.antlr.v4.runtime.tree.TerminalNode;
 import org.apache.commons.codec.binary.Base64;
+import org.json.JSONException;
+import org.json.JSONObject;
 
 import java.io.IOException;
 import java.math.BigInteger;
@@ -29,9 +31,23 @@ import java.util.LinkedList;
 import java.util.List;
 import java.util.stream.Collectors;
 
+/**
+ * This functional helper interface holds several methods, mainly with parsing purposes, for the different hyperledger
+ * specific instructions.
+ *
+ */
+
 public interface HyperledgerInstructionHelper {
 
     BigInteger CURRENT_BLOCK = BigInteger.valueOf(-1);
+
+    /**
+     * Tries to parse an address List.
+     *
+     * @param hyperledgerProgramState   The current ProgramState of the BLF.
+     * @param addressListCtx            The context of the address list.
+     * @return                          Address names as list of Strings
+     */
 
     static List<String> parseAddressListCtx(HyperledgerProgramState hyperledgerProgramState, BcqlParser.AddressListContext addressListCtx) {
 
@@ -52,19 +68,8 @@ public interface HyperledgerInstructionHelper {
 
         if (addressListVariableNameCtx != null) {
             final String variableName = addressListVariableNameCtx.getText();
-            final ValueAccessor accessor = ValueAccessor.createVariableAccessor(variableName);
 
-            String value = null;
-            try {
-                value = (String) accessor.getValue(hyperledgerProgramState);
-            } catch (ClassCastException e) {
-                String errorMsg = String.format(
-                    "Variable '%s' in manifest file is not an instance of a String.",
-                    addressListVariableNameCtx.getText()
-                );
-
-                ExceptionHandler.getInstance().handleException(errorMsg, e);
-            }
+            String value = queryVariableNameString(hyperledgerProgramState, variableName);
 
             if (value != null) {
                 addressNames = new LinkedList<>(Collections.singletonList(value));
@@ -92,6 +97,14 @@ public interface HyperledgerInstructionHelper {
         return addressNames;
     }
 
+    /**
+     * Tries to parse the Smart Contract Filter input in the manner the manifest requested.
+     *
+     * @param hyperledgerProgramState The current ProgramState of the BLF.
+     * @param smartContractFilterCtx  The context of the Smart Contract Filter.
+     * @return                        Pair of the contract address/name and a List of HyperledgerQueryParameters.
+     */
+
     static Pair<String, List<HyperledgerQueryParameters>> parseSmartContractFilterCtx(
         HyperledgerProgramState hyperledgerProgramState,
         BcqlParser.SmartContractFilterContext smartContractFilterCtx
@@ -100,19 +113,8 @@ public interface HyperledgerInstructionHelper {
         String contractAddress = null;
 
         if (smartContractFilterCtx.contractAddress.variableName() != null) {
-            final String variableName = smartContractFilterCtx.contractAddress.getText();
-            final ValueAccessor valueAccessor = ValueAccessor.createVariableAccessor(variableName);
-
-            try {
-                contractAddress = (String) valueAccessor.getValue(hyperledgerProgramState);
-            } catch (ClassCastException e) {
-                String errorMsg = String.format(
-                    "Variable '%s' in manifest file is not an instance of a String.",
-                    smartContractFilterCtx.contractAddress.getText()
-                );
-
-                ExceptionHandler.getInstance().handleException(errorMsg, e);
-            }
+            String variableName = smartContractFilterCtx.contractAddress.getText();
+            contractAddress = queryVariableNameString(hyperledgerProgramState, variableName);
         }
 
         if (smartContractFilterCtx.contractAddress.literal() != null) {
@@ -130,62 +132,80 @@ public interface HyperledgerInstructionHelper {
             }
 
             if (smartContractQuery.publicFunctionQuery() != null) {
-                hyperledgerQueryParameters.add(parsePublicFunctionQuery(smartContractQuery));
+                hyperledgerQueryParameters.add(parsePublicFunctionQuery(hyperledgerProgramState, smartContractQuery));
             }
         }
 
         return new Pair<>(contractAddress, hyperledgerQueryParameters);
     }
 
-    static HyperledgerQueryParameters parsePublicVariableQuery(BcqlParser.SmartContractQueryContext smartContractQuery) {
-        BcqlParser.SmartContractParameterContext smartContractParameterContext = smartContractQuery.publicVariableQuery()
+    /**
+     * Tries to parse the Smart Contract Query as a Public Variable Query.
+     *
+     * @param smartContractQueryCtx  The context of the Smart Contract Query.
+     * @return                       HyperledgerQueryParameters class including all parsed parameters.
+     */
+
+    static HyperledgerQueryParameters parsePublicVariableQuery(BcqlParser.SmartContractQueryContext smartContractQueryCtx) {
+        BcqlParser.SmartContractParameterContext smartContractParameterContext = smartContractQueryCtx.publicVariableQuery()
             .smartContractParameter();
 
-        Pair<String, String> outputParameter = new Pair<>(
-            smartContractParameterContext.solType().getText(),
-            smartContractParameterContext.variableName().getText()
-        );
+        String[] outputParameter = new String[] { smartContractParameterContext.variableName().getText() };
         return (new HyperledgerQueryParameters(outputParameter));
     }
 
-    static HyperledgerQueryParameters parsePublicFunctionQuery(BcqlParser.SmartContractQueryContext smartContractQuery) {
+    /**
+     * Tries to parse the Smart Contract Query as a Public Function Query.
+     *
+     * @param hyperledgerProgramState   The current ProgramState of the BLF.
+     * @param smartContractQueryCtx     The context of the Smart Contract Query.
+     * @return                          HyperledgerQueryParameters class including all parsed parameters.
+     */
 
-        BcqlParser.PublicFunctionQueryContext publicFunctionQuery = smartContractQuery.publicFunctionQuery();
+    static HyperledgerQueryParameters parsePublicFunctionQuery(
+        HyperledgerProgramState hyperledgerProgramState,
+        BcqlParser.SmartContractQueryContext smartContractQueryCtx
+    ) {
+
+        BcqlParser.PublicFunctionQueryContext publicFunctionQuery = smartContractQueryCtx.publicFunctionQuery();
 
         List<BcqlParser.SmartContractParameterContext> smartContractParameters = publicFunctionQuery.smartContractParameter();
-        List<Pair<String, String>> outputParameters = new LinkedList<>();
+        String[] outputParameters = new String[smartContractParameters.size()];
 
-        for (BcqlParser.SmartContractParameterContext smartContractParameter : smartContractParameters) {
-            Pair<String, String> outputParameter = new Pair<>(
-                smartContractParameter.solType().getText(),
-                smartContractParameter.variableName().getText()
-            );
-            outputParameters.add(outputParameter);
+        for (int i = 0; i < smartContractParameters.size(); i++) {
+            String variableName = smartContractParameters.get(i).getText();
+            outputParameters[i] = variableName;
         }
 
         final String methodName = publicFunctionQuery.methodName.getText();
 
         List<BcqlParser.SmartContractQueryParameterContext> smartContractQueryParameters = publicFunctionQuery
             .smartContractQueryParameter();
-        List<Pair<String, String>> inputParameters = new LinkedList<>();
+        String[] inputParameters = new String[smartContractQueryParameters.size()];
 
-        for (BcqlParser.SmartContractQueryParameterContext smartContractQueryParameter : smartContractQueryParameters) {
-            if (smartContractQueryParameter.solType() != null && smartContractQueryParameter.literal() != null) {
-                Pair<String, String> outputParameter = new Pair<>(
-                    smartContractQueryParameter.solType().getText(),
-                    smartContractQueryParameter.literal().getText()
-                );
-                inputParameters.add(outputParameter);
+        for (int i = 0; i < smartContractQueryParameters.size(); i++) {
+            if (smartContractQueryParameters.get(i).literal() != null) {
+                String literal = smartContractQueryParameters.get(i).literal().getText();
+                inputParameters[i] = literal;
             }
 
-            if (smartContractQueryParameter.variableName() != null) {
-                // TODO (Tom Knoche): Name and TYPE have to be refered from the Valuestore (achieved only name)
-                inputParameters.add(null);
+            if (smartContractQueryParameters.get(i).variableName() != null) {
+                String variableName = smartContractQueryParameters.get(i).variableName().getText();
+                inputParameters[i] = queryVariableNameString(hyperledgerProgramState, variableName);
             }
 
         }
         return (new HyperledgerQueryParameters(outputParameters, methodName, inputParameters));
     }
+
+    /**
+     * Tries to parse the Log Entry Filter input in the manner the manifest requested.
+     *
+     * @param hyperledgerProgramState   The current ProgramState of the BLF.
+     * @param logEntryCtx               The context of the log entry filter.
+     * @return                          A Triple including the event name, a list of type and name pairs and
+     *                                  a List of contract names/addresses.
+     */
 
     static Triple<String, List<Pair<String, String>>, List<String>> parseLogEntryFilterCtx(
         HyperledgerProgramState hyperledgerProgramState,
@@ -216,6 +236,13 @@ public interface HyperledgerInstructionHelper {
         return new Triple<>(eventName, entryParameters, addressNames);
     }
 
+    /**
+     * Tries to parse the Block Filter input in the manner the manifest requested.
+     *
+     * @param hyperledgerProgramState   The current ProgramState of the BLF.
+     * @param blockCtx                  The context of the block filter.
+     * @return                          A Pair of a starting and ending block number.
+     */
     static Pair<BigInteger, BigInteger> parseBlockFilterCtx(
         HyperledgerProgramState hyperledgerProgramState,
         BcqlParser.BlockFilterContext blockCtx
@@ -223,10 +250,14 @@ public interface HyperledgerInstructionHelper {
         return new Pair<>(parseBlockNumber(hyperledgerProgramState, blockCtx.from), parseBlockNumber(hyperledgerProgramState, blockCtx.to));
     }
 
-    private static BigInteger parseBlockNumber(
-        HyperledgerProgramState hyperledgerProgramState,
-        BcqlParser.BlockNumberContext blockNumberContext
-    ) {
+    /**
+     * Tries to parse a Block Number.
+     *
+     * @param hyperledgerProgramState   The current ProgramState of the BLF.
+     * @param blockNumberContext        The context of the block number.
+     * @return                          A block number as BigInteger.
+     */
+    static BigInteger parseBlockNumber(HyperledgerProgramState hyperledgerProgramState, BcqlParser.BlockNumberContext blockNumberContext) {
         final BcqlParser.ValueExpressionContext valueExpressionCtx = blockNumberContext.valueExpression();
         final TerminalNode continuousKey = blockNumberContext.KEY_CONTINUOUS();
         final TerminalNode earliestKey = blockNumberContext.KEY_EARLIEST();
@@ -276,7 +307,34 @@ public interface HyperledgerInstructionHelper {
         return blockNumber;
     }
 
-    // inspired from: https://stackoverflow.com/questions/9655181/how-to-convert-a-byte-array-to-a-hex-string-in-java
+    /**
+     * Queries for a String variableName.
+     *
+     * @param hyperledgerProgramState   The current ProgramState of the BLF.
+     * @param variableName              The variableName which is queried.
+     * @return                          The mapped value to the variableName.
+     */
+    static String queryVariableNameString(HyperledgerProgramState hyperledgerProgramState, String variableName) {
+        final ValueAccessor valueAccessor = ValueAccessor.createVariableAccessor(variableName);
+
+        try {
+            return (String) valueAccessor.getValue(hyperledgerProgramState);
+        } catch (ClassCastException e) {
+            String errorMsg = String.format("Variable '%s' in manifest file is not an instance of a String.", variableName);
+
+            ExceptionHandler.getInstance().handleException(errorMsg, e);
+        }
+        return null;
+    }
+
+    /**
+     * Converts a bytes array to a hex String.
+     * <p>
+     * Inspired from: https://stackoverflow.com/questions/9655181/how-to-convert-a-byte-array-to-a-hex-string-in-java
+     *
+     * @param bytes     Input bytes array
+     * @return          Output hex String
+     */
     static String bytesToHexString(byte[] bytes) {
         final byte[] hexArray = "0123456789ABCDEF".getBytes(StandardCharsets.US_ASCII);
         byte[] hexChars = new byte[bytes.length * 2];
@@ -288,6 +346,12 @@ public interface HyperledgerInstructionHelper {
         return new String(hexChars, StandardCharsets.UTF_8);
     }
 
+    /**
+     * Reads a hyperledger private key from a file.
+     *
+     * @param path      Directory specification for the file.
+     * @return          The hyperledger private key.
+     */
     static PrivateKey readPrivateKeyFromFile(String path) {
         PrivateKey privateKey = null;
         try {
@@ -323,4 +387,5 @@ public interface HyperledgerInstructionHelper {
 
         return privateKey;
     }
+
 }

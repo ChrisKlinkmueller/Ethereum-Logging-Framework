@@ -11,16 +11,19 @@ import blf.grammar.BcqlParser;
 import org.antlr.v4.runtime.misc.Pair;
 import org.hyperledger.fabric.sdk.*;
 import org.hyperledger.fabric.sdk.exception.*;
-import org.hyperledger.fabric.sdk.identity.X509Enrollment;
 import org.hyperledger.fabric.sdk.security.CryptoSuite;
 
-import java.io.*;
-import java.nio.file.Files;
-import java.nio.file.Path;
-import java.security.PrivateKey;
 import java.util.Collection;
+import java.util.LinkedList;
 import java.util.List;
 import java.util.logging.Logger;
+import java.util.stream.IntStream;
+
+/**
+ * HyperledgerSmartContractFilterInstruction is an Instruction for the Hyperledger smart contract mode of the Blockchain
+ * Logging Framework. It queries for the requested output parameters with a respective function from the current Block and
+ * stores the extracted parameter values in the ProgramState.
+ */
 
 public class HyperledgerSmartContractFilterInstruction extends Instruction {
 
@@ -29,6 +32,12 @@ public class HyperledgerSmartContractFilterInstruction extends Instruction {
     @SuppressWarnings({ "FieldCanBeLocal", "unused" })
     private final Logger logger;
 
+    /**
+     * Constructs a HyperledgerSmartContractFilterInstruction.
+     *
+     * @param smartContractFilterCtx    The context of smartContractFilter.
+     * @param nestedInstructions        The list of nested instruction.
+     */
     public HyperledgerSmartContractFilterInstruction(
         BcqlParser.SmartContractFilterContext smartContractFilterCtx,
         List<Instruction> nestedInstructions
@@ -38,6 +47,12 @@ public class HyperledgerSmartContractFilterInstruction extends Instruction {
         this.logger = Logger.getLogger(HyperledgerSmartContractFilterInstruction.class.getName());
     }
 
+    /**
+     * execute is called once the program is constructed from the manifest. It contains the logic for queries
+     * from Hyperledger blocks that the BLF is currently analyzing. It is called by the Program class.
+     *
+     * @param state The current ProgramState of the BLF, provided by the Program when called.
+     */
     @Override
     public void execute(final ProgramState state) {
 
@@ -46,25 +61,38 @@ public class HyperledgerSmartContractFilterInstruction extends Instruction {
         Pair<String, List<HyperledgerQueryParameters>> hyperledgerContractQueries = HyperledgerInstructionHelper
             .parseSmartContractFilterCtx(hyperledgerProgramState, smartContractFilterCtx);
 
-        UserContext userContext = new UserContext();
-        userContext.setName("User1");
+        // preparation to fulfill the hyperledger sdk requirements for queries
 
-        String certificate = null;
-        try {
-            certificate = Files.readString(Path.of("hyperledger/user1.crt"));
-        } catch (IOException e) {
-            ExceptionHandler.getInstance().handleException("Could not read user certificate", e);
+        UserContext userContext = new UserContext(hyperledgerProgramState);
+        HFClient hfClient = createHFClient();
+        hfClient.setUserContext(userContext);
+        Channel channel = hyperledgerProgramState.getNetwork().getChannel();
+
+        QueryByChaincodeRequest queryRequest = hfClient.newQueryProposalRequest();
+        queryRequest.setUserContext(userContext);
+
+        // here begins the usage of parsed values from the smart contract signature
+
+        String contractName = hyperledgerContractQueries.a;
+        ChaincodeID chaincodeID = ChaincodeID.newBuilder().setName(contractName).build();
+        queryRequest.setChaincodeID(chaincodeID);
+
+        for (HyperledgerQueryParameters hyperledgerQueryParameters : hyperledgerContractQueries.b) {
+
+            List<ProposalResponse> responses = processQuery(queryRequest, hyperledgerQueryParameters, channel);
+
+            setValues(responses, hyperledgerQueryParameters.getOutputParameters(), hyperledgerProgramState);
         }
 
-        // Get private key from file.
-        PrivateKey privateKey = HyperledgerInstructionHelper.readPrivateKeyFromFile("hyperledger/user1.key");
+        this.executeNestedInstructions(hyperledgerProgramState);
+    }
 
-        String mspName = hyperledgerProgramState.getMspName();
-        userContext.setMspId(mspName);
-
-        X509Enrollment x509Enrollment = new X509Enrollment(privateKey, certificate);
-        userContext.setEnrollment(x509Enrollment);
-
+    /**
+     * Creates the Hyperledger Fabric CLient and prepares a CryptoSuite for it. The client is needed to call a query.
+     *
+     * @return      returns a Hyperledger Fabric Client, including a set CryptoSuite.
+     */
+    private HFClient createHFClient() {
         CryptoSuite cryptoSuite = null;
         try {
             cryptoSuite = CryptoSuite.Factory.getCryptoSuite();
@@ -79,38 +107,63 @@ public class HyperledgerSmartContractFilterInstruction extends Instruction {
         } catch (Exception e) {
             ExceptionHandler.getInstance().handleException("Cryptosuite couldn't be set", e);
         }
+        return hfClient;
+    }
 
-        hfClient.setUserContext(userContext);
+    /**
+     * Processes the previously instantiated queryRequest, through updating it with a function name and input parameters
+     * from the parsed Smart Contract Query of the manifest and querying the channel.
+     *
+     * @param queryRequest                  The request object needed for the query.
+     * @param hyperledgerQueryParameters    The parsed parameters of the manifest to perform a query.
+     * @param channel                       The hyperledger fabric channel on which the query is performed.
+     * @return                              A List of Proposal Responses, which can be written into the ProgramState.
+     */
+    private List<ProposalResponse> processQuery(
+        QueryByChaincodeRequest queryRequest,
+        HyperledgerQueryParameters hyperledgerQueryParameters,
+        Channel channel
+    ) {
+        // Chaincode function name for querying the blocks
+        queryRequest.setFcn(hyperledgerQueryParameters.getMethodName());
 
-        Channel channel = hyperledgerProgramState.getNetwork().getChannel();
+        // Arguments that the above function takes
+        if (hyperledgerQueryParameters.getInputParameters() != null) queryRequest.setArgs(hyperledgerQueryParameters.getInputParameters());
 
-        QueryByChaincodeRequest queryRequest = hfClient.newQueryProposalRequest();
-        queryRequest.setUserContext(userContext);
-
-        // here begins using parsed values from the smart contract signature
-
-        String contractName = hyperledgerContractQueries.a;
-        ChaincodeID ccid = ChaincodeID.newBuilder().setName(contractName).build();
-        queryRequest.setChaincodeID(ccid); // ChaincodeId object as created in Invoke block
-
-        queryRequest.setFcn("OwnerOf"); // Chaincode function name for querying the blocks
-        String[] arguments = { "6" }; // Arguments that the above functions take
-        if (arguments != null) queryRequest.setArgs(arguments);
         // Query the chaincode
         Collection<ProposalResponse> queryResponse = null;
         try {
             queryResponse = channel.queryByChaincode(queryRequest);
         } catch (Exception e) {
-            ExceptionHandler.getInstance().handleException("Smartcontract query could not be sent", e);
+            ExceptionHandler.getInstance().handleException("SmartContract query could not be sent", e);
         }
 
-        for (ProposalResponse pres : queryResponse) {
-            try {
-                System.out.println(new String(pres.getChaincodeActionResponsePayload()));
-            } catch (InvalidArgumentException e) {
-                e.printStackTrace();
-            }
+        return new LinkedList<>(queryResponse);
+    }
+
+    /**
+     * Tries to parse the contents of the Proposal Responses to Strings. Afterwards sets it to the
+     * ValueStore of the ProgramState together with the output parameter name defined in the manifest.
+     *
+     * @param responses                 List of Proposal Responses, which include the returned values of the query.
+     * @param outputParameters          The output parameters defined in the manifest and which serve as variableNames.
+     * @param hyperledgerProgramState   The current ProgramState of the BLF.
+     */
+    private void setValues(List<ProposalResponse> responses, String[] outputParameters, HyperledgerProgramState hyperledgerProgramState) {
+        if (responses.size() != outputParameters.length) {
+            throw new IllegalArgumentException("Expected output parameters amount does not match with actually returned values.");
         }
+
+        IntStream.range(0, responses.size()).forEach(i -> {
+            final String value;
+            try {
+                value = new String(responses.get(i).getChaincodeActionResponsePayload());
+                final String name = outputParameters[i];
+                hyperledgerProgramState.getValueStore().setValue(name, value);
+            } catch (InvalidArgumentException e) {
+                ExceptionHandler.getInstance().handleException("Chaincode response includes an invalid argument", e);
+            }
+        });
     }
 
 }

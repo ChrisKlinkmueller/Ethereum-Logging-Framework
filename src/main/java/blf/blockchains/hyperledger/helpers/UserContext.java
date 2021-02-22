@@ -12,16 +12,24 @@
  */
 package blf.blockchains.hyperledger.helpers;
 
+import java.io.IOException;
 import java.io.Serializable;
+import java.nio.file.Files;
+import java.nio.file.Path;
+import java.security.PrivateKey;
 import java.util.Set;
 
+import blf.blockchains.hyperledger.state.HyperledgerProgramState;
+import blf.core.exceptions.ExceptionHandler;
 import org.hyperledger.fabric.sdk.Enrollment;
 import org.hyperledger.fabric.sdk.User;
+import org.hyperledger.fabric.sdk.identity.X509Enrollment;
 
 /**
- * Implementation class for User
- * 
- * @author Balaji Kadambi
+ * This helper class is the implementation for a Hyperledger Fabric User. The purpose of the UserContext in regards to
+ * BLF is to fulfill the requirements for queries in the Java Hyperledger Fabric SDK. The UserContext must be instantiated
+ * with a valid user name, a valid MspID, a valid user certificate and a valid user key to be accepted by a query, as
+ * they are performed in the HyperledgerSmartContractFilterInstruction.
  *
  */
 
@@ -87,6 +95,32 @@ public class UserContext implements User, Serializable {
     @Override
     public String getMspId() {
         return mspId;
+    }
+
+    /**
+     * Constructs a UserContext by setting the name, mspID and enrollment.
+     *
+     * @param hyperledgerProgramState   The current ProgramState of the BLF.
+     */
+
+    public UserContext(HyperledgerProgramState hyperledgerProgramState) {
+        this.setName("User1");
+
+        String certificate = null;
+        try {
+            certificate = Files.readString(Path.of("hyperledger/user1.crt"));
+        } catch (IOException e) {
+            ExceptionHandler.getInstance().handleException("Could not read user certificate", e);
+        }
+
+        // Get private key from file.
+        PrivateKey privateKey = HyperledgerInstructionHelper.readPrivateKeyFromFile("hyperledger/user1.key");
+
+        String mspName = hyperledgerProgramState.getMspName();
+        this.setMspId(mspName);
+
+        X509Enrollment x509Enrollment = new X509Enrollment(privateKey, certificate);
+        this.setEnrollment(x509Enrollment);
     }
 
 }
