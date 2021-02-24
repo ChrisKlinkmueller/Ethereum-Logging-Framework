@@ -1,0 +1,32 @@
+// Author: Tom Knoche
+
+SET BLOCKCHAIN "Hyperledger"
+
+SET OUTPUT FOLDER "./test_output"
+
+SET CONNECTION {
+   "hyperledger/connection-org1.yaml",
+   "hyperledger/server.key",
+   "hyperledger/server.crt",
+   "Org1MSP",
+   "mychannel",
+   "User1",
+   "hyperledger/user1.key",
+   "hyperledger/user1.crt"
+}
+
+string contractAddress = "kitties";
+
+BLOCKS (91) (91) {
+    SMART CONTRACT (contractAddress) (string owner = OwnerOf(uint64 5)) {
+		EMIT LOG LINE ("Kitty 5 owner is ", owner);
+	}
+
+	SMART CONTRACT (contractAddress) (bool canBreedWith = CanBreedWith(uint64 3, uint64 6)) {
+		EMIT LOG LINE ("Kitty 3 can breed with Kitty 6: ", canBreedWith);
+	}
+
+	SMART CONTRACT (contractAddress) (bool canBreedWith = CanBreedWith(uint64 4, uint64 5)) {
+    	EMIT LOG LINE ("Kitty 3 can breed with Kitty 6: ", canBreedWith);
+    }
+}

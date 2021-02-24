@@ -73,9 +73,13 @@ public class CsvWriter extends DataWriter {
 
     @Override
     protected void writeState(String namePrefix) {
-        List<String> tableNames = new LinkedList<>(this.tables.keySet());
-        for (String tableName : tableNames) {
-            this.writeTable(namePrefix, tableName);
+        if (this.tables.size() != 0) {
+            LOGGER.info("Csv export started.");
+            List<String> tableNames = new LinkedList<>(this.tables.keySet());
+            for (String tableName : tableNames) {
+                this.writeTable(namePrefix, tableName);
+            }
+            LOGGER.info("Csv export ended.");
         }
     }
 

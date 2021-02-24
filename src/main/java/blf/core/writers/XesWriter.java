@@ -158,36 +158,38 @@ public class XesWriter extends DataWriter {
 
     @Override
     protected void writeState(String fileNameSuffix) {
-        LOGGER.info("Xes export started.");
+        if (!(this.traces.size() == 0 || this.events.size() == 0 || this.element == null)) {
+            LOGGER.info("Xes export started.");
 
-        // Before
-        Map<String, Map<String, XTrace>> formerTraces = deepCopyTraces();
-        Map<String, Map<String, Map<String, XEvent>>> formerEvents = deepCopyEvents();
+            // Before
+            Map<String, Map<String, XTrace>> formerTraces = deepCopyTraces();
+            Map<String, Map<String, Map<String, XEvent>>> formerEvents = deepCopyEvents();
 
-        final Map<String, XLog> logs = this.getLogs();
+            final Map<String, XLog> logs = this.getLogs();
 
-        // Restore of state
-        this.traces.clear();
-        this.events.clear();
-        this.traces.putAll(formerTraces);
-        this.events.putAll(formerEvents);
+            // Restore of state
+            this.traces.clear();
+            this.events.clear();
+            this.traces.putAll(formerTraces);
+            this.events.putAll(formerEvents);
 
-        try {
-            final File folder = this.getOutputFolder().toAbsolutePath().toFile();
-            final XesXmlSerializer serializer = new XesXmlSerializer();
-            for (Entry<String, XLog> entry : logs.entrySet()) {
-                final String filename = String.format("log_%s_%s.xes", entry.getKey(), fileNameSuffix);
-                final File file = new File(folder, filename);
-                try (final FileOutputStream outputStream = new FileOutputStream(file)) {
-                    serializer.serialize(entry.getValue(), outputStream);
+            try {
+                final File folder = this.getOutputFolder().toAbsolutePath().toFile();
+                final XesXmlSerializer serializer = new XesXmlSerializer();
+                for (Entry<String, XLog> entry : logs.entrySet()) {
+                    final String filename = String.format("log_%s_%s.xes", entry.getKey(), fileNameSuffix);
+                    final File file = new File(folder, filename);
+                    try (final FileOutputStream outputStream = new FileOutputStream(file)) {
+                        serializer.serialize(entry.getValue(), outputStream);
+                    }
                 }
+            } catch (Exception e) {
+                final String errorMsg = "Error exporting data to XES.";
+                ExceptionHandler.getInstance().handleException(errorMsg, e);
             }
-        } catch (Exception e) {
-            final String errorMsg = "Error exporting data to XES.";
-            ExceptionHandler.getInstance().handleException(errorMsg, e);
-        }
 
-        LOGGER.info("Xes export finished.");
+            LOGGER.info("Xes export finished.");
+        }
     }
 
     @Override

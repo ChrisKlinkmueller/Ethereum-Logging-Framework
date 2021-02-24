@@ -149,8 +149,7 @@ public class HyperledgerSmartContractFilterInstruction extends Instruction {
         if (queryResponse != null) {
             return new LinkedList<>(queryResponse);
         } else {
-            ExceptionHandler.getInstance()
-                    .handleException("The queries response is null", new NullPointerException());
+            ExceptionHandler.getInstance().handleException("The queries response is null", new NullPointerException());
 
             return new LinkedList<>();
         }
