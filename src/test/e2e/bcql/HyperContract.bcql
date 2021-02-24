@@ -2,7 +2,7 @@
 
 SET BLOCKCHAIN "Hyperledger"
 
-SET OUTPUT FOLDER "./test_output"
+SET OUTPUT FOLDER "./HyperContract"
 
 SET CONNECTION {
    "hyperledger/connection-org1.yaml",
