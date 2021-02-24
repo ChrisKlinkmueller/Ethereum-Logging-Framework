@@ -1,5 +1,6 @@
 package blf.blockchains.hyperledger;
 
+import blf.blockchains.hyperledger.helpers.UserContext;
 import blf.blockchains.hyperledger.instructions.*;
 import blf.blockchains.hyperledger.state.HyperledgerProgramState;
 import blf.configuration.BaseBlockchainListener;
@@ -40,6 +41,7 @@ public class HyperledgerListener extends BaseBlockchainListener {
 
     @Override
     public void enterConnection(BcqlParser.ConnectionContext ctx) {
+        HyperledgerProgramState hyperledgerProgramState = (HyperledgerProgramState) state;
         final BcqlParser.LiteralContext literal = ctx.literal();
         final String literalText = ctx.literal().getText();
 
@@ -50,8 +52,8 @@ public class HyperledgerListener extends BaseBlockchainListener {
 
         final List<String> hyperledgerConnectionParams = TypeUtils.parseStringArrayLiteral(literalText);
 
-        if (hyperledgerConnectionParams.size() != 5) {
-            logger.severe("Hyperledger SET CONNECTION parameter should be a String array of length 5");
+        if (!(hyperledgerConnectionParams.size() == 5 || hyperledgerConnectionParams.size() == 8)) {
+            logger.severe("Hyperledger SET CONNECTION parameter should be a String array of either length 5 or 8");
         }
 
         final String networkConfigFilePath = hyperledgerConnectionParams.get(0);
@@ -67,6 +69,21 @@ public class HyperledgerListener extends BaseBlockchainListener {
             mspName,
             channelName
         );
+
+        if (hyperledgerConnectionParams.size() == 8) {
+            final String userName = hyperledgerConnectionParams.get(5);
+            final String userKeyFilePath = hyperledgerConnectionParams.get(6);
+            final String userCrtFilePath = hyperledgerConnectionParams.get(7);
+
+            UserContext userContext = new UserContext(userName, mspName, userKeyFilePath, userCrtFilePath);
+            hyperledgerProgramState.setUserContext(userContext);
+
+            if (hyperledgerProgramState.getUserContext() == null) {
+                logger.severe("Setting the Hyperledger User has failed");
+            } else {
+                logger.info("The Hyperledger User has been set successfully");
+            }
+        }
 
         this.composer.addInstruction(hyperledgerConnectInstruction);
     }

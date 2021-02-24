@@ -1,15 +1,3 @@
-/****************************************************** 
- *  Copyright 2018 IBM Corporation 
- *  Licensed under the Apache License, Version 2.0 (the "License"); 
- *  you may not use this file except in compliance with the License. 
- *  You may obtain a copy of the License at 
- *  http://www.apache.org/licenses/LICENSE-2.0 
- *  Unless required by applicable law or agreed to in writing, software 
- *  distributed under the License is distributed on an "AS IS" BASIS, 
- *  WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied. 
- *  See the License for the specific language governing permissions and 
- *  limitations under the License.
- */
 package blf.blockchains.hyperledger.helpers;
 
 import java.io.IOException;
@@ -19,7 +7,6 @@ import java.nio.file.Path;
 import java.security.PrivateKey;
 import java.util.Set;
 
-import blf.blockchains.hyperledger.state.HyperledgerProgramState;
 import blf.core.exceptions.ExceptionHandler;
 import org.hyperledger.fabric.sdk.Enrollment;
 import org.hyperledger.fabric.sdk.User;
@@ -100,24 +87,26 @@ public class UserContext implements User, Serializable {
     /**
      * Constructs a UserContext by setting the name, mspID and enrollment.
      *
-     * @param hyperledgerProgramState   The current ProgramState of the BLF.
+     * @param userName              The User name specification.
+     * @param mspId                 The Msp ID specification.
+     * @param privateKeyPath        The private key for the user enrollment.
+     * @param certificatePath       The certificate for the user enrollment.
      */
 
-    public UserContext(HyperledgerProgramState hyperledgerProgramState) {
-        this.setName("User1");
+    public UserContext(String userName, String mspId, String privateKeyPath, String certificatePath) {
+        this.setName(userName);
 
         String certificate = null;
         try {
-            certificate = Files.readString(Path.of("hyperledger/user1.crt"));
+            certificate = Files.readString(Path.of(certificatePath));
         } catch (IOException e) {
             ExceptionHandler.getInstance().handleException("Could not read user certificate", e);
         }
 
         // Get private key from file.
-        PrivateKey privateKey = HyperledgerInstructionHelper.readPrivateKeyFromFile("hyperledger/user1.key");
+        PrivateKey privateKey = HyperledgerInstructionHelper.readPrivateKeyFromFile(privateKeyPath);
 
-        String mspName = hyperledgerProgramState.getMspName();
-        this.setMspId(mspName);
+        this.setMspId(mspId);
 
         X509Enrollment x509Enrollment = new X509Enrollment(privateKey, certificate);
         this.setEnrollment(x509Enrollment);

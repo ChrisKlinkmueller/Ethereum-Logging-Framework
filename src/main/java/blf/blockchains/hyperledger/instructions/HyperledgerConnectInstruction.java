@@ -61,7 +61,6 @@ public class HyperledgerConnectInstruction extends Instruction {
 
         hyperledgerProgramState.setGateway(gateway);
         hyperledgerProgramState.setNetwork(network);
-        hyperledgerProgramState.setMspName(this.mspName);
     }
 
     /**

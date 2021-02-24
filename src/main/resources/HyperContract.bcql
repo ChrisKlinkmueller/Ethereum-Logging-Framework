@@ -1,16 +1,19 @@
 // Author: Tom Knoche
 
-SET BLOCKCHAIN "Hyperledger";
+SET BLOCKCHAIN "Hyperledger"
 
-SET OUTPUT FOLDER "./test_output";
+SET OUTPUT FOLDER "./test_output"
 
 SET CONNECTION {
    "hyperledger/connection-org1.yaml",
    "hyperledger/server.key",
    "hyperledger/server.crt",
    "Org1MSP",
-   "mychannel"
-};
+   "mychannel",
+   "User1",
+   "hyperledger/user1.key",
+   "hyperledger/user1.crt"
+}
 
 string contractAddress = "kitties";
 

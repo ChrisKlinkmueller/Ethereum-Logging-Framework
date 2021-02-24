@@ -10,8 +10,6 @@ import org.antlr.v4.runtime.misc.Triple;
 import org.antlr.v4.runtime.tree.ParseTree;
 import org.antlr.v4.runtime.tree.TerminalNode;
 import org.apache.commons.codec.binary.Base64;
-import org.json.JSONException;
-import org.json.JSONObject;
 
 import java.io.IOException;
 import java.math.BigInteger;
@@ -173,7 +171,7 @@ public interface HyperledgerInstructionHelper {
         String[] outputParameters = new String[smartContractParameters.size()];
 
         for (int i = 0; i < smartContractParameters.size(); i++) {
-            String variableName = smartContractParameters.get(i).getText();
+            String variableName = smartContractParameters.get(i).variableName().getText();
             outputParameters[i] = variableName;
         }
 

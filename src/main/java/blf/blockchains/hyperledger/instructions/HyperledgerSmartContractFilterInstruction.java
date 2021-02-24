@@ -63,7 +63,15 @@ public class HyperledgerSmartContractFilterInstruction extends Instruction {
 
         // preparation to fulfill the hyperledger sdk requirements for queries
 
-        UserContext userContext = new UserContext(hyperledgerProgramState);
+        UserContext userContext = hyperledgerProgramState.getUserContext();
+
+        if (userContext == null) {
+            ExceptionHandler.getInstance()
+                .handleException("UserContext has to be specified in SET CONNECTION for queries to work", new NullPointerException());
+
+            return;
+        }
+
         HFClient hfClient = createHFClient();
         hfClient.setUserContext(userContext);
         Channel channel = hyperledgerProgramState.getNetwork().getChannel();
@@ -138,7 +146,14 @@ public class HyperledgerSmartContractFilterInstruction extends Instruction {
             ExceptionHandler.getInstance().handleException("SmartContract query could not be sent", e);
         }
 
-        return new LinkedList<>(queryResponse);
+        if (queryResponse != null) {
+            return new LinkedList<>(queryResponse);
+        } else {
+            ExceptionHandler.getInstance()
+                    .handleException("The queries response is null", new NullPointerException());
+
+            return new LinkedList<>();
+        }
     }
 
     /**
