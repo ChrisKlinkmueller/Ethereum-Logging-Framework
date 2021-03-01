@@ -105,8 +105,8 @@ public class TemplateListener extends BaseBlockchainListener {
 
     private void handleBlockFilterScopeExit(BcqlParser.BlockFilterContext blockCtx) {
         final TemplateBlockFilterInstruction TemplateBlockFilterInstruction = new TemplateBlockFilterInstruction(
-                blockCtx,
-                this.composer.instructionListsStack.pop()
+            blockCtx,
+            this.composer.instructionListsStack.pop()
         );
 
         this.composer.addInstruction(TemplateBlockFilterInstruction);
@@ -123,8 +123,8 @@ public class TemplateListener extends BaseBlockchainListener {
 
     public void handleTransactionFilterScopeExit(BcqlParser.TransactionFilterContext transactionCtx) {
         final TemplateTransactionFilterInstruction TemplateTransactionFilterInstruction = new TemplateTransactionFilterInstruction(
-                transactionCtx,
-                this.composer.instructionListsStack.pop()
+            transactionCtx,
+            this.composer.instructionListsStack.pop()
         );
 
         this.composer.addInstruction(TemplateTransactionFilterInstruction);
@@ -141,8 +141,8 @@ public class TemplateListener extends BaseBlockchainListener {
 
     public void handleLogEntryFilterScopeExit(BcqlParser.LogEntryFilterContext logEntryCtx) {
         final TemplateLogEntryFilterInstruction logEntryFilterInstruction = new TemplateLogEntryFilterInstruction(
-                logEntryCtx,
-                this.composer.instructionListsStack.pop()
+            logEntryCtx,
+            this.composer.instructionListsStack.pop()
         );
 
         this.composer.addInstruction(logEntryFilterInstruction);

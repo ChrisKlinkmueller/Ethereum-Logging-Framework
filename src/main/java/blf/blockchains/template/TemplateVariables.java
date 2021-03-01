@@ -62,10 +62,7 @@ public class TemplateVariables implements BlockchainVariables {
     }
 
     private static Stream<Variable> variableStream() {
-        return Stream.concat(
-            blockVariables.stream(),
-            transactionVariables.stream()
-        );
+        return Stream.concat(blockVariables.stream(), transactionVariables.stream());
     }
 
 }

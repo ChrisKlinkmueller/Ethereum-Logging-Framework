@@ -11,8 +11,8 @@ import java.util.logging.Logger;
 public class TemplateConnectInstruction extends Instruction {
 
     private final Logger logger;
-    public TemplateConnectInstruction(
-    ) {
+
+    public TemplateConnectInstruction() {
 
         this.logger = Logger.getLogger(TemplateConnectInstruction.class.getName());
     }

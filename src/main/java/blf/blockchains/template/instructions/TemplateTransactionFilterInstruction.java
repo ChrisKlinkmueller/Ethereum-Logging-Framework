@@ -9,7 +9,6 @@ import java.math.BigInteger;
 import java.util.List;
 import java.util.logging.Logger;
 
-
 /**
  * TemplateTransactionFilterInstruction is an Instruction for the Template log extraction mode.
  */
@@ -25,10 +24,7 @@ public class TemplateTransactionFilterInstruction extends Instruction {
      * @param transactionCtx The context of transaction filter.
      * @param nestedInstructions The list of nested instructions.
      */
-    public TemplateTransactionFilterInstruction(
-        BcqlParser.TransactionFilterContext transactionCtx,
-        List<Instruction> nestedInstructions
-    ) {
+    public TemplateTransactionFilterInstruction(BcqlParser.TransactionFilterContext transactionCtx, List<Instruction> nestedInstructions) {
         super(nestedInstructions);
 
         this.transactionCtx = transactionCtx;
