@@ -1,0 +1,15 @@
+// Author: Paul Beck
+
+SET BLOCKCHAIN "Template";
+
+SET OUTPUT FOLDER "./test_output";
+
+SET CONNECTION {"https://myNodeURL", "mySecretPassword"};
+
+BLOCKS (1) (100) {
+    TRANSACTIONS ("mom") ("sun") {
+        LOG ENTRIES ("Birthday") (Birthday(string kid_name)) {
+              EMIT LOG LINE ("Birthday!!! Hurray.");
+        }
+    }
+}
