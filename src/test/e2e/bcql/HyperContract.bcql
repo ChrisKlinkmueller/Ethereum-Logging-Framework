@@ -1,8 +1,8 @@
 // Author: Tom Knoche
 
-SET BLOCKCHAIN "Hyperledger"
+SET BLOCKCHAIN "Hyperledger";
 
-SET OUTPUT FOLDER "./HyperContract"
+SET OUTPUT FOLDER "./HyperContract";
 
 SET CONNECTION {
    "hyperledger/connection-org1.yaml",
@@ -13,7 +13,7 @@ SET CONNECTION {
    "User1",
    "hyperledger/user1.key",
    "hyperledger/user1.crt"
-}
+};
 
 string contractAddress = "kitties";
 
