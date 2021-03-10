@@ -368,18 +368,6 @@ function main() {
 
   #--------------------------------------------------------------------------------
 
-	colorecho "Testing HyperContract"
-	if [ "$1" = "$SILENT_PARAM" ] || [ "$2" = "$SILENT_PARAM" ] || [ "$3" = "$SILENT_PARAM" ]; then
-	  java -jar "$JAR" extract HyperContract.bcql &> /dev/null
-	else
-	  java -jar "$JAR" extract HyperContract.bcql
-  fi
-		cmp HyperContract/all.log{,.xblf} || { redecho "Comparing the extracted data with the expected data failed! Leaving test environment as is for investigation" ; exit 2; }
-	  cmp HyperContract/error.log{,.xblf} || { redecho "Comparing the extracted data with the expected data failed! Leaving test environment as is for investigation" ; exit 2; }
-	colorecho "Test successful"
-
-  #--------------------------------------------------------------------------------
-
 	colorecho "Testing FailingHyperKitties"
 	LAST_EXIT=0
 	if [ "$1" = "$SILENT_PARAM" ] || [ "$2" = "$SILENT_PARAM" ] || [ "$3" = "$SILENT_PARAM" ]; then
