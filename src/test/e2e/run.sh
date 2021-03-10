@@ -49,7 +49,6 @@ function main() {
 	touch "$ED"/NetworkStatisticsStreaming/error.log.xblf
 	touch "$ED"/CryptoKittiesStreaming/error.log.xblf
 	touch "$ED"/HyperBasicStreaming/error.log.xblf
-	touch "$ED"/HyperContract/error.log.xblf
 	touch "$ED"/NetworkStatisticsExternalError/error.log.xblf
 	touch "$ED"/NetworkStatisticsExternalErrorAndName/customErrorName.log.xblf
 
