@@ -17,7 +17,8 @@ SET CONNECTION {
 
 string contractAddress = "kitties";
 
-BLOCKS (91) (91) {
+// Hyperledger SMART CONTRACT filters only work sensibly when starting with the CURRENT block!
+BLOCKS (CURRENT) (100) {
     SMART CONTRACT (contractAddress) (string owner = OwnerOf(uint64 5)) {
 		EMIT LOG LINE ("Kitty 5 owner is ", owner);
 	}
