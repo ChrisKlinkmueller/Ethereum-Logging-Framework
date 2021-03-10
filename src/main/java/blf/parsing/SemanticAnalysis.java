@@ -8,6 +8,7 @@ import java.util.logging.Logger;
 import blf.blockchains.ethereum.state.EthereumProgramState;
 import blf.configuration.BaseBlockchainListener;
 import blf.grammar.BcqlBaseListener;
+import blf.grammar.BcqlListener;
 import blf.grammar.BcqlParser;
 import blf.util.RootListenerException;
 import blf.util.RootListener;
@@ -33,6 +34,7 @@ public class SemanticAnalysis extends RootListener {
             this.addListener(new EmitAnalyzer(errorCollector, varAnalyzer));
             this.addListener(new ExpressionStatementAnalyzer(errorCollector, varAnalyzer));
             this.addListener(varAnalyzer);
+            this.addListener(new HyperledgerSmartContractAnalyzer(errorCollector));
         } catch (RootListenerException e) {
             e.printStackTrace();
         }
@@ -75,6 +77,7 @@ public class SemanticAnalysis extends RootListener {
         }
 
         varAnalyzer.setBlockchainVariables(targetBlockchainListener.getState().getBlockchainVariables());
+        this.notifyListener(BcqlListener::enterBlockchain, ctx);
     }
 
 }

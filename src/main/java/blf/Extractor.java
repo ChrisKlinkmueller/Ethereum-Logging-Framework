@@ -1,6 +1,7 @@
 package blf;
 
 import blf.configuration.BaseBlockchainListener;
+import blf.parsing.HyperledgerSmartContractAnalyzer;
 import blf.util.RootListenerException;
 import blf.core.Program;
 import blf.parsing.VariableExistenceListener;
@@ -20,10 +21,11 @@ public class Extractor {
         final ParseTreeWalker walker = new ParseTreeWalker();
 
         final VariableExistenceListener variableExistenceListener = new VariableExistenceListener();
-
+        final HyperledgerSmartContractAnalyzer hyperledgerSmartContractAnalyzer = new HyperledgerSmartContractAnalyzer();
         final RootListener rootListener = new RootListener(Constants.getBlockchainMap(variableExistenceListener));
 
         rootListener.addListener(variableExistenceListener);
+        rootListener.addListener(hyperledgerSmartContractAnalyzer);
 
         walker.walk(rootListener, parseTree);
 
