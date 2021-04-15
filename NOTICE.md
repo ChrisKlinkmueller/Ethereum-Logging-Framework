@@ -1,4 +1,11 @@
-# CSIRO Open Source Software Licence Agreement (variation of the BSD / MIT License)
+# Ethereum Logging Framework
+
+The Blockchain Logging Framework is based on the [Ethereum Logging Framework](https://github.com/ChrisKlinkmueller/Ethereum-Logging-Framework),
+which is licensed under the CSIRO Open Source Software Licence Agreement. All code
+that was inherited from the Ethereum Logging Framework is therefore still licensed
+under the CSIRO Open Source Software Licence Agreement as stated below.
+
+## CSIRO Open Source Software Licence Agreement (variation of the BSD / MIT License)
 
 Copyright (c) 2019, Commonwealth Scientific and Industrial Research Organisation (CSIRO) ABN 41 687 119 230.
 All rights reserved. CSIRO is willing to grant you a licence to this Ethereum Logging Framework on the following terms, except where otherwise indicated for third party material.
