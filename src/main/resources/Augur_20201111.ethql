@@ -1,0 +1,865 @@
+// based on the script Rebesky_Augur.ethql by Martin Rebesky
+
+connectIpc("/home/ethuser/.local/share/openethereum/jsonrpc.ipc");
+setOutputFolder("./output_Richard");
+address augur = 0x75228DcE4D82566d93068A8D5d49435216551599;
+
+// BLOCKS (5926229) (10193336) {
+BLOCKS    (5933155)  (7133155) {
+  int timestamp = multiply(block.timestamp, 1000);
+  
+  // TRANSACTIONS (ANY) (ANY) {
+    LOG ENTRIES (0x75228DcE4D82566d93068A8D5d49435216551599) (
+      MarketCreated(
+        bytes32 indexed topic, 
+        string description, 
+        string extraInfo, 
+        address indexed universe, 
+        address market, 
+        address indexed marketCreator, 
+        //address designatedMarketReporter,
+        //uint256 feePerCashInAttoCash,
+        //uint256 noShowBond,
+        //uint256 numTicks,
+        //unint256 timestamp,
+        bytes32[] outcomes, 
+        uint256 marketCreationFee, 
+        int256 minPrice, 
+        int256 maxPrice, 
+        uint8 marketType
+      )
+    ) {
+      string type = mapValue(marketType, "unknown", {0, 1, 2}, {"binary", "categorical", "scalar"});
+      EMIT XES TRACE ("augur")(market)(
+        universe as xs:string universe,
+        description as xs:string description, 
+        extraInfo as xs:string extraInfo, 
+        type as xs:string marketType, 
+        //outcomes, 
+        minPrice as xs:int minPrice, 
+        maxPrice as xs:int maxPrice,
+        block.number as xs:int blockNumber,
+        timestamp as xs:date time:timestamp
+      );
+          
+      int gasPaid = multiply(tx.gasPrice, tx.gasUsed);
+      EMIT XES EVENT ("augur")(market)()(
+        "create market" as xs:string concept:name, 
+        universe as xs:string universe, 
+        marketCreator as xs:string creator, 
+        marketCreationFee as xs:int creationFee,
+        //designatedMarketReporter as xs:string designatedMarketReporter,
+        //feePerCashInAttoCash as xs:int feePerCashInAttoCash,
+        //numTicks as xs:int numTicks,
+        //noShowBond as xs:int noShowBond,
+        //timestamp as xs:int eventTimestamp,
+        block.number as xs:int blockNumber,
+        timestamp as xs:date time:timestamp,
+        gasPaid as xs:int gasPaid,
+        tx.gasPrice as xs:int gasPrice,
+        tx.gasUsed as xs:int gasUsed,
+        tx.gas as xs:int gas,
+        tx.transactionIndex as xs:int txIndex,
+        tx.hash as xs:string txHash,
+        tx.success as xs:boolean txSuccessful,
+        tx.from as xs:string requester,
+        log.removed as xs:boolean logRemoved,
+        tx.to as xs:string receivingContract
+      );
+    }
+  
+    LOG ENTRIES (0x75228DcE4D82566d93068A8D5d49435216551599) (
+      InitialReportSubmitted(
+        address indexed universe, 
+        address indexed reporter, 
+        address indexed market, 
+        uint256 amountStaked, 
+        bool isDesignatedReporter, 
+        uint256[] payoutNumerators,
+      // uint256 timestamp, 
+        bool invalid
+      )
+    ) {
+      int gasPaid = multiply(tx.gasPrice, tx.gasUsed);
+      EMIT XES EVENT ("augur")(market)()(
+        "submit initial report" as xs:string concept:name,
+        universe as xs:string universe,
+        reporter as xs:string reporter,
+        amountStaked as xs:int amountStaked,
+        isDesignatedReporter as xs:boolean isDesignatedReporter,
+        //payoutNumerators,
+        invalid as xs:boolean invalid,
+        //timestamp as xs:int eventTimestamp,
+        block.number as xs:int blockNumber,
+        timestamp as xs:date time:timestamp,
+        gasPaid as xs:int gasPaid,
+        tx.gasPrice as xs:int gasPrice,
+        tx.gasUsed as xs:int gasUsed,
+        tx.gas as xs:int gas,
+        tx.transactionIndex as xs:int txIndex,
+        tx.hash as xs:string txHash,
+        tx.success as xs:boolean txSuccessful,
+        tx.from as xs:string requester,
+        log.removed as xs:boolean logRemoved,
+        tx.to as xs:string receivingContract
+      );
+    }
+    
+    LOG ENTRIES (0x75228DcE4D82566d93068A8D5d49435216551599) (
+      MarketFinalized(
+        address indexed universe, 
+        address indexed market
+      )
+    ){
+      int gasPaid = multiply(tx.gasPrice, tx.gasUsed);
+      EMIT XES EVENT ("augur")(market)()(
+        "finalize market" as xs:string concept:name, 
+        universe as xs:string universe,
+        block.number as xs:int blockNumber,
+        timestamp as xs:date time:timestamp,
+        gasPaid as xs:int gasPaid,
+        tx.gasPrice as xs:int gasPrice,
+        tx.gasUsed as xs:int gasUsed,
+        tx.gas as xs:int gas,
+        tx.transactionIndex as xs:int txIndex,
+        tx.hash as xs:string txHash,
+        tx.success as xs:boolean txSuccessful,
+        tx.from as xs:string requester,
+        log.removed as xs:boolean logRemoved,
+        tx.to as xs:string receivingContract
+      );
+    }
+      
+    LOG ENTRIES (0x75228DcE4D82566d93068A8D5d49435216551599) (
+      MarketMigrated(
+        address indexed market, 
+        address indexed originalUniverse, 
+        address indexed newUniverse
+      )
+    ){
+      int gasPaid = multiply(tx.gasPrice, tx.gasUsed);
+      EMIT XES EVENT ("augur")(market)()(
+        "migrate market" as xs:string concept:name,
+        originalUniverse as xs:string originalUniverse,
+        newUniverse as xs:string newUniverse,
+        block.number as xs:int blockNumber,
+        timestamp as xs:date time:timestamp,
+        gasPaid as xs:int gasPaid,
+        tx.gasPrice as xs:int gasPrice,
+        tx.gasUsed as xs:int gasUsed,
+        tx.gas as xs:int gas,
+        tx.transactionIndex as xs:int txIndex,
+        tx.hash as xs:string txHash,
+        tx.success as xs:boolean txSuccessful,
+        tx.from as xs:string requester,
+        log.removed as xs:boolean logRemoved,
+        tx.to as xs:string receivingContract
+      );
+    }
+
+    LOG ENTRIES (0x75228DcE4D82566d93068A8D5d49435216551599) (
+      CompleteSetsPurchased(
+        address indexed universe, 
+        address indexed market,
+        address indexed account,
+        uint256 numCompleteSets
+        //uint256 timestamp
+      )
+    ){
+      int gasPaid = multiply(tx.gasPrice, tx.gasUsed);
+      EMIT XES EVENT ("augur")(market)()(
+        "purchase complete sets" as xs:string concept:name,
+        universe as xs:string universe,
+      // market as xs:string market,
+        account as xs:string account,
+        numCompleteSets as xs:int numCompleteSets,
+        //timestamp as xs:int eventTimestamp,
+        block.number as xs:int blockNumber,
+        timestamp as xs:date time:timestamp,
+        gasPaid as xs:int gasPaid,
+        tx.gasPrice as xs:int gasPrice,
+        tx.gasUsed as xs:int gasUsed,
+        tx.gas as xs:int gas,
+        tx.transactionIndex as xs:int txIndex,
+        tx.hash as xs:string txHash,
+        tx.success as xs:boolean txSuccessful,
+        tx.from as xs:string requester,
+        log.removed as xs:boolean logRemoved,
+        tx.to as xs:string receivingContract
+      );
+    }
+
+    LOG ENTRIES (0x75228DcE4D82566d93068A8D5d49435216551599) (
+      CompleteSetsSold(
+        address indexed universe, 
+        address indexed market,
+        address indexed account,
+        uint256 numCompleteSets,
+        uint256 fees
+      // uint256 timestamp
+      )
+    ){
+      int gasPaid = multiply(tx.gasPrice, tx.gasUsed);
+      EMIT XES EVENT ("augur")(market)()(
+        "sell complete sets" as xs:string concept:name,
+        universe as xs:string universe,
+      // market as xs:string market,
+        account as xs:string account,
+        numCompleteSets as xs:int numCompleteSets,
+        fees as xs:int fees,
+        //timestamp as xs:int event:timestamp,
+        block.number as xs:int blockNumber,
+        timestamp as xs:date time:timestamp,
+        gasPaid as xs:int gasPaid,
+        tx.gasPrice as xs:int gasPrice,
+        tx.gasUsed as xs:int gasUsed,
+        tx.gas as xs:int gas,
+        tx.transactionIndex as xs:int txIndex,
+        tx.hash as xs:string txHash,
+        tx.success as xs:boolean txSuccessful,
+        tx.from as xs:string requester,
+        log.removed as xs:boolean logRemoved,
+        tx.to as xs:string receivingContract
+      );
+    }
+    
+    LOG ENTRIES (0x75228DcE4D82566d93068A8D5d49435216551599) (
+      TradingProceedsClaimed(
+        address indexed universe, 
+        address indexed shareToken, 
+        address indexed sender, 
+        address market, 
+        uint256 numShares, 
+        uint256 numPayoutTokens, 
+        uint256 finalTokenBalance
+      )
+    ) {
+      int gasPaid = multiply(tx.gasPrice, tx.gasUsed);
+      EMIT XES EVENT ("augur")(market)()(
+        "claim trading proceeds" as xs:string concept:name,
+        universe as xs:string universe,
+        shareToken as xs:string shareToken,
+        sender as xs:string sender,
+        numShares as xs:int numShares,
+        numPayoutTokens as xs:int numPayoutTokens,
+        finalTokenBalance as xs:int finalTokenBalance,
+        block.number as xs:int blockNumber,
+        timestamp as xs:date time:timestamp,
+        gasPaid as xs:int gasPaid,
+        tx.gasPrice as xs:int gasPrice,
+        tx.gasUsed as xs:int gasUsed,
+        tx.gas as xs:int gas,
+        tx.transactionIndex as xs:int txIndex,
+        tx.hash as xs:string txHash,
+        tx.success as xs:boolean txSuccessful,
+        tx.from as xs:string requester,
+        log.removed as xs:boolean logRemoved,
+        tx.to as xs:string receivingContract
+      );
+    }
+
+    LOG ENTRIES (0x75228DcE4D82566d93068A8D5d49435216551599) (
+      TokensTransferred(
+        address indexed universe, 
+        address indexed token, 
+        address indexed from,
+        address indexed to,
+        uint256 value
+        //TokenType tokenType,
+        //address market
+      )
+    ) {
+      int gasPaid = multiply(tx.gasPrice, tx.gasUsed);
+      EMIT XES EVENT ("augur")(universe)()(
+        "transfer tokens" as xs:string concept:name,
+        universe as xs:string universe,
+        token as xs:string token,
+        from as xs:string from,
+        to as xs:string to,
+        value as xs:int value,
+        //market as xs:string market,
+        block.number as xs:int blockNumber,
+        timestamp as xs:date time:timestamp,
+        gasPaid as xs:int gasPaid,
+        tx.gasPrice as xs:int gasPrice,
+        tx.gasUsed as xs:int gasUsed,
+        tx.gas as xs:int gas,
+        tx.transactionIndex as xs:int txIndex,
+        tx.hash as xs:string txHash,
+        tx.success as xs:boolean txSuccessful,
+        tx.from as xs:string requester,
+        log.removed as xs:boolean logRemoved,
+        tx.to as xs:string receivingContract
+      );
+    }
+
+    LOG ENTRIES (0x75228DcE4D82566d93068A8D5d49435216551599) (
+      TokenBalanceChanged(
+        address indexed universe, 
+        address indexed owner,
+        address indexed token,
+        //TokenType tokenType,
+        //address market,
+        uint256 balance,
+        uint256 outcome
+      )
+    ) {
+      int gasPaid = multiply(tx.gasPrice, tx.gasUsed);
+      EMIT XES EVENT ("augur")(universe)()(
+        "change token balance" as xs:string concept:name,
+        universe as xs:string universe,
+        owner as xs:string owner,
+        token as xs:string token,
+        balance as xs:int balance,
+        outcome as xs:int outcome,
+        //market as xs:string market,
+        block.number as xs:int blockNumber,
+        timestamp as xs:date time:timestamp,
+        gasPaid as xs:int gasPaid,
+        tx.gasPrice as xs:int gasPrice,
+        tx.gasUsed as xs:int gasUsed,
+        tx.gas as xs:int gas,
+        tx.transactionIndex as xs:int txIndex,
+        tx.hash as xs:string txHash,
+        tx.success as xs:boolean txSuccessful,
+        tx.from as xs:string requester,
+        log.removed as xs:boolean logRemoved,
+        tx.to as xs:string receivingContract
+      );
+    }
+
+    LOG ENTRIES (0x75228DcE4D82566d93068A8D5d49435216551599) (
+      DisputeWindowCreated(
+        address indexed universe, 
+        address indexed disputeWindow
+        //unit256 startTime,
+        //uint256 endTime,
+        //uint256 id,
+        //bool initial
+      )
+    ) {
+      int gasPaid = multiply(tx.gasPrice, tx.gasUsed);
+      EMIT XES EVENT ("augur")(universe)()(
+        "create dispute window" as xs:string concept:name,
+        universe as xs:string universe,
+        disputeWindow as xs:string disputeWindow,
+        block.number as xs:int blockNumber,
+        timestamp as xs:date time:timestamp,
+        gasPaid as xs:int gasPaid,
+        tx.gasPrice as xs:int gasPrice,
+        tx.gasUsed as xs:int gasUsed,
+        tx.gas as xs:int gas,
+        tx.transactionIndex as xs:int txIndex,
+        tx.hash as xs:string txHash,
+        tx.success as xs:boolean txSuccessful,
+        tx.from as xs:string requester,
+        log.removed as xs:boolean logRemoved,
+        tx.to as xs:string receivingContract
+      );
+    }
+
+    LOG ENTRIES (0x75228DcE4D82566d93068A8D5d49435216551599) (
+      MarketOIChanged(
+        address indexed universe, 
+        address indexed market,
+        uint256 marketOI
+      )
+    ) {
+      int gasPaid = multiply(tx.gasPrice, tx.gasUsed);
+      EMIT XES EVENT ("augur")(universe)()(
+        "change marketOI" as xs:string concept:name,
+        universe as xs:string universe,
+        market as xs:string market,
+        marketOI as xs:int marketOI,
+        block.number as xs:int blockNumber,
+        timestamp as xs:date time:timestamp,
+        gasPaid as xs:int gasPaid,
+        tx.gasPrice as xs:int gasPrice,
+        tx.gasUsed as xs:int gasUsed,
+        tx.gas as xs:int gas,
+        tx.transactionIndex as xs:int txIndex,
+        tx.hash as xs:string txHash,
+        tx.success as xs:boolean txSuccessful,
+        tx.from as xs:string requester,
+        log.removed as xs:boolean logRemoved,
+        tx.to as xs:string receivingContract
+      );
+    }
+
+    LOG ENTRIES (0x75228DcE4D82566d93068A8D5d49435216551599) (
+      ParticipationTokensRedeemed(
+        address indexed universe,
+        address indexed disputeWindow,
+        address indexed account,
+        uint256 attoParticipationTokens,
+        uint256 feePayoutShare
+        //uint256 timestamp
+      )
+    ) {
+      int gasPaid = multiply(tx.gasPrice, tx.gasUsed);
+      EMIT XES EVENT ("augur")(universe)()(
+        "redeem particiption token" as xs:string concept:name,
+        universe as xs:string universe,
+        disputeWindow as xs:string disputeWindow,
+        account as xs:string account,
+        attoParticipationTokens as xs:int attoParticipationTokens,
+        feePayoutShare as xs:int feePayoutShare,
+        //timestamp as xs:int eventTimestamp,
+        block.number as xs:int blockNumber,
+        timestamp as xs:date time:timestamp,
+        gasPaid as xs:int gasPaid,
+        tx.gasPrice as xs:int gasPrice,
+        tx.gasUsed as xs:int gasUsed,
+        tx.gas as xs:int gas,
+        tx.transactionIndex as xs:int txIndex,
+        tx.hash as xs:string txHash,
+        tx.success as xs:boolean txSuccessful,
+        tx.from as xs:string requester,
+        log.removed as xs:boolean logRemoved,
+        tx.to as xs:string receivingContract
+      );
+    }
+
+    LOG ENTRIES (0x75228DcE4D82566d93068A8D5d49435216551599) (
+      ValidityBondChanged(
+        address indexed universe,
+        uint256 validityBond
+      )
+    ) {
+      int gasPaid = multiply(tx.gasPrice, tx.gasUsed);
+      EMIT XES EVENT ("augur")(universe)()(
+        "change validity bond" as xs:string concept:name,
+        universe as xs:string universe,
+        validityBond as xs:int validityBond,
+        block.number as xs:int blockNumber,
+        timestamp as xs:date time:timestamp,
+        gasPaid as xs:int gasPaid,
+        tx.gasPrice as xs:int gasPrice,
+        tx.gasUsed as xs:int gasUsed,
+        tx.gas as xs:int gas,
+        tx.transactionIndex as xs:int txIndex,
+        tx.hash as xs:string txHash,
+        tx.success as xs:boolean txSuccessful,
+        tx.from as xs:string requester,
+        log.removed as xs:boolean logRemoved,
+        tx.to as xs:string receivingContract
+      );
+    }
+
+    LOG ENTRIES (0x75228DcE4D82566d93068A8D5d49435216551599) (
+      DesignatedReportStakeChanged(
+        address indexed universe,
+        uint256 designatedReportStake
+      )
+    ) {
+      int gasPaid = multiply(tx.gasPrice, tx.gasUsed);
+      EMIT XES EVENT ("augur")(universe)()(
+        "change designated report stake" as xs:string concept:name,
+        universe as xs:string universe,
+        designatedReportStake as xs:int designatedReportStake,
+        block.number as xs:int blockNumber,
+        timestamp as xs:date time:timestamp,
+        gasPaid as xs:int gasPaid,
+        tx.gasPrice as xs:int gasPrice,
+        tx.gasUsed as xs:int gasUsed,
+        tx.gas as xs:int gas,
+        tx.transactionIndex as xs:int txIndex,
+        tx.hash as xs:string txHash,
+        tx.success as xs:boolean txSuccessful,
+        tx.from as xs:string requester,
+        log.removed as xs:boolean logRemoved,
+        tx.to as xs:string receivingContract
+      );
+    }
+
+    LOG ENTRIES (0x75228DcE4D82566d93068A8D5d49435216551599) (
+      NoShowBondChanged(
+        address indexed universe,
+        uint256 noShowBond
+      )
+    ) {
+      int gasPaid = multiply(tx.gasPrice, tx.gasUsed);
+      EMIT XES EVENT ("augur")(universe)()(
+        "change no-show bond" as xs:string concept:name,
+        universe as xs:string universe,
+        noShowBond as xs:int noShowBond,
+        block.number as xs:int blockNumber,
+        timestamp as xs:date time:timestamp,
+        gasPaid as xs:int gasPaid,
+        tx.gasPrice as xs:int gasPrice,
+        tx.gasUsed as xs:int gasUsed,
+        tx.gas as xs:int gas,
+        tx.transactionIndex as xs:int txIndex,
+        tx.hash as xs:string txHash,
+        tx.success as xs:boolean txSuccessful,
+        tx.from as xs:string requester,
+        log.removed as xs:boolean logRemoved,
+        tx.to as xs:string receivingContract
+      );
+    }
+
+    LOG ENTRIES (0x75228DcE4D82566d93068A8D5d49435216551599) (
+      ReportingFeeChanged(
+        address indexed universe,
+        uint256 reportingFee
+      )
+    ) {
+      int gasPaid = multiply(tx.gasPrice, tx.gasUsed);
+      EMIT XES EVENT ("augur")(universe)()(
+        "change reporting fee" as xs:string concept:name,
+        universe as xs:string universe,
+        reportingFee as xs:int reportingFee,
+        block.number as xs:int blockNumber,
+        timestamp as xs:date time:timestamp,
+        gasPaid as xs:int gasPaid,
+        tx.gasPrice as xs:int gasPrice,
+        tx.gasUsed as xs:int gasUsed,
+        tx.gas as xs:int gas,
+        tx.transactionIndex as xs:int txIndex,
+        tx.hash as xs:string txHash,
+        tx.success as xs:boolean txSuccessful,
+        tx.from as xs:string requester,
+        log.removed as xs:boolean logRemoved,
+        tx.to as xs:string receivingContract
+      );
+    }
+
+    LOG ENTRIES (0x75228DcE4D82566d93068A8D5d49435216551599) (
+      ShareTokenBalanceChanged(
+        address indexed universe,
+        address indexed account,
+        address indexed market,
+        uint256 outcome,
+        uint256 balance
+      )
+    ) {
+      int gasPaid = multiply(tx.gasPrice, tx.gasUsed);
+      EMIT XES EVENT ("augur")(universe)()(
+        "change share token balance" as xs:string concept:name,
+        universe as xs:string universe,
+        account as xs:string account,
+        market as xs:string market,
+        outcome as xs:int outcome,
+        balance as xs:int balance,
+        block.number as xs:int blockNumber,
+        timestamp as xs:date time:timestamp,
+        gasPaid as xs:int gasPaid,
+        tx.gasPrice as xs:int gasPrice,
+        tx.gasUsed as xs:int gasUsed,
+        tx.gas as xs:int gas,
+        tx.transactionIndex as xs:int txIndex,
+        tx.hash as xs:string txHash,
+        tx.success as xs:boolean txSuccessful,
+        tx.from as xs:string requester,
+        log.removed as xs:boolean logRemoved,
+        tx.to as xs:string receivingContract
+      );
+    }
+
+    LOG ENTRIES (0x75228DcE4D82566d93068A8D5d49435216551599) (
+      MarketRepBondTransferred(
+        address indexed universe,
+        address market,
+        address from,
+        address to
+      )
+    ) {
+      int gasPaid = multiply(tx.gasPrice, tx.gasUsed);
+      EMIT XES EVENT ("augur")(universe)()(
+        "transfer market rep bond" as xs:string concept:name,
+        universe as xs:string universe,
+        market as xs:string market,
+        from as xs:string from,
+        to as xs:string to,
+        block.number as xs:int blockNumber,
+        timestamp as xs:date time:timestamp,
+        gasPaid as xs:int gasPaid,
+        tx.gasPrice as xs:int gasPrice,
+        tx.gasUsed as xs:int gasUsed,
+        tx.gas as xs:int gas,
+        tx.transactionIndex as xs:int txIndex,
+        tx.hash as xs:string txHash,
+        tx.success as xs:boolean txSuccessful,
+        tx.from as xs:string requester,
+        log.removed as xs:boolean logRemoved,
+        tx.to as xs:string receivingContract
+      );
+    }
+
+  //##############################
+  
+    LOG ENTRIES (0x75228DcE4D82566d93068A8D5d49435216551599) (
+      DisputeCrowdsourcerCreated(
+        address indexed universe, 
+        address indexed market, 
+        address disputeCrowdsourcer, 
+        uint256[] payoutNumerators, 
+        uint256 size, 
+        bool invalid
+      )
+    ){
+      int gasPaid = multiply(tx.gasPrice, tx.gasUsed);
+      EMIT XES EVENT ("augur")(market)()(
+        "create dispute" as xs:string concept:name, 
+        universe as xs:string universe,
+        disputeCrowdsourcer as xs:string disputeCrowdsourcer,
+        //payoutNumerators ,
+        size as xs:int size,
+        invalid as xs:boolean invalid,
+        block.number as xs:int blockNumber,
+        timestamp as xs:date time:timestamp,
+        gasPaid as xs:int gasPaid,
+        tx.gasPrice as xs:int gasPrice,
+        tx.gasUsed as xs:int gasUsed,
+        tx.gas as xs:int gas,
+        tx.transactionIndex as xs:int txIndex,
+        tx.hash as xs:string txHash,
+        tx.success as xs:boolean txSuccessful,
+        tx.from as xs:string requester,
+        log.removed as xs:boolean logRemoved,
+        tx.to as xs:string receivingContract
+      );
+    }
+      
+    LOG ENTRIES (0x75228DcE4D82566d93068A8D5d49435216551599) (
+      DisputeCrowdsourcerContribution(
+        address indexed universe, 
+        address indexed reporter, 
+        address indexed market, 
+        address disputeCrowdsourcer, 
+        uint256 amountStaked)
+    ){
+      int gasPaid = multiply(tx.gasPrice, tx.gasUsed);
+      EMIT XES EVENT ("augur")(market)()(
+        "contribute to dispute" as xs:string concept:name, 
+        universe as xs:string universe,
+        reporter as xs:string reporter,
+        disputeCrowdsourcer as xs:string disputeCrowdsourcer,
+        amountStaked as xs:int amountStaked,
+        block.number as xs:int blockNumber,
+        timestamp as xs:date time:timestamp,
+        gasPaid as xs:int gasPaid,
+        tx.gasPrice as xs:int gasPrice,
+        tx.gasUsed as xs:int gasUsed,
+        tx.gas as xs:int gas,
+        tx.transactionIndex as xs:int txIndex,
+        tx.hash as xs:string txHash,
+        tx.success as xs:boolean txSuccessful,
+        tx.from as xs:string requester,
+        log.removed as xs:boolean logRemoved,
+        tx.to as xs:string receivingContract
+      );
+    }
+      
+    LOG ENTRIES (0x75228DcE4D82566d93068A8D5d49435216551599) (
+      DisputeCrowdsourcerCompleted(
+        address indexed universe, 
+        address indexed market, 
+        address disputeCrowdsourcer
+      )
+    ){
+      int gasPaid = multiply(tx.gasPrice, tx.gasUsed);
+      EMIT XES EVENT ("augur")(market)()(
+        "complete dispute" as xs:string concept:name,
+        universe as xs:string universe,
+        disputeCrowdsourcer as xs:string disputeCrowdsourcer,
+        block.number as xs:int blockNumber,
+        timestamp as xs:date time:timestamp,
+        gasPaid as xs:int gasPaid,
+        tx.gasPrice as xs:int gasPrice,
+        tx.gasUsed as xs:int gasUsed,
+        tx.gas as xs:int gas,
+        tx.transactionIndex as xs:int txIndex,
+        tx.hash as xs:string txHash,
+        tx.success as xs:boolean txSuccessful,
+        tx.from as xs:string requester,
+        log.removed as xs:boolean logRemoved,
+        tx.to as xs:string receivingContract
+      );
+    }
+      
+    LOG ENTRIES (0x75228DcE4D82566d93068A8D5d49435216551599) (
+      DisputeCrowdsourcerRedeemed(
+        address indexed universe, 
+        address indexed reporter, 
+        address indexed market, 
+        address disputeCrowdsourcer, 
+        uint256 amountRedeemed, 
+        uint256 repReceived, 
+        uint256 reportingFeesReceived, 
+        uint256[] payoutNumerators
+      )
+    ){
+      int gasPaid = multiply(tx.gasPrice, tx.gasUsed);
+      EMIT XES EVENT ("augur")(market)()(
+        "redeem dispute crowdsourcer" as xs:string concept:name,
+        universe as xs:string universe,
+        reporter as xs:string reporter,
+        disputeCrowdsourcer as xs:string disputeCrowdsourcer,
+        amountRedeemed as xs:int amountRedeemed,
+        repReceived as xs:int repReceived,
+        reportingFeesReceived as xs:int reportingFeesReceived,
+        block.number as xs:int blockNumber,
+        timestamp as xs:date time:timestamp,
+        gasPaid as xs:int gasPaid,
+        tx.gasPrice as xs:int gasPrice,
+        tx.gasUsed as xs:int gasUsed,
+        tx.gas as xs:int gas,
+        tx.transactionIndex as xs:int txIndex,
+        tx.hash as xs:string txHash,
+        tx.success as xs:boolean txSuccessful,
+        tx.from as xs:string requester,
+        log.removed as xs:boolean logRemoved,
+        tx.to as xs:string receivingContract
+        //, payoutNumerators
+      );
+    }
+      
+    LOG ENTRIES (0x75228DcE4D82566d93068A8D5d49435216551599) (
+      MarketTransferred(
+        address indexed universe, 
+        address indexed market, 
+        address from, 
+        address to
+      )
+    ){
+      int gasPaid = multiply(tx.gasPrice, tx.gasUsed);
+      EMIT XES EVENT ("augur")(market)()(
+        "transfer market" as xs:string concept:name,
+        universe as xs:string universe,
+        from as xs:string from, 
+        to as xs:string to,
+        block.number as xs:int blockNumber,
+        timestamp as xs:date time:timestamp,
+        gasPaid as xs:int gasPaid,
+        tx.gasPrice as xs:int gasPrice,
+        tx.gasUsed as xs:int gasUsed,
+        tx.gas as xs:int gas,
+        tx.transactionIndex as xs:int txIndex,
+        tx.hash as xs:string txHash,
+        tx.success as xs:boolean txSuccessful,
+        tx.from as xs:string requester,
+        log.removed as xs:boolean logRemoved,
+        tx.to as xs:string receivingContract
+      );
+    }
+        
+    LOG ENTRIES (0x75228DcE4D82566d93068A8D5d49435216551599) (
+      ReportingParticipantDisavowed(
+        address indexed universe, 
+        address indexed market, 
+        address reportingParticipant
+      )
+    ){ 
+      int gasPaid = multiply(tx.gasPrice, tx.gasUsed);
+      EMIT XES EVENT ("augur")(market)()(
+        "disavow reporting participant" as xs:string concept:name,
+        universe as xs:string universe,
+        reportingParticipant as xs:string reportingParticipant,
+        block.number as xs:int blockNumber,
+        timestamp as xs:date time:timestamp,
+        gasPaid as xs:int gasPaid,
+        tx.gasPrice as xs:int gasPrice,
+        tx.gasUsed as xs:int gasUsed,
+        tx.gas as xs:int gas,
+        tx.transactionIndex as xs:int txIndex,
+        tx.hash as xs:string txHash,
+        tx.success as xs:boolean txSuccessful,
+        tx.from as xs:string requester,
+        log.removed as xs:boolean logRemoved,
+        tx.to as xs:string receivingContract
+      );
+    }
+
+    LOG ENTRIES (0x75228DcE4D82566d93068A8D5d49435216551599) (
+      MarketParticipantsDisavowed(
+        address indexed universe, 
+        address indexed market
+      )
+    ){ 
+      int gasPaid = multiply(tx.gasPrice, tx.gasUsed);
+      EMIT XES EVENT ("augur")(market)()(
+        "disavow market participants" as xs:string concept:name,
+        universe as xs:string universe,
+        block.number as xs:int blockNumber,
+        timestamp as xs:date time:timestamp,
+        gasPaid as xs:int gasPaid,
+        tx.gasPrice as xs:int gasPrice,
+        tx.gasUsed as xs:int gasUsed,
+        tx.gas as xs:int gas,
+        tx.transactionIndex as xs:int txIndex,
+        tx.hash as xs:string txHash,
+        tx.success as xs:boolean txSuccessful,
+        tx.from as xs:string requester,
+        log.removed as xs:boolean logRemoved,
+        tx.to as xs:string receivingContract
+      );
+    }
+      
+    LOG ENTRIES (0x75228DcE4D82566d93068A8D5d49435216551599) (
+      InitialReporterRedeemed(
+        address indexed universe, 
+        address indexed reporter, 
+        address indexed market, 
+        uint256 amountRedeemed, 
+        uint256 repReceived, 
+        uint256 reportingFeesReceived, 
+        uint256[] payoutNumerators
+      )
+    ){
+      int gasPaid = multiply(tx.gasPrice, tx.gasUsed);
+      EMIT XES EVENT ("augur")(market)()(
+        "redeem as initial reporter" as xs:string concept:name,
+        universe as xs:string universe,
+        reporter as xs:string reporter,
+        amountRedeemed as xs:int amountRedeemed,
+        repReceived as xs:int repReceived,
+        reportingFeesReceived as xs:int reportingFeesReceived,
+        // payoutNumerators,
+        block.number as xs:int blockNumber,
+        timestamp as xs:date time:timestamp,
+        gasPaid as xs:int gasPaid,
+        tx.gasPrice as xs:int gasPrice,
+        tx.gasUsed as xs:int gasUsed,
+        tx.gas as xs:int gas,
+        tx.transactionIndex as xs:int txIndex,
+        tx.hash as xs:string txHash,
+        tx.success as xs:boolean txSuccessful,
+        tx.from as xs:string requester,
+        log.removed as xs:boolean logRemoved,
+        tx.to as xs:string receivingContract
+      );
+    }
+      
+    LOG ENTRIES (0x75228DcE4D82566d93068A8D5d49435216551599) (
+      InitialReporterTransferred(
+          address indexed universe, 
+          address indexed market, 
+          address from, 
+          address to
+        )
+    ){
+      int gasPaid = multiply(tx.gasPrice, tx.gasUsed);
+      EMIT XES EVENT ("augur")(market)()(
+        "transfer initial reporting duty" as xs:string concept:name,
+        universe as xs:string universe,
+        from as xs:string from, 
+        to as xs:string to,
+        block.number as xs:int blockNumber,
+        timestamp as xs:date time:timestamp,
+        gasPaid as xs:int gasPaid,
+        tx.gasPrice as xs:int gasPrice,
+        tx.gasUsed as xs:int gasUsed,
+        tx.gas as xs:int gas,
+        tx.transactionIndex as xs:int txIndex,
+        tx.hash as xs:string txHash,
+        tx.success as xs:boolean txSuccessful,
+        tx.from as xs:string requester,
+        log.removed as xs:boolean logRemoved,
+        tx.to as xs:string receivingContract
+      );
+    }
+
+  //}
+
+}
