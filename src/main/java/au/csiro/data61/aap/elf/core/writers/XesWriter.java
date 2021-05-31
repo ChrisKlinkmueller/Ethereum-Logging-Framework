@@ -6,6 +6,7 @@ import java.math.BigInteger;
 import java.util.Collections;
 import java.util.Date;
 import java.util.LinkedHashMap;
+import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
 import java.util.Objects;
@@ -16,6 +17,7 @@ import java.util.logging.Logger;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
+import org.deckfour.xes.classification.XEventAttributeClassifier;
 import org.deckfour.xes.model.XAttributable;
 import org.deckfour.xes.model.XAttribute;
 import org.deckfour.xes.model.XEvent;
@@ -51,11 +53,25 @@ public class XesWriter extends DataWriter {
 
     private final Map<String, Map<String, XTrace>> traces;
     private final Map<String, Map<String, Map<String, XEvent>>> events;
+    private final Map<String, List<XEventAttributeClassifier>> classifiers;
     private XAttributable element;
 
     public XesWriter() {
         this.traces = new LinkedHashMap<>();
         this.events = new LinkedHashMap<>();
+        this.classifiers = new LinkedHashMap<>();
+    }
+
+    public void addExtension(String pid) {
+
+    }
+
+    public void addGlobalValue(String pid, String name, String... attributes) {
+
+    }
+
+    public void addEventClassifier(String pid, String name, String... attributes) {
+        this.classifiers.computeIfAbsent(pid, n -> new LinkedList<>()).add(new XEventAttributeClassifier(name, attributes));
     }
 
     public void startTrace(String inputPid, String inputPiid) {
@@ -106,68 +122,73 @@ public class XesWriter extends DataWriter {
         this.events.get(pid).get(piid).put(eid, event);
     }
 
-    public void addBooleanValue(String key, boolean value) {
+    public void addBooleanValue(String key, Object value) {
         assert key != null;
-        this.addAttribute(key, value, XAttributeBooleanImpl::new);
+        this.addAttribute(key, (boolean) value, XAttributeBooleanImpl::new);
         LOGGER.info(String.format("Boolean attribute %s added.", key));
     }
 
-    public void addBooleanList(String key, List<Boolean> values) {
-        assert key != null && values != null && values.stream().allMatch(Objects::nonNull);
-        this.addListAttribute(key, values, XAttributeBooleanImpl::new);
+    @SuppressWarnings("unchecked")
+    public void addBooleanList(String key, Object value) {
+        assert key != null && value != null && value instanceof List && ((List<Boolean>) value).stream().allMatch(Objects::nonNull);
+        this.addListAttribute(key, (List<Boolean>) value, XAttributeBooleanImpl::new);
         LOGGER.info(String.format("Boolean list attribute %s added.", key));
     }
 
-    public void addFloatValue(String key, BigInteger value) {
+    public void addFloatValue(String key, Object value) {
         assert key != null && value != null;
-        this.addAttribute(key, value.doubleValue(), XAttributeContinuousImpl::new);
+        this.addAttribute(key, ((BigInteger) value).doubleValue(), XAttributeContinuousImpl::new);
         LOGGER.info(String.format("Float attribute %s added.", key));
     }
 
-    public void addFloatList(String key, List<BigInteger> values) {
-        assert key != null && values != null && values.stream().allMatch(Objects::nonNull);
-        final List<Double> list = values.stream().map(BigInteger::doubleValue).collect(Collectors.toList());
+    @SuppressWarnings("unchecked")
+    public void addFloatList(String key, Object value) {
+        assert key != null && value != null && value instanceof List && ((List<BigInteger>) value).stream().allMatch(Objects::nonNull);
+        final List<Double> list = ((List<BigInteger>) value).stream().map(BigInteger::doubleValue).collect(Collectors.toList());
         this.addListAttribute(key, list, XAttributeContinuousImpl::new);
         LOGGER.info(String.format("Float list attribute %s added.", key));
     }
 
-    public void addIntValue(String key, BigInteger value) {
+    public void addIntValue(String key, Object value) {
         assert key != null && value != null;
-        this.addAttribute(key, value.longValue(), XAttributeDiscreteImpl::new);
+        this.addAttribute(key, ((BigInteger) value).longValue(), XAttributeDiscreteImpl::new);
         LOGGER.info(String.format("Int attribute %s added.", key));
     }
 
-    public void addIntList(String key, List<BigInteger> values) {
-        assert key != null && values != null && values.stream().allMatch(Objects::nonNull);
-        final List<Long> list = values.stream().map(BigInteger::longValue).collect(Collectors.toList());
+    @SuppressWarnings("unchecked")
+    public void addIntList(String key, Object value) {
+        assert key != null && value != null && value instanceof List && ((List<BigInteger>) value).stream().allMatch(Objects::nonNull);
+        final List<Long> list = ((List<BigInteger>) value).stream().map(BigInteger::longValue).collect(Collectors.toList());
         this.addListAttribute(key, list, XAttributeContinuousImpl::new);
         LOGGER.info(String.format("Int list attribute %s added.", key));
     }
 
-    public void addDateValue(String key, BigInteger value) {
+    public void addDateValue(String key, Object value) {
         assert key != null && value != null;
-        final Date date = new Date(value.longValue());
+        final Date date = new Date(((BigInteger) value).longValue());
         this.addAttribute(key, date, XAttributeTimestampImpl::new);
         LOGGER.info(String.format("Date attribute %s added.", key));
     }
 
-    public void addDateList(String key, List<BigInteger> values) {
-        assert key != null && values != null && values.stream().allMatch(Objects::nonNull);
-        final List<Date> list = values.stream().map(BigInteger::longValue).map(Date::new).collect(Collectors.toList());
+    @SuppressWarnings("unchecked")
+    public void addDateList(String key, Object value) {
+        assert key != null && value instanceof List && ((List<BigInteger>) value).stream().allMatch(Objects::nonNull);
+        final List<Date> list = ((List<BigInteger>) value).stream().map(BigInteger::longValue).map(Date::new).collect(Collectors.toList());
         this.addListAttribute(key, list, XAttributeTimestampImpl::new);
         LOGGER.info(String.format("Date list attribute %s added.", key));
     }
 
-    public void addStringValue(String key, String value) {
+    public void addStringValue(String key, Object value) {
         assert key != null && value != null;
-        this.addAttribute(key, value, XAttributeLiteralImpl::new);
+        this.addAttribute(key, value.toString(), XAttributeLiteralImpl::new);
         LOGGER.info(String.format("String attribute %s = %s added.", key, value));
     }
 
-    public void addStringList(String key, List<String> values) {
-        assert key != null && values != null && values.stream().allMatch(Objects::nonNull);
-        this.addListAttribute(key, values, XAttributeLiteralImpl::new);
-        LOGGER.info(String.format("String list attribute %s added.", key));
+    @SuppressWarnings("unchecked")
+    public void addStringList(String key, Object value) {
+        assert key != null && value instanceof List && ((List<? extends Object>) value).stream().allMatch(Objects::nonNull);
+        final List<String> stringValues = ((List<Object>) value).stream().map(Object::toString).collect(Collectors.toList());
+        this.addListAttribute(key, stringValues, XAttributeLiteralImpl::new);
     }
 
     private <T> void addListAttribute(String key, List<T> list, BiFunction<String, T, XAttribute> attributeCreator) {
@@ -218,9 +239,17 @@ public class XesWriter extends DataWriter {
     private XLog createLog(String pid) {
         final XLog log = new XLogImpl(new XAttributeMapImpl());
         this.element = log;
+        this.addClassifiers(log, pid);
         this.addStringValue(PID_ATTRIBUTE, pid);
         this.addTracesToLog(log, pid);
         return log;
+    }
+
+    private void addClassifiers(XLog log, String pid) {
+        for (XEventAttributeClassifier classifier : this.classifiers.getOrDefault(pid, Collections.emptyList())) {
+            log.getClassifiers().add(new XEventAttributeClassifier(classifier.name(), classifier.getDefiningAttributeKeys()));
+        }
+
     }
 
     private void addTracesToLog(XLog log, String pid) {

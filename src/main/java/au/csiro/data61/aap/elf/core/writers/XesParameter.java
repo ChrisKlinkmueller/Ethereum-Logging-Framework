@@ -68,11 +68,10 @@ public class XesParameter {
         return new XesParameter(exportValue(name, accessor, XesWriter::addStringList));
     }
 
-    @SuppressWarnings("unchecked")
-    public static <T> XesParameterExporter exportValue(String name, ValueAccessor accessor, XesWriterMethod<T> writerMethod) {
+    public static <T> XesParameterExporter exportValue(String name, ValueAccessor accessor, XesWriterMethod writerMethod) {
         return (state, writer) -> {
             try {
-                final T value = (T) accessor.getValue(state);
+                final Object value = accessor.getValue(state);
                 writerMethod.export(writer, name, value);
             } catch (Throwable cause) {
                 throw new ProgramException(String.format("Error exporting xes attribute '%s'.", name), cause);
@@ -86,8 +85,8 @@ public class XesParameter {
     }
 
     @FunctionalInterface
-    private static interface XesWriterMethod<T> {
-        public void export(XesWriter writer, String name, T value);
+    private static interface XesWriterMethod {
+        public void export(XesWriter writer, String name, Object value);
     }
 
 }
