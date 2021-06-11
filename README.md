@@ -48,6 +48,10 @@ Details of the framework are described in more detail in the following publicati
 
 [C. Klinkmüller, I. Weber, A. Ponomarev, A.B. Tran, W. van der Aalst (2020)](https://arxiv.org/abs/2001.10281): Efficient Logging for Blockchain Applications. 	arXiv:2001.10281.
 
+## Short video demonstration 
+
+https://user-images.githubusercontent.com/17274966/121722525-d7191980-cae5-11eb-8291-900e030beea5.mp4
+
 ## Build
 
 1. Ensure Java 11 or higher is installed locally and the env var `JAVA_HOME` is properly set. [AdoptOpenJDK](https://adoptopenjdk.net/installation.html) provides binaries and installation guides for various operating systems.
