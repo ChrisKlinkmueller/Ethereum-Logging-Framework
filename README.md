@@ -17,7 +17,8 @@ This framework provides advanced logging capabilities for Ethereum applications 
 - Extractor: a component to extract, transform and format data based on bcql
 - Generator: a component to create efficient logging functionality that can be embedded into smart contracts
 
-![](framework.png)
+<!-- ![](framework.png) -->
+<img width="844" alt="Screenshot 2021-06-21 at 13 02 09" src="https://user-images.githubusercontent.com/17274966/122752286-0cb1c580-d291-11eb-999b-f40c30c797dd.png">
 
 Example bcql documents include
 - [AugurContractRegistry.bcql](./src/main/resources/AugurContractRegistry.bcql)
