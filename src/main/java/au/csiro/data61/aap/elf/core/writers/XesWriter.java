@@ -163,9 +163,12 @@ public class XesWriter extends DataWriter {
         LOGGER.info(String.format("Int list attribute %s added.", key));
     }
 
+    private static final long MILLIS_MULTIPLIER = 1000l;
+
     public void addDateValue(String key, Object value) {
-        assert key != null && value != null;
-        final Date date = new Date(((BigInteger) value).longValue());
+        assert key != null && value instanceof BigInteger;
+        final long timestamp = ((BigInteger) value).longValue() * MILLIS_MULTIPLIER;
+        final Date date = new Date(timestamp);
         this.addAttribute(key, date, XAttributeTimestampImpl::new);
         LOGGER.info(String.format("Date attribute %s added.", key));
     }
