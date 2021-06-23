@@ -2,7 +2,9 @@
 
 connect("ws://localhost:8546/");
 setOutputFolder("./test_output");
-BLOCKS (10310000) (10311000) {
+
+BLOCKS (9391396) (CURRENT) {
+// BLOCKS (10310000) (10311000) {
     LOG ENTRIES (0x5acc84a3e955bdd76467d3348077d003f00ffb97) (
         Registration(address indexed user, address indexed referrer,
         uint indexed userId, uint referrerId)
