@@ -60,7 +60,7 @@ public class EmitAnalyzer extends SemanticAnalyzer {
     public void exitEmitStatementXesEvent(EmitStatementXesEventContext ctx) {
         this.verifyUniquenessOfNames(ctx.xesEmitVariable(), EmitAnalyzer::getXesVariableName);
         this.verifyXesTypeCompatibility(ctx.xesEmitVariable());
-        this.verifyXesEventExtensions(ctx.xesEmitVariable());
+        this.verifyXesEventExtensions(ctx);
         this.verifyXesId(ctx.pid);
         this.verifyXesId(ctx.piid);
         this.verifyXesId(ctx.eid);
@@ -107,8 +107,12 @@ public class EmitAnalyzer extends SemanticAnalyzer {
         }
     }
 
-    private void verifyXesEventExtensions(final List<XesEmitVariableContext> variables) {
-        for (XesEmitVariableContext variable : variables) {
+    private void verifyXesEventExtensions(EmitStatementXesEventContext eventCtx) {
+        boolean containsConceptName = false;
+        boolean containsTimestamp = false;
+        boolean containsLifecycleTransition = false;
+
+        for (XesEmitVariableContext variable : eventCtx.xesEmitVariable()) {
             final VariableNameContext nameCtx = getXesVariableName(variable);
             if (nameCtx == null) {
                 continue;
@@ -117,6 +121,12 @@ public class EmitAnalyzer extends SemanticAnalyzer {
             final String name = nameCtx.getText();
             if (!name.contains(":")) { // name does not contain a prefix for an XES extension
                 continue;
+            }
+
+            switch (name) {
+                case "concept:name" : containsConceptName = true; break;
+                case "lifecycle:transition" : containsLifecycleTransition = true; break;
+                case "time:timestamp" : containsTimestamp = true; break;
             }
 
             final String[] nameParts = name.split(":");
@@ -129,8 +139,8 @@ public class EmitAnalyzer extends SemanticAnalyzer {
 
             final XAttribute attribute = getXesExtensionAttribute(extension, name);
             if (attribute == null) {
-                final String warning = String.format("XES extension '%s' does not specify an event attribute '%s'.", nameParts[0], nameParts[1]);
-                this.errorCollector.addWarning(variable.start, warning);
+                final String error = String.format("XES extension '%s' does not specify an event attribute '%s'.", nameParts[0], nameParts[1]);
+                this.errorCollector.addSemanticError(variable.start, error);
                 continue;
             }
 
@@ -149,6 +159,29 @@ public class EmitAnalyzer extends SemanticAnalyzer {
                 );
                 this.errorCollector.addSemanticError(variable.start, error);
             }
+        }
+
+        if (!containsConceptName) {
+            final String error = String.format("The XES event does not contain an attribute 'concept:name'.");
+            this.errorCollector.addSemanticError(eventCtx.start, error);
+        }
+
+        if (!containsTimestamp) {
+            final String warning = String.format(
+                "The XES event does not contain an attribute 'time:timestamp'. " +
+                "If other events contain this attribute, a global default value is set " +
+                "that by default applies to all events without such this attribute."
+            );
+            this.errorCollector.addWarning(eventCtx.start, warning);
+        }           
+
+        if (!containsLifecycleTransition) {
+            final String warning = String.format(
+                "The XES event does not contain an attribute 'lifecycle:transition'. " +
+                "If other events contain this attribute, a global default value is set " +
+                "that by default applies to all events without such this attribute."
+            );
+            this.errorCollector.addWarning(eventCtx.start, warning);
         }
     }
 
