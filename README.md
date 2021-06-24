@@ -51,7 +51,7 @@ Details of the framework are described in more detail in the following publicati
 
 ## Short video demonstration 
 
-https://user-images.githubusercontent.com/17274966/121722525-d7191980-cae5-11eb-8291-900e030beea5.mp4
+https://user-images.githubusercontent.com/17274966/123259876-41be5200-d4f5-11eb-9e57-d1bfb387e1c3.mov
 
 ## Build
 
