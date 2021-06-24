@@ -3,7 +3,7 @@ package au.csiro.data61.aap.samples;
 import java.net.URL;
 import java.util.List;
 
-import au.csiro.data61.aap.elf.EthqlProcessingError;
+import au.csiro.data61.aap.elf.EthqlProcessingEvent;
 import au.csiro.data61.aap.elf.EthqlProcessingException;
 import au.csiro.data61.aap.elf.Validator;
 
@@ -20,13 +20,9 @@ public class ValidatorTest {
     private static void test(Validator validator, URL url) {
         System.out.println(url.getFile());
         try {
-            List<EthqlProcessingError> errors = validator.analyzeScript(url.getFile());
-            System.out.println(errors.size());
-            errors.forEach(
-                error -> System.out.println(
-                    String.format("At line %s, col %s: %s", error.getLine(), error.getColumn(), error.getErrorMessage())
-                )
-            );
+            List<EthqlProcessingEvent> events = validator.analyzeScript(url.getFile());
+            System.out.printf("%s events during validation.%s", events.size(), System.lineSeparator());
+            events.forEach(System.out::println);
         } catch (EthqlProcessingException e) {
             e.printStackTrace();
         }

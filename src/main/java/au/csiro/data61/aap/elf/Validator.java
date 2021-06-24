@@ -20,15 +20,15 @@ public class Validator {
         this.interpreter = new EthqlInterpreter();
     }
 
-    public List<EthqlProcessingError> analyzeScript(String ethqlFile) throws EthqlProcessingException {
+    public List<EthqlProcessingEvent> analyzeScript(String ethqlFile) throws EthqlProcessingException {
         final EthqlProcessingResult<ParseTree> result = this.parseScript(ethqlFile);
         assert result != null;
-        return result.getErrors();
+        return result.getEvents();
     }
 
-    public List<EthqlProcessingError> analyzeScript(InputStream stream) throws EthqlProcessingException {
+    public List<EthqlProcessingEvent> analyzeScript(InputStream stream) throws EthqlProcessingException {
         final EthqlProcessingResult<ParseTree> result = this.parseScript(stream);
-        return result.getErrors();
+        return result.getEvents();
     }
 
     EthqlProcessingResult<ParseTree> parseScript(String ethqlFile) throws EthqlProcessingException {

@@ -3,6 +3,8 @@ package au.csiro.data61.aap.elf;
 import java.io.File;
 import java.util.List;
 
+import au.csiro.data61.aap.elf.EthqlProcessingEvent.Type;
+
 public class ElfApp {
     private static final int INDEX_CMD = 0;
     private static final int INDEX_PATH = 1;
@@ -73,21 +75,27 @@ public class ElfApp {
         final Validator validator = new Validator();
 
         try {
-            final List<EthqlProcessingError> errors = validator.analyzeScript(filepath);
-            printValidationResult(errors);
+            final List<EthqlProcessingEvent> events = validator.analyzeScript(filepath);
+            printValidationResult(events);
         } catch (EthqlProcessingException ex) {
             ex.printStackTrace(System.err);
         }
     }
 
-    private static void printValidationResult(List<EthqlProcessingError> errors) {
-        if (errors.isEmpty()) {
-            System.out.println("The validation didn't find errors.");
+    private static void printValidationResult(List<EthqlProcessingEvent> events) {
+        if (events.isEmpty()) {
+            System.out.println("The script is valid.");
             return;
         }
 
-        System.out.println("The validation detected the following errors:");
-        errors.forEach(System.out::println);
+        if (events.stream().anyMatch(e -> e.getType() == Type.ERROR)) {
+            System.out.println("The script is invalid:");    
+        }
+        else {
+            System.out.println("The script is valid, but there are the following warnings and / or infos:");    
+        }
+
+        events.forEach(System.out::println);
     }
 
 }

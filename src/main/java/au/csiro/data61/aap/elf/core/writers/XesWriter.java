@@ -62,14 +62,6 @@ public class XesWriter extends DataWriter {
         this.classifiers = new LinkedHashMap<>();
     }
 
-    public void addExtension(String pid) {
-
-    }
-
-    public void addGlobalValue(String pid, String name, String... attributes) {
-
-    }
-
     public void addEventClassifier(String pid, String name, String... attributes) {
         this.classifiers.computeIfAbsent(pid, n -> new LinkedList<>()).add(new XEventAttributeClassifier(name, attributes));
     }
