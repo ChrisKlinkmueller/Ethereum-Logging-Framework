@@ -24,7 +24,7 @@ public class EthqlProcessingResult<T> {
     }
 
     public boolean isSuccessful() {
-        return this.events.length == 0;
+        return this.eventStream().allMatch(e -> e.getType() != Type.ERROR);
     }
 
     public T getResult() {

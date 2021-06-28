@@ -5,6 +5,7 @@ import java.util.Set;
 import java.util.function.Function;
 
 import au.csiro.data61.aap.elf.core.readers.EthereumLogEntry;
+import au.csiro.data61.aap.elf.core.values.ValueAccessor.ProgramFunction;
 
 /**
  * LogEntryVariables
@@ -24,11 +25,7 @@ public class LogEntryVariables {
     }
 
     private static void addLogEntryVariable(String name, String type, Function<EthereumLogEntry, Object> blockValueExtractor) {
-        EthereumVariable.addVariable(
-            LOG_ENTRY_VARIABLES,
-            name,
-            type,
-            state -> blockValueExtractor.apply(state.getReader().getCurrentLogEntry())
-        );
+        final ProgramFunction function = state -> blockValueExtractor.apply(state.getReader().getCurrentLogEntry());
+        EthereumVariable.addVariable(LOG_ENTRY_VARIABLES, name, type, ValueAccessor.createFunctionAccessor(function));
     }
 }

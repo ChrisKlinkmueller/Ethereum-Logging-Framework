@@ -9,9 +9,15 @@ import au.csiro.data61.aap.elf.core.values.ValueAccessor;
  */
 public class XesParameter {
     private final XesParameterExporter attributeExporter;
+    private final String name;
 
-    private XesParameter(XesParameterExporter attributeExporter) {
+    private XesParameter(String name, XesParameterExporter attributeExporter) {
         this.attributeExporter = attributeExporter;
+        this.name = name;
+    }
+
+    public String getName() {
+        return this.name;
     }
 
     void exportAttribute(ProgramState state, XesWriter writer) throws ProgramException {
@@ -20,52 +26,52 @@ public class XesParameter {
 
     public static XesParameter boolParameter(String name, ValueAccessor accessor) {
         assert name != null && accessor != null;
-        return new XesParameter(exportValue(name, accessor, XesWriter::addBooleanValue));
+        return new XesParameter(name, exportValue(name, accessor, XesWriter::addBooleanValue));
     }
 
     public static XesParameter boolListParameter(String name, ValueAccessor accessor) {
         assert name != null && accessor != null;
-        return new XesParameter(exportValue(name, accessor, XesWriter::addBooleanList));
+        return new XesParameter(name, exportValue(name, accessor, XesWriter::addBooleanList));
     }
 
     public static XesParameter dateParameter(String name, ValueAccessor accessor) {
         assert name != null && accessor != null;
-        return new XesParameter(exportValue(name, accessor, XesWriter::addDateValue));
+        return new XesParameter(name, exportValue(name, accessor, XesWriter::addDateValue));
     }
 
     public static XesParameter dateListParameter(String name, ValueAccessor accessor) {
         assert name != null && accessor != null;
-        return new XesParameter(exportValue(name, accessor, XesWriter::addDateList));
+        return new XesParameter(name, exportValue(name, accessor, XesWriter::addDateList));
     }
 
     public static XesParameter floatParameter(String name, ValueAccessor accessor) {
         assert name != null && accessor != null;
-        return new XesParameter(exportValue(name, accessor, XesWriter::addFloatValue));
+        return new XesParameter(name, exportValue(name, accessor, XesWriter::addFloatValue));
     }
 
     public static XesParameter floatListParameter(String name, ValueAccessor accessor) {
         assert name != null && accessor != null;
-        return new XesParameter(exportValue(name, accessor, XesWriter::addFloatList));
+        return new XesParameter(name, exportValue(name, accessor, XesWriter::addFloatList));
     }
 
     public static XesParameter integerParameter(String name, ValueAccessor accessor) {
         assert name != null && accessor != null;
-        return new XesParameter(exportValue(name, accessor, XesWriter::addIntValue));
+        return new XesParameter(name, exportValue(name, accessor, XesWriter::addIntValue));
     }
 
     public static XesParameter integerListParameter(String name, ValueAccessor accessor) {
         assert name != null && accessor != null;
-        return new XesParameter(exportValue(name, accessor, XesWriter::addIntList));
+        return new XesParameter(name, exportValue(name, accessor, XesWriter::addIntList));
     }
 
     public static XesParameter stringParameter(String name, ValueAccessor accessor) {
         assert name != null && accessor != null;
-        return new XesParameter(exportValue(name, accessor, XesWriter::addStringValue));
+        return new XesParameter(name, exportValue(name, accessor, XesWriter::addStringValue));
     }
 
     public static XesParameter stringListParameter(String name, ValueAccessor accessor) {
         assert name != null && accessor != null;
-        return new XesParameter(exportValue(name, accessor, XesWriter::addStringList));
+        return new XesParameter(name, exportValue(name, accessor, XesWriter::addStringList));
     }
 
     public static <T> XesParameterExporter exportValue(String name, ValueAccessor accessor, XesWriterMethod writerMethod) {

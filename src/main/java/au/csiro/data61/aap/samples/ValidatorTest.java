@@ -14,7 +14,8 @@ public class ValidatorTest {
 
     public static void main(String[] args) {
         Validator validator = new Validator();
-        SampleUtils.getAllResources().forEach(url -> test(validator, url));
+        // SampleUtils.getAllResources().forEach(url -> test(validator, url));
+        SampleUtils.getResources("XesTest.ethql").forEach(url -> test(validator, url));
     }
 
     private static void test(Validator validator, URL url) {

@@ -89,10 +89,9 @@ public class ElfApp {
         }
 
         if (events.stream().anyMatch(e -> e.getType() == Type.ERROR)) {
-            System.out.println("The script is invalid:");    
-        }
-        else {
-            System.out.println("The script is valid, but there are the following warnings and / or infos:");    
+            System.out.println("The script is invalid:");
+        } else {
+            System.out.println("The script is valid, but there are the following warnings and / or infos:");
         }
 
         events.forEach(System.out::println);

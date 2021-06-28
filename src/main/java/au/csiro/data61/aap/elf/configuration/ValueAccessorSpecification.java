@@ -24,70 +24,82 @@ public class ValueAccessorSpecification {
     public static ValueAccessorSpecification addressLiteral(String literal) throws BuildException {
         assert literal != null;
         final String value = TypeUtils.parseBytesLiteral(literal);
-        return new ValueAccessorSpecification(state -> value);
+        final ValueAccessor accessor = ValueAccessor.createLiteralAccessor(value);
+        return new ValueAccessorSpecification(accessor);
     }
 
     public static ValueAccessorSpecification addressArrayLiteral(String literal) throws BuildException {
         assert literal != null;
         final List<String> values = TypeUtils.parseBytesArrayLiteral(literal);
-        return new ValueAccessorSpecification(state -> values);
+        final ValueAccessor accessor = ValueAccessor.createLiteralAccessor(values);
+        return new ValueAccessorSpecification(accessor);
     }
 
     public static ValueAccessorSpecification booleanLiteral(String literal) throws BuildException {
         assert literal != null;
         final boolean value = TypeUtils.parseBoolLiteral(literal);
-        return new ValueAccessorSpecification(state -> value);
+        final ValueAccessor accessor = ValueAccessor.createLiteralAccessor(value);
+        return new ValueAccessorSpecification(accessor);
     }
 
     public static ValueAccessorSpecification booleanArrayLiteral(String literal) throws BuildException {
         assert literal != null;
         final List<Boolean> values = TypeUtils.parseBoolArrayLiteral(literal);
-        return new ValueAccessorSpecification(state -> values);
+        final ValueAccessor accessor = ValueAccessor.createLiteralAccessor(values);
+        return new ValueAccessorSpecification(accessor);
     }
 
     public static ValueAccessorSpecification bytesLiteral(String literal) throws BuildException {
         assert literal != null;
         final String value = TypeUtils.parseBytesLiteral(literal);
-        return new ValueAccessorSpecification(state -> value);
+        final ValueAccessor accessor = ValueAccessor.createLiteralAccessor(value);
+        return new ValueAccessorSpecification(accessor);
     }
 
     public static ValueAccessorSpecification bytesArrayLiteral(String literal) throws BuildException {
         assert literal != null;
         final List<String> values = TypeUtils.parseBytesArrayLiteral(literal);
-        return new ValueAccessorSpecification(state -> values);
+        final ValueAccessor accessor = ValueAccessor.createLiteralAccessor(values);
+        return new ValueAccessorSpecification(accessor);
     }
 
     public static ValueAccessorSpecification integerLiteral(String literal) throws BuildException {
         assert literal != null;
         final BigInteger number = TypeUtils.parseIntLiteral(literal);
-        return new ValueAccessorSpecification(state -> number);
+        final ValueAccessor accessor = ValueAccessor.createLiteralAccessor(number);
+        return new ValueAccessorSpecification(accessor);
     }
 
     public static ValueAccessorSpecification integerArrayLiteral(String literal) throws BuildException {
         assert literal != null;
         final List<BigInteger> values = TypeUtils.parseIntArrayLiteral(literal);
-        return new ValueAccessorSpecification(state -> values);
+        final ValueAccessor accessor = ValueAccessor.createLiteralAccessor(values);
+        return new ValueAccessorSpecification(accessor);
     }
 
     public static ValueAccessorSpecification integerLiteral(long literal) throws BuildException {
-        return new ValueAccessorSpecification(state -> BigInteger.valueOf(literal));
+        final ValueAccessor accessor = ValueAccessor.createLiteralAccessor(BigInteger.valueOf(literal));
+        return new ValueAccessorSpecification(accessor);
     }
 
     public static ValueAccessorSpecification integerLiteral(BigInteger literal) throws BuildException {
         assert literal != null;
-        return new ValueAccessorSpecification(state -> literal);
+        final ValueAccessor accessor = ValueAccessor.createLiteralAccessor(literal);
+        return new ValueAccessorSpecification(accessor);
     }
 
     public static ValueAccessorSpecification stringLiteral(String literal) throws BuildException {
         assert literal != null;
         final String value = TypeUtils.parseStringLiteral(literal);
-        return new ValueAccessorSpecification(state -> value);
+        final ValueAccessor accessor = ValueAccessor.createLiteralAccessor(value);
+        return new ValueAccessorSpecification(accessor);
     }
 
     public static ValueAccessorSpecification stringArrayLiteral(String literal) throws BuildException {
         assert literal != null;
         final List<String> values = TypeUtils.parseStringArrayLiteral(literal);
-        return new ValueAccessorSpecification(state -> values);
+        final ValueAccessor accessor = ValueAccessor.createLiteralAccessor(values);
+        return new ValueAccessorSpecification(accessor);
     }
 
     public static ValueAccessorSpecification ofVariable(String varName) {

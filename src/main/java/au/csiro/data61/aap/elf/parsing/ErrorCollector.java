@@ -27,7 +27,7 @@ public class ErrorCollector extends BaseErrorListener {
     }
 
     public boolean hasErrors() {
-        return !this.events.isEmpty();
+        return !this.events.stream().allMatch(e -> e.getType() != Type.ERROR);
     }
 
     public Stream<EthqlProcessingEvent> errorStream() {

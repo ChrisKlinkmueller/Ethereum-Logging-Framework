@@ -76,10 +76,13 @@ public class EthqlProcessingEvent {
         @Override
         public String toString() {
             switch (this) {
-                case ERROR : return "Error";
-                case WARNING : return "Warning";
-                case INFO : return "Info";
-                default : {
+                case ERROR:
+                    return "Error";
+                case WARNING:
+                    return "Warning";
+                case INFO:
+                    return "Info";
+                default: {
                     assert false : "Unknown message type.";
                     throw new IllegalArgumentException("Unknown message type.");
                 }

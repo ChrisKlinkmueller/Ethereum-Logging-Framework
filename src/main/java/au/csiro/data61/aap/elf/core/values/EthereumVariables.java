@@ -14,13 +14,13 @@ import au.csiro.data61.aap.elf.core.exceptions.ProgramException;
 public class EthereumVariables {
 
     public static ValueAccessor currentBlockNumberAccessor() {
-        return state -> {
+        return ValueAccessor.createFunctionAccessor(state -> {
             try {
                 return state.getReader().getClient().queryBlockNumber();
             } catch (final Throwable error) {
                 throw new ProgramException("Error when retrieving the current block number.", error);
             }
-        };
+        });
     }
 
     public static boolean isEthereumVariable(String name) {

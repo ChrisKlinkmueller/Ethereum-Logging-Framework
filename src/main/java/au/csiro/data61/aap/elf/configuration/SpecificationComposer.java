@@ -23,9 +23,11 @@ import au.csiro.data61.aap.elf.core.values.ValueMutator;
 public class SpecificationComposer {
     private final Stack<FactoryState> states;
     private final Stack<List<Instruction>> instructions;
+    private final LinkedList<Instruction> programInstructions;
 
     public SpecificationComposer() {
         this.instructions = new Stack<>();
+        this.programInstructions = new LinkedList<>();
         this.states = new Stack<>();
     }
 
@@ -79,7 +81,8 @@ public class SpecificationComposer {
         }
 
         this.states.push(newState);
-        this.instructions.add(new LinkedList<>());
+
+        this.instructions.add(newState == FactoryState.PROGRAM ? this.programInstructions : new LinkedList<>());
     }
 
     public Program buildProgram() throws BuildException {
@@ -178,6 +181,13 @@ public class SpecificationComposer {
             this.instructions.peek().add(instruction);
         }
         this.states.pop();
+    }
+
+    public void addInstructionToPreamble(InstructionSpecification<?> instruction) throws BuildException {
+        if (instruction == null) {
+            throw new BuildException(String.format("Parameter instruction is null."));
+        }
+        this.programInstructions.addFirst(instruction.getInstruction());
     }
 
     public void addInstruction(InstructionSpecification<?> instruction) throws BuildException {

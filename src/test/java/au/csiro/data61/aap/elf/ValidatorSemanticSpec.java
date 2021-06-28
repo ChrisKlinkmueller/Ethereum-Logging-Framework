@@ -18,7 +18,7 @@ import org.junit.jupiter.params.provider.ValueSource;
 import au.csiro.data61.aap.samples.SampleUtils;
 
 public class ValidatorSemanticSpec {
-    private final Validator validator = new Validator();    
+    private final Validator validator = new Validator();
 
     private void testProcessing(String script, List<String> errorMessages) {
         try {

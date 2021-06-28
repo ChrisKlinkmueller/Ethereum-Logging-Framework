@@ -5,8 +5,8 @@ import java.io.FileOutputStream;
 import java.math.BigInteger;
 import java.util.Collections;
 import java.util.Date;
+import java.util.HashSet;
 import java.util.LinkedHashMap;
-import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
 import java.util.Objects;
@@ -17,7 +17,11 @@ import java.util.logging.Logger;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
-import org.deckfour.xes.classification.XEventAttributeClassifier;
+import org.deckfour.xes.classification.XEventAndClassifier;
+import org.deckfour.xes.classification.XEventLifeTransClassifier;
+import org.deckfour.xes.classification.XEventNameClassifier;
+import org.deckfour.xes.extension.XExtension;
+import org.deckfour.xes.extension.XExtensionManager;
 import org.deckfour.xes.model.XAttributable;
 import org.deckfour.xes.model.XAttribute;
 import org.deckfour.xes.model.XEvent;
@@ -53,17 +57,37 @@ public class XesWriter extends DataWriter {
 
     private final Map<String, Map<String, XTrace>> traces;
     private final Map<String, Map<String, Map<String, XEvent>>> events;
-    private final Map<String, List<XEventAttributeClassifier>> classifiers;
+    private final Map<String, Set<String>> extensions;
+    private final Set<String> pidsWithGlobalTimestamps;
     private XAttributable element;
 
     public XesWriter() {
         this.traces = new LinkedHashMap<>();
         this.events = new LinkedHashMap<>();
-        this.classifiers = new LinkedHashMap<>();
+        this.extensions = new LinkedHashMap<>();
+        this.pidsWithGlobalTimestamps = new HashSet<>();
     }
 
-    public void addEventClassifier(String pid, String name, String... attributes) {
-        this.classifiers.computeIfAbsent(pid, n -> new LinkedList<>()).add(new XEventAttributeClassifier(name, attributes));
+    public void addExtensionForDefaultPid(String extPrefix) {
+        this.addExtension(DEFAULT_PID, extPrefix);
+    }
+
+    public void addExtension(String pid, String extPrefix) {
+        assert pid != null && extPrefix != null;
+        if (extPrefix.equals("concept") || extPrefix.equals("lifecycle")) {
+            return;
+        }
+
+        assert XExtensionManager.instance().getByPrefix(extPrefix) != null;
+        this.extensions.computeIfAbsent(pid, p -> new HashSet<>()).add(extPrefix);
+    }
+
+    public void addGlobalTimestamp(String pid) {
+        this.pidsWithGlobalTimestamps.add(pid);
+    }
+
+    public void addGlobalTimestampForDefaultPid() {
+        this.pidsWithGlobalTimestamps.add(DEFAULT_PID);
     }
 
     public void startTrace(String inputPid, String inputPiid) {
@@ -234,17 +258,29 @@ public class XesWriter extends DataWriter {
     private XLog createLog(String pid) {
         final XLog log = new XLogImpl(new XAttributeMapImpl());
         this.element = log;
-        this.addClassifiers(log, pid);
+        this.addPreamble(log, pid);
         this.addStringValue(PID_ATTRIBUTE, pid);
         this.addTracesToLog(log, pid);
         return log;
     }
 
-    private void addClassifiers(XLog log, String pid) {
-        for (XEventAttributeClassifier classifier : this.classifiers.getOrDefault(pid, Collections.emptyList())) {
-            log.getClassifiers().add(new XEventAttributeClassifier(classifier.name(), classifier.getDefiningAttributeKeys()));
+    private void addPreamble(XLog log, String pid) {
+        log.getExtensions().add(XExtensionManager.instance().getByPrefix("concept"));
+        log.getExtensions().add(XExtensionManager.instance().getByPrefix("lifecycle"));
+        for (String extPrefix : this.extensions.getOrDefault(pid, Collections.emptySet())) {
+            final XExtension extension = XExtensionManager.instance().getByPrefix(extPrefix);
+            log.getExtensions().add(extension);
         }
 
+        log.getGlobalEventAttributes().add(new XAttributeLiteralImpl("concept:name", "No global concept name value defined"));
+        log.getGlobalEventAttributes().add(new XAttributeLiteralImpl("lifecycle:transition", "Completed"));
+        if (this.pidsWithGlobalTimestamps.contains(pid)) {
+            log.getGlobalEventAttributes().add(new XAttributeTimestampImpl("time:timestamp", 0));
+        }
+
+        log.getClassifiers().add(new XEventNameClassifier());
+        log.getClassifiers().add(new XEventAndClassifier(new XEventNameClassifier(), new XEventLifeTransClassifier()));
+        log.getAttributes().put("lifecyle:model", new XAttributeLiteralImpl("lifecycle:model", "bpaf"));
     }
 
     private void addTracesToLog(XLog log, String pid) {
