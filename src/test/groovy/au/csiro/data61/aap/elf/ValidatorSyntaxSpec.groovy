@@ -15,7 +15,7 @@ class ValidatorSyntaxSpec extends Specification {
     EthqlInterpreter interpreter = new EthqlInterpreter(new EventCollector(), noOpAnalyser)
 
     static List<EthqlProcessingEvent> validateSyntax(String script, EthqlInterpreter interpreter) {
-        interpreter.parseDocument(new ByteArrayInputStream(script.getBytes())).getEvents()
+        interpreter.parseDocument(new ByteArrayInputStream(script.getBytes()), true).getEvents()
     }
 
     def "comment"() {

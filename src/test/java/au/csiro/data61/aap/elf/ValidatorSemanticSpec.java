@@ -38,14 +38,14 @@ public class ValidatorSemanticSpec {
     }
 
     private List<EthqlProcessingEvent> validate(String script) throws EthqlProcessingException {
-        return this.validator.analyzeScript(new ByteArrayInputStream(script.getBytes()));
+        return this.validator.analyzeScript(new ByteArrayInputStream(script.getBytes()), true);
     }
 
     @ParameterizedTest
     @MethodSource("sampleScripts")
     public void processSampleScript(URL url) {
         try {
-            final List<EthqlProcessingEvent> errors = this.validator.analyzeScript(url.getFile());
+            final List<EthqlProcessingEvent> errors = this.validator.analyzeScript(url.getFile(), true);
             assertEquals(0, errors.size());
         } catch (EthqlProcessingException ex) {
             fail(ex);
@@ -60,7 +60,7 @@ public class ValidatorSemanticSpec {
     @ValueSource(strings = { "notExist.ethql", "D:/test_1231243/error.ethql", "C:/" })
     public void processNonExistingScript(String file) {
         try {
-            this.validator.analyzeScript(file);
+            this.validator.analyzeScript(file, true);
             fail();
         } catch (EthqlProcessingException ex) {
             final String message = String.format("Invalid file path: '%s'.", file);

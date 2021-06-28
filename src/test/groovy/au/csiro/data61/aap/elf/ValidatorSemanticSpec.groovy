@@ -8,7 +8,7 @@ class ValidatorSemanticSpec extends Specification {
     Validator validator = new Validator()
 
     static List<EthqlProcessingEvent> validate(String script, Validator validator) {
-        validator.analyzeScript(new ByteArrayInputStream(script.getBytes()))
+        validator.analyzeScript(new ByteArrayInputStream(script.getBytes()), true)
     }
 
     /*

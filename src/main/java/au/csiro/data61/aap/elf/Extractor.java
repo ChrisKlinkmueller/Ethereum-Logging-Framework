@@ -16,7 +16,7 @@ import au.csiro.data61.aap.elf.util.CompositeEthqlListener;
 public class Extractor {
 
     public void extractData(final String ethqlFilepath) throws EthqlProcessingException {
-        final ParseTree parseTree = Validator.createParseTree(ethqlFilepath);
+        final ParseTree parseTree = Validator.createParseTree(ethqlFilepath, true);
 
         final CompositeEthqlListener<EthqlListener> rootListener = new CompositeEthqlListener<>();
         final VariableExistenceAnalyzer analyzer = new VariableExistenceAnalyzer();
