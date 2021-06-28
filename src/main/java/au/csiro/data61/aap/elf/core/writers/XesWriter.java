@@ -5,6 +5,7 @@ import java.io.FileOutputStream;
 import java.math.BigInteger;
 import java.util.Collections;
 import java.util.Date;
+import java.util.HashMap;
 import java.util.HashSet;
 import java.util.LinkedHashMap;
 import java.util.List;
@@ -58,14 +59,14 @@ public class XesWriter extends DataWriter {
     private final Map<String, Map<String, XTrace>> traces;
     private final Map<String, Map<String, Map<String, XEvent>>> events;
     private final Map<String, Set<String>> extensions;
-    private final Set<String> pidsWithGlobalTimestamps;
+    private final Map<String, Set<String>> pidsGlobalValues;
     private XAttributable element;
 
     public XesWriter() {
         this.traces = new LinkedHashMap<>();
         this.events = new LinkedHashMap<>();
         this.extensions = new LinkedHashMap<>();
-        this.pidsWithGlobalTimestamps = new HashSet<>();
+        this.pidsGlobalValues = new HashMap<>();
     }
 
     public void addExtensionForDefaultPid(String extPrefix) {
@@ -82,12 +83,12 @@ public class XesWriter extends DataWriter {
         this.extensions.computeIfAbsent(pid, p -> new HashSet<>()).add(extPrefix);
     }
 
-    public void addGlobalTimestamp(String pid) {
-        this.pidsWithGlobalTimestamps.add(pid);
+    public void addGlobalValue(String pid, String attribute) {
+        this.pidsGlobalValues.computeIfAbsent(pid, p -> new HashSet<>()).add(attribute);
     }
 
-    public void addGlobalTimestampForDefaultPid() {
-        this.pidsWithGlobalTimestamps.add(DEFAULT_PID);
+    public void addGlobalValueForDefaultPid(String attribute) {
+        this.addGlobalValue(DEFAULT_PID, attribute);
     }
 
     public void startTrace(String inputPid, String inputPiid) {
@@ -274,8 +275,17 @@ public class XesWriter extends DataWriter {
 
         log.getGlobalEventAttributes().add(new XAttributeLiteralImpl("concept:name", "No global concept name value defined"));
         log.getGlobalEventAttributes().add(new XAttributeLiteralImpl("lifecycle:transition", "Completed"));
-        if (this.pidsWithGlobalTimestamps.contains(pid)) {
-            log.getGlobalEventAttributes().add(new XAttributeTimestampImpl("time:timestamp", 0));
+        for (String attr : this.pidsGlobalValues.get(pid)) {
+            switch (attr) {
+                case "time:timestamp":
+                    log.getGlobalEventAttributes().add(new XAttributeTimestampImpl("time:timestamp", 0));
+                    break;
+                case "org:resource":
+                    log.getGlobalEventAttributes().add(new XAttributeLiteralImpl("org:resource", "No global resource identifier defined"));
+                    break;
+                default:
+                    throw new IllegalStateException(String.format("Unsupported global XES attribute: %s", attr));
+            }
         }
 
         log.getClassifiers().add(new XEventNameClassifier());

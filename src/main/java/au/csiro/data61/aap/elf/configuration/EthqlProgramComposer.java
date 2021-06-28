@@ -507,15 +507,17 @@ public class EthqlProgramComposer extends EthqlBaseListener {
         final List<XesParameterSpecification> parameters = this.getXesParameters(ctx.xesEmitVariable());
         this.composer.addInstruction(XesExportSpecification.ofEventExport(pid, piid, eid, parameters));
         this.addXesExtension(pid, parameters);
-        this.addGlobalTimestamp(pid, parameters);
+        this.addGlobalValue(pid, parameters, "time:timestamp");
+        this.addGlobalValue(pid, parameters, "org:resource");
     }
 
-    private void addGlobalTimestamp(ValueAccessorSpecification pid, List<XesParameterSpecification> parameters) throws BuildException {
-        if (!parameters.stream().anyMatch(p -> p.getParameter().getName().equals("time:timestamp"))) {
+    private void addGlobalValue(ValueAccessorSpecification pid, List<XesParameterSpecification> parameters, String attribute)
+        throws BuildException {
+        if (!parameters.stream().anyMatch(p -> p.getParameter().getName().equals(attribute))) {
             return;
         }
 
-        final XesGlobalAttributeSpecification spec = XesGlobalAttributeSpecification.of(pid);
+        final XesGlobalAttributeSpecification spec = XesGlobalAttributeSpecification.of(pid, attribute);
         if (pid == null || pid.getValueAccessor().getType() == Type.LITERAL) {
             this.composer.addInstructionToPreamble(spec);
         } else {

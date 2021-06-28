@@ -111,6 +111,7 @@ public class EmitAnalyzer extends SemanticAnalyzer {
         boolean containsConceptName = false;
         boolean containsTimestamp = false;
         boolean containsLifecycleTransition = false;
+        boolean containsResource = false;
 
         for (XesEmitVariableContext variable : eventCtx.xesEmitVariable()) {
             final VariableNameContext nameCtx = getXesVariableName(variable);
@@ -132,6 +133,9 @@ public class EmitAnalyzer extends SemanticAnalyzer {
                     break;
                 case "time:timestamp":
                     containsTimestamp = true;
+                    break;
+                case "org:resource":
+                    containsResource = true;
                     break;
             }
 
@@ -188,6 +192,15 @@ public class EmitAnalyzer extends SemanticAnalyzer {
         if (!containsLifecycleTransition) {
             final String warning = String.format(
                 "The XES event does not contain an attribute 'lifecycle:transition'. "
+                    + "If other events contain this attribute, a global default value is set "
+                    + "that by default applies to all events without such this attribute."
+            );
+            this.errorCollector.addWarning(eventCtx.start, warning);
+        }
+
+        if (!containsResource) {
+            final String warning = String.format(
+                "The XES event does not contain an attribute 'org:resource'. "
                     + "If other events contain this attribute, a global default value is set "
                     + "that by default applies to all events without such this attribute."
             );
