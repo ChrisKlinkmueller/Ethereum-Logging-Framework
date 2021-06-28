@@ -32,7 +32,7 @@ public class FilterDefinitionAnalyzer extends SemanticAnalyzer {
     private final VariableExistenceAnalyzer variableAnalyzer;
     private final Stack<String> conditionalTypes;
 
-    public FilterDefinitionAnalyzer(final ErrorCollector errorCollector, final VariableExistenceAnalyzer variableAnalyzer) {
+    public FilterDefinitionAnalyzer(final EventCollector errorCollector, final VariableExistenceAnalyzer variableAnalyzer) {
         super(errorCollector);
         assert variableAnalyzer != null;
         this.variableAnalyzer = variableAnalyzer;

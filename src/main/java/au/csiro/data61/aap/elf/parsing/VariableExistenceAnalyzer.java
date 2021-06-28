@@ -30,10 +30,10 @@ public class VariableExistenceAnalyzer extends SemanticAnalyzer {
     private final Stack<List<Variable>> visibleVariables;
 
     public VariableExistenceAnalyzer() {
-        this(new ErrorCollector());
+        this(new EventCollector());
     }
 
-    public VariableExistenceAnalyzer(ErrorCollector errorCollector) {
+    public VariableExistenceAnalyzer(EventCollector errorCollector) {
         super(errorCollector);
 
         this.visibleVariables = new Stack<>();

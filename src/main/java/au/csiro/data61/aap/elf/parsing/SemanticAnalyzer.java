@@ -6,9 +6,9 @@ import org.antlr.v4.runtime.Token;
  * XbelAnalyzer
  */
 public abstract class SemanticAnalyzer extends EthqlBaseListener {
-    protected final ErrorCollector errorCollector;
+    protected final EventCollector errorCollector;
 
-    public SemanticAnalyzer(ErrorCollector errorCollector) {
+    public SemanticAnalyzer(EventCollector errorCollector) {
         assert errorCollector != null;
         this.errorCollector = errorCollector;
     }

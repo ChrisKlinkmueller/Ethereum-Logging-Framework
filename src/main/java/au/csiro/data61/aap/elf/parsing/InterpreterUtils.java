@@ -51,17 +51,17 @@ public class InterpreterUtils {
         }
     }
 
-    static MethodResult<EthqlParser> createParser(InputStream is, ErrorCollector errorCollector) {
+    static MethodResult<EthqlParser> createParser(InputStream is, EventCollector errorCollector) {
         final MethodResult<CharStream> charstreamResult = charStreamfromInputStream(is);
         return createParser(charstreamResult, errorCollector);
     }
 
-    static MethodResult<EthqlParser> createParser(String string, ErrorCollector errorCollector) {
+    static MethodResult<EthqlParser> createParser(String string, EventCollector errorCollector) {
         final MethodResult<CharStream> charstreamResult = charStreamfromString(string);
         return createParser(charstreamResult, errorCollector);
     }
 
-    private static MethodResult<EthqlParser> createParser(MethodResult<CharStream> charstreamResult, ErrorCollector errorCollector) {
+    private static MethodResult<EthqlParser> createParser(MethodResult<CharStream> charstreamResult, EventCollector errorCollector) {
         if (!charstreamResult.isSuccessful()) {
             return MethodResult.ofError(charstreamResult);
         }

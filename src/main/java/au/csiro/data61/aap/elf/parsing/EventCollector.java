@@ -15,22 +15,22 @@ import au.csiro.data61.aap.elf.EthqlProcessingEvent.Type;
 /**
  * ErrorCollector
  */
-public class ErrorCollector extends BaseErrorListener {
+public class EventCollector extends BaseErrorListener {
     private final List<EthqlProcessingEvent> events;
 
-    public ErrorCollector() {
+    public EventCollector() {
         this.events = new ArrayList<>();
     }
 
-    public int errorCount() {
+    public int eventCount() {
         return this.events.size();
     }
 
-    public boolean hasErrors() {
+    public boolean hasEvents() {
         return !this.events.stream().allMatch(e -> e.getType() != Type.ERROR);
     }
 
-    public Stream<EthqlProcessingEvent> errorStream() {
+    public Stream<EthqlProcessingEvent> eventStream() {
         return this.events.stream();
     }
 

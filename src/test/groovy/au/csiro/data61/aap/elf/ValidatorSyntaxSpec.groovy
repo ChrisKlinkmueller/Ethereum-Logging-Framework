@@ -1,6 +1,6 @@
 package au.csiro.data61.aap.elf
 
-import au.csiro.data61.aap.elf.parsing.ErrorCollector
+import au.csiro.data61.aap.elf.parsing.EventCollector
 import au.csiro.data61.aap.elf.parsing.EthqlInterpreter
 import au.csiro.data61.aap.elf.parsing.SemanticAnalysis
 import org.antlr.v4.runtime.tree.ParseTree
@@ -12,7 +12,7 @@ class ValidatorSyntaxSpec extends Specification {
     SemanticAnalysis noOpAnalyser = Stub(SemanticAnalysis) {
         analyze(_ as ParseTree) >> {}
     }
-    EthqlInterpreter interpreter = new EthqlInterpreter(new ErrorCollector(), noOpAnalyser)
+    EthqlInterpreter interpreter = new EthqlInterpreter(new EventCollector(), noOpAnalyser)
 
     static List<EthqlProcessingEvent> validateSyntax(String script, EthqlInterpreter interpreter) {
         interpreter.parseDocument(new ByteArrayInputStream(script.getBytes())).getEvents()

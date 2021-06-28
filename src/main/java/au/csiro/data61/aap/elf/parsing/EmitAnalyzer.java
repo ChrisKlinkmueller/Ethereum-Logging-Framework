@@ -30,7 +30,7 @@ import au.csiro.data61.aap.elf.util.TypeUtils;
 public class EmitAnalyzer extends SemanticAnalyzer {
     private final VariableExistenceAnalyzer varAnalyzer;
 
-    public EmitAnalyzer(final ErrorCollector errorCollector, final VariableExistenceAnalyzer varAnalyzer) {
+    public EmitAnalyzer(final EventCollector errorCollector, final VariableExistenceAnalyzer varAnalyzer) {
         super(errorCollector);
         assert varAnalyzer != null;
         this.varAnalyzer = varAnalyzer;

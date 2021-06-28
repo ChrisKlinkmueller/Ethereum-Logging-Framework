@@ -14,10 +14,10 @@ import au.csiro.data61.aap.elf.EthqlProcessingResult;
  * Parser
  */
 public class EthqlInterpreter {
-    private final ErrorCollector errorCollector;
+    private final EventCollector errorCollector;
     private final SemanticAnalysis semanticAnalysis;
 
-    public EthqlInterpreter(ErrorCollector errorCollector, SemanticAnalysis analysis) {
+    public EthqlInterpreter(EventCollector errorCollector, SemanticAnalysis analysis) {
         assert errorCollector != null;
         assert analysis != null;
         this.errorCollector = errorCollector;
@@ -25,7 +25,7 @@ public class EthqlInterpreter {
     }
 
     public EthqlInterpreter() {
-        errorCollector = new ErrorCollector();
+        errorCollector = new EventCollector();
         semanticAnalysis = new SemanticAnalysis(this.errorCollector);
     }
 
@@ -53,13 +53,13 @@ public class EthqlInterpreter {
         syntacticParser.addErrorListener(this.errorCollector);
 
         final ParseTree tree = rule.apply(syntacticParser);
-        if (errorCollector.hasErrors()) {
+        if (errorCollector.hasEvents()) {
             return this.createErrorResultAndCleanUp();
         }
 
         semanticAnalysis.analyze(tree);
 
-        if (errorCollector.hasErrors()) {
+        if (errorCollector.hasEvents()) {
             return this.createErrorResultAndCleanUp();
         }
 
@@ -67,7 +67,7 @@ public class EthqlInterpreter {
     }
 
     private EthqlProcessingResult<ParseTree> createErrorResultAndCleanUp() {
-        final EthqlProcessingResult<ParseTree> result = EthqlProcessingResult.ofErrors(this.errorCollector.errorStream());
+        final EthqlProcessingResult<ParseTree> result = EthqlProcessingResult.ofErrors(this.errorCollector.eventStream());
         this.errorCollector.clear();
         return result;
     }
