@@ -3,9 +3,11 @@
 connect("ws://localhost:8546/");
 setOutputFolder("./test_output");
 
+address TokenNetwork = 0x34ff4c1Cb40687d0B64AcCC24154d187265A3F3d;
+
 //main contract. 759 tx
 BLOCKS (9838608) (10186597) {
-    LOG ENTRIES (0x34ff4c1Cb40687d0B64AcCC24154d187265A3F3d) (
+    LOG ENTRIES (TokenNetwork) (
         ChannelOpened(uint256 indexed channel_identifier, address
         indexed participant1, address indexed participant2, uint256
         settle_timeout)
@@ -14,7 +16,7 @@ BLOCKS (9838608) (10186597) {
             "Channel Opened" as xs:string concept:name);
     }
 
-    LOG ENTRIES (0x34ff4c1Cb40687d0B64AcCC24154d187265A3F3d) (
+    LOG ENTRIES (TokenNetwork) (
         ChannelNewDeposit(uint256 indexed channel_identifier,
         address indexed participant, uint256 total_deposit)
     ){
@@ -22,7 +24,7 @@ BLOCKS (9838608) (10186597) {
             "Channel New Deposit" as xs:string concept:name);
     }
 
-    LOG ENTRIES (0x34ff4c1Cb40687d0B64AcCC24154d187265A3F3d) (
+    LOG ENTRIES (TokenNetwork) (
         ChannelWithdraw(uint256 indexed channel_identifier, address
         indexed participant, uint256 total_withdraw)
     ){
@@ -30,7 +32,7 @@ BLOCKS (9838608) (10186597) {
             "Channel Withdraw" as xs:string concept:name);
     }
 
-    LOG ENTRIES (0x34ff4c1Cb40687d0B64AcCC24154d187265A3F3d) (
+    LOG ENTRIES (TokenNetwork) (
         ChannelClosed(uint256 indexed channel_identifier, address
         indexed closing_participant, uint256 indexed nonce, bytes32
         balance_hash)
@@ -39,7 +41,7 @@ BLOCKS (9838608) (10186597) {
             "Channel Closed" as xs:string concept:name);
     }
 
-    LOG ENTRIES (0x34ff4c1Cb40687d0B64AcCC24154d187265A3F3d) (
+    LOG ENTRIES (TokenNetwork) (
         ChannelUnlocked(uint256 indexed channel_identifier, address
         indexed receiver, address indexed sender, bytes32 locksroot,
         uint256 unlocked_amount, uint256 returned_tokens)
@@ -48,7 +50,7 @@ BLOCKS (9838608) (10186597) {
             "Channel Unlocked" as xs:string concept:name);
     }
 
-    LOG ENTRIES (0x34ff4c1Cb40687d0B64AcCC24154d187265A3F3d) (
+    LOG ENTRIES (TokenNetwork) (
         NonClosingBalanceProofUpdated(uint256 indexed
         channel_identifier, address indexed closing_participant,
         uint256 indexed nonce, bytes32 balance_hash)
@@ -58,7 +60,7 @@ BLOCKS (9838608) (10186597) {
             name);
     }
 
-    LOG ENTRIES (0x34ff4c1Cb40687d0B64AcCC24154d187265A3F3d) (
+    LOG ENTRIES (TokenNetwork) (
         ChannelSettled(uint256 indexed channel_identifier, uint256
         participant1_amount, bytes32 participant1_locksroot,
         uint256 participant2_amount, bytes32 participant2_locksroot)
@@ -66,4 +68,9 @@ BLOCKS (9838608) (10186597) {
         EMIT XES EVENT ("raiden-0x34ff")(channel_identifier)()(
             "Channel Settled" as xs:string concept:name);
     }
+
+
+    SecretRegistry
+    event SecretRevealed(bytes32 indexed secrethash, bytes32 secret);
+
 }

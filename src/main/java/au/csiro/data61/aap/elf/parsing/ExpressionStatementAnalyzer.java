@@ -22,7 +22,7 @@ import au.csiro.data61.aap.elf.util.TypeUtils;
 public class ExpressionStatementAnalyzer extends SemanticAnalyzer {
     private final VariableExistenceAnalyzer varAnalyzer;
 
-    public ExpressionStatementAnalyzer(ErrorCollector errorCollector, VariableExistenceAnalyzer variableAnalyzer) {
+    public ExpressionStatementAnalyzer(EventCollector errorCollector, VariableExistenceAnalyzer variableAnalyzer) {
         super(errorCollector);
         assert variableAnalyzer != null;
         this.varAnalyzer = variableAnalyzer;

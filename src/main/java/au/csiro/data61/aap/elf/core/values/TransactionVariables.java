@@ -5,6 +5,7 @@ import java.util.Set;
 
 import au.csiro.data61.aap.elf.core.exceptions.ProgramException;
 import au.csiro.data61.aap.elf.core.readers.EthereumTransaction;
+import au.csiro.data61.aap.elf.core.values.ValueAccessor.ProgramFunction;
 
 /**
  * TransactionVariables
@@ -60,12 +61,14 @@ public class TransactionVariables {
     }
 
     private static void addTransactionVariable(String name, String type, ValueExtractor<EthereumTransaction> transactionValueExtractor) {
-        EthereumVariable.addVariable(TRANSACTION_VARIABLES, name, type, state -> {
+        final ProgramFunction function = state -> {
             final EthereumTransaction tx = state.getReader().getCurrentTransaction() == null
                 ? state.getReader().getCurrentLogEntry().getTransaction()
                 : state.getReader().getCurrentTransaction();
             return transactionValueExtractor.extractValue(tx);
-        });
+        };
+        final ValueAccessor accessor = ValueAccessor.createFunctionAccessor(function);
+        EthereumVariable.addVariable(TRANSACTION_VARIABLES, name, type, accessor);
     }
 
     @FunctionalInterface

@@ -3,12 +3,17 @@ package au.csiro.data61.aap.elf;
 import java.io.File;
 import java.util.List;
 
+import au.csiro.data61.aap.elf.EthqlProcessingEvent.Type;
+
 public class ElfApp {
     private static final int INDEX_CMD = 0;
     private static final int INDEX_PATH = 1;
+    private static final int INDEX_MODE = 2;
     private static final String CMD_GENERATE = "generate";
     private static final String CMD_EXTRACT = "extract";
     private static final String CMD_VALIDATE = "validate";
+    private static final String FULL_VALIDATION_MODE = "-full";
+    private static final String ERROR_VALIDATION_MODE = "-errors";
 
     public static void main(String[] args) {
         if (args.length < 2) {
@@ -36,7 +41,22 @@ public class ElfApp {
         } else if (command.equals(CMD_EXTRACT)) {
             extract(filepath);
         } else if (command.equals(CMD_VALIDATE)) {
-            validate(filepath);
+            boolean errorsOnly = false;
+            if (INDEX_MODE + 1 <= args.length) {
+                if (args[INDEX_MODE].equals(ERROR_VALIDATION_MODE)) {
+                    errorsOnly = true;
+                } else if (!args[INDEX_MODE].equals(FULL_VALIDATION_MODE)) {
+                    final String message = String.format(
+                        "Invalid validation mode. Must be '%s' or '%s', but was %s",
+                        ERROR_VALIDATION_MODE,
+                        FULL_VALIDATION_MODE,
+                        args[INDEX_MODE]
+                    );
+                    System.out.println(message);
+                    return;
+                }
+            }
+            validate(filepath, errorsOnly);
         } else {
             final String message = String.format(
                 "Unsupported command. Must be %s, %s, or %s. But was: %s",
@@ -69,25 +89,30 @@ public class ElfApp {
         }
     }
 
-    private static void validate(String filepath) {
+    private static void validate(String filepath, boolean errorsOnly) {
         final Validator validator = new Validator();
 
         try {
-            final List<EthqlProcessingError> errors = validator.analyzeScript(filepath);
-            printValidationResult(errors);
+            final List<EthqlProcessingEvent> events = validator.analyzeScript(filepath, errorsOnly);
+            printValidationResult(events);
         } catch (EthqlProcessingException ex) {
             ex.printStackTrace(System.err);
         }
     }
 
-    private static void printValidationResult(List<EthqlProcessingError> errors) {
-        if (errors.isEmpty()) {
-            System.out.println("The validation didn't find errors.");
+    private static void printValidationResult(List<EthqlProcessingEvent> events) {
+        if (events.isEmpty()) {
+            System.out.println("The script is valid.");
             return;
         }
 
-        System.out.println("The validation detected the following errors:");
-        errors.forEach(System.out::println);
+        if (events.stream().anyMatch(e -> e.getType() == Type.ERROR)) {
+            System.out.println("The script is invalid:");
+        } else {
+            System.out.println("The script is valid, but there are the following warnings and / or infos:");
+        }
+
+        events.forEach(System.out::println);
     }
 
 }

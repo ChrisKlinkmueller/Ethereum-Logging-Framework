@@ -6,7 +6,7 @@ connect("ws://localhost:8546/");
 // use setOutputFolder to specify Folder
 setOutputFolder("./test_output");
 
-address chickenContract = 0x1eD3d2c916cab00631cce4b08a7F880d4Badae94;
+address chickenContract = 0x1eD3d2c916cab00631cce4b08a7F880d4Badae94;                          
 
 BLOCKS (5851509) (10193336) {
 

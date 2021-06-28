@@ -14,12 +14,12 @@ public class Variables {
             return accessor;
         }
 
-        return state -> {
+        return ValueAccessor.createFunctionAccessor(state -> {
             if (!state.getValueStore().containsName(name)) {
                 throw new ProgramException(String.format("Variable '%s' does not exist.", name));
             }
             return state.getValueStore().getValue(name);
-        };
+        });
     }
 
     public static ValueMutator createValueMutator(String name) {

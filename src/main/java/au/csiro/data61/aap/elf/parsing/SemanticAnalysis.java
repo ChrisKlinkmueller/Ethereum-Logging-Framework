@@ -13,7 +13,7 @@ import au.csiro.data61.aap.elf.util.CompositeEthqlListener;
  */
 public class SemanticAnalysis extends CompositeEthqlListener<SemanticAnalyzer> {
 
-    public SemanticAnalysis(ErrorCollector errorCollector) {
+    public SemanticAnalysis(EventCollector errorCollector) {
         assert errorCollector != null;
         final VariableExistenceAnalyzer varAnalyzer = new VariableExistenceAnalyzer(errorCollector);
         this.addListener(new FilterNestingAnalyzer(errorCollector));

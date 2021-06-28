@@ -18,7 +18,7 @@ import au.csiro.data61.aap.elf.parsing.EthqlParser.ScopeContext;
 public class FilterNestingAnalyzer extends SemanticAnalyzer {
     private final Stack<String> filterStack;
 
-    public FilterNestingAnalyzer(ErrorCollector errorCollector) {
+    public FilterNestingAnalyzer(EventCollector errorCollector) {
         super(errorCollector);
         this.filterStack = new Stack<String>();
 

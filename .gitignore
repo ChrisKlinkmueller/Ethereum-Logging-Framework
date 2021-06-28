@@ -133,3 +133,6 @@ CsvTransform.java
 /test_app
 /src/license
 package-lock.json
+/test_app
+/dapp-docs
+/*.msg

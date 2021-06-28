@@ -55,6 +55,11 @@ public class BlockVariables {
     }
 
     private static void addBlockVariable(String name, String type, Function<EthereumBlock, Object> blockValueExtractor) {
-        EthereumVariable.addVariable(BLOCK_VARIABLES, name, type, state -> blockValueExtractor.apply(state.getReader().getCurrentBlock()));
+        EthereumVariable.addVariable(
+            BLOCK_VARIABLES,
+            name,
+            type,
+            ValueAccessor.createFunctionAccessor(state -> blockValueExtractor.apply(state.getReader().getCurrentBlock()))
+        );
     }
 }

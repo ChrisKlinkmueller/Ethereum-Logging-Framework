@@ -1,0 +1,119 @@
+connect("ws://localhost:8546/");
+setOutputFolder("./test_output/cryptokitties");
+
+// KittyCore contract source code is available at etherscan: 
+// https://etherscan.io/address/0x06012c8cf97bead5deae237070f9587f8e7a266d#code
+
+// KittyCore was created in block 4605167 by the following transaction:
+// https://etherscan.io/tx/0x691f348ef11e9ef95d540a2da2c5f38e36072619aa44db0827e1b8a276f120f4
+
+BLOCKS (4605167) (12000000) {
+    
+    LOG ENTRIES (0x06012c8cf97BEaD5deAe237070F9587f8E7A266d) (Birth(address owner, uint256 kittyId, uint256 matronId, uint256 sireId, uint256 genes)) {
+        
+        EMIT XES TRACE ()(kittyId)(
+            kittyId as xs:string concept:name,
+            matronId as xs:string matronId,
+            sireId as xs:string sireId,
+            genes as xs:int genes
+        );
+
+        EMIT XES EVENT ()(kittyId)()(
+            "Is Born" as xs:string concept:name,
+            owner as xs:string owner,
+            block.timestamp as xs:date time:timestamp,
+            block.number as xs:int blockNumber,
+            tx.transactionIndex as xs:int transactionIndex,
+            log.logIndex as xs:int logIndex
+        );
+
+        EMIT XES EVENT ()(matronId)()(
+            "Give Birth as Matron" as xs:string concept:name,
+            kittyId as xs:string kittyId,
+            sireId as xs:string sireId,
+            block.timestamp as xs:date time:timestamp,
+            block.number as xs:int blockNumber,
+            tx.transactionIndex as xs:int transactionIndex,
+            log.logIndex as xs:int logIndex
+        );
+
+        EMIT XES EVENT ()(sireId)()(
+            "Give Birth as Sire" as xs:string concept:name,
+            kittyId as xs:string kittyId,
+            matronId as xs:string matronId,
+            block.timestamp as xs:date time:timestamp,
+            block.number as xs:int blockNumber,
+            tx.transactionIndex as xs:int transactionIndex,
+            log.logIndex as xs:int logIndex
+        );
+    }
+
+    LOG ENTRIES (0x06012c8cf97BEaD5deAe237070F9587f8E7A266d) (Transfer(address from, address to, uint256 tokenId)) {
+        EMIT XES EVENT ()(tokenId)()(
+            "Is Transferred" as xs:string concept:name,
+            from as xs:string from,
+            to as xs:string to,
+            block.timestamp as xs:date time:timestamp,
+            block.number as xs:int blockNumber,
+            tx.transactionIndex as xs:int transactionIndex,
+            log.logIndex as xs:int logIndex
+        );
+    }
+
+    LOG ENTRIES (0x06012c8cf97BEaD5deAe237070F9587f8E7A266d) (Pregnant(address owner, uint256 matronId, uint256 sireId, uint256 cooldownEndBlock)) {
+        EMIT XES EVENT ()(matronId)()(
+            "Conceive as Matron" as xs:string concept:name,
+            sireId as xs:string sireId,
+            block.timestamp as xs:date time:timestamp,
+            block.number as xs:int blockNumber,
+            tx.transactionIndex as xs:int transactionIndex,
+            log.logIndex as xs:int logIndex
+        );
+
+        EMIT XES EVENT ()(sireId)()(
+            "Conceive as Sire" as xs:string concept:name,
+            matronId as xs:string matronId,
+            block.timestamp as xs:date time:timestamp,
+            block.number as xs:int blockNumber,
+            tx.transactionIndex as xs:int transactionIndex,
+            log.logIndex as xs:int logIndex
+
+        );
+    }
+
+    LOG ENTRIES (0xb1690c08e213a35ed9bab7b318de14420fb57d8c) (AuctionCreated(uint256 tokenId, uint256 startingPrice, uint256 endingPrice, uint256 duration)) {
+        EMIT XES EVENT ()(tokenId)()(
+            "Put Up for Auction" as xs:string concept:name,
+            startingPrice as xs:int startingPrice,
+            endingPrice as xs:int endingPrice,
+            duration as xs:int duration,
+            tx.input as xs:string payload,
+            block.timestamp as xs:date time:timestamp,
+            block.number as xs:int blockNumber,
+            tx.transactionIndex as xs:int transactionIndex,
+            log.logIndex as xs:int logIndex
+        );
+    }
+
+    LOG ENTRIES (0xb1690c08e213a35ed9bab7b318de14420fb57d8c) (AuctionSuccessful(uint256 tokenId, uint256 totalPrice, address winner)) {
+        EMIT XES EVENT ()(tokenId)()(
+            "Complete Auction" as xs:string concept:name,
+            totalPrice as xs:int totalPrice,
+            winner as xs:string winner,
+            block.timestamp as xs:date time:timestamp,
+            block.number as xs:int blockNumber,
+            tx.transactionIndex as xs:int transactionIndex,
+            log.logIndex as xs:int logIndex
+        );
+    }
+
+    LOG ENTRIES (0xb1690c08e213a35ed9bab7b318de14420fb57d8c) (AuctionCancelled(uint256 tokenId)) {
+        EMIT XES EVENT ()(tokenId)()(
+            "Cancel auction" as xs:string concept:name,
+            block.timestamp as xs:date time:timestamp,
+            block.number as xs:int blockNumber,
+            tx.transactionIndex as xs:int transactionIndex,
+            log.logIndex as xs:int logIndex
+        );
+    }
+}

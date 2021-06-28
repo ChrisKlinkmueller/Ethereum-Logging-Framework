@@ -18,11 +18,11 @@ import org.junit.jupiter.params.provider.ValueSource;
 import au.csiro.data61.aap.samples.SampleUtils;
 
 public class ValidatorSemanticSpec {
-    private final Validator validator = new Validator();    
+    private final Validator validator = new Validator();
 
     private void testProcessing(String script, List<String> errorMessages) {
         try {
-            final List<EthqlProcessingError> errors = validate(script);
+            final List<EthqlProcessingEvent> errors = validate(script);
             assertEquals(errorMessages.size(), errors.size());
             for (int i = 0; i < errors.size(); i++) {
                 assertEquals(errors.get(i).getErrorMessage(), errorMessages.get(i));
@@ -37,15 +37,15 @@ public class ValidatorSemanticSpec {
         }
     }
 
-    private List<EthqlProcessingError> validate(String script) throws EthqlProcessingException {
-        return this.validator.analyzeScript(new ByteArrayInputStream(script.getBytes()));
+    private List<EthqlProcessingEvent> validate(String script) throws EthqlProcessingException {
+        return this.validator.analyzeScript(new ByteArrayInputStream(script.getBytes()), true);
     }
 
     @ParameterizedTest
     @MethodSource("sampleScripts")
     public void processSampleScript(URL url) {
         try {
-            final List<EthqlProcessingError> errors = this.validator.analyzeScript(url.getFile());
+            final List<EthqlProcessingEvent> errors = this.validator.analyzeScript(url.getFile(), true);
             assertEquals(0, errors.size());
         } catch (EthqlProcessingException ex) {
             fail(ex);
@@ -60,7 +60,7 @@ public class ValidatorSemanticSpec {
     @ValueSource(strings = { "notExist.ethql", "D:/test_1231243/error.ethql", "C:/" })
     public void processNonExistingScript(String file) {
         try {
-            this.validator.analyzeScript(file);
+            this.validator.analyzeScript(file, true);
             fail();
         } catch (EthqlProcessingException ex) {
             final String message = String.format("Invalid file path: '%s'.", file);

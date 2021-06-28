@@ -2,22 +2,25 @@ package au.csiro.data61.aap.elf.parsing;
 
 import java.io.InputStream;
 import java.util.function.Function;
+import java.util.function.Predicate;
 
 import org.antlr.v4.runtime.CharStream;
 import org.antlr.v4.runtime.CommonTokenStream;
 import org.antlr.v4.runtime.tree.ParseTree;
 
 import au.csiro.data61.aap.elf.util.MethodResult;
+import au.csiro.data61.aap.elf.EthqlProcessingEvent;
 import au.csiro.data61.aap.elf.EthqlProcessingResult;
+import au.csiro.data61.aap.elf.EthqlProcessingEvent.Type;
 
 /**
  * Parser
  */
 public class EthqlInterpreter {
-    private final ErrorCollector errorCollector;
+    private final EventCollector errorCollector;
     private final SemanticAnalysis semanticAnalysis;
 
-    public EthqlInterpreter(ErrorCollector errorCollector, SemanticAnalysis analysis) {
+    public EthqlInterpreter(EventCollector errorCollector, SemanticAnalysis analysis) {
         assert errorCollector != null;
         assert analysis != null;
         this.errorCollector = errorCollector;
@@ -25,15 +28,15 @@ public class EthqlInterpreter {
     }
 
     public EthqlInterpreter() {
-        errorCollector = new ErrorCollector();
+        errorCollector = new EventCollector();
         semanticAnalysis = new SemanticAnalysis(this.errorCollector);
     }
 
-    public EthqlProcessingResult<ParseTree> parseDocument(InputStream is) {
-        return this.parse(is, EthqlParser::document);
+    public EthqlProcessingResult<ParseTree> parseDocument(InputStream is, boolean errorsOnly) {
+        return this.parse(is, errorsOnly, EthqlParser::document);
     }
 
-    protected EthqlProcessingResult<ParseTree> parse(InputStream is, Function<EthqlParser, ParseTree> rule) {
+    protected EthqlProcessingResult<ParseTree> parse(InputStream is, boolean errorsOnly, Function<EthqlParser, ParseTree> rule) {
         if (is == null) {
             return EthqlProcessingResult.ofError("The 'is' parameter was null.");
         }
@@ -53,21 +56,23 @@ public class EthqlInterpreter {
         syntacticParser.addErrorListener(this.errorCollector);
 
         final ParseTree tree = rule.apply(syntacticParser);
-        if (errorCollector.hasErrors()) {
-            return this.createErrorResultAndCleanUp();
+        if (errorCollector.hasEvents(errorsOnly)) {
+            return this.createErrorResultAndCleanUp(errorsOnly);
         }
 
         semanticAnalysis.analyze(tree);
 
-        if (errorCollector.hasErrors()) {
-            return this.createErrorResultAndCleanUp();
+        if (errorCollector.hasEvents(errorsOnly)) {
+            return this.createErrorResultAndCleanUp(errorsOnly);
         }
 
         return EthqlProcessingResult.ofResult(tree);
     }
 
-    private EthqlProcessingResult<ParseTree> createErrorResultAndCleanUp() {
-        final EthqlProcessingResult<ParseTree> result = EthqlProcessingResult.ofErrors(this.errorCollector.errorStream());
+    private EthqlProcessingResult<ParseTree> createErrorResultAndCleanUp(boolean errorsOnly) {
+        final Predicate<EthqlProcessingEvent> predicate = errorsOnly ? e -> e.getType() == Type.ERROR : e -> true;
+
+        final EthqlProcessingResult<ParseTree> result = EthqlProcessingResult.ofErrors(this.errorCollector.eventStream().filter(predicate));
         this.errorCollector.clear();
         return result;
     }
