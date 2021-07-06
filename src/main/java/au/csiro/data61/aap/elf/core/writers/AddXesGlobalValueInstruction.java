@@ -1,3 +1,4 @@
+/*
 package au.csiro.data61.aap.elf.core.writers;
 
 import au.csiro.data61.aap.elf.core.Instruction;
@@ -27,3 +28,4 @@ public class AddXesGlobalValueInstruction implements Instruction {
         }
     }
 }
+*/

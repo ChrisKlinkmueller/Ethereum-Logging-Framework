@@ -518,12 +518,14 @@ public class EthqlProgramComposer extends EthqlBaseListener {
             return;
         }
 
+        /*
         final XesGlobalAttributeSpecification spec = XesGlobalAttributeSpecification.of(pid, attribute);
         if (pid == null || pid.getValueAccessor().getType() == Type.LITERAL) {
             this.composer.addInstructionToPreamble(spec);
         } else {
             this.composer.addInstruction(spec);
         }
+        */
     }
 
     private void addXesExtension(ValueAccessorSpecification pid, List<XesParameterSpecification> parameters) throws BuildException {

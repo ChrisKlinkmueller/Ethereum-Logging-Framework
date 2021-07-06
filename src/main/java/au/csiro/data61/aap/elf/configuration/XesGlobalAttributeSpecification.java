@@ -1,3 +1,4 @@
+/*
 package au.csiro.data61.aap.elf.configuration;
 
 import au.csiro.data61.aap.elf.core.values.ValueAccessor;
@@ -17,3 +18,4 @@ public class XesGlobalAttributeSpecification extends InstructionSpecification<Ad
     }
 
 }
+*/

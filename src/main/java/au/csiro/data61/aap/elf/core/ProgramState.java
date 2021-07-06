@@ -85,4 +85,17 @@ public class ProgramState {
         }
         return null;
     }
+
+    public static Object setXesGlobalEventAttribte(Object[] parameters, ProgramState state) throws ProgramException {
+        assert parameters != null && parameters.length == 3;
+        assert parameters[0] instanceof String;
+        assert parameters[1] instanceof String;
+        assert parameters[2] != null;
+        try {
+            state.writers.getXesWriter().addGlobalEventValue((String)parameters[0], (String)parameters[1], parameters[2]);
+        } catch (Throwable e) {
+            throw new ProgramException("Error when setting adding a global xes event attribute.", e);
+        }
+        return null;
+    }
 }
