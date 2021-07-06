@@ -44,6 +44,8 @@ import au.csiro.data61.aap.elf.util.TypeUtils;
  * XesExporter
  */
 public class XesWriter extends DataWriter {
+    private static boolean EXPORT_IDENTS = false;
+
     private static final Logger LOGGER = Logger.getLogger(XesWriter.class.getName());
     private static final String PID_ATTRIBUTE = "ident:pid";
     private static final String PIID_ATTRIBUTE = "ident:piid";
@@ -104,7 +106,10 @@ public class XesWriter extends DataWriter {
 
         final XTrace trace = new XTraceImpl(new XAttributeMapImpl());
         this.element = trace;
-        this.addStringValue(PIID_ATTRIBUTE, piid);
+
+        if (EXPORT_IDENTS) {
+            this.addStringValue(PIID_ATTRIBUTE, piid);
+        }
 
         this.traces.putIfAbsent(pid, new LinkedHashMap<>());
         this.traces.get(pid).put(piid, trace);
@@ -129,7 +134,10 @@ public class XesWriter extends DataWriter {
 
         final XEvent event = new XEventImpl(new XAttributeMapImpl());
         this.element = event;
-        this.addStringValue(EID_ATTRIBUTE, eid);
+
+        if (EXPORT_IDENTS) {
+            this.addStringValue(EID_ATTRIBUTE, eid);
+        }
 
         this.events.putIfAbsent(pid, new LinkedHashMap<>());
         this.events.get(pid).putIfAbsent(piid, new LinkedHashMap<>());
@@ -257,7 +265,11 @@ public class XesWriter extends DataWriter {
         final XLog log = new XLogImpl(new XAttributeMapImpl());
         this.element = log;
         this.addPreamble(log, pid);
-        this.addStringValue(PID_ATTRIBUTE, pid);
+
+        if (EXPORT_IDENTS) {
+            this.addStringValue(PID_ATTRIBUTE, pid);
+        }
+
         this.addTracesToLog(log, pid);
         return log;
     }
