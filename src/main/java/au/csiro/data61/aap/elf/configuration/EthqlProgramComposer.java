@@ -507,6 +507,7 @@ public class EthqlProgramComposer extends EthqlBaseListener {
         final List<XesParameterSpecification> parameters = this.getXesParameters(ctx.xesEmitVariable());
         this.composer.addInstruction(XesExportSpecification.ofEventExport(pid, piid, eid, parameters));
         this.addXesExtension(pid, parameters);
+        this.addGlobalValue(pid, parameters, "lifecycle:transition");
         this.addGlobalValue(pid, parameters, "time:timestamp");
         this.addGlobalValue(pid, parameters, "org:resource");
     }

@@ -18,9 +18,6 @@ import java.util.logging.Logger;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
-import org.deckfour.xes.classification.XEventAndClassifier;
-import org.deckfour.xes.classification.XEventLifeTransClassifier;
-import org.deckfour.xes.classification.XEventNameClassifier;
 import org.deckfour.xes.extension.XExtension;
 import org.deckfour.xes.extension.XExtensionManager;
 import org.deckfour.xes.model.XAttributable;
@@ -267,15 +264,13 @@ public class XesWriter extends DataWriter {
 
     private void addPreamble(XLog log, String pid) {
         log.getExtensions().add(XExtensionManager.instance().getByPrefix("concept"));
-        log.getExtensions().add(XExtensionManager.instance().getByPrefix("lifecycle"));
         for (String extPrefix : this.extensions.getOrDefault(pid, Collections.emptySet())) {
             final XExtension extension = XExtensionManager.instance().getByPrefix(extPrefix);
             log.getExtensions().add(extension);
         }
 
         log.getGlobalEventAttributes().add(new XAttributeLiteralImpl("concept:name", "No global concept name value defined"));
-        log.getGlobalEventAttributes().add(new XAttributeLiteralImpl("lifecycle:transition", "Completed"));
-        for (String attr : this.pidsGlobalValues.get(pid)) {
+        for (String attr : this.pidsGlobalValues.getOrDefault(pid, Collections.emptySet())) {
             switch (attr) {
                 case "time:timestamp":
                     log.getGlobalEventAttributes().add(new XAttributeTimestampImpl("time:timestamp", 0));
@@ -283,14 +278,20 @@ public class XesWriter extends DataWriter {
                 case "org:resource":
                     log.getGlobalEventAttributes().add(new XAttributeLiteralImpl("org:resource", "No global resource identifier defined"));
                     break;
+                case "lifecycle:transition":
+                    log.getGlobalEventAttributes().add(new XAttributeLiteralImpl("lifecycle:transition", "Completed"));
+                    break;
                 default:
                     throw new IllegalStateException(String.format("Unsupported global XES attribute: %s", attr));
             }
         }
 
-        log.getClassifiers().add(new XEventNameClassifier());
-        log.getClassifiers().add(new XEventAndClassifier(new XEventNameClassifier(), new XEventLifeTransClassifier()));
-        log.getAttributes().put("lifecyle:model", new XAttributeLiteralImpl("lifecycle:model", "bpaf"));
+        // log.getClassifiers().add(new XEventNameClassifier());
+        // log.getClassifiers().add(new XEventAndClassifier(new XEventNameClassifier(), new XEventLifeTransClassifier()));
+
+        if (this.pidsGlobalValues.getOrDefault(pid, Collections.emptySet()).contains("lifecycle:transition")) {
+            log.getAttributes().put("lifecyle:model", new XAttributeLiteralImpl("lifecycle:model", "bpaf"));
+        }
     }
 
     private void addTracesToLog(XLog log, String pid) {
