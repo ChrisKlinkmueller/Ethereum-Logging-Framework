@@ -28,7 +28,10 @@ public class LogWriter extends DataWriter {
     protected void writeState(String filenameSuffix) throws Throwable {
         assert filenameSuffix != null;
         if (!this.lines.isEmpty()) {
-            final Path outputPath = Paths.get(this.getOutputFolder().toString(), String.format("%s.log", filenameSuffix));
+            final String filename = filenameSuffix == null 
+                ? "log.txt"
+                : String.format("log_%s.txt", filenameSuffix);
+            final Path outputPath = Paths.get(this.getOutputFolder().toString(), filename);
 
             try (BufferedWriter writer = new BufferedWriter(new FileWriter(outputPath.toFile()))) {
                 for (String line : lines) {

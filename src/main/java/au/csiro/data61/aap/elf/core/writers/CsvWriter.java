@@ -84,7 +84,10 @@ public class CsvWriter extends DataWriter {
 
     protected void writeTable(String filenameSuffix, String tableName) throws Throwable {
         LOGGER.info(String.format("Export of CSV table %s started.", tableName));
-        final Path path = Paths.get(this.getOutputFolder().toString(), String.format("%s_%s.csv", tableName, filenameSuffix));
+        final String filename = filenameSuffix == null 
+            ? String.format("%s.csv", tableName)
+            : String.format("%s_%s.csv", tableName, filenameSuffix);
+        final Path path = Paths.get(this.getOutputFolder().toString(), filename);
 
         final Map<String, ArrayList<Object>> table = this.tables.get(tableName);
         try (BufferedWriter writer = new BufferedWriter(new FileWriter(path.toFile()))) {

@@ -38,8 +38,12 @@ public abstract class DataWriter {
 
     public final void endProgram() throws Throwable {
         if (!this.streaming) {
-            this.writeState("all");
+            this.writeState();
         }
+    }
+
+    protected void writeState() throws Throwable {
+        this.writeState(null);
     }
 
     protected abstract void writeState(String filenameSuffix) throws Throwable;

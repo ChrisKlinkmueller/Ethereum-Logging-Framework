@@ -239,7 +239,9 @@ public class XesWriter extends DataWriter {
             final File folder = this.getOutputFolder().toAbsolutePath().toFile();
             final XesXmlSerializer serializer = new XesXmlSerializer();
             for (Entry<String, XLog> entry : logs.entrySet()) {
-                final String filename = String.format("log_%s_%s.xes", entry.getKey(), filenameSuffix);
+                final String filename = filenameSuffix == null
+                    ? String.format("%s.xes", entry.getKey())
+                    : String.format("%s_%s.xes", entry.getKey(), filenameSuffix);
                 final File file = new File(folder, filename);
                 serializer.serialize(entry.getValue(), new FileOutputStream(file));
             }
