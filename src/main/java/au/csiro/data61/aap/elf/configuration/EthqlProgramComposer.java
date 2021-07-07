@@ -520,7 +520,6 @@ public class EthqlProgramComposer extends EthqlBaseListener {
 
             final XesExtensionSpecification extInstruction = XesExtensionSpecification.of(prefix);
             this.composer.addInstructionToPreamble(extInstruction);
-
         }
     }
 

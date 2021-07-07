@@ -3,6 +3,7 @@ package au.csiro.data61.aap.elf.core.writers;
 import java.io.File;
 import java.io.FileOutputStream;
 import java.math.BigInteger;
+import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Date;
 import java.util.HashSet;
@@ -12,11 +13,17 @@ import java.util.Map;
 import java.util.Objects;
 import java.util.Set;
 import java.util.Map.Entry;
+import java.util.concurrent.atomic.AtomicBoolean;
 import java.util.function.BiFunction;
 import java.util.logging.Logger;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
+import org.deckfour.xes.classification.XEventAttributeClassifier;
+import org.deckfour.xes.classification.XEventClassifier;
+import org.deckfour.xes.classification.XEventLifeTransClassifier;
+import org.deckfour.xes.classification.XEventNameClassifier;
+import org.deckfour.xes.classification.XEventResourceClassifier;
 import org.deckfour.xes.extension.XExtension;
 import org.deckfour.xes.extension.XExtensionManager;
 import org.deckfour.xes.model.XAttributable;
@@ -58,6 +65,8 @@ public class XesWriter extends DataWriter {
     private final Map<String, Map<String, Map<String, XEvent>>> events;
     private final Set<String> extensions;
     private final Map<String, GlobalValue> globalEventValues;
+    private final Map<String, List<String>> classifiers;
+    private final AtomicBoolean lifecycleModelEnabled;
     private XAttributable element;
 
     public XesWriter() {
@@ -65,9 +74,12 @@ public class XesWriter extends DataWriter {
         this.events = new LinkedHashMap<>();
 
         this.globalEventValues = new LinkedHashMap<>();
+        this.classifiers = new LinkedHashMap<>();
 
         this.extensions = new HashSet<>();
         this.extensions.add("concept");
+
+        this.lifecycleModelEnabled = new AtomicBoolean(false);
     }
 
     public void addExtension(String extPrefix) {
@@ -75,6 +87,10 @@ public class XesWriter extends DataWriter {
 
         assert XExtensionManager.instance().getByPrefix(extPrefix) != null;
         this.extensions.add(extPrefix);
+    }
+
+    public void addClassifier(String name, List<String> attributes) {
+        this.classifiers.put(name, new ArrayList<>(attributes));
     }
 
     public void addGlobalEventValue(String name, String type, Object value) {
@@ -185,6 +201,10 @@ public class XesWriter extends DataWriter {
 
     public void addDateValue(String key, Object value) {
         assert key != null && value instanceof BigInteger;
+        if (key.equals("time:timestamp")) {
+            this.addTimestampAndLifecycle();
+        }
+
         final Date date = convertToDate((BigInteger) value);
         this.addAttribute(key, date, XAttributeTimestampImpl::new);
         LOGGER.info(String.format("Date attribute %s added.", key));
@@ -205,8 +225,25 @@ public class XesWriter extends DataWriter {
 
     public void addStringValue(String key, Object value) {
         assert key != null && value != null;
+        if (key.equals("lifecycle:transition")) {
+            this.addTimestampAndLifecycle();
+        } else if (key.equals("org:resource") && !this.globalEventValues.containsKey("org:resource")) {
+            this.globalEventValues.put("org:resource", new GlobalValue("xs:string", "No global value for org:resource defined"));
+        }
+
         this.addAttribute(key, value.toString(), XAttributeLiteralImpl::new);
         LOGGER.info(String.format("String attribute %s = %s added.", key, value));
+    }
+
+    private void addTimestampAndLifecycle() {
+        if (!this.globalEventValues.containsKey("time:timestamp")) {
+            this.globalEventValues.put("time:timestamp", new GlobalValue("xs:date", BigInteger.ZERO));
+        }
+
+        if (!this.globalEventValues.containsKey("lifecycle:transition")) {
+            this.lifecycleModelEnabled.set(true);
+            this.globalEventValues.put("lifecycle:transition", new GlobalValue("xs:string", "Completed"));
+        }
     }
 
     @SuppressWarnings("unchecked")
@@ -277,14 +314,17 @@ public class XesWriter extends DataWriter {
     }
 
     private void addPreamble(XLog log, String pid) {
-        // log.getExtensions().add(XExtensionManager.instance().getByPrefix("concept"));
+        if (this.lifecycleModelEnabled.get()) {
+            log.getAttributes().put("lifecycle:model", new XAttributeLiteralImpl("lifecycle:model", "bpaf"));
+        }
+
         for (String extPrefix : this.extensions) {
             final XExtension extension = XExtensionManager.instance().getByPrefix(extPrefix);
             log.getExtensions().add(extension);
         }
 
         if (!this.globalEventValues.containsKey("concept:name")) {
-            log.getGlobalEventAttributes().add(new XAttributeLiteralImpl("concept:name", "No global concept name value defined"));
+            log.getGlobalEventAttributes().add(new XAttributeLiteralImpl("concept:name", "No global value for concept:name defined"));
         }
 
         for (Entry<String, GlobalValue> entry : this.globalEventValues.entrySet()) {
@@ -312,6 +352,8 @@ public class XesWriter extends DataWriter {
             }
         }
 
+        this.addClassifiers(log);
+
         /*
         for (String attr : this.pidsGlobalValues.getOrDefault(pid, Collections.emptySet())) {
             switch (attr) {
@@ -338,6 +380,34 @@ public class XesWriter extends DataWriter {
             log.getAttributes().put("lifecyle:model", new XAttributeLiteralImpl("lifecycle:model", "bpaf"));
         }
         */
+    }
+
+    private void addClassifiers(XLog log) {
+        if (this.classifiers.isEmpty()) {
+            return;
+        }
+
+        for (Entry<String, List<String>> entry : this.classifiers.entrySet()) {
+            final XEventClassifier classifier = entry.getValue().size() == 1
+                ? this.getClassifier(entry.getKey(), entry.getValue().get(0))
+                : new XEventAttributeClassifier(entry.getKey(), entry.getValue().toArray(String[]::new));
+            log.getClassifiers().add(classifier);
+        }
+    }
+
+    private XEventClassifier getClassifier(String name, String attribute) {
+        switch (attribute) {
+            case "concept:name":
+                return new XEventNameClassifier();
+            case "lifecycle:transition":
+                return new XEventLifeTransClassifier();
+            case "org:resource":
+                return new XEventResourceClassifier();
+            case "time:timestamp":
+                return new XEventAttributeClassifier("time classifier", "time:timestamp");
+            default:
+                return new XEventAttributeClassifier(name, attribute);
+        }
     }
 
     private void addTracesToLog(XLog log, String pid) {

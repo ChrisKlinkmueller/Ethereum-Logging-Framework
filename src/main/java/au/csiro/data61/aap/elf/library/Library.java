@@ -83,6 +83,7 @@ public class Library {
             this.addMethod(ProgramState::setXesGlobalEventAttribte, null, "addGlobalXesEventAttribute", "string", "string", "byte");
             this.addMethod(ProgramState::setXesGlobalEventAttribte, null, "addGlobalXesEventAttribute", "string", "string", "int");
             this.addMethod(ProgramState::setXesGlobalEventAttribte, null, "addGlobalXesEventAttribute", "string", "string", "string");
+            this.addMethod(ProgramState::addXesClassifier, null, "addXesClassifier", "string", "string[]");
         } catch (LibraryException e) {
             e.printStackTrace();
         }
