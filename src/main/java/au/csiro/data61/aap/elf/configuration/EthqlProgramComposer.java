@@ -11,7 +11,6 @@ import java.util.stream.Collectors;
 import org.antlr.v4.runtime.ParserRuleContext;
 
 import au.csiro.data61.aap.elf.core.filters.Program;
-import au.csiro.data61.aap.elf.core.values.ValueAccessor.Type;
 import au.csiro.data61.aap.elf.parsing.EthqlBaseListener;
 import au.csiro.data61.aap.elf.parsing.InterpreterUtils;
 import au.csiro.data61.aap.elf.parsing.VariableExistenceAnalyzer;
@@ -493,6 +492,7 @@ public class EthqlProgramComposer extends EthqlBaseListener {
         final ValueAccessorSpecification piid = this.getXesId(ctx.piid);
         final List<XesParameterSpecification> parameters = this.getXesParameters(ctx.xesEmitVariable());
         this.composer.addInstruction(XesExportSpecification.ofTraceExport(pid, piid, parameters));
+        this.addXesExtensions(parameters);
     }
 
     @Override
@@ -506,29 +506,10 @@ public class EthqlProgramComposer extends EthqlBaseListener {
         final ValueAccessorSpecification eid = this.getXesId(ctx.eid);
         final List<XesParameterSpecification> parameters = this.getXesParameters(ctx.xesEmitVariable());
         this.composer.addInstruction(XesExportSpecification.ofEventExport(pid, piid, eid, parameters));
-        this.addXesExtension(pid, parameters);
-        this.addGlobalValue(pid, parameters, "lifecycle:transition");
-        this.addGlobalValue(pid, parameters, "time:timestamp");
-        this.addGlobalValue(pid, parameters, "org:resource");
+        this.addXesExtensions(parameters);
     }
 
-    private void addGlobalValue(ValueAccessorSpecification pid, List<XesParameterSpecification> parameters, String attribute)
-        throws BuildException {
-        if (!parameters.stream().anyMatch(p -> p.getParameter().getName().equals(attribute))) {
-            return;
-        }
-
-        /*
-        final XesGlobalAttributeSpecification spec = XesGlobalAttributeSpecification.of(pid, attribute);
-        if (pid == null || pid.getValueAccessor().getType() == Type.LITERAL) {
-            this.composer.addInstructionToPreamble(spec);
-        } else {
-            this.composer.addInstruction(spec);
-        }
-        */
-    }
-
-    private void addXesExtension(ValueAccessorSpecification pid, List<XesParameterSpecification> parameters) throws BuildException {
+    private void addXesExtensions(List<XesParameterSpecification> parameters) throws BuildException {
         for (XesParameterSpecification param : parameters) {
             final String name = param.getParameter().getName();
             if (!name.contains(":")) {
@@ -537,13 +518,9 @@ public class EthqlProgramComposer extends EthqlBaseListener {
 
             final String prefix = name.split(":")[0];
 
-            final XesExtensionSpecification extInstruction = XesExtensionSpecification.of(prefix, pid);
-            if (pid == null || pid.getValueAccessor().getType() == Type.LITERAL) { // the pid value is static, hence we only need to execute
-                                                                                   // it once
-                this.composer.addInstructionToPreamble(extInstruction);
-            } else { // the pid value is dynamic and needs to be evaluated frequently
-                this.composer.addInstruction(extInstruction);
-            }
+            final XesExtensionSpecification extInstruction = XesExtensionSpecification.of(prefix);
+            this.composer.addInstructionToPreamble(extInstruction);
+
         }
     }
 

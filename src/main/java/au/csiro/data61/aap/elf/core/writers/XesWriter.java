@@ -5,7 +5,6 @@ import java.io.FileOutputStream;
 import java.math.BigInteger;
 import java.util.Collections;
 import java.util.Date;
-import java.util.HashMap;
 import java.util.HashSet;
 import java.util.LinkedHashMap;
 import java.util.List;
@@ -57,29 +56,25 @@ public class XesWriter extends DataWriter {
 
     private final Map<String, Map<String, XTrace>> traces;
     private final Map<String, Map<String, Map<String, XEvent>>> events;
-    private final Map<String, Set<String>> extensions;
+    private final Set<String> extensions;
     private final Map<String, GlobalValue> globalEventValues;
     private XAttributable element;
 
     public XesWriter() {
         this.traces = new LinkedHashMap<>();
         this.events = new LinkedHashMap<>();
-        this.extensions = new LinkedHashMap<>();
-        this.globalEventValues = new HashMap<>();
+
+        this.globalEventValues = new LinkedHashMap<>();
+
+        this.extensions = new HashSet<>();
+        this.extensions.add("concept");
     }
 
-    public void addExtensionForDefaultPid(String extPrefix) {
-        this.addExtension(DEFAULT_PID, extPrefix);
-    }
-
-    public void addExtension(String pid, String extPrefix) {
-        assert pid != null && extPrefix != null;
-        if (extPrefix.equals("concept") || extPrefix.equals("lifecycle")) {
-            return;
-        }
+    public void addExtension(String extPrefix) {
+        assert extPrefix != null && !extPrefix.isBlank();
 
         assert XExtensionManager.instance().getByPrefix(extPrefix) != null;
-        this.extensions.computeIfAbsent(pid, p -> new HashSet<>()).add(extPrefix);
+        this.extensions.add(extPrefix);
     }
 
     public void addGlobalEventValue(String name, String type, Object value) {
@@ -282,8 +277,8 @@ public class XesWriter extends DataWriter {
     }
 
     private void addPreamble(XLog log, String pid) {
-        log.getExtensions().add(XExtensionManager.instance().getByPrefix("concept"));
-        for (String extPrefix : this.extensions.getOrDefault(pid, Collections.emptySet())) {
+        // log.getExtensions().add(XExtensionManager.instance().getByPrefix("concept"));
+        for (String extPrefix : this.extensions) {
             final XExtension extension = XExtensionManager.instance().getByPrefix(extPrefix);
             log.getExtensions().add(extension);
         }
