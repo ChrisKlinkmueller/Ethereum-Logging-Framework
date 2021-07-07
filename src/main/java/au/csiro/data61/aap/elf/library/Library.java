@@ -79,7 +79,6 @@ public class Library {
             this.addMethod(ListOperations::newIntArray, "int[]", "newIntArray");
             this.addMethod(ListOperations::newStringArray, "string[]", "newStringArray");
 
-            this.addMethod(ProgramState::setXesGlobalEventAttribte, null, "addGlobalXesEventAttribute", "string", "string", "address");
             this.addMethod(ProgramState::setXesGlobalEventAttribte, null, "addGlobalXesEventAttribute", "string", "string", "bool");
             this.addMethod(ProgramState::setXesGlobalEventAttribte, null, "addGlobalXesEventAttribute", "string", "string", "byte");
             this.addMethod(ProgramState::setXesGlobalEventAttribte, null, "addGlobalXesEventAttribute", "string", "string", "int");

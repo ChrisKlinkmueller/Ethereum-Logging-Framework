@@ -86,7 +86,7 @@ public class XesWriter extends DataWriter {
         if (!isXesType(type)) {
             throw new IllegalArgumentException(String.format("Type '%s' is not a supported XES type.", type));
         }
-       
+
         final GlobalValue globalValue = new GlobalValue(type, value);
         this.globalEventValues.put(name, globalValue);
     }
@@ -190,7 +190,7 @@ public class XesWriter extends DataWriter {
 
     public void addDateValue(String key, Object value) {
         assert key != null && value instanceof BigInteger;
-        final Date date = convertToDate((BigInteger)value);
+        final Date date = convertToDate((BigInteger) value);
         this.addAttribute(key, date, XAttributeTimestampImpl::new);
         LOGGER.info(String.format("Date attribute %s added.", key));
     }
@@ -294,22 +294,26 @@ public class XesWriter extends DataWriter {
 
         for (Entry<String, GlobalValue> entry : this.globalEventValues.entrySet()) {
             switch (entry.getValue().getType()) {
-                case BOOLEAN_TYPE : 
-                    log.getGlobalEventAttributes().add(new XAttributeBooleanImpl(entry.getKey(), (boolean)entry.getValue().getValue()));
+                case BOOLEAN_TYPE:
+                    log.getGlobalEventAttributes().add(new XAttributeBooleanImpl(entry.getKey(), (boolean) entry.getValue().getValue()));
                     break;
-                case INT_TYPE :
-                    log.getGlobalEventAttributes().add(new XAttributeDiscreteImpl(entry.getKey(), ((BigInteger)entry.getValue().getValue()).longValue()));
+                case INT_TYPE:
+                    log.getGlobalEventAttributes()
+                        .add(new XAttributeDiscreteImpl(entry.getKey(), ((BigInteger) entry.getValue().getValue()).longValue()));
                     break;
-                case FLOAT_TYPE :
-                    log.getGlobalEventAttributes().add(new XAttributeContinuousImpl(entry.getKey(), ((BigInteger)entry.getValue().getValue()).longValue()));
+                case FLOAT_TYPE:
+                    log.getGlobalEventAttributes()
+                        .add(new XAttributeContinuousImpl(entry.getKey(), ((BigInteger) entry.getValue().getValue()).longValue()));
                     break;
-                case DATE_TYPE :
-                    log.getGlobalEventAttributes().add(new XAttributeTimestampImpl(entry.getKey(), convertToDate((BigInteger)entry.getValue().getValue())));
+                case DATE_TYPE:
+                    log.getGlobalEventAttributes()
+                        .add(new XAttributeTimestampImpl(entry.getKey(), convertToDate((BigInteger) entry.getValue().getValue())));
                     break;
-                case STRING_TYPE :
-                    log.getGlobalEventAttributes().add(new XAttributeLiteralImpl(entry.getKey(), entry.getValue().toString()));
+                case STRING_TYPE:
+                    log.getGlobalEventAttributes().add(new XAttributeLiteralImpl(entry.getKey(), entry.getValue().getValue().toString()));
                     break;
-                default : throw new IllegalArgumentException("Unknown XES type: " + entry.getValue().getType());
+                default:
+                    throw new IllegalArgumentException("Unknown XES type: " + entry.getValue().getType());
             }
         }
 
@@ -376,12 +380,18 @@ public class XesWriter extends DataWriter {
 
     public static boolean isXesType(String type) {
         switch (type) {
-            case BOOLEAN_TYPE : return true;
-            case DATE_TYPE : return true;
-            case FLOAT_TYPE : return true;
-            case INT_TYPE : return true;
-            case STRING_TYPE : return true;
-            default : return false;
+            case BOOLEAN_TYPE:
+                return true;
+            case DATE_TYPE:
+                return true;
+            case FLOAT_TYPE:
+                return true;
+            case INT_TYPE:
+                return true;
+            case STRING_TYPE:
+                return true;
+            default:
+                return false;
         }
     }
 

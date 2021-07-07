@@ -84,7 +84,7 @@ public class CsvWriter extends DataWriter {
 
     protected void writeTable(String filenameSuffix, String tableName) throws Throwable {
         LOGGER.info(String.format("Export of CSV table %s started.", tableName));
-        final String filename = filenameSuffix == null 
+        final String filename = filenameSuffix == null
             ? String.format("%s.csv", tableName)
             : String.format("%s_%s.csv", tableName, filenameSuffix);
         final Path path = Paths.get(this.getOutputFolder().toString(), filename);
