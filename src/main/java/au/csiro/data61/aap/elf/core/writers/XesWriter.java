@@ -322,10 +322,12 @@ public class XesWriter extends DataWriter {
             final XExtension extension = XExtensionManager.instance().getByPrefix(extPrefix);
             log.getExtensions().add(extension);
         }
-
+        
         if (!this.globalEventValues.containsKey("concept:name")) {
-            log.getGlobalEventAttributes().add(new XAttributeLiteralImpl("concept:name", "No global value for concept:name defined"));
+            this.globalEventValues.put("concept:name", new GlobalValue("xs:string", "No global value for concept:name defined"));
         }
+
+        this.addClassifiers(log);  
 
         for (Entry<String, GlobalValue> entry : this.globalEventValues.entrySet()) {
             switch (entry.getValue().getType()) {
@@ -350,36 +352,7 @@ public class XesWriter extends DataWriter {
                 default:
                     throw new IllegalArgumentException("Unknown XES type: " + entry.getValue().getType());
             }
-        }
-
-        this.addClassifiers(log);
-
-        /*
-        for (String attr : this.pidsGlobalValues.getOrDefault(pid, Collections.emptySet())) {
-            switch (attr) {
-                case "time:timestamp":
-                    log.getGlobalEventAttributes().add(new XAttributeTimestampImpl("time:timestamp", 0));
-                    break;
-                case "org:resource":
-                    log.getGlobalEventAttributes().add(new XAttributeLiteralImpl("org:resource", "No global resource identifier defined"));
-                    break;
-                case "lifecycle:transition":
-                    log.getGlobalEventAttributes().add(new XAttributeLiteralImpl("lifecycle:transition", "Completed"));
-                    break;
-                default:
-                    throw new IllegalStateException(String.format("Unsupported global XES attribute: %s", attr));
-            }
-        }
-        */
-
-        // log.getClassifiers().add(new XEventNameClassifier());
-        // log.getClassifiers().add(new XEventAndClassifier(new XEventNameClassifier(), new XEventLifeTransClassifier()));
-
-        /*
-        if (this.pidsGlobalValues.getOrDefault(pid, Collections.emptySet()).contains("lifecycle:transition")) {
-            log.getAttributes().put("lifecyle:model", new XAttributeLiteralImpl("lifecycle:model", "bpaf"));
-        }
-        */
+        }      
     }
 
     private void addClassifiers(XLog log) {
