@@ -238,11 +238,14 @@ public class XesWriter extends DataWriter {
     private void addTimestampAndLifecycle() {
         if (!this.globalEventValues.containsKey("time:timestamp")) {
             this.globalEventValues.put("time:timestamp", new GlobalValue("xs:date", BigInteger.ZERO));
+            this.addExtension("time");
         }
 
+        this.lifecycleModelEnabled.set(true);
+
         if (!this.globalEventValues.containsKey("lifecycle:transition")) {
-            this.lifecycleModelEnabled.set(true);
             this.globalEventValues.put("lifecycle:transition", new GlobalValue("xs:string", "Completed"));
+            this.addExtension("lifecycle");
         }
     }
 
@@ -322,12 +325,12 @@ public class XesWriter extends DataWriter {
             final XExtension extension = XExtensionManager.instance().getByPrefix(extPrefix);
             log.getExtensions().add(extension);
         }
-        
+
         if (!this.globalEventValues.containsKey("concept:name")) {
             this.globalEventValues.put("concept:name", new GlobalValue("xs:string", "No global value for concept:name defined"));
         }
 
-        this.addClassifiers(log);  
+        this.addClassifiers(log);
 
         for (Entry<String, GlobalValue> entry : this.globalEventValues.entrySet()) {
             switch (entry.getValue().getType()) {
@@ -352,7 +355,7 @@ public class XesWriter extends DataWriter {
                 default:
                     throw new IllegalArgumentException("Unknown XES type: " + entry.getValue().getType());
             }
-        }      
+        }
     }
 
     private void addClassifiers(XLog log) {

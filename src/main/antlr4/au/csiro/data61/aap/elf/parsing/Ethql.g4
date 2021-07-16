@@ -130,7 +130,7 @@ emitStatementXesEvent
     ;
 
 xesEmitVariable
-    : valueExpression (KEY_AS (xesTypes)? variableName)?
+    : valueExpression KEY_AS xesTypes variableName
     ;
 
 xesTypes

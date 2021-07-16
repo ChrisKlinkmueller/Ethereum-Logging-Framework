@@ -21,6 +21,9 @@ import au.csiro.data61.aap.elf.library.types.ListOperations;
  * Library
  */
 public class Library {
+    public static final String ADD_XES_CLASSIFIER = "addXesClassifier";
+    public static final String ADD_XES_GLOBAL_EVENT_ATTRIBUTE = "addGlobalXesEventAttribute";
+
     private static final Logger LOGGER = Logger.getLogger(Library.class.getName());
     public static Library INSTANCE = new Library();
 
@@ -79,11 +82,11 @@ public class Library {
             this.addMethod(ListOperations::newIntArray, "int[]", "newIntArray");
             this.addMethod(ListOperations::newStringArray, "string[]", "newStringArray");
 
-            this.addMethod(ProgramState::setXesGlobalEventAttribte, null, "addGlobalXesEventAttribute", "string", "string", "bool");
-            this.addMethod(ProgramState::setXesGlobalEventAttribte, null, "addGlobalXesEventAttribute", "string", "string", "byte");
-            this.addMethod(ProgramState::setXesGlobalEventAttribte, null, "addGlobalXesEventAttribute", "string", "string", "int");
-            this.addMethod(ProgramState::setXesGlobalEventAttribte, null, "addGlobalXesEventAttribute", "string", "string", "string");
-            this.addMethod(ProgramState::addXesClassifier, null, "addXesClassifier", "string", "string[]");
+            this.addMethod(ProgramState::setXesGlobalEventAttribte, null, ADD_XES_GLOBAL_EVENT_ATTRIBUTE, "string", "string", "bool");
+            this.addMethod(ProgramState::setXesGlobalEventAttribte, null, ADD_XES_GLOBAL_EVENT_ATTRIBUTE, "string", "string", "byte");
+            this.addMethod(ProgramState::setXesGlobalEventAttribte, null, ADD_XES_GLOBAL_EVENT_ATTRIBUTE, "string", "string", "int");
+            this.addMethod(ProgramState::setXesGlobalEventAttribte, null, ADD_XES_GLOBAL_EVENT_ATTRIBUTE, "string", "string", "string");
+            this.addMethod(ProgramState::addXesClassifier, null, ADD_XES_CLASSIFIER, "string", "string[]");
         } catch (LibraryException e) {
             e.printStackTrace();
         }
