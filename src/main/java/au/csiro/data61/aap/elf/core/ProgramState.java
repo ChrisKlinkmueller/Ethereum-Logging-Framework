@@ -1,6 +1,7 @@
 package au.csiro.data61.aap.elf.core;
 
 import java.nio.file.Path;
+import java.util.List;
 
 import au.csiro.data61.aap.elf.core.exceptions.ProgramException;
 import au.csiro.data61.aap.elf.core.exceptions.ExceptionHandler;
@@ -82,6 +83,32 @@ public class ProgramState {
             state.setOutputFolder(outputFolder);
         } catch (Throwable e) {
             throw new ProgramException("Error when setting the output folder.", e);
+        }
+        return null;
+    }
+
+    public static Object setXesGlobalEventAttribte(Object[] parameters, ProgramState state) throws ProgramException {
+        assert parameters != null && parameters.length == 3;
+        assert parameters[0] instanceof String;
+        assert parameters[1] instanceof String;
+        assert parameters[2] != null;
+        try {
+            state.writers.getXesWriter().addGlobalEventValue((String) parameters[0], (String) parameters[1], parameters[2]);
+        } catch (Throwable e) {
+            throw new ProgramException("Error when setting adding a global xes event attribute.", e);
+        }
+        return null;
+    }
+
+    @SuppressWarnings("unchecked")
+    public static Object addXesClassifier(Object[] parameters, ProgramState state) throws ProgramException {
+        assert parameters != null && parameters.length == 2;
+        assert parameters[0] instanceof String;
+        assert List.class.isAssignableFrom(parameters[1].getClass());
+        try {
+            state.writers.getXesWriter().addClassifier((String) parameters[0], (List<String>) parameters[1]);
+        } catch (Throwable e) {
+            throw new ProgramException("Error when setting adding a global xes event attribute.", e);
         }
         return null;
     }

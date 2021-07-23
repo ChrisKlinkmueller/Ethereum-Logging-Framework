@@ -3,9 +3,9 @@ package au.csiro.data61.aap.elf.core.writers;
 import java.io.File;
 import java.io.FileOutputStream;
 import java.math.BigInteger;
+import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Date;
-import java.util.HashMap;
 import java.util.HashSet;
 import java.util.LinkedHashMap;
 import java.util.List;
@@ -13,14 +13,17 @@ import java.util.Map;
 import java.util.Objects;
 import java.util.Set;
 import java.util.Map.Entry;
+import java.util.concurrent.atomic.AtomicBoolean;
 import java.util.function.BiFunction;
 import java.util.logging.Logger;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
-import org.deckfour.xes.classification.XEventAndClassifier;
+import org.deckfour.xes.classification.XEventAttributeClassifier;
+import org.deckfour.xes.classification.XEventClassifier;
 import org.deckfour.xes.classification.XEventLifeTransClassifier;
 import org.deckfour.xes.classification.XEventNameClassifier;
+import org.deckfour.xes.classification.XEventResourceClassifier;
 import org.deckfour.xes.extension.XExtension;
 import org.deckfour.xes.extension.XExtensionManager;
 import org.deckfour.xes.model.XAttributable;
@@ -47,6 +50,8 @@ import au.csiro.data61.aap.elf.util.TypeUtils;
  * XesExporter
  */
 public class XesWriter extends DataWriter {
+    private static boolean EXPORT_IDENTS = false;
+
     private static final Logger LOGGER = Logger.getLogger(XesWriter.class.getName());
     private static final String PID_ATTRIBUTE = "ident:pid";
     private static final String PIID_ATTRIBUTE = "ident:piid";
@@ -58,37 +63,43 @@ public class XesWriter extends DataWriter {
 
     private final Map<String, Map<String, XTrace>> traces;
     private final Map<String, Map<String, Map<String, XEvent>>> events;
-    private final Map<String, Set<String>> extensions;
-    private final Map<String, Set<String>> pidsGlobalValues;
+    private final Set<String> extensions;
+    private final Map<String, GlobalValue> globalEventValues;
+    private final Map<String, List<String>> classifiers;
+    private final AtomicBoolean lifecycleModelEnabled;
     private XAttributable element;
 
     public XesWriter() {
         this.traces = new LinkedHashMap<>();
         this.events = new LinkedHashMap<>();
-        this.extensions = new LinkedHashMap<>();
-        this.pidsGlobalValues = new HashMap<>();
+
+        this.globalEventValues = new LinkedHashMap<>();
+        this.classifiers = new LinkedHashMap<>();
+
+        this.extensions = new HashSet<>();
+        this.extensions.add("concept");
+
+        this.lifecycleModelEnabled = new AtomicBoolean(false);
     }
 
-    public void addExtensionForDefaultPid(String extPrefix) {
-        this.addExtension(DEFAULT_PID, extPrefix);
-    }
-
-    public void addExtension(String pid, String extPrefix) {
-        assert pid != null && extPrefix != null;
-        if (extPrefix.equals("concept") || extPrefix.equals("lifecycle")) {
-            return;
-        }
+    public void addExtension(String extPrefix) {
+        assert extPrefix != null && !extPrefix.isBlank();
 
         assert XExtensionManager.instance().getByPrefix(extPrefix) != null;
-        this.extensions.computeIfAbsent(pid, p -> new HashSet<>()).add(extPrefix);
+        this.extensions.add(extPrefix);
     }
 
-    public void addGlobalValue(String pid, String attribute) {
-        this.pidsGlobalValues.computeIfAbsent(pid, p -> new HashSet<>()).add(attribute);
+    public void addClassifier(String name, List<String> attributes) {
+        this.classifiers.put(name, new ArrayList<>(attributes));
     }
 
-    public void addGlobalValueForDefaultPid(String attribute) {
-        this.addGlobalValue(DEFAULT_PID, attribute);
+    public void addGlobalEventValue(String name, String type, Object value) {
+        if (!isXesType(type)) {
+            throw new IllegalArgumentException(String.format("Type '%s' is not a supported XES type.", type));
+        }
+
+        final GlobalValue globalValue = new GlobalValue(type, value);
+        this.globalEventValues.put(name, globalValue);
     }
 
     public void startTrace(String inputPid, String inputPiid) {
@@ -107,7 +118,10 @@ public class XesWriter extends DataWriter {
 
         final XTrace trace = new XTraceImpl(new XAttributeMapImpl());
         this.element = trace;
-        this.addStringValue(PIID_ATTRIBUTE, piid);
+
+        if (EXPORT_IDENTS) {
+            this.addStringValue(PIID_ATTRIBUTE, piid);
+        }
 
         this.traces.putIfAbsent(pid, new LinkedHashMap<>());
         this.traces.get(pid).put(piid, trace);
@@ -132,7 +146,10 @@ public class XesWriter extends DataWriter {
 
         final XEvent event = new XEventImpl(new XAttributeMapImpl());
         this.element = event;
-        this.addStringValue(EID_ATTRIBUTE, eid);
+
+        if (EXPORT_IDENTS) {
+            this.addStringValue(EID_ATTRIBUTE, eid);
+        }
 
         this.events.putIfAbsent(pid, new LinkedHashMap<>());
         this.events.get(pid).putIfAbsent(piid, new LinkedHashMap<>());
@@ -184,10 +201,18 @@ public class XesWriter extends DataWriter {
 
     public void addDateValue(String key, Object value) {
         assert key != null && value instanceof BigInteger;
-        final long timestamp = ((BigInteger) value).longValue() * MILLIS_MULTIPLIER;
-        final Date date = new Date(timestamp);
+        if (key.equals("time:timestamp")) {
+            this.addTimestampAndLifecycle();
+        }
+
+        final Date date = convertToDate((BigInteger) value);
         this.addAttribute(key, date, XAttributeTimestampImpl::new);
         LOGGER.info(String.format("Date attribute %s added.", key));
+    }
+
+    private Date convertToDate(BigInteger value) {
+        final long timestamp = ((BigInteger) value).longValue() * MILLIS_MULTIPLIER;
+        return new Date(timestamp);
     }
 
     @SuppressWarnings("unchecked")
@@ -200,8 +225,28 @@ public class XesWriter extends DataWriter {
 
     public void addStringValue(String key, Object value) {
         assert key != null && value != null;
+        if (key.equals("lifecycle:transition")) {
+            this.addTimestampAndLifecycle();
+        } else if (key.equals("org:resource") && !this.globalEventValues.containsKey("org:resource")) {
+            this.globalEventValues.put("org:resource", new GlobalValue("xs:string", "No global value for org:resource defined"));
+        }
+
         this.addAttribute(key, value.toString(), XAttributeLiteralImpl::new);
         LOGGER.info(String.format("String attribute %s = %s added.", key, value));
+    }
+
+    private void addTimestampAndLifecycle() {
+        if (!this.globalEventValues.containsKey("time:timestamp")) {
+            this.globalEventValues.put("time:timestamp", new GlobalValue("xs:date", BigInteger.ZERO));
+            this.addExtension("time");
+        }
+
+        this.lifecycleModelEnabled.set(true);
+
+        if (!this.globalEventValues.containsKey("lifecycle:transition")) {
+            this.globalEventValues.put("lifecycle:transition", new GlobalValue("xs:string", "Completed"));
+            this.addExtension("lifecycle");
+        }
     }
 
     @SuppressWarnings("unchecked")
@@ -234,7 +279,9 @@ public class XesWriter extends DataWriter {
             final File folder = this.getOutputFolder().toAbsolutePath().toFile();
             final XesXmlSerializer serializer = new XesXmlSerializer();
             for (Entry<String, XLog> entry : logs.entrySet()) {
-                final String filename = String.format("log_%s_%s.xes", entry.getKey(), filenameSuffix);
+                final String filename = filenameSuffix == null
+                    ? String.format("%s.xes", entry.getKey())
+                    : String.format("%s_%s.xes", entry.getKey(), filenameSuffix);
                 final File file = new File(folder, filename);
                 serializer.serialize(entry.getValue(), new FileOutputStream(file));
             }
@@ -260,37 +307,83 @@ public class XesWriter extends DataWriter {
         final XLog log = new XLogImpl(new XAttributeMapImpl());
         this.element = log;
         this.addPreamble(log, pid);
-        this.addStringValue(PID_ATTRIBUTE, pid);
+
+        if (EXPORT_IDENTS) {
+            this.addStringValue(PID_ATTRIBUTE, pid);
+        }
+
         this.addTracesToLog(log, pid);
         return log;
     }
 
     private void addPreamble(XLog log, String pid) {
-        log.getExtensions().add(XExtensionManager.instance().getByPrefix("concept"));
-        log.getExtensions().add(XExtensionManager.instance().getByPrefix("lifecycle"));
-        for (String extPrefix : this.extensions.getOrDefault(pid, Collections.emptySet())) {
+        if (this.lifecycleModelEnabled.get()) {
+            log.getAttributes().put("lifecycle:model", new XAttributeLiteralImpl("lifecycle:model", "bpaf"));
+        }
+
+        for (String extPrefix : this.extensions) {
             final XExtension extension = XExtensionManager.instance().getByPrefix(extPrefix);
             log.getExtensions().add(extension);
         }
 
-        log.getGlobalEventAttributes().add(new XAttributeLiteralImpl("concept:name", "No global concept name value defined"));
-        log.getGlobalEventAttributes().add(new XAttributeLiteralImpl("lifecycle:transition", "Completed"));
-        for (String attr : this.pidsGlobalValues.get(pid)) {
-            switch (attr) {
-                case "time:timestamp":
-                    log.getGlobalEventAttributes().add(new XAttributeTimestampImpl("time:timestamp", 0));
-                    break;
-                case "org:resource":
-                    log.getGlobalEventAttributes().add(new XAttributeLiteralImpl("org:resource", "No global resource identifier defined"));
-                    break;
-                default:
-                    throw new IllegalStateException(String.format("Unsupported global XES attribute: %s", attr));
-            }
+        if (!this.globalEventValues.containsKey("concept:name")) {
+            this.globalEventValues.put("concept:name", new GlobalValue("xs:string", "No global value for concept:name defined"));
         }
 
-        log.getClassifiers().add(new XEventNameClassifier());
-        log.getClassifiers().add(new XEventAndClassifier(new XEventNameClassifier(), new XEventLifeTransClassifier()));
-        log.getAttributes().put("lifecyle:model", new XAttributeLiteralImpl("lifecycle:model", "bpaf"));
+        this.addClassifiers(log);
+
+        for (Entry<String, GlobalValue> entry : this.globalEventValues.entrySet()) {
+            switch (entry.getValue().getType()) {
+                case BOOLEAN_TYPE:
+                    log.getGlobalEventAttributes().add(new XAttributeBooleanImpl(entry.getKey(), (boolean) entry.getValue().getValue()));
+                    break;
+                case INT_TYPE:
+                    log.getGlobalEventAttributes()
+                        .add(new XAttributeDiscreteImpl(entry.getKey(), ((BigInteger) entry.getValue().getValue()).longValue()));
+                    break;
+                case FLOAT_TYPE:
+                    log.getGlobalEventAttributes()
+                        .add(new XAttributeContinuousImpl(entry.getKey(), ((BigInteger) entry.getValue().getValue()).longValue()));
+                    break;
+                case DATE_TYPE:
+                    log.getGlobalEventAttributes()
+                        .add(new XAttributeTimestampImpl(entry.getKey(), convertToDate((BigInteger) entry.getValue().getValue())));
+                    break;
+                case STRING_TYPE:
+                    log.getGlobalEventAttributes().add(new XAttributeLiteralImpl(entry.getKey(), entry.getValue().getValue().toString()));
+                    break;
+                default:
+                    throw new IllegalArgumentException("Unknown XES type: " + entry.getValue().getType());
+            }
+        }
+    }
+
+    private void addClassifiers(XLog log) {
+        if (this.classifiers.isEmpty()) {
+            return;
+        }
+
+        for (Entry<String, List<String>> entry : this.classifiers.entrySet()) {
+            final XEventClassifier classifier = entry.getValue().size() == 1
+                ? this.getClassifier(entry.getKey(), entry.getValue().get(0))
+                : new XEventAttributeClassifier(entry.getKey(), entry.getValue().toArray(String[]::new));
+            log.getClassifiers().add(classifier);
+        }
+    }
+
+    private XEventClassifier getClassifier(String name, String attribute) {
+        switch (attribute) {
+            case "concept:name":
+                return new XEventNameClassifier();
+            case "lifecycle:transition":
+                return new XEventLifeTransClassifier();
+            case "org:resource":
+                return new XEventResourceClassifier();
+            case "time:timestamp":
+                return new XEventAttributeClassifier("time classifier", "time:timestamp");
+            default:
+                return new XEventAttributeClassifier(name, attribute);
+        }
     }
 
     private void addTracesToLog(XLog log, String pid) {
@@ -326,8 +419,43 @@ public class XesWriter extends DataWriter {
         Set.of(STRING_TYPE)
     );
 
+    public static boolean isXesType(String type) {
+        switch (type) {
+            case BOOLEAN_TYPE:
+                return true;
+            case DATE_TYPE:
+                return true;
+            case FLOAT_TYPE:
+                return true;
+            case INT_TYPE:
+                return true;
+            case STRING_TYPE:
+                return true;
+            default:
+                return false;
+        }
+    }
+
     public static boolean areTypesCompatible(String solType, String xesType) {
         final String rootType = TypeUtils.getRootType(solType);
         return SUPPORTED_SOL_TO_XES_CASTS.getOrDefault(rootType, Collections.emptySet()).contains(xesType);
     }
+
+    private static class GlobalValue {
+        private final String type;
+        private final Object value;
+
+        private GlobalValue(String type, Object value) {
+            this.type = type;
+            this.value = value;
+        }
+
+        public String getType() {
+            return this.type;
+        }
+
+        public Object getValue() {
+            return this.value;
+        }
+    };
 }

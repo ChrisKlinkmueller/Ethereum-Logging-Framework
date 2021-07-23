@@ -101,18 +101,23 @@ public class ElfApp {
     }
 
     private static void printValidationResult(List<EthqlProcessingEvent> events) {
-        if (events.isEmpty()) {
+        if (events.stream().anyMatch(e -> e.getType() == Type.ERROR)) {
+            System.out.println("The script is invalid.");
+            printEvents(events, Type.ERROR);
+        } else {
             System.out.println("The script is valid.");
+        }
+
+        printEvents(events, Type.WARNING);
+        printEvents(events, Type.INFO);
+    }
+
+    private static void printEvents(List<EthqlProcessingEvent> events, Type type) {
+        if (!events.stream().anyMatch(e -> e.getType() == type)) {
             return;
         }
 
-        if (events.stream().anyMatch(e -> e.getType() == Type.ERROR)) {
-            System.out.println("The script is invalid:");
-        } else {
-            System.out.println("The script is valid, but there are the following warnings and / or infos:");
-        }
-
-        events.forEach(System.out::println);
+        events.stream().filter(e -> e.getType() == type).forEach(e -> System.out.println("- " + e));
     }
 
 }

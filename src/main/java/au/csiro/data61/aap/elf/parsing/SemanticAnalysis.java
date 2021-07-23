@@ -20,6 +20,7 @@ public class SemanticAnalysis extends CompositeEthqlListener<SemanticAnalyzer> {
         this.addListener(new FilterDefinitionAnalyzer(errorCollector, varAnalyzer));
         this.addListener(new EmitAnalyzer(errorCollector, varAnalyzer));
         this.addListener(new ExpressionStatementAnalyzer(errorCollector, varAnalyzer));
+        this.addListener(new XesCertificationLevelsAnalyzer(errorCollector));
         this.addListener(varAnalyzer);
     }
 
