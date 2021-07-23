@@ -5,6 +5,7 @@ import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
 import java.util.Objects;
+import java.util.Map.Entry;
 import java.util.concurrent.atomic.AtomicBoolean;
 import java.util.concurrent.atomic.AtomicReference;
 import java.util.stream.Collectors;
@@ -28,15 +29,26 @@ import au.csiro.data61.aap.elf.parsing.EthqlParser.LiteralContext;
 import au.csiro.data61.aap.elf.parsing.EthqlParser.MethodStatementContext;
 
 public class XesCertificationLevelsAnalyzer extends SemanticAnalyzer {
-    private static final String CONCEPT_NAME = "concept:name";
-    private static final String TIME_TIMESTAMP = "time:timestamp";
-    private static final String ORG_RESOURCE = "org:resource";
-    private static final String LIFECYLE_TRANSITION = "lifecycle:transition";
+    private static final AttributeName CONCEPT_NAME = new AttributeName("concept:name");
+    private static final AttributeName TIME_TIMESTAMP = new AttributeName("time:timestamp");
+    private static final AttributeName ORG_RESOURCE = new AttributeName("org:resource");
+    private static final AttributeName LIFECYLE_TRANSITION = new AttributeName("lifecycle:transition");
+    private static final String LEVEL_A1 = "A1";
+    // private static final String LEVEL_A2 = "A2";
+    private static final String LEVEL_B1 = "B1";
+    // private static final String LEVEL_B2 = "B2";
+    private static final String LEVEL_C1 = "C1";
+    // private static final String LEVEL_C2 = "C2";
+    private static final String LEVEL_D1 = "D1";
+    // private static final String LEVEL_D2 = "D2";
+    private static final String FLAG_X1 = "X1";
+    // private static final String FLAG_X2 = "X2";
 
     private static final String GLOBAL_ATTR_WARNING_TEMPLATE =
         "XES compliance problem: The XES standard extension attribute '%s' must be specified as a "
             + "global event attribute, in order to comply with XES certification level %s. "
-            + "As this was not done explicitly in the script, a global event attribute definition with a default value will be added automatically during extraction.";
+            + "As this was not done explicitly in the script, a global event attribute definition "
+            + "with a default value will be added automatically during extraction.";
 
     private static class AttributeName {
         protected final String prefix;
@@ -102,14 +114,8 @@ public class XesCertificationLevelsAnalyzer extends SemanticAnalyzer {
         protected final Token startToken;
         protected final String type;
         protected final AttributeName name;
-        protected final boolean isGlobal;
 
         private AttributeDef(Token startToken, String type, String fullName) {
-            this(startToken, type, fullName, false);
-        }
-
-        private AttributeDef(Token startToken, String type, String fullName, boolean isGlobal) {
-            this.isGlobal = isGlobal;
             this.startToken = startToken;
             this.type = type;
             this.name = new AttributeName(fullName);
@@ -125,7 +131,7 @@ public class XesCertificationLevelsAnalyzer extends SemanticAnalyzer {
         private final LiteralContext value;
 
         private GlobalValueDef(Token startToken, String fullName, String type, LiteralContext value) {
-            super(startToken, type.substring(1, type.length() - 1), fullName.substring(1, fullName.length() - 1), true);
+            super(startToken, type.substring(1, type.length() - 1), fullName.substring(1, fullName.length() - 1));
             this.value = value;
         }
 
@@ -171,12 +177,11 @@ public class XesCertificationLevelsAnalyzer extends SemanticAnalyzer {
     }
 
     private final AtomicBoolean isPreambleFinished;
-    private final AtomicBoolean hasErrors;
+    // private final AtomicBoolean hasErrors;
     private final List<GlobalValueDef> globalValueDefs;
     private final List<ClassifierDef> classifierDefs;
     private final List<EventDef> eventDefs;
     private final AtomicReference<Token> documentStartToken;
-    private final List<String> certLevels;
 
     public XesCertificationLevelsAnalyzer(EventCollector errorCollector) {
         super(errorCollector);
@@ -185,8 +190,7 @@ public class XesCertificationLevelsAnalyzer extends SemanticAnalyzer {
         this.classifierDefs = new LinkedList<>();
         this.eventDefs = new LinkedList<>();
         this.documentStartToken = new AtomicReference<>();
-        this.certLevels = new LinkedList<>();
-        this.hasErrors = new AtomicBoolean(false);
+        // this.hasErrors = new AtomicBoolean(false);
     }
 
     @Override
@@ -210,7 +214,7 @@ public class XesCertificationLevelsAnalyzer extends SemanticAnalyzer {
 
         final String methodName = ctx.methodInvocation().methodName.getText();
         switch (methodName) {
-            case Library.ADD_XES_CLASSIFIER:
+            case Library.ADD_XES_EVENT_CLASSIFIER:
                 this.collectClassifier(ctx);
                 break;
             case Library.ADD_XES_GLOBAL_EVENT_ATTRIBUTE:
@@ -224,7 +228,7 @@ public class XesCertificationLevelsAnalyzer extends SemanticAnalyzer {
             return;
         }
 
-        if (!this.areParametersLiterals(ctx, Library.ADD_XES_CLASSIFIER)) {
+        if (!this.areParametersLiterals(ctx, Library.ADD_XES_EVENT_CLASSIFIER)) {
             return;
         }
 
@@ -233,11 +237,6 @@ public class XesCertificationLevelsAnalyzer extends SemanticAnalyzer {
             ctx.methodInvocation().valueExpression(0).literal().getText(),
             ctx.methodInvocation().valueExpression(1).literal().getText()
         );
-
-        if (def.attributes.isEmpty()) {
-            this.errorCollector.addSemanticError(ctx.start, "An XES event classifier must contain at least one attribute.");
-            return;
-        }
 
         this.classifierDefs.add(def);
     }
@@ -269,7 +268,7 @@ public class XesCertificationLevelsAnalyzer extends SemanticAnalyzer {
                     + "for validation purposes can only take literals as parameters.",
                 methodName
             );
-            this.errorCollector.addSemanticError(ctx.start, errorMessage);
+            this.addError(ctx.start, errorMessage);
         }
 
         return areParamsLiterals;
@@ -287,40 +286,46 @@ public class XesCertificationLevelsAnalyzer extends SemanticAnalyzer {
 
     @Override
     public void exitDocument(DocumentContext ctx) {
-        final Map<String, AttributeDef> attributes = this.verifyGlobalAttributes();
-        this.verifyClassifiers(attributes);
+        this.verifyGlobalAttributes();
+        this.verifyClassifiers();
 
-        if (this.eventDefs.isEmpty()) {
-            return;
-        }
+        this.verifyCertLevelA();
+        this.verifyCertLevelB();
+        this.verifyCertLevelC();
+        this.verifyCertLevelDAndFlagX();
 
-        this.verifyEventAttributes(attributes);
-        this.verifyCertLevelA(attributes);
-        this.verifyCertLevelB(attributes);
-        this.verifyCertLevelC(attributes);
-
-        if (!this.hasErrors.get()) {
-            // TODO: add certification levels
-        }
+        // if (!this.hasErrors.get()) {
+        // this.determineCertificationLevels();
+        // }
 
         this.cleanUp();
     }
 
-    private void cleanUp() {
-        this.isPreambleFinished.set(false);
-        this.globalValueDefs.clear();
-        this.classifierDefs.clear();
-        this.eventDefs.clear();
-        this.documentStartToken.set(null);
-        this.hasErrors.set(false);
-        this.certLevels.clear();
+    /*
+    @Override
+    protected void addError(Token token, String message) {
+        this.hasErrors.set(true);
+        super.addError(token, message);
     }
+    */
 
-    private Map<String, AttributeDef> verifyGlobalAttributes() {
+    private void verifyGlobalAttributes() {
         final Map<String, AttributeDef> attributes = new HashMap<>();
+
+        if (this.globalValueDefs.isEmpty()) {
+            return;
+        }
+
+        if (this.eventDefs.isEmpty()) {
+            final String error = "XES compliance problem: The script defines global event attributes "
+                + "for XES logs but doesn't contain XES event emissions.";
+            this.addError(this.documentStartToken.get(), error);
+            return;
+        }
 
         for (GlobalValueDef globalValue : this.globalValueDefs) {
             final String attrName = globalValue.name.toString();
+
             final AttributeDef existingAttr = attributes.get(attrName);
             if (existingAttr != null) {
                 final String error = String.format(
@@ -329,171 +334,182 @@ public class XesCertificationLevelsAnalyzer extends SemanticAnalyzer {
                     existingAttr.startToken.getLine(),
                     existingAttr.startToken.getCharPositionInLine()
                 );
-                this.errorCollector.addSemanticError(globalValue.startToken, error);
+                this.addError(globalValue.startToken, error);
                 continue;
             }
 
-            if (!this.satisfiesExtension(globalValue)) {
+            final AttributeDef attr = this.transformToExtensionCompliantAttribute(globalValue);
+            if (attr == null) {
                 continue;
             }
-
-            if (!this.isValueTypeCompatible(globalValue.type, globalValue.value)) {
-                final String errorMessage = String.format(
-                    "XES compliance problem: The value type and the specified type for the XES attribute are not compatible."
-                );
-                this.errorCollector.addSemanticError(globalValue.startToken, errorMessage);
-            }
-
-            final AttributeDef attr = new AttributeDef(globalValue.startToken, globalValue.type, attrName, true);
             attributes.put(attrName, attr);
-        }
 
-        return attributes;
-    }
-
-    private void verifyEventAttributes(Map<String, AttributeDef> attributes) {
-        for (EventDef event : this.eventDefs) {
-            for (AttributeDef attr : event.attributes) {
-                final String attrName = attr.name.toString();
-                if (attr.name.prefix == null) {
-                    if (attributes.containsKey(attrName)) {
-                        final AttributeDef definedAttribute = attributes.get(attrName);
-                        if (!definedAttribute.type.equals(attr.type)) {
-                            final String error = String.format(
-                                "XES compliance problem: The attribute '%s' was already used with a different type in the XES event emission at Ln %s, Col %s.",
-                                attrName,
-                                definedAttribute.startToken.getLine(),
-                                definedAttribute.startToken.getCharPositionInLine()
-                            );
-                            this.errorCollector.addSemanticError(attr.startToken, error);
-                        }
-                    }
-                } else if (!this.satisfiesExtension(attr)) {
-                    continue;
-                }
-
-                if (!attributes.containsKey(attrName)) {
-                    attributes.put(attrName, attr);
-                }
+            if (!this.isValueTypeCompatible(attr.type, globalValue.value)) {
+                final String errorMessage =
+                    "XES compliance problem: The value type and the specified type for the XES attribute are not compatible.";
+                this.addError(globalValue.startToken, errorMessage);
             }
         }
     }
 
-    private void verifyClassifiers(Map<String, AttributeDef> attributes) {
+    private void verifyClassifiers() {
         for (ClassifierDef def : this.classifierDefs) {
+            if (def.attributes.isEmpty()) {
+                this.addError(def.startToken, "XES compliance problem: XES event classifiers must contain at least one attribute.");
+                return;
+            }
+
             for (AttributeName attrName : def.attributes) {
-                if (this.isRequiredAsGlobal(attrName, attributes)) {
+                if (this.isRequiredAsGlobal(attrName)) {
                     final String error = String.format(
                         "XES compliance problem: The attribute '%s' is part of an XES event classifier, but is not defined as a global event attribute.",
                         attrName
                     );
-                    this.errorCollector.addSemanticError(def.startToken, error);
+                    this.addError(def.startToken, error);
                 }
             }
         }
     }
 
-    private void verifyCertLevelA(Map<String, AttributeDef> attributes) {
+    private void verifyCertLevelA() {
         for (EventDef event : this.eventDefs) {
-            final boolean containsConceptName = event.attributes.stream().anyMatch(a -> a.name.toString().equals(CONCEPT_NAME));
-            if (!containsConceptName) {
+            final AttributeDef conceptName = this.getAttribute(event, CONCEPT_NAME);
+            if (conceptName == null) {
                 final String error = String.format(
-                    "XES compliance problem: XES event emissions must contain the '%s' attribute to comply with XES certification level A1.",
-                    CONCEPT_NAME
+                    "XES compliance problem: XES event emissions must contain the standard extension attribute"
+                        + " '%s' to comply with XES certification level %s.",
+                    CONCEPT_NAME,
+                    LEVEL_A1
                 );
-                this.errorCollector.addSemanticError(event.startToken, error);
+                this.addError(event.startToken, error);
+            } else {
+                this.transformToExtensionCompliantAttribute(conceptName);
             }
         }
 
-        final AttributeDef def = attributes.get(CONCEPT_NAME);
-        if (def == null || !def.isGlobal) {
-            final String warning = String.format(GLOBAL_ATTR_WARNING_TEMPLATE, CONCEPT_NAME, "A1");
-            this.errorCollector.addWarning(this.documentStartToken.get(), warning);
-        }
+        this.addGlobalAttributeWarning(CONCEPT_NAME, LEVEL_A1);
     }
 
-    private void verifyCertLevelB(Map<String, AttributeDef> attributes) {
-        final AttributeDef timestamp = attributes.get(TIME_TIMESTAMP);
-        final AttributeDef transition = attributes.get(LIFECYLE_TRANSITION);
-
-        final String missingAttributeWarning = "XES compliance problem: The XES standard extension attribute '%1$s' "
-            + "must be used in combination with the XES standard extension attribute '%2$s', which is not explicitly used in the script. "
-            + "To ensure compliance with XES certification level B1, a global event attribute for '%2$s' will automatically be added during extraction.";
-        if (timestamp == null && transition == null) { // none of the attributes exist
+    private void verifyCertLevelB() {
+        final boolean timestampUsed = this.existsEventAttribute(TIME_TIMESTAMP) || this.existsGlobalAttribute(TIME_TIMESTAMP);
+        final boolean transitionUsed = this.existsEventAttribute(LIFECYLE_TRANSITION) || this.existsGlobalAttribute(LIFECYLE_TRANSITION);
+        if (!timestampUsed && !transitionUsed) { // none of the attributes exist
             return;
-        } else if (transition == null) { // only timestamp is set
-            final String transitionWarning = String.format(missingAttributeWarning, TIME_TIMESTAMP, LIFECYLE_TRANSITION);
-            this.errorCollector.addWarning(this.documentStartToken.get(), transitionWarning);
-        } else if (timestamp == null) { // only transition is set
-            final String timestampWarning = String.format(missingAttributeWarning, LIFECYLE_TRANSITION, TIME_TIMESTAMP);
-            this.errorCollector.addWarning(this.documentStartToken.get(), timestampWarning);
         }
 
-        if (timestamp != null && !timestamp.isGlobal) { // timestamp is used, but not set globally
-            this.errorCollector.addWarning(
-                this.documentStartToken.get(),
-                String.format(GLOBAL_ATTR_WARNING_TEMPLATE, TIME_TIMESTAMP, "B1")
-            );
-        }
-        if (transition != null && !transition.isGlobal) { // transition is used, but not set globally
-            this.errorCollector.addWarning(
-                this.documentStartToken.get(),
-                String.format(GLOBAL_ATTR_WARNING_TEMPLATE, LIFECYLE_TRANSITION, "B1")
-            );
-        }
-
-        final String eventAttributeWarning =
-            "XES compliance problem: The XES standard extension attribute '%1$s' is %2$s used in the script, "
-                + "but it was not added in this XES event emission. When used, it is recommended to define meaningful values for '%1$s' in all XES event emissions.";
+        final String explicitError = "XES compliance problem: The XES standard extension attribute '%2$s' is used in the script. "
+            + "Thus, all XES event emissions must contain this attribute to comply with XES certification level %3$s.";
+        final String implicitError = "XES compliance problem: The XES standard extension attribute '%1$s' is used in the script. "
+            + "Thus, all XES event emissions must also contain the standard extension attribute '%2$s' "
+            + "to comply with XES certification level %3$s.";
+        final String timestampError = timestampUsed ? explicitError : implicitError;
+        final String transitionError = transitionUsed ? explicitError : implicitError;
         for (EventDef event : this.eventDefs) {
-            if (!this.containsAttribute(event, TIME_TIMESTAMP)) {
-                final String timestampWarning = String.format(
-                    eventAttributeWarning,
-                    TIME_TIMESTAMP,
-                    timestamp == null ? "implicitly" : "explicitly",
-                    timestamp == null || !timestamp.isGlobal ? "automatically" : "manually"
-                );
-                this.errorCollector.addWarning(event.startToken, timestampWarning);
+            final AttributeDef timestamp = this.getAttribute(event, TIME_TIMESTAMP);
+            if (timestamp == null) {
+                final String error = String.format(timestampError, LIFECYLE_TRANSITION, TIME_TIMESTAMP, LEVEL_B1);
+                this.addError(event.startToken, error);
+            } else {
+                this.transformToExtensionCompliantAttribute(timestamp);
             }
-            if (!this.containsAttribute(event, LIFECYLE_TRANSITION)) {
-                final String timestampWarning = String.format(
-                    eventAttributeWarning,
-                    LIFECYLE_TRANSITION,
-                    transition == null ? "implicitly" : "explicitly",
-                    transition == null || !transition.isGlobal ? "automatically" : "manually"
-                );
-                this.errorCollector.addWarning(event.startToken, timestampWarning);
+
+            final AttributeDef transition = this.getAttribute(event, LIFECYLE_TRANSITION);
+            if (transition == null) {
+                final String error = String.format(transitionError, TIME_TIMESTAMP, LIFECYLE_TRANSITION, LEVEL_B1);
+                this.addError(event.startToken, error);
+            } else {
+                this.transformToExtensionCompliantAttribute(transition);
             }
         }
+
+        this.addGlobalAttributeWarning(TIME_TIMESTAMP, LEVEL_B1);
+        this.addGlobalAttributeWarning(LIFECYLE_TRANSITION, LEVEL_B1);
     }
 
-    private void verifyCertLevelC(Map<String, AttributeDef> attributes) {
-        final AttributeDef resource = attributes.get(ORG_RESOURCE);
-        if (resource == null) {
+    private void verifyCertLevelC() {
+        if (!this.existsEventAttribute(ORG_RESOURCE) && !this.existsGlobalAttribute(ORG_RESOURCE)) {
             return;
         }
 
-        if (!resource.isGlobal) { // timestamp is used, but not set globally
-            this.errorCollector.addWarning(this.documentStartToken.get(), String.format(GLOBAL_ATTR_WARNING_TEMPLATE, ORG_RESOURCE, "C1"));
-        }
+        this.addGlobalAttributeWarning(ORG_RESOURCE, LEVEL_C1);
 
-        final String eventAttributeWarning = "XES compliance problem: The XES standard extension attribute '%1$s' is used in the script, "
-            + "but was not added in this XES event emission. When used, it is recommended to define meaningful values for '%1$s' in all XES event emissions.";
+        final String eventAttributeWarning = "XES compliance problem: The XES standard extension attribute '%1$s' is used in the script. "
+            + "Thus, all XES event emissions must contain this attribute to comply with XES certification level %2$s.";
         for (EventDef event : this.eventDefs) {
             if (!this.containsAttribute(event, ORG_RESOURCE)) {
-                final String timestampWarning = String.format(
-                    eventAttributeWarning,
-                    ORG_RESOURCE,
-                    resource.isGlobal ? "manually" : "automatically"
-                );
-                this.errorCollector.addWarning(event.startToken, timestampWarning);
+                final String timestampWarning = String.format(eventAttributeWarning, ORG_RESOURCE, LEVEL_C1);
+                this.addError(event.startToken, timestampWarning);
             }
         }
     }
 
-    private boolean satisfiesExtension(AttributeDef attr) {
+    private void verifyCertLevelDAndFlagX() {
+        final Map<AttributeName, AttributeDef> attributes = new HashMap<>();
+        this.eventDefs.stream().flatMap(e -> e.attributes.stream()).filter(a -> !this.isCertAttribute(a.name)).forEach(a -> {
+            if (!attributes.containsKey(a.name)) {
+                attributes.put(a.name, a);
+            }
+        });
+
+        for (Entry<AttributeName, AttributeDef> entry : attributes.entrySet()) {
+            final AttributeDef global = this.getGlobalAttribute(entry.getKey());
+
+            for (EventDef event : this.eventDefs) {
+                final AttributeDef attr = this.getAttribute(event, entry.getKey());
+
+                if (attr == null) { // event doesn't have this attribute
+                    if (global != null) { // that's only a problem, if the attribute was specified globally
+                        final String error = String.format(
+                            "XES compliance problem: The XES event attribute '%s' was defined globally. "
+                                + "It must thus be added to all XES event emissions to comply with XES certification level %s.",
+                            entry.getKey(),
+                            entry.getKey().prefix == null ? FLAG_X1 : LEVEL_D1
+                        );
+                        this.addError(event.startToken, error);
+                    }
+                } else { // the event exists and must adhere to the type of the first usage or the global event attribute definition
+                    if (this.transformToExtensionCompliantAttribute(attr) == null || attr.name.prefix != null) {
+                        continue;
+                    }
+
+                    if (global != null) {
+                        if (!attr.type.equals(global.type)) {
+                            final String error = String.format(
+                                "XES compliance problem: The XES event attribute '%s' was already defined with a different type at Ln %s, Col %s.",
+                                attr.name,
+                                global.startToken.getLine(),
+                                global.startToken.getCharPositionInLine()
+                            );
+                            this.addError(attr.startToken, error);
+                        }
+                    } else if (attr != entry.getValue()) {
+                        if (!attr.type.equals(entry.getValue().type)) {
+                            final String error = String.format(
+                                "XES compliance problem: The XES event attribute '%s' was already defined with a different type at Ln %s, Col %s.",
+                                attr.name,
+                                entry.getValue().startToken.getLine(),
+                                entry.getValue().startToken.getCharPositionInLine()
+                            );
+                            this.addError(attr.startToken, error);
+                        }
+                    }
+                }
+            }
+        }
+    }
+
+    private void cleanUp() {
+        this.isPreambleFinished.set(false);
+        this.globalValueDefs.clear();
+        this.classifierDefs.clear();
+        this.eventDefs.clear();
+        this.documentStartToken.set(null);
+        // this.hasErrors.set(false);
+    }
+
+    private AttributeDef transformToExtensionCompliantAttribute(AttributeDef attr) {
         if (attr.name.prefix == null) {
-            return true;
+            return attr;
         }
 
         if (this.isExtensionAttribute(attr.name)) {
@@ -502,33 +518,33 @@ public class XesCertificationLevelsAnalyzer extends SemanticAnalyzer {
                 final String errorMessage = String.format(
                     "XES compliance problem: The XES standard extension attribute '%s' has the type '%s'. "
                         + "This type is currently not supported.",
-                    attr.toString(),
+                    attr.name,
                     type,
                     attr.type
                 );
-                this.errorCollector.addSemanticError(attr.startToken, errorMessage);
-                return false;
+                this.addError(attr.startToken, errorMessage);
+                return null;
             } else if (!type.equals(attr.type)) {
                 final String errorMessage = String.format(
                     "XES compliance problem: The type '%s' was specified for attribute '%s'. "
                         + "This violates the definition from the standard extension, where the type '%s' was specified.",
                     attr.type,
-                    attr.name.toString(),
+                    attr.name,
                     type
                 );
-                this.errorCollector.addSemanticError(attr.startToken, errorMessage);
-                return false;
+                this.addError(attr.startToken, errorMessage);
+                return new AttributeDef(attr.startToken, type, attr.name.toString());
+            } else {
+                return attr;
             }
         } else {
             final String errorMessage = String.format(
                 "XES compliance problem: The XES standard extension attribute '%s' does not exist.",
                 attr.name
             );
-            this.errorCollector.addSemanticError(attr.startToken, errorMessage);
-            return false;
+            this.addError(attr.startToken, errorMessage);
+            return null;
         }
-
-        return true;
     }
 
     private boolean isExtensionAttribute(AttributeName name) {
@@ -573,28 +589,45 @@ public class XesCertificationLevelsAnalyzer extends SemanticAnalyzer {
         return XesWriter.areTypesCompatible(solType, xesType);
     }
 
-    private boolean isRequiredAsGlobal(AttributeName attrName, Map<String, AttributeDef> attributes) {
-        final AttributeDef attr = attributes.get(attrName.toString());
-        if (attr == null) {
-            return true;
-        }
-
-        if (attr.isGlobal) {
+    private boolean isRequiredAsGlobal(AttributeName attrName) {
+        if (this.isCertAttribute(attrName)) {
             return false;
         }
 
-        return !this.isCertAttribute(attrName);
+        return !this.existsGlobalAttribute(attrName);
     }
 
     private boolean isCertAttribute(AttributeName attrName) {
-        final String plainName = attrName.toString();
-        return plainName.equals(CONCEPT_NAME)
-            || plainName.equals(TIME_TIMESTAMP)
-            || plainName.equals(LIFECYLE_TRANSITION)
-            || plainName.equals(ORG_RESOURCE);
+        return attrName.equals(CONCEPT_NAME)
+            || attrName.equals(TIME_TIMESTAMP)
+            || attrName.equals(LIFECYLE_TRANSITION)
+            || attrName.equals(ORG_RESOURCE);
     }
 
-    private boolean containsAttribute(EventDef event, String fullName) {
-        return event.attributes.stream().anyMatch(a -> a.name.toString().equals(fullName));
+    private boolean existsGlobalAttribute(AttributeName name) {
+        return this.globalValueDefs.stream().anyMatch(def -> def.name.equals(name));
+    }
+
+    private GlobalValueDef getGlobalAttribute(AttributeName name) {
+        return this.globalValueDefs.stream().filter(a -> a.name.equals(name)).findFirst().orElse(null);
+    }
+
+    private boolean existsEventAttribute(AttributeName name) {
+        return this.eventDefs.stream().anyMatch(e -> this.containsAttribute(e, name));
+    }
+
+    private boolean containsAttribute(EventDef event, AttributeName name) {
+        return event.attributes.stream().anyMatch(a -> a.name.equals(name));
+    }
+
+    private AttributeDef getAttribute(EventDef event, AttributeName name) {
+        return event.attributes.stream().filter(a -> a.name.equals(name)).findFirst().orElse(null);
+    }
+
+    private void addGlobalAttributeWarning(AttributeName attrName, String level) {
+        if (!this.existsGlobalAttribute(attrName)) {
+            final String warning = String.format(GLOBAL_ATTR_WARNING_TEMPLATE, attrName, level);
+            this.errorCollector.addWarning(this.documentStartToken.get(), warning);
+        }
     }
 }
