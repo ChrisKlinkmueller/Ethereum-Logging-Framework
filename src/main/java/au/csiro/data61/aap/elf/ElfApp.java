@@ -117,7 +117,14 @@ public class ElfApp {
             return;
         }
 
-        events.stream().filter(e -> e.getType() == type).forEach(e -> System.out.println("- " + e));
+        events.stream()
+            .filter(e -> e.getType() == type)
+            .sorted(
+                (e1, e2) -> e1.getLine() == e2.getLine()
+                    ? Integer.compare(e1.getColumn(), e2.getColumn())
+                    : Integer.compare(e1.getLine(), e2.getLine())
+            )
+            .forEach(e -> System.out.println("- " + e));
     }
 
 }

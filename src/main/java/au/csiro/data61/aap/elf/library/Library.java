@@ -21,7 +21,7 @@ import au.csiro.data61.aap.elf.library.types.ListOperations;
  * Library
  */
 public class Library {
-    public static final String ADD_XES_CLASSIFIER = "addXesClassifier";
+    public static final String ADD_XES_EVENT_CLASSIFIER = "addXesEventClassifier";
     public static final String ADD_XES_GLOBAL_EVENT_ATTRIBUTE = "addGlobalXesEventAttribute";
 
     private static final Logger LOGGER = Logger.getLogger(Library.class.getName());
@@ -86,7 +86,7 @@ public class Library {
             this.addMethod(ProgramState::setXesGlobalEventAttribte, null, ADD_XES_GLOBAL_EVENT_ATTRIBUTE, "string", "string", "byte");
             this.addMethod(ProgramState::setXesGlobalEventAttribte, null, ADD_XES_GLOBAL_EVENT_ATTRIBUTE, "string", "string", "int");
             this.addMethod(ProgramState::setXesGlobalEventAttribte, null, ADD_XES_GLOBAL_EVENT_ATTRIBUTE, "string", "string", "string");
-            this.addMethod(ProgramState::addXesClassifier, null, ADD_XES_CLASSIFIER, "string", "string[]");
+            this.addMethod(ProgramState::addXesClassifier, null, ADD_XES_EVENT_CLASSIFIER, "string", "string[]");
         } catch (LibraryException e) {
             e.printStackTrace();
         }
