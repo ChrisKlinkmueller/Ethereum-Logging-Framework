@@ -1,7 +1,7 @@
 {
     "recommendations": [
         "mike-lischke.vscode-antlr4",
-        "jaimeolivares.yuml",
-        "fabiospampinato.vscode-todo-plus"
+        "hediet.vscode-drawio",
+        "vscjava.vscode-java-pack"
     ]
 }
