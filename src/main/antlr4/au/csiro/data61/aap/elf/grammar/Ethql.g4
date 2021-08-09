@@ -14,31 +14,25 @@ document
 statement
     : scopedStatement
     | expressionStatement
-    | emitStatement
+    | emissionStatement
     ;
 
 scopedStatement
-    : filter '{' statement* '}'
+    : scopeDefinition '{' statement* '}'
     ;
 
-filter
-    : genericFilter
+scopeDefinition
+    : extractScope
+    | ifScope
     ;
 
-genericFilter
+extractScope
+    : KEY_EXTRACT Identifier PLUGIN_DEFINITION
+    ;
+
+ifScope
     : KEY_IF '(' conditionalExpression ')'
     ;
-
-
-// emitStatements
-
-emitStatement
-    : KEY_EMIT Identifier ';'
-    ;
-
-
-
-// expressionStatements
 
 expressionStatement 
     : methodStatement
@@ -55,72 +49,36 @@ variableAssignmentStatement
     ;
 
 statementExpression
-    : valueExpression
+    : expression
     | methodInvocation
     ;
 
-conditionalExpression
-    : conditionalOrExpression
+
+// emitStatements
+
+configurationStatement
+    : KEY_CONFIGURE Identifier PLUGIN_DEFINITION ';'
     ;
 
-conditionalOrExpression
-    : conditionalAndExpression
-    | conditionalOrExpression KEY_OR conditionalAndExpression
+emissionStatement
+    : KEY_EMIT Identifier PLUGIN_DEFINITION ';'
     ;
 
-conditionalAndExpression
-    : conditionalComparisonExpression
-    | conditionalAndExpression KEY_AND conditionalComparisonExpression
-    ;
 
-conditionalComparisonExpression
-    : conditionalNotExpression (comparators conditionalNotExpression)?
-    ;
 
-conditionalNotExpression
-    : KEY_NOT? conditionalPrimaryExpression
-    ;
-
-conditionalPrimaryExpression 
-    : valueExpression 
-    | '(' conditionalOrExpression ')'
-    ;
-
-comparators
-    : '=='
-    | '!='
-    | '>='
-    | '>'
-    | '<'
-    | '<='
-    | KEY_IN
-    ;
+// expressionStatements
 
 methodStatement
     : methodInvocation ';'
     ;
 
-type
-    : TYPE_BOOLEAN
-    | TYPE_INT
-    | TYPE_FLOAT
-    | TYPE_STRING
-    ;
+PLUGIN_DEFINITION : [0-9a-fA-F ():._'"{}]+;
 
 // Keywords
-TYPE_INT : I N T;
-TYPE_FLOAT : F L O A T;
-TYPE_BOOLEAN : B O O L E A N;
-TYPE_STRING : S T R I N G;
-
-
+KEY_EXTRACT : E X T R A C T;
 KEY_IF : I F;
-KEY_NOT: '!';
-KEY_AND: '||';
-KEY_OR: '&&';
-KEY_IN: I N;
-KEY_AS: A S;
 KEY_EMIT: E M I T;
+KEY_CONFIGURE: C O N F I G U R E;
 KEY_CSV_ROW: C S V ' ' R O W;
 KEY_LOG_LINE: L O G ' ' L I N E;
 KEY_XES_EVENT: X E S ' ' E V E N T;

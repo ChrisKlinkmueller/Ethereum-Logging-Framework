@@ -1,13 +1,13 @@
 grammar EthqlCore;
 
-valueExpression
+expression
     : literal
     | variableName
     | methodInvocation
     ;
 
 methodInvocation
-    : methodName=Identifier '(' (valueExpression (',' valueExpression)* )? ')'
+    : methodName=Identifier '(' (expression (',' expression)* )? ')'
     ;
 
 variableName
@@ -15,6 +15,66 @@ variableName
     | Identifier ':' Identifier
     | Identifier '.' Identifier
     ;
+
+conditionalExpression
+    : conditionalOrExpression
+    ;
+
+conditionalOrExpression
+    : conditionalAndExpression
+    | conditionalOrExpression KEY_OR conditionalAndExpression
+    ;
+
+conditionalAndExpression
+    : conditionalComparisonExpression
+    | conditionalAndExpression KEY_AND conditionalComparisonExpression
+    ;
+
+conditionalComparisonExpression
+    : conditionalNotExpression (comparators conditionalNotExpression)?
+    ;
+
+conditionalNotExpression
+    : KEY_NOT? conditionalPrimaryExpression
+    ;
+
+conditionalPrimaryExpression 
+    : expression 
+    | '(' conditionalOrExpression ')'
+    ;
+
+comparators
+    : '=='
+    | '!='
+    | '>='
+    | '>'
+    | '<'
+    | '<='
+    | KEY_IN
+    ;
+
+KEY_NOT: '!';
+KEY_AND: '||';
+KEY_OR: '&&';
+KEY_IN: I N;
+
+
+
+// Types
+
+type
+    : TYPE_BOOLEAN
+    | TYPE_INT
+    | TYPE_FLOAT
+    | TYPE_STRING
+    ;
+
+TYPE_INT : I N T;
+TYPE_FLOAT : F L O A T;
+TYPE_BOOLEAN : B O O L E A N;
+TYPE_STRING : S T R I N G;
+
+
 
 // Literals
 
@@ -59,9 +119,6 @@ BOOLEAN_LITERAL
   ;
 
 BYTES_LITERAL : '0x' [0-9a-fA-F]+;
-
-
-
 
 
 // FRAGMENTS

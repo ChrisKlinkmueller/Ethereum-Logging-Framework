@@ -20,7 +20,7 @@ blockNumber
     : KEY_CURRENT
     | KEY_EARLIEST
     | KEY_CONTINUOUS
-    | valueExpression
+    | expression
     ;
 
 transactionFilter
@@ -55,7 +55,7 @@ skippableLogEntryParameter
 
 
 smartContractFilter
-    : KEY_SMART_CONTRACT '(' contractAddress=valueExpression ')' ('(' smartContractQuery ')')+
+    : KEY_SMART_CONTRACT '(' contractAddress=expression ')' ('(' smartContractQuery ')')+
     ;
 
 smartContractQuery
