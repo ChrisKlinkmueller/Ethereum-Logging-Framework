@@ -1,4 +1,8 @@
-# Ethereum Logging Framework
+# Ethereum Logging Framework (ELF)
+
+**Note:** The [Blockchain Logging Framework](https://github.com/TU-ADSP/Blockchain-Logging-Framework) is an extension of ELF that provides logging capabilities for DApps on any blockchain platform and that currently supports Ethereum and HyperLedger Fabric.
+
+**Note:** The open [collection of resources for process mining on blockchain data](https://ingo-weber.github.io/dapp-data/) contains event logs extracted with ELF from DApps deployed on public Ethereum.
 
 ## Capabilities
 
@@ -51,7 +55,13 @@ Details of the framework are described in more detail in the following publicati
 
 [C. Klinkmüller, A. Ponomarev, A.B. Tran, I. Weber, W. van der Aalst (2019)](https://www.researchgate.net/publication/335399009_Mining_Blockchain_Processes_Extracting_Process_Mining_Data_from_Blockchain_Applications): "Mining Blockchain Processes: Extracting Process Mining Data from Blockchain Applications". In: 17th International Conference on Business Process Management (Blockchain Forum).
 
-[C. Klinkmüller, I. Weber, A. Ponomarev, A.B. Tran, W. van der Aalst (2020)](https://arxiv.org/abs/2001.10281): Efficient Logging for Blockchain Applications. 	arXiv:2001.10281.
+[C. Klinkmüller, I. Weber, A. Ponomarev, A.B. Tran, W. van der Aalst (2020)](https://arxiv.org/abs/2001.10281): "Efficient Logging for Blockchain Applications". arXiv:2001.10281.
+
+[R. Hobeck, C. Klinkmüller, D. Bandara, I. Weber, W. van der Aalst (2021)](https://easychair.org/publications/preprint/HDkV): "Process Mining on Blockchain Data: a Case Study of Augur". In: 19th International Conference on Business Process Management.
+
+P. Beck,  H. Bockrath, T. Knoche, M. Digtiar, T. Petrich, D. Romanchenko, R. Hobeck, L. Pufahl, C. Klinkmüller, I. Weber (2021): "BLF: A Blockchain Logging Framework for MiningBlockchain Data". In: 19th International Conference on Business Process Management (Demo & Resource Track).
+
+D. Bandara, H. Bockrath, R. Hobeck, C. Klinkmüller, L. Pufahl, M. Rebesky, W. van der Aalst, I. Weber (2021): "Event Logs of Ethereum-Based Applications -- A Collection of Resources for Process Mining on Blockchain Data". In: 19th International Conference on Business Process Management (Demo & Resource Track).
 
 ## Build
 
