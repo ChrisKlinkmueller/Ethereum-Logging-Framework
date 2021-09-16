@@ -35,22 +35,28 @@ final class ComparisonTest {
     private static Stream<Arguments> testAssignability() {
         final List<Tuple2<Type, Type>> typePairs = getTypePairs();
         final List<Boolean> assignabilityResults = List.of(
-            true, false, false, false, false, false, false, false, false, false, false, false, false, false, false, false, // BooleanType.isAssignableFrom(?)
-            false, true, false, false, false, false, false, false, false, false, false, false, false, false, false, false, // DateType.isAssignableFrom(?)
-            false, false, true, false, false, false, false, false, false, false, false, false, false, false, false, false, // FloatType.isAssignableFrom(?)
-            false, false, false, true, false, false, false, false, false, false, false, false, false, false, false, false, // IntType.isAssignableFrom(?)
-            false, false, false, false, true, false, false, false, false, false, false, false, false, false, false, false, // StringType.isAssignableFrom(?)
-            false, false, false, false, false, true, false, false, false, false, false, false, false, false, false, false, // List<Boolean>.isAssignableFrom(?)
-            false, false, false, false, false, false, true, false, false, false, false, false, false, false, false, false, // List<Date>.isAssignableFrom(?)
-            false, false, false, false, false, false, false, true, false, false, false, false, false, false, false, false, // List<Float>.isAssignableFrom(?)
-            false, false, false, false, false, false, false, false, true, false, false, false, false, false, false, false, // List<Int>.isAssignableFrom(?)
-            false, false, false, false, false, false, false, false, false, true, false, false, false, false, false, false, // List<String>.isAssignableFrom(?)
-            false, false, false, false, false, false, false, false, false, false, true, true, true, false, false, false,   // struct1.isAssignableFrom(?)
-            false, false, false, false, false, false, false, false, false, false, false, true, true, false, false, false,  // struct2.isAssignableFrom(?)
-            false, false, false, false, false, false, false, false, false, false, false, false, true, false, false, false, // struct3.isAssignableFrom(?)
-            false, false, false, false, false, false, false, false, false, false, false, false, false, true, false, false, // struct4.isAssignableFrom(?)
-            false, false, false, false, false, false, false, false, false, false, false, false, false, false, true, true,  // struct5.isAssignableFrom(?)
-            false, false, false, false, false, false, false, false, false, false, false, false, false, false, true, true   // struct6.isAssignableFrom(?)
+            true, false, false, false, false, false, false, false, false, false, false, false, false, false, false, false, false, false, false, false, false, false, // BooleanType.isAssignableFrom(?)
+            false, true, false, false, false, false, false, false, false, false, false, false, false, false, false, false, false, false, false, false, false, false, // DateType.isAssignableFrom(?)
+            false, false, true, false, false, false, false, false, false, false, false, false, false, false, false, false, false, false, false, false, false, false, // FloatType.isAssignableFrom(?)
+            false, false, false, true, false, false, false, false, false, false, false, false, false, false, false, false, false, false, false, false, false, false, // IntType.isAssignableFrom(?)
+            false, false, false, false, true, false, false, false, false, false, false, false, false, false, false, false, false, false, false, false, false, false, // StringType.isAssignableFrom(?)
+            false, false, false, false, false, true, false, false, false, false, false, false, false, false, false, false, false, false, false, false, false, false, // List<Boolean>.isAssignableFrom(?)
+            false, false, false, false, false, false, true, false, false, false, false, false, false, false, false, false, false, false, false, false, false, false, // List<Date>.isAssignableFrom(?)
+            false, false, false, false, false, false, false, true, false, false, false, false, false, false, false, false, false, false, false, false, false, false, // List<Float>.isAssignableFrom(?)
+            false, false, false, false, false, false, false, false, true, false, false, false, false, false, false, false, false, false, false, false, false, false, // List<Int>.isAssignableFrom(?)
+            false, false, false, false, false, false, false, false, false, true, false, false, false, false, false, false, false, false, false, false, false, false, // List<String>.isAssignableFrom(?)
+            false, false, false, false, false, false, false, false, false, false, true, true, true, false, false, false, false, false, false, false, false, false,   // struct1.isAssignableFrom(?)
+            false, false, false, false, false, false, false, false, false, false, false, true, true, false, false, false, false, false, false, false, false, false,  // struct2.isAssignableFrom(?)
+            false, false, false, false, false, false, false, false, false, false, false, false, true, false, false, false, false, false, false, false, false, false, // struct3.isAssignableFrom(?)
+            false, false, false, false, false, false, false, false, false, false, false, false, false, true, false, false, false, false, false, false, false, false, // struct4.isAssignableFrom(?)
+            false, false, false, false, false, false, false, false, false, false, false, false, false, false, true, true, false, false, false, false, false, false,  // struct5.isAssignableFrom(?)
+            false, false, false, false, false, false, false, false, false, false, false, false, false, false, true, true, false, false, false, false, false, false,  // struct6.isAssignableFrom(?)
+            false, false, false, false, false, false, false, false, false, false, false, false, false, false, false, false, true, true, true, false, false, false,   // structList1.isAssignableFrom(?)
+            false, false, false, false, false, false, false, false, false, false, false, false, false, false, false, false, false, true, true, false, false, false,  // structList2.isAssignableFrom(?)
+            false, false, false, false, false, false, false, false, false, false, false, false, false, false, false, false, false, false, true, false, false, false, // structList3.isAssignableFrom(?)
+            false, false, false, false, false, false, false, false, false, false, false, false, false, false, false, false, false, false, false, true, false, false, // structList4.isAssignableFrom(?)
+            false, false, false, false, false, false, false, false, false, false, false, false, false, false, false, false, false, false, false, false, true, true,  // structList5.isAssignableFrom(?)
+            false, false, false, false, false, false, false, false, false, false, false, false, false, false, false, false, false, false, false, false, true, true   // structList6.isAssignableFrom(?)
         );
 
         return IntStream.range(0, assignabilityResults.size())
@@ -65,22 +71,28 @@ final class ComparisonTest {
     private static Stream<Arguments> testEqualityAndHashCode() {
         final List<Tuple2<Type, Type>> typePairs = getTypePairs();
         final List<Boolean> equalityResults = List.of(
-            true, false, false, false, false, false, false, false, false, false, false, false, false, false, false, false, // BooleanType.equals(?)
-            false, true, false, false, false, false, false, false, false, false, false, false, false, false, false, false, // DateType.equals(?)
-            false, false, true, false, false, false, false, false, false, false, false, false, false, false, false, false, // FloatType.equals(?)
-            false, false, false, true, false, false, false, false, false, false, false, false, false, false, false, false, // IntType.equals(?)
-            false, false, false, false, true, false, false, false, false, false, false, false, false, false, false, false, // StringType.equals(?)
-            false, false, false, false, false, true, false, false, false, false, false, false, false, false, false, false, // BooleanType[].equals(?)
-            false, false, false, false, false, false, true, false, false, false, false, false, false, false, false, false, // DateType[].equals(?)
-            false, false, false, false, false, false, false, true, false, false, false, false, false, false, false, false, // FloatType[].equals(?)
-            false, false, false, false, false, false, false, false, true, false, false, false, false, false, false, false, // IntType[].equals(?)
-            false, false, false, false, false, false, false, false, false, true, false, false, false, false, false, false, // StringType[].equals(?)
-            false, false, false, false, false, false, false, false, false, false, true, false, false, false, false, false, // struct1.equals(?)
-            false, false, false, false, false, false, false, false, false, false, false, true, false, false, false, false, // struct2.equals(?)
-            false, false, false, false, false, false, false, false, false, false, false, false, true, false, false, false, // struct3.equals(?)
-            false, false, false, false, false, false, false, false, false, false, false, false, false, true, false, false, // struct4.equals(?)
-            false, false, false, false, false, false, false, false, false, false, false, false, false, false, true, true,  // struct5.equals(?)
-            false, false, false, false, false, false, false, false, false, false, false, false, false, false, true, true   // struct6.equals(?)
+            true, false, false, false, false, false, false, false, false, false, false, false, false, false, false, false, false, false, false, false, false, false, // BooleanType.equals(?)
+            false, true, false, false, false, false, false, false, false, false, false, false, false, false, false, false, false, false, false, false, false, false, // DateType.equals(?)
+            false, false, true, false, false, false, false, false, false, false, false, false, false, false, false, false, false, false, false, false, false, false, // FloatType.equals(?)
+            false, false, false, true, false, false, false, false, false, false, false, false, false, false, false, false, false, false, false, false, false, false, // IntType.equals(?)
+            false, false, false, false, true, false, false, false, false, false, false, false, false, false, false, false, false, false, false, false, false, false, // StringType.equals(?)
+            false, false, false, false, false, true, false, false, false, false, false, false, false, false, false, false, false, false, false, false, false, false, // BooleanType[].equals(?)
+            false, false, false, false, false, false, true, false, false, false, false, false, false, false, false, false, false, false, false, false, false, false, // DateType[].equals(?)
+            false, false, false, false, false, false, false, true, false, false, false, false, false, false, false, false, false, false, false, false, false, false, // FloatType[].equals(?)
+            false, false, false, false, false, false, false, false, true, false, false, false, false, false, false, false, false, false, false, false, false, false, // IntType[].equals(?)
+            false, false, false, false, false, false, false, false, false, true, false, false, false, false, false, false, false, false, false, false, false, false, // StringType[].equals(?)
+            false, false, false, false, false, false, false, false, false, false, true, false, false, false, false, false, false, false, false, false, false, false, // struct1.equals(?)
+            false, false, false, false, false, false, false, false, false, false, false, true, false, false, false, false, false, false, false, false, false, false, // struct2.equals(?)
+            false, false, false, false, false, false, false, false, false, false, false, false, true, false, false, false, false, false, false, false, false, false, // struct3.equals(?)
+            false, false, false, false, false, false, false, false, false, false, false, false, false, true, false, false, false, false, false, false, false, false, // struct4.equals(?)
+            false, false, false, false, false, false, false, false, false, false, false, false, false, false, true, true, false, false, false, false, false, false,  // struct5.equals(?)
+            false, false, false, false, false, false, false, false, false, false, false, false, false, false, true, true, false, false, false, false, false, false,  // struct6.equals(?)
+            false, false, false, false, false, false, false, false, false, false, false, false, false, false, false, false, true, false, false, false, false, false, // structList1.equals(?)
+            false, false, false, false, false, false, false, false, false, false, false, false, false, false, false, false, false, true, false, false, false, false, // structList2.equals(?)
+            false, false, false, false, false, false, false, false, false, false, false, false, false, false, false, false, false, false, true, false, false, false, // structList3.equals(?)
+            false, false, false, false, false, false, false, false, false, false, false, false, false, false, false, false, false, false, false, true, false, false, // structList4.equals(?)
+            false, false, false, false, false, false, false, false, false, false, false, false, false, false, false, false, false, false, false, false, true, true,  // structList5.equals(?)
+            false, false, false, false, false, false, false, false, false, false, false, false, false, false, false, false, false, false, false, false, true, true   // structList6.equals(?)
         ); 
 
         return IntStream.range(0, equalityResults.size())
@@ -131,6 +143,13 @@ final class ComparisonTest {
             new StructField("d", intList)
         );
 
+        final Type structList1 = new ListType(struct1);
+        final Type structList2 = new ListType(struct2);
+        final Type structList3 = new ListType(struct3);
+        final Type structList4 = new ListType(struct4);
+        final Type structList5 = new ListType(struct5);
+        final Type structList6 = new ListType(struct6);
+
         return List.of(
             // BooleanType -> ?
             new Tuple2<>(BooleanType.INSTANCE, BooleanType.INSTANCE),
@@ -149,6 +168,12 @@ final class ComparisonTest {
             new Tuple2<>(BooleanType.INSTANCE, struct4),
             new Tuple2<>(BooleanType.INSTANCE, struct5),
             new Tuple2<>(BooleanType.INSTANCE, struct6),
+            new Tuple2<>(BooleanType.INSTANCE, structList1),
+            new Tuple2<>(BooleanType.INSTANCE, structList2),
+            new Tuple2<>(BooleanType.INSTANCE, structList3),
+            new Tuple2<>(BooleanType.INSTANCE, structList4),
+            new Tuple2<>(BooleanType.INSTANCE, structList5),
+            new Tuple2<>(BooleanType.INSTANCE, structList6),
 
             // DateType -> ?
             new Tuple2<>(DateType.INSTANCE, BooleanType.INSTANCE),
@@ -167,6 +192,12 @@ final class ComparisonTest {
             new Tuple2<>(DateType.INSTANCE, struct4),
             new Tuple2<>(DateType.INSTANCE, struct5),
             new Tuple2<>(DateType.INSTANCE, struct6),
+            new Tuple2<>(DateType.INSTANCE, structList1),
+            new Tuple2<>(DateType.INSTANCE, structList2),
+            new Tuple2<>(DateType.INSTANCE, structList3),
+            new Tuple2<>(DateType.INSTANCE, structList4),
+            new Tuple2<>(DateType.INSTANCE, structList5),
+            new Tuple2<>(DateType.INSTANCE, structList6),
 
             // FloatType -> ?
             new Tuple2<>(FloatType.INSTANCE, BooleanType.INSTANCE),
@@ -185,6 +216,12 @@ final class ComparisonTest {
             new Tuple2<>(FloatType.INSTANCE, struct4),
             new Tuple2<>(FloatType.INSTANCE, struct5),
             new Tuple2<>(FloatType.INSTANCE, struct6),
+            new Tuple2<>(FloatType.INSTANCE, structList1),
+            new Tuple2<>(FloatType.INSTANCE, structList2),
+            new Tuple2<>(FloatType.INSTANCE, structList3),
+            new Tuple2<>(FloatType.INSTANCE, structList4),
+            new Tuple2<>(FloatType.INSTANCE, structList5),
+            new Tuple2<>(FloatType.INSTANCE, structList6),
 
             // IntType -> ?
             new Tuple2<>(IntType.INSTANCE, BooleanType.INSTANCE),
@@ -203,6 +240,12 @@ final class ComparisonTest {
             new Tuple2<>(IntType.INSTANCE, struct4),
             new Tuple2<>(IntType.INSTANCE, struct5),
             new Tuple2<>(IntType.INSTANCE, struct6),
+            new Tuple2<>(IntType.INSTANCE, structList1),
+            new Tuple2<>(IntType.INSTANCE, structList2),
+            new Tuple2<>(IntType.INSTANCE, structList3),
+            new Tuple2<>(IntType.INSTANCE, structList4),
+            new Tuple2<>(IntType.INSTANCE, structList5),
+            new Tuple2<>(IntType.INSTANCE, structList6),
 
             // StringType -> ?
             new Tuple2<>(StringType.INSTANCE, BooleanType.INSTANCE),
@@ -221,6 +264,12 @@ final class ComparisonTest {
             new Tuple2<>(StringType.INSTANCE, struct4),
             new Tuple2<>(StringType.INSTANCE, struct5),
             new Tuple2<>(StringType.INSTANCE, struct6),
+            new Tuple2<>(StringType.INSTANCE, structList1),
+            new Tuple2<>(StringType.INSTANCE, structList2),
+            new Tuple2<>(StringType.INSTANCE, structList3),
+            new Tuple2<>(StringType.INSTANCE, structList4),
+            new Tuple2<>(StringType.INSTANCE, structList5),
+            new Tuple2<>(StringType.INSTANCE, structList6),
             
             // boolList -> ?
             new Tuple2<>(boolList, BooleanType.INSTANCE),
@@ -239,6 +288,12 @@ final class ComparisonTest {
             new Tuple2<>(boolList, struct4),
             new Tuple2<>(boolList, struct5),
             new Tuple2<>(boolList, struct6),
+            new Tuple2<>(boolList, structList1),
+            new Tuple2<>(boolList, structList2),
+            new Tuple2<>(boolList, structList3),
+            new Tuple2<>(boolList, structList4),
+            new Tuple2<>(boolList, structList5),
+            new Tuple2<>(boolList, structList6),
             
             // dataList -> ?
             new Tuple2<>(dateList, BooleanType.INSTANCE),
@@ -251,12 +306,18 @@ final class ComparisonTest {
             new Tuple2<>(dateList, floatList),
             new Tuple2<>(dateList, intList),
             new Tuple2<>(dateList, stringList),
-            new Tuple2<>(boolList, struct1),
-            new Tuple2<>(boolList, struct2),
-            new Tuple2<>(boolList, struct3),
-            new Tuple2<>(boolList, struct4),
-            new Tuple2<>(boolList, struct5),
-            new Tuple2<>(boolList, struct6),
+            new Tuple2<>(dateList, struct1),
+            new Tuple2<>(dateList, struct2),
+            new Tuple2<>(dateList, struct3),
+            new Tuple2<>(dateList, struct4),
+            new Tuple2<>(dateList, struct5),
+            new Tuple2<>(dateList, struct6),
+            new Tuple2<>(dateList, structList1),
+            new Tuple2<>(dateList, structList2),
+            new Tuple2<>(dateList, structList3),
+            new Tuple2<>(dateList, structList4),
+            new Tuple2<>(dateList, structList5),
+            new Tuple2<>(dateList, structList6),
             
             // floatList -> ?
             new Tuple2<>(floatList, BooleanType.INSTANCE),
@@ -275,6 +336,12 @@ final class ComparisonTest {
             new Tuple2<>(floatList, struct4),
             new Tuple2<>(floatList, struct5),
             new Tuple2<>(floatList, struct6),
+            new Tuple2<>(floatList, structList1),
+            new Tuple2<>(floatList, structList2),
+            new Tuple2<>(floatList, structList3),
+            new Tuple2<>(floatList, structList4),
+            new Tuple2<>(floatList, structList5),
+            new Tuple2<>(floatList, structList6),
             
             // intList -> ?
             new Tuple2<>(intList, BooleanType.INSTANCE),
@@ -293,6 +360,12 @@ final class ComparisonTest {
             new Tuple2<>(intList, struct4),
             new Tuple2<>(intList, struct5),
             new Tuple2<>(intList, struct6),
+            new Tuple2<>(intList, structList1),
+            new Tuple2<>(intList, structList2),
+            new Tuple2<>(intList, structList3),
+            new Tuple2<>(intList, structList4),
+            new Tuple2<>(intList, structList5),
+            new Tuple2<>(intList, structList6),
             
             // stringList -> ?
             new Tuple2<>(stringList, BooleanType.INSTANCE),
@@ -311,6 +384,12 @@ final class ComparisonTest {
             new Tuple2<>(stringList, struct4),
             new Tuple2<>(stringList, struct5),
             new Tuple2<>(stringList, struct6),
+            new Tuple2<>(stringList, structList1),
+            new Tuple2<>(stringList, structList2),
+            new Tuple2<>(stringList, structList3),
+            new Tuple2<>(stringList, structList4),
+            new Tuple2<>(stringList, structList5),
+            new Tuple2<>(stringList, structList6),
             
             // struct1 -> ?
             new Tuple2<>(struct1, BooleanType.INSTANCE),
@@ -329,6 +408,12 @@ final class ComparisonTest {
             new Tuple2<>(struct1, struct4),
             new Tuple2<>(struct1, struct5),
             new Tuple2<>(struct1, struct6),
+            new Tuple2<>(struct1, structList1),
+            new Tuple2<>(struct1, structList2),
+            new Tuple2<>(struct1, structList3),
+            new Tuple2<>(struct1, structList4),
+            new Tuple2<>(struct1, structList5),
+            new Tuple2<>(struct1, structList6),
             
             // struct2 -> ?
             new Tuple2<>(struct2, BooleanType.INSTANCE),
@@ -347,6 +432,12 @@ final class ComparisonTest {
             new Tuple2<>(struct2, struct4),
             new Tuple2<>(struct2, struct5),
             new Tuple2<>(struct2, struct6),
+            new Tuple2<>(struct2, structList1),
+            new Tuple2<>(struct2, structList2),
+            new Tuple2<>(struct2, structList3),
+            new Tuple2<>(struct2, structList4),
+            new Tuple2<>(struct2, structList5),
+            new Tuple2<>(struct2, structList6),
             
             // struct3 -> ?
             new Tuple2<>(struct3, BooleanType.INSTANCE),
@@ -365,6 +456,12 @@ final class ComparisonTest {
             new Tuple2<>(struct3, struct4),
             new Tuple2<>(struct3, struct5),
             new Tuple2<>(struct3, struct6),
+            new Tuple2<>(struct3, structList1),
+            new Tuple2<>(struct3, structList2),
+            new Tuple2<>(struct3, structList3),
+            new Tuple2<>(struct3, structList4),
+            new Tuple2<>(struct3, structList5),
+            new Tuple2<>(struct3, structList6),
             
             // struct4 -> ?
             new Tuple2<>(struct4, BooleanType.INSTANCE),
@@ -383,6 +480,12 @@ final class ComparisonTest {
             new Tuple2<>(struct4, struct4),
             new Tuple2<>(struct4, struct5),
             new Tuple2<>(struct4, struct6),
+            new Tuple2<>(struct4, structList1),
+            new Tuple2<>(struct4, structList2),
+            new Tuple2<>(struct4, structList3),
+            new Tuple2<>(struct4, structList4),
+            new Tuple2<>(struct4, structList5),
+            new Tuple2<>(struct4, structList6),
             
             // struct5 -> ?
             new Tuple2<>(struct5, BooleanType.INSTANCE),
@@ -401,6 +504,12 @@ final class ComparisonTest {
             new Tuple2<>(struct5, struct4),
             new Tuple2<>(struct5, struct5),
             new Tuple2<>(struct5, struct6),
+            new Tuple2<>(struct5, structList1),
+            new Tuple2<>(struct5, structList2),
+            new Tuple2<>(struct5, structList3),
+            new Tuple2<>(struct5, structList4),
+            new Tuple2<>(struct5, structList5),
+            new Tuple2<>(struct5, structList6),
             
             // struct6 -> ?
             new Tuple2<>(struct6, BooleanType.INSTANCE),
@@ -418,7 +527,157 @@ final class ComparisonTest {
             new Tuple2<>(struct6, struct3),
             new Tuple2<>(struct6, struct4),
             new Tuple2<>(struct6, struct5),
-            new Tuple2<>(struct6, struct6)
+            new Tuple2<>(struct6, struct6),
+            new Tuple2<>(struct6, structList1),
+            new Tuple2<>(struct6, structList2),
+            new Tuple2<>(struct6, structList3),
+            new Tuple2<>(struct6, structList4),
+            new Tuple2<>(struct6, structList5),
+            new Tuple2<>(struct6, structList6),
+            
+            // structList1 -> ?
+            new Tuple2<>(structList1, BooleanType.INSTANCE),
+            new Tuple2<>(structList1, DateType.INSTANCE),
+            new Tuple2<>(structList1, FloatType.INSTANCE),
+            new Tuple2<>(structList1, IntType.INSTANCE),
+            new Tuple2<>(structList1, StringType.INSTANCE),
+            new Tuple2<>(structList1, boolList),
+            new Tuple2<>(structList1, dateList),
+            new Tuple2<>(structList1, floatList),
+            new Tuple2<>(structList1, intList),
+            new Tuple2<>(structList1, stringList),
+            new Tuple2<>(structList1, struct1),
+            new Tuple2<>(structList1, struct2),
+            new Tuple2<>(structList1, struct3),
+            new Tuple2<>(structList1, struct4),
+            new Tuple2<>(structList1, struct5),
+            new Tuple2<>(structList1, struct6),
+            new Tuple2<>(structList1, structList1),
+            new Tuple2<>(structList1, structList2),
+            new Tuple2<>(structList1, structList3),
+            new Tuple2<>(structList1, structList4),
+            new Tuple2<>(structList1, structList5),
+            new Tuple2<>(structList1, structList6),
+            
+            // structList2 -> ?
+            new Tuple2<>(structList2, BooleanType.INSTANCE),
+            new Tuple2<>(structList2, DateType.INSTANCE),
+            new Tuple2<>(structList2, FloatType.INSTANCE),
+            new Tuple2<>(structList2, IntType.INSTANCE),
+            new Tuple2<>(structList2, StringType.INSTANCE),
+            new Tuple2<>(structList2, boolList),
+            new Tuple2<>(structList2, dateList),
+            new Tuple2<>(structList2, floatList),
+            new Tuple2<>(structList2, intList),
+            new Tuple2<>(structList2, stringList),
+            new Tuple2<>(structList2, struct1),
+            new Tuple2<>(structList2, struct2),
+            new Tuple2<>(structList2, struct3),
+            new Tuple2<>(structList2, struct4),
+            new Tuple2<>(structList2, struct5),
+            new Tuple2<>(structList2, struct6),
+            new Tuple2<>(structList2, structList1),
+            new Tuple2<>(structList2, structList2),
+            new Tuple2<>(structList2, structList3),
+            new Tuple2<>(structList2, structList4),
+            new Tuple2<>(structList2, structList5),
+            new Tuple2<>(structList2, structList6),
+            
+            // structList3 -> ?
+            new Tuple2<>(structList3, BooleanType.INSTANCE),
+            new Tuple2<>(structList3, DateType.INSTANCE),
+            new Tuple2<>(structList3, FloatType.INSTANCE),
+            new Tuple2<>(structList3, IntType.INSTANCE),
+            new Tuple2<>(structList3, StringType.INSTANCE),
+            new Tuple2<>(structList3, boolList),
+            new Tuple2<>(structList3, dateList),
+            new Tuple2<>(structList3, floatList),
+            new Tuple2<>(structList3, intList),
+            new Tuple2<>(structList3, stringList),
+            new Tuple2<>(structList3, struct1),
+            new Tuple2<>(structList3, struct2),
+            new Tuple2<>(structList3, struct3),
+            new Tuple2<>(structList3, struct4),
+            new Tuple2<>(structList3, struct5),
+            new Tuple2<>(structList3, struct6),
+            new Tuple2<>(structList3, structList1),
+            new Tuple2<>(structList3, structList2),
+            new Tuple2<>(structList3, structList3),
+            new Tuple2<>(structList3, structList4),
+            new Tuple2<>(structList3, structList5),
+            new Tuple2<>(structList3, structList6),
+            
+            // structList4 -> ?
+            new Tuple2<>(structList4, BooleanType.INSTANCE),
+            new Tuple2<>(structList4, DateType.INSTANCE),
+            new Tuple2<>(structList4, FloatType.INSTANCE),
+            new Tuple2<>(structList4, IntType.INSTANCE),
+            new Tuple2<>(structList4, StringType.INSTANCE),
+            new Tuple2<>(structList4, boolList),
+            new Tuple2<>(structList4, dateList),
+            new Tuple2<>(structList4, floatList),
+            new Tuple2<>(structList4, intList),
+            new Tuple2<>(structList4, stringList),
+            new Tuple2<>(structList4, struct1),
+            new Tuple2<>(structList4, struct2),
+            new Tuple2<>(structList4, struct3),
+            new Tuple2<>(structList4, struct4),
+            new Tuple2<>(structList4, struct5),
+            new Tuple2<>(structList4, struct6),
+            new Tuple2<>(structList4, structList1),
+            new Tuple2<>(structList4, structList2),
+            new Tuple2<>(structList4, structList3),
+            new Tuple2<>(structList4, structList4),
+            new Tuple2<>(structList4, structList5),
+            new Tuple2<>(structList4, structList6),
+            
+            // structList5 -> ?
+            new Tuple2<>(structList5, BooleanType.INSTANCE),
+            new Tuple2<>(structList5, DateType.INSTANCE),
+            new Tuple2<>(structList5, FloatType.INSTANCE),
+            new Tuple2<>(structList5, IntType.INSTANCE),
+            new Tuple2<>(structList5, StringType.INSTANCE),
+            new Tuple2<>(structList5, boolList),
+            new Tuple2<>(structList5, dateList),
+            new Tuple2<>(structList5, floatList),
+            new Tuple2<>(structList5, intList),
+            new Tuple2<>(structList5, stringList),
+            new Tuple2<>(structList5, struct1),
+            new Tuple2<>(structList5, struct2),
+            new Tuple2<>(structList5, struct3),
+            new Tuple2<>(structList5, struct4),
+            new Tuple2<>(structList5, struct5),
+            new Tuple2<>(structList5, struct6),
+            new Tuple2<>(structList5, structList1),
+            new Tuple2<>(structList5, structList2),
+            new Tuple2<>(structList5, structList3),
+            new Tuple2<>(structList5, structList4),
+            new Tuple2<>(structList5, structList5),
+            new Tuple2<>(structList5, structList6),
+            
+            // structList6 -> ?
+            new Tuple2<>(structList6, BooleanType.INSTANCE),
+            new Tuple2<>(structList6, DateType.INSTANCE),
+            new Tuple2<>(structList6, FloatType.INSTANCE),
+            new Tuple2<>(structList6, IntType.INSTANCE),
+            new Tuple2<>(structList6, StringType.INSTANCE),
+            new Tuple2<>(structList6, boolList),
+            new Tuple2<>(structList6, dateList),
+            new Tuple2<>(structList6, floatList),
+            new Tuple2<>(structList6, intList),
+            new Tuple2<>(structList6, stringList),
+            new Tuple2<>(structList6, struct1),
+            new Tuple2<>(structList6, struct2),
+            new Tuple2<>(structList6, struct3),
+            new Tuple2<>(structList6, struct4),
+            new Tuple2<>(structList6, struct5),
+            new Tuple2<>(structList6, struct6),
+            new Tuple2<>(structList6, structList1),
+            new Tuple2<>(structList6, structList2),
+            new Tuple2<>(structList6, structList3),
+            new Tuple2<>(structList6, structList4),
+            new Tuple2<>(structList6, structList5),
+            new Tuple2<>(structList6, structList6)
         );
     }
 }
