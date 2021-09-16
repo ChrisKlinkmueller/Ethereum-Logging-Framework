@@ -1,6 +1,7 @@
 {
     "recommendations": [
         "mike-lischke.vscode-antlr4",
+        "hediet.vscode-drawio",
         "vscjava.vscode-java-pack"
     ]
 }
