@@ -13,8 +13,6 @@ import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.Arguments;
 import org.junit.jupiter.params.provider.MethodSource;
 
-import io.vavr.Tuple2;
-
 final class ComparisonTest {
     private static final Type STRUCT_1 = new StructType(Map.of("a", FloatType.INSTANCE, "b", ListType.STRING_LIST));
     private static final Type STRUCT_2 = new StructType(Map.of("a", FloatType.INSTANCE, "b", ListType.STRING_LIST, "c", STRUCT_1));
