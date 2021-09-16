@@ -27,9 +27,7 @@ public abstract class PrimitiveType implements Type {
 
     @Override
     public boolean equals(Object o) {
-        return o != null 
-            && PrimitiveType.class.isAssignableFrom(o.getClass())
-            && ((PrimitiveType)o).name.equals(this.name);
+        return this.getClass().isInstance(o);
     }
 
     @Override

@@ -5,6 +5,12 @@ import static com.google.common.base.Preconditions.checkNotNull;
 import java.util.Objects;
 
 public final class ListType implements Type {
+    public static final ListType BOOLEAN_LIST = new ListType(BooleanType.INSTANCE);
+    public static final ListType DATE_LIST = new ListType(DateType.INSTANCE);
+    public static final ListType INT_LIST = new ListType(IntType.INSTANCE);
+    public static final ListType FLOAT_LIST = new ListType(FloatType.INSTANCE);
+    public static final ListType STRING_LIST = new ListType(StringType.INSTANCE);
+
     private final Type baseType;
 
     public ListType(Type baseType) {
