@@ -137,3 +137,4 @@ package-lock.json
 /test_app
 /dapp-docs
 /*.msg
+sonar.bat
