@@ -36,7 +36,7 @@ class Recognizer {
 
         final CommonTokenStream tokens = new CommonTokenStream(lexer);
         final EthqlParser parser = new EthqlParser(tokens);
-        parser.removeErrorListeners();;
+        parser.removeErrorListeners();
         parser.addErrorListener(this.errorListener);
 
         final ParseTree parseTree = parseRule.apply(parser);
