@@ -6,6 +6,12 @@ import static com.google.common.base.Preconditions.checkNotNull;
 import org.antlr.v4.runtime.Token;
 
 public class InterpretationEvent {
+    static final int DEFAULT_LINE = 0;
+    static final int DEFAULT_COLUMN = 0;
+    static final String ERROR_STRING = "error";
+    static final String WARNING_STRING = "warning";
+    static final String INFO_STRING = "info";
+
     public enum Type {
         ERROR,
         WARNING,
@@ -14,9 +20,9 @@ public class InterpretationEvent {
         @Override
         public String toString() {
             switch (this) {
-                case ERROR : return "error";
-                case WARNING : return "warning";
-                case INFO : return "info";
+                case ERROR : return ERROR_STRING;
+                case WARNING : return WARNING_STRING;
+                case INFO : return INFO_STRING;
                 default : throw new IllegalArgumentException("Unknown type!");
             }
         }
@@ -53,10 +59,14 @@ public class InterpretationEvent {
         checkNotNull(message);
         checkArgument(!message.isBlank());
         this.type = type;
-        this.line = 0;
-        this.column = 0;
+        this.line = DEFAULT_LINE;
+        this.column = DEFAULT_COLUMN;
         this.message = message;
         this.cause = cause;
+    }
+
+    public InterpretationEvent(Type type, int line, int column, String message) {
+        this(type, line, column, message, null);
     }
 
     public InterpretationEvent(Type type, int line, int column, String message, Throwable cause) {
