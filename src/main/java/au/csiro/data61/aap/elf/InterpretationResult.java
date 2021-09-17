@@ -37,7 +37,7 @@ public class InterpretationResult<T> {
         checkArgument(events.stream().allMatch(Objects::nonNull));
         checkArgument(events.stream().allMatch(e -> e.getType() != Type.ERROR));
         final List<InterpretationEvent> eventsCopy = events.stream().collect(Collectors.toList());
-        return new InterpretationResult<T>(result, eventsCopy);
+        return new InterpretationResult<>(result, eventsCopy);
     }
 
     /**
@@ -53,7 +53,7 @@ public class InterpretationResult<T> {
         checkArgument(events.stream().allMatch(Objects::nonNull));
         checkArgument(events.stream().anyMatch(e -> e.getType() == Type.ERROR));
         final List<InterpretationEvent> eventsCopy = events.stream().collect(Collectors.toList());
-        return new InterpretationResult<T>(null, eventsCopy);
+        return new InterpretationResult<>(null, eventsCopy);
     }
 
     /**
