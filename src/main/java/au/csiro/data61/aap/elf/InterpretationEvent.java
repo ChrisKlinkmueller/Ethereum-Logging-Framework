@@ -6,7 +6,7 @@ import static com.google.common.base.Preconditions.checkNotNull;
 import org.antlr.v4.runtime.Token;
 
 public class InterpretationEvent {
-    public static enum Type {
+    public enum Type {
         ERROR,
         WARNING,
         INFO;
