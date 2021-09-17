@@ -172,7 +172,7 @@ final class TypeTests {
         }
     }
 
-    static Stream<Arguments> testStructFieldEqualsWithNoStructFields() {
+    private static Stream<Arguments> testStructFieldEqualsWithNoStructFields() {
         return Stream.of(
             Arguments.of(new Object()),
             Arguments.of(BigInteger.ONE),
@@ -214,7 +214,7 @@ final class TypeTests {
         assertThrows(IllegalArgumentException.class, () -> new StructType(fieldList));
     }
 
-    void verifyStructType(StructType type, List<StructField> fields) {
+    private void verifyStructType(StructType type, List<StructField> fields) {
         assertEquals(type.getFields().size(), fields.size());
 
         fields.stream().allMatch(f1 -> type.fieldStream().anyMatch(f2 -> f1.equals(f2)));
