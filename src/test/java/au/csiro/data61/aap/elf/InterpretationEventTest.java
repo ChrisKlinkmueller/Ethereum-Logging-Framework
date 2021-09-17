@@ -21,7 +21,7 @@ class InterpretationEventTest {
         assertEquals(expectedString, type.toString());
     }
 
-    static Stream<Arguments> type_toStringReturnsCorrectResult() {
+    private static Stream<Arguments> type_toStringReturnsCorrectResult() {
         return Stream.of(
             Arguments.of(Type.ERROR, InterpretationEvent.ERROR_STRING),
             Arguments.of(Type.INFO, InterpretationEvent.INFO_STRING),
@@ -85,7 +85,7 @@ class InterpretationEventTest {
         }
     }
 
-    static Stream<Arguments> constructorTestCases() {
+    private static Stream<Arguments> constructorTestCases() {
         return Stream.of(
             Arguments.of(Type.ERROR, mock(Token.class), "An error that occurred during parsing.", new IllegalArgumentException()),
             Arguments.of(Type.INFO, mock(Token.class), "An info regarding the analysis.", new UnsupportedOperationException()),
