@@ -12,33 +12,44 @@ document
     ;
 
 statement
-    : scopedStatement
+    : blockStatement
     | expressionStatement
-    | emissionStatement
     ;
 
-scopedStatement
+
+
+// block statements
+
+blockStatement
     : scopeDefinition '{' statement* '}'
     ;
 
 scopeDefinition
-    : extractScope
+    : pluginStatement
     | ifScope
-    ;
-
-extractScope
-    : KEY_EXTRACT Identifier PLUGIN_DEFINITION
     ;
 
 ifScope
     : KEY_IF '(' conditionalExpression ')'
     ;
 
+
+
+// expression statements
 expressionStatement 
-    : methodStatement
+    : pluginStatement
+    | methodStatement
     | variableDeclarationStatement
     | variableAssignmentStatement
     ; 
+
+pluginStatement
+    : action=( KEY_CONFIGURE | KEY_EXTRACT | KEY_CONFIGURE ) plugin=Identifier code=Code ';'
+    ;
+
+methodStatement
+    : methodInvocation ';'
+    ;
 
 variableDeclarationStatement
     : type variableName '=' statementExpression ';' 
@@ -54,31 +65,13 @@ statementExpression
     ;
 
 
-// emitStatements
-
-configurationStatement
-    : KEY_CONFIGURE Identifier PLUGIN_DEFINITION ';'
-    ;
-
-emissionStatement
-    : KEY_EMIT Identifier PLUGIN_DEFINITION ';'
-    ;
-
-
-
-// expressionStatements
-
-methodStatement
-    : methodInvocation ';'
-    ;
-
-PLUGIN_DEFINITION : [0-9a-fA-F ():._'"{}]+;
 
 // Keywords
-KEY_EXTRACT : E X T R A C T;
-KEY_IF : I F;
-KEY_EMIT: E M I T;
+
 KEY_CONFIGURE: C O N F I G U R E;
+KEY_EXTRACT : E X T R A C T;
+KEY_EMIT: E M I T;
+KEY_IF : I F;
 KEY_CSV_ROW: C S V ' ' R O W;
 KEY_LOG_LINE: L O G ' ' L I N E;
 KEY_XES_EVENT: X E S ' ' E V E N T;
