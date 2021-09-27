@@ -8,9 +8,7 @@ import org.antlr.v4.runtime.RecognitionException;
 import org.antlr.v4.runtime.Recognizer;
 import org.antlr.v4.runtime.tree.ParseTree;
 
-import au.csiro.data61.aap.elf.InterpretationEvent;
-import au.csiro.data61.aap.elf.InterpretationResult;
-import au.csiro.data61.aap.elf.InterpretationEvent.Type;
+import au.csiro.data61.aap.elf.parsing.InterpretationEvent.Type;
 
 class SyntaxErrorListener extends BaseErrorListener {
     private final List<InterpretationEvent> events;

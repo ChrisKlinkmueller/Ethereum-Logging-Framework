@@ -1,4 +1,4 @@
-package au.csiro.data61.aap.elf;
+package au.csiro.data61.aap.elf.parsing;
 
 import static com.google.common.base.Preconditions.checkArgument;
 import static com.google.common.base.Preconditions.checkNotNull;

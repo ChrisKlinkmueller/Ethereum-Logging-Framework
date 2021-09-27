@@ -13,20 +13,18 @@ import org.antlr.v4.runtime.tree.ParseTree;
 
 import static com.google.common.base.Preconditions.checkNotNull;
 
-import au.csiro.data61.aap.elf.InterpretationEvent;
-import au.csiro.data61.aap.elf.InterpretationResult;
-import au.csiro.data61.aap.elf.InterpretationEvent.Type;
 import au.csiro.data61.aap.elf.grammar.EthqlLexer;
 import au.csiro.data61.aap.elf.grammar.EthqlParser;
+import au.csiro.data61.aap.elf.parsing.InterpretationEvent.Type;
 
-public class Parser {
+class Parser {
     private final SyntaxErrorListener errorListener;
 
-    public Parser() {
+    Parser() {
         this.errorListener = new SyntaxErrorListener();
     }
 
-    public InterpretationResult<ParseTree> read(InputStream is) {
+    InterpretationResult<ParseTree> recognizeQuery(InputStream is) {
         checkNotNull(is);
 
         return this.recognize(is, EthqlParser::document);

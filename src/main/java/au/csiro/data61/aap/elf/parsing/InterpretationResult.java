@@ -1,4 +1,4 @@
-package au.csiro.data61.aap.elf;
+package au.csiro.data61.aap.elf.parsing;
 
 import static com.google.common.base.Preconditions.checkArgument;
 import static com.google.common.base.Preconditions.checkNotNull;
@@ -9,7 +9,7 @@ import java.util.List;
 import java.util.Objects;
 import java.util.stream.Collectors;
 
-import au.csiro.data61.aap.elf.InterpretationEvent.Type;
+import au.csiro.data61.aap.elf.parsing.InterpretationEvent.Type;
 
 public class InterpretationResult<T> {
 
@@ -66,6 +66,25 @@ public class InterpretationResult<T> {
      */
     public static <T> InterpretationResult<T> failure(InterpretationEvent... events) {
         return failure(List.of(events));
+    }
+
+    /**
+     * Creates a failed {@link InterpretationResult} that contains a single {@link InterpretationEvent} with
+     * the specified message and cause.
+     * @param <T> the type of the result
+     * @param message the error message
+     * @param cause the error cause (optional)
+     * @return a failed {@link InterpretationResult}
+     * @throws IllegalArgumentException if message is null or black.
+     */
+    public static <T> InterpretationResult<T> failure(String message, Exception cause) {
+        checkNotNull(message);
+        checkArgument(!message.isBlank());
+
+        final InterpretationEvent event = cause == null
+            ? new InterpretationEvent(Type.ERROR, message)
+            : new InterpretationEvent(Type.ERROR, message, cause);
+        return new InterpretationResult<>(null, List.of(event));
     }
 
     private final T result;
