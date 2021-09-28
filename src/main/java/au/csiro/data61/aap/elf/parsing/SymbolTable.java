@@ -20,6 +20,10 @@ class SymbolTable {
         this.items = new HashMap<>();
     }
 
+    SymbolTable getParent() {
+        return this.parent;
+    }
+
     void addItem(DataItem item) {
         checkNotNull(item);
         this.items.put(item.getName(), item);

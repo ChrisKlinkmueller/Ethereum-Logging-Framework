@@ -18,10 +18,10 @@ import au.csiro.data61.aap.elf.grammar.EthqlParser;
 import au.csiro.data61.aap.elf.parsing.InterpretationEvent.Type;
 
 class Parser {
-    private final SyntaxErrorListener errorListener;
+    private final InterpretationEventCollector errorListener;
 
     Parser() {
-        this.errorListener = new SyntaxErrorListener();
+        this.errorListener = new InterpretationEventCollector();
     }
 
     InterpretationResult<ParseTree> recognizeQuery(InputStream is) {
