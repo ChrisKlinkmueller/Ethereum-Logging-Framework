@@ -10,6 +10,7 @@ import java.util.stream.Collectors;
 import java.util.stream.IntStream;
 
 import au.csiro.data61.aap.elf.types.Type;
+import com.google.common.base.Preconditions;
 
 public final class MethodSignature {
     private final String name;
@@ -23,7 +24,7 @@ public final class MethodSignature {
         checkNotNull(name);
         checkArgument(!name.isBlank());
         checkNotNull(parameterTypes);
-        parameterTypes.forEach(pt -> checkNotNull(pt));
+        parameterTypes.forEach(Preconditions::checkNotNull);
 
         this.name = name;
         this.parameterTypes = List.copyOf(parameterTypes);
