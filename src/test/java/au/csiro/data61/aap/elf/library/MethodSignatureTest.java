@@ -19,7 +19,7 @@ import au.csiro.data61.aap.elf.types.StructField;
 import au.csiro.data61.aap.elf.types.StructType;
 import au.csiro.data61.aap.elf.types.Type;
 
-public class MethodSignatureTest {
+class MethodSignatureTest {
     
     @ParameterizedTest
     @MethodSource
