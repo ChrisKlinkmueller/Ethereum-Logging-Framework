@@ -51,6 +51,7 @@ class Analyzer implements EthqlListener {
 
         final SymbolTableBuilder symbolTableBuilder = new SymbolTableBuilder(this.eventCollector);
         this.rules.add(symbolTableBuilder);
+        this.rules.add(new ConfigureInPreambleRule(this.eventCollector, symbolTableBuilder));
     }
     
     InterpretationResult<ParseTree> analyze(ParseTree parseTree) {
