@@ -3,6 +3,7 @@ package au.csiro.data61.aap.elf.library;
 import static com.google.common.base.Preconditions.checkArgument;
 import static com.google.common.base.Preconditions.checkNotNull;
 
+import java.util.Collections;
 import java.util.HashMap;
 import java.util.LinkedList;
 import java.util.List;
@@ -27,10 +28,10 @@ public class Library {
         nameMethods.add(method);
     }
 
-    public Try<Method> getMethod(MethodSignature signature) {
+    public Try<Method> findMethod(MethodSignature signature) {
         checkNotNull(signature);
 
-        final List<Method> nameMethods = this.methods.get(signature.getName());
+        final List<Method> nameMethods = this.methods.getOrDefault(signature.getName(), Collections.emptyList());
         if (nameMethods.isEmpty()) {
             return this.noSuchMethod(signature);
         }
@@ -57,12 +58,12 @@ public class Library {
 
     private Try<Method> noSuchMethod(MethodSignature signature) {
         final String msg = String.format("No compatible method with signature '%s' found.", signature);
-        return Try.failure(new NoSuchMethodError(msg));
+        return Try.failure(new UnsupportedOperationException(msg));
     }
 
     private Try<Method> multipleMethods(MethodSignature signature) {
         final String msg = String.format("Multiple compatible methods with signature '%s' found.", signature);
-        return Try.failure(new NoSuchMethodError(msg));
+        return Try.failure(new UnsupportedOperationException(msg));
     }
 
     private boolean containsMethod(Method method, List<Method> methods) {
