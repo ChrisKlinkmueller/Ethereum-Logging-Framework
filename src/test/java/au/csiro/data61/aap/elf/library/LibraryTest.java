@@ -2,18 +2,21 @@ package au.csiro.data61.aap.elf.library;
 
 import static org.junit.jupiter.api.Assertions.assertDoesNotThrow;
 import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.junit.jupiter.api.Assertions.assertTrue;
+import static org.mockito.Mockito.mock;
 
 import java.util.stream.Stream;
 
+import org.junit.jupiter.api.MethodOrderer.OrderAnnotation;
 import org.junit.jupiter.api.Order;
 import org.junit.jupiter.api.TestInstance;
 import org.junit.jupiter.api.TestMethodOrder;
-import org.junit.jupiter.api.MethodOrderer.OrderAnnotation;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.Arguments;
 import org.junit.jupiter.params.provider.MethodSource;
+import org.mockito.Mockito;
 
 import au.csiro.data61.aap.elf.types.BooleanType;
 import au.csiro.data61.aap.elf.types.DateType;
@@ -27,6 +30,11 @@ import io.vavr.control.Try;
 @TestInstance(TestInstance.Lifecycle.PER_CLASS)
 @TestMethodOrder(OrderAnnotation.class)
 class LibraryTest {
+    private static final String XES_PLUGIN = "XES";
+    private static final String CSV_PLUGIN = "CSV";
+    private static final String TXT_PLUGIN = "TXT";
+    private static final String ETH_WEB3_PLUGIN = "ETH_WEB3";    
+
     private static final MethodSignature SIG_1 = new MethodSignature("add", IntType.INSTANCE, IntType.INSTANCE);
     private static final Method METHOD_1 = new Method(SIG_1, IntType.INSTANCE);
 
@@ -87,6 +95,39 @@ class LibraryTest {
         assertTrue(searchResult.getCause().getMessage().contains(messagePrefix));
     }
 
+    @ParameterizedTest
+    @MethodSource
+    @Order(5)
+    void addPlugin_InsertsWithoutExceptions(Plugin plugin) {
+        assertDoesNotThrow(() -> this.library.addPlugin(plugin));
+    }
+
+    @ParameterizedTest
+    @MethodSource
+    @Order(6)
+    void addPlugin_InsertFailsWithException(Plugin plugin, Class<? extends Throwable> cl) {
+        assertThrows(cl, () -> this.library.addPlugin(plugin));
+    }
+
+    @ParameterizedTest
+    @MethodSource
+    @Order(7)
+    void findPlugin_PluginIsDetected(String pluginName) {
+        final Try<Plugin> searchResult = this.library.findPlugin(pluginName);
+        assertTrue(searchResult.isSuccess());
+        assertNotNull(searchResult.get());
+        assertEquals(pluginName, searchResult.get().getName());
+    }
+
+    @ParameterizedTest
+    @MethodSource
+    @Order(8)
+    void findPlugin_PluginIsNotDetected(String pluginName) {
+        final Try<Plugin> searchResult = this.library.findPlugin(pluginName);
+        assertTrue(searchResult.isFailure());
+        assertEquals(UnsupportedOperationException.class, searchResult.getCause().getClass());
+    }
+
     private static Stream<Arguments> addMethod_InsertsWithoutExceptions() {
         return Stream.of(METHOD_1, METHOD_2, METHOD_3, METHOD_4, METHOD_5, METHOD_6).map(Arguments::of);
     }
@@ -129,6 +170,40 @@ class LibraryTest {
             Arguments.of(new MethodSignature(METHOD_5.getSignature().getName(), new StructType(FIELD_2)), "No"),
             Arguments.of(new MethodSignature(METHOD_5.getSignature().getName(), new StructType(FIELD_1, FIELD_2, FIELD_3, field)), "Multiple")
         );
+    }
+
+    private static Stream<Arguments> addPlugin_InsertsWithoutExceptions() {
+        return pluginNameStream()
+            .map(LibraryTest::createPluginMock)
+            .map(Arguments::of);
+    }
+
+    private static Plugin createPluginMock(String name) {
+        final Plugin mock = mock(Plugin.class);
+        Mockito.when(mock.getName()).thenReturn(name);
+        return mock;
+    }
+
+    private static Stream<Arguments> addPlugin_InsertFailsWithException() {
+        return Stream.of(
+            Arguments.of(null, NullPointerException.class),
+            Arguments.of(createPluginMock(XES_PLUGIN), IllegalArgumentException.class)
+        );
+    }
+
+    private static Stream<String> findPlugin_PluginIsDetected() {
+        return pluginNameStream();            
+    }
+
+    private static Stream<String> findPlugin_PluginIsNotDetected() {
+        return Stream.concat(
+            pluginNameStream().map(String::toLowerCase), 
+            Stream.of("NO", "SUCH", "PLUGIN")
+        );
+    }
+
+    private static Stream<String> pluginNameStream() {
+        return Stream.of(XES_PLUGIN, CSV_PLUGIN, TXT_PLUGIN, ETH_WEB3_PLUGIN);
     }
 
 }

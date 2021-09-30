@@ -14,9 +14,11 @@ import io.vavr.control.Try;
 
 public class Library {
     private final Map<String, List<Method>> methods;
+    private final Map<String, Plugin> plugins;
 
     public Library() {
         this.methods = new HashMap<>();
+        this.plugins = new HashMap<>();
     }
 
     public void addMethod(Method method) {
@@ -26,6 +28,13 @@ public class Library {
         checkArgument(!this.containsMethod(method, nameMethods));
 
         nameMethods.add(method);
+    }
+
+    public void addPlugin(Plugin plugin) {
+        checkNotNull(plugin);
+
+        checkArgument(!this.plugins.containsKey(plugin.getName()));
+        this.plugins.put(plugin.getName(), plugin);
     }
 
     public Try<Method> findMethod(MethodSignature signature) {
@@ -56,8 +65,19 @@ public class Library {
         }
     }
 
+    public Try<Plugin> findPlugin(String pluginName) {
+        checkNotNull(pluginName);
+        final Plugin plugin = this.plugins.get(pluginName);
+        return plugin == null ? this.noSuchPlugin(pluginName) : Try.success(plugin);
+    }
+
     private Try<Method> noSuchMethod(MethodSignature signature) {
         final String msg = String.format("No compatible method with signature '%s' found.", signature);
+        return Try.failure(new UnsupportedOperationException(msg));
+    }
+
+    private Try<Plugin> noSuchPlugin(String pluginName) {
+        final String msg = String.format("No plugin with name '%s' found.", pluginName);
         return Try.failure(new UnsupportedOperationException(msg));
     }
 
