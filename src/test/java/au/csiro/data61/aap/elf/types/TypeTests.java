@@ -48,7 +48,8 @@ final class TypeTests {
         new ListType(STRUCT_3), // 18
         new ListType(STRUCT_4), // 19
         new ListType(STRUCT_5), // 20
-        new ListType(STRUCT_6)  // 21
+        new ListType(STRUCT_6), // 21
+        VoidType.INSTANCE       // 22
     };
 
     private static final Map<Integer, List<Integer>> ASSIGNABILITY_CASES = Map.of(
