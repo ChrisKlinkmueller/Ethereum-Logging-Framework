@@ -1,5 +1,6 @@
 package au.csiro.data61.aap.elf.library;
 
+import static org.junit.jupiter.api.Assertions.assertDoesNotThrow;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.junit.jupiter.api.Assertions.assertTrue;
@@ -57,7 +58,7 @@ class LibraryTest {
     @MethodSource
     @Order(1)
     void addMethod_InsertsWithoutExceptions(Method method) {
-        this.library.addMethod(method);
+        assertDoesNotThrow(() -> this.library.addMethod(method));
     }
 
     @ParameterizedTest
