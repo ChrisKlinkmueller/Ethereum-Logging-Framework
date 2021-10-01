@@ -4,7 +4,7 @@ import static com.google.common.base.Preconditions.checkNotNull;
 
 import au.csiro.data61.aap.elf.grammar.EthqlBaseListener;
 
-class SymbolTableBuilder extends EthqlBaseListener {
+public class SymbolTableBuilder extends EthqlBaseListener {
     private final InterpretationEventCollector eventCollector;
     private SymbolTable currentTable;
 

@@ -12,7 +12,7 @@ import org.antlr.v4.runtime.tree.ParseTree;
 
 import au.csiro.data61.aap.elf.parsing.InterpretationEvent.Type;
 
-class InterpretationEventCollector extends BaseErrorListener {
+public class InterpretationEventCollector extends BaseErrorListener {
     private final List<InterpretationEvent> events;
 
     InterpretationEventCollector() {

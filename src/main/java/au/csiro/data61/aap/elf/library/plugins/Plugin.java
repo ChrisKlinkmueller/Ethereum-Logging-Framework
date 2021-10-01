@@ -3,25 +3,24 @@ package au.csiro.data61.aap.elf.library.plugins;
 import static com.google.common.base.Preconditions.checkArgument;
 import static com.google.common.base.Preconditions.checkNotNull;
 
-import au.csiro.data61.aap.elf.grammar.EthqlParser.PluginStatementContext;
-
-public abstract class Plugin {
+public class Plugin {    
     private final String name;
+    private final PluginAnalysisRule parser;
 
-    protected Plugin(String name) {
+    public Plugin(String name, PluginAnalysisRule parser) {
         checkNotNull(name);
         checkArgument(!name.isBlank());
+        checkNotNull(parser);
         this.name = name;
+        this.parser = parser;
     }
 
     public String getName() {
-        return name;
+        return this.name;
     }
 
-    public PluginParseResult parseAction(PluginStatementContext ctx) {
-        checkNotNull(ctx);
-        return this.parse(ctx);
+    public PluginAnalysisRule getParser() {
+        return this.parser;
     }
 
-    protected abstract PluginParseResult parse(PluginStatementContext ctx);
 }

@@ -7,7 +7,7 @@ import java.util.HashMap;
 import java.util.Map;
 import java.util.Optional;
 
-class SymbolTable {
+public class SymbolTable {
     private final SymbolTable parent;
     private final Map<String, DataItem> items;
 
