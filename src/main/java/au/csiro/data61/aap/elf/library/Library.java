@@ -3,6 +3,7 @@ package au.csiro.data61.aap.elf.library;
 import static com.google.common.base.Preconditions.checkArgument;
 import static com.google.common.base.Preconditions.checkNotNull;
 
+import java.util.Collection;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.LinkedList;
@@ -11,7 +12,6 @@ import java.util.Map;
 import java.util.stream.Collectors;
 
 import au.csiro.data61.aap.elf.library.plugins.Plugin;
-import au.csiro.data61.aap.elf.library.plugins.PluginAnalysisRule;
 import io.vavr.control.Try;
 
 public class Library {
@@ -73,10 +73,8 @@ public class Library {
         return plugin == null ? this.noSuchPlugin(pluginName) : Try.success(plugin);
     }
 
-    public List<PluginAnalysisRule> getAnalysisRules() {
-        return this.plugins.values().stream()
-            .map(Plugin::getAnalysisRule)
-            .collect(Collectors.toList());
+    public Collection<Plugin> getPlugins() {
+        return this.plugins.values();
     }
 
     private Try<Method> noSuchMethod(MethodSignature signature) {

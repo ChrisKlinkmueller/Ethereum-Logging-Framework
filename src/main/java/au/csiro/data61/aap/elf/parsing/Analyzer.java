@@ -41,10 +41,13 @@ import au.csiro.data61.aap.elf.grammar.EthqlParser.VariableAssignmentStatementCo
 import au.csiro.data61.aap.elf.grammar.EthqlParser.VariableDeclarationStatementContext;
 import au.csiro.data61.aap.elf.grammar.EthqlParser.VariableNameContext;
 import au.csiro.data61.aap.elf.library.Library;
+import au.csiro.data61.aap.elf.library.plugins.Plugin;
+import au.csiro.data61.aap.elf.library.plugins.PluginAnalysisRule;
 import au.csiro.data61.aap.elf.parsing.InterpretationEvent.Type;
 
 class Analyzer implements EthqlListener {
     private final InterpretationEventCollector eventCollector;
+    private final SymbolTableBuilder symbolTableBuilder;
     private final List<EthqlListener> rules;
     private final Library library;
 
@@ -56,11 +59,17 @@ class Analyzer implements EthqlListener {
 
         this.eventCollector = new InterpretationEventCollector();
 
-        final SymbolTableBuilder symbolTableBuilder = new SymbolTableBuilder(this.eventCollector);
+        this.symbolTableBuilder = new SymbolTableBuilder(this.eventCollector);
         this.rules.add(symbolTableBuilder);
         this.rules.add(new ConfigureInPreambleRule(this.eventCollector, symbolTableBuilder));
 
-        this.rules.addAll(this.library.getAnalysisRules());
+        this.library.getPlugins().forEach(this::addPluginAnalysisRule);
+    }
+
+    private void addPluginAnalysisRule(Plugin plugin) {
+        checkNotNull(plugin);
+        final PluginAnalysisRule rule = plugin.createAnalysisRule(this.eventCollector, this.symbolTableBuilder);
+        this.rules.add(rule);
     }
     
     InterpretationResult<ParseTree> analyze(ParseTree parseTree) {

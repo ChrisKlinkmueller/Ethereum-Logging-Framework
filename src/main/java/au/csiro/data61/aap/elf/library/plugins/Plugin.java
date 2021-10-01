@@ -3,24 +3,27 @@ package au.csiro.data61.aap.elf.library.plugins;
 import static com.google.common.base.Preconditions.checkArgument;
 import static com.google.common.base.Preconditions.checkNotNull;
 
-public class Plugin {    
-    private final String name;
-    private final PluginAnalysisRule parser;
+import au.csiro.data61.aap.elf.parsing.InterpretationEventCollector;
+import au.csiro.data61.aap.elf.parsing.SymbolTableBuilder;
 
-    public Plugin(String name, PluginAnalysisRule parser) {
+public abstract class Plugin {    
+    private final String name;
+
+    protected Plugin(String name) {
         checkNotNull(name);
         checkArgument(!name.isBlank());
-        checkNotNull(parser);
         this.name = name;
-        this.parser = parser;
     }
 
     public String getName() {
         return this.name;
     }
 
-    public PluginAnalysisRule getAnalysisRule() {
-        return this.parser;
+    public PluginAnalysisRule createAnalysisRule(InterpretationEventCollector eventCollector, SymbolTableBuilder symbolTableBuilder) {
+        checkNotNull(eventCollector);
+        checkNotNull(symbolTableBuilder);
+        return this.newAnalysisRule(eventCollector, symbolTableBuilder);
     }
 
+    protected abstract PluginAnalysisRule newAnalysisRule(InterpretationEventCollector eventCollector, SymbolTableBuilder symbolTableBuilder);
 }
