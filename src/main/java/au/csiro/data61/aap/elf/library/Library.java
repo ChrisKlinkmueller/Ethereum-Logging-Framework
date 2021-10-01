@@ -11,6 +11,7 @@ import java.util.Map;
 import java.util.stream.Collectors;
 
 import au.csiro.data61.aap.elf.library.plugins.Plugin;
+import au.csiro.data61.aap.elf.library.plugins.PluginAnalysisRule;
 import io.vavr.control.Try;
 
 public class Library {
@@ -70,6 +71,12 @@ public class Library {
         checkNotNull(pluginName);
         final Plugin plugin = this.plugins.get(pluginName);
         return plugin == null ? this.noSuchPlugin(pluginName) : Try.success(plugin);
+    }
+
+    public List<PluginAnalysisRule> getAnalysisRules() {
+        return this.plugins.values().stream()
+            .map(Plugin::getAnalysisRule)
+            .collect(Collectors.toList());
     }
 
     private Try<Method> noSuchMethod(MethodSignature signature) {

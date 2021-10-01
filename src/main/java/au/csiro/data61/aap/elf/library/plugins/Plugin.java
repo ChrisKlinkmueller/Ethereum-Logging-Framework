@@ -19,7 +19,7 @@ public class Plugin {
         return this.name;
     }
 
-    public PluginAnalysisRule getParser() {
+    public PluginAnalysisRule getAnalysisRule() {
         return this.parser;
     }
 

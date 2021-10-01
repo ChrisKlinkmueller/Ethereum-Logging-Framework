@@ -14,13 +14,16 @@ import java.util.logging.Logger;
 
 import org.antlr.v4.runtime.tree.ParseTree;
 
+import au.csiro.data61.aap.elf.library.Library;
+
 public class Interpreter {
     private final Parser parser;
     private final Analyzer analyzer;
 
-    public Interpreter() {
+    public Interpreter(Library library) {
+        checkNotNull(library);
         this.parser = new Parser();
-        this.analyzer = new Analyzer();
+        this.analyzer = new Analyzer(library);
     }
 
     public InterpretationResult<ParseTree> interpretFile(String filepath) {

@@ -1,5 +1,7 @@
 package au.csiro.data61.aap.elf.parsing;
 
+import static com.google.common.base.Preconditions.checkNotNull;
+
 import java.util.LinkedList;
 import java.util.List;
 import java.util.function.BiConsumer;
@@ -38,13 +40,18 @@ import au.csiro.data61.aap.elf.grammar.EthqlParser.TypeContext;
 import au.csiro.data61.aap.elf.grammar.EthqlParser.VariableAssignmentStatementContext;
 import au.csiro.data61.aap.elf.grammar.EthqlParser.VariableDeclarationStatementContext;
 import au.csiro.data61.aap.elf.grammar.EthqlParser.VariableNameContext;
+import au.csiro.data61.aap.elf.library.Library;
 import au.csiro.data61.aap.elf.parsing.InterpretationEvent.Type;
 
 class Analyzer implements EthqlListener {
     private final InterpretationEventCollector eventCollector;
     private final List<EthqlListener> rules;
+    private final Library library;
 
-    Analyzer() {
+    Analyzer(Library library) {
+        checkNotNull(library);
+        this.library = library;
+
         this.rules = new LinkedList<>();
 
         this.eventCollector = new InterpretationEventCollector();
@@ -52,6 +59,8 @@ class Analyzer implements EthqlListener {
         final SymbolTableBuilder symbolTableBuilder = new SymbolTableBuilder(this.eventCollector);
         this.rules.add(symbolTableBuilder);
         this.rules.add(new ConfigureInPreambleRule(this.eventCollector, symbolTableBuilder));
+
+        this.rules.addAll(this.library.getAnalysisRules());
     }
     
     InterpretationResult<ParseTree> analyze(ParseTree parseTree) {
