@@ -10,6 +10,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.stream.Collectors;
 
+import au.csiro.data61.aap.elf.library.plugins.Plugin;
 import io.vavr.control.Try;
 
 public class Library {

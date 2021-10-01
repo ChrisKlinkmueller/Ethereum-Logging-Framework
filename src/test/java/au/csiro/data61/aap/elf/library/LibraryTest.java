@@ -18,6 +18,7 @@ import org.junit.jupiter.params.provider.Arguments;
 import org.junit.jupiter.params.provider.MethodSource;
 import org.mockito.Mockito;
 
+import au.csiro.data61.aap.elf.library.plugins.Plugin;
 import au.csiro.data61.aap.elf.types.BooleanType;
 import au.csiro.data61.aap.elf.types.DateType;
 import au.csiro.data61.aap.elf.types.FloatType;
