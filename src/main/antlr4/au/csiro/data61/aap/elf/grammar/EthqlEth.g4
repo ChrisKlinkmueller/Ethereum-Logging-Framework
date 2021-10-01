@@ -8,6 +8,24 @@ statement
 
 query
     : blockFilter
+    ;
+
+blockFilter : KEY_BLOCKS '[' (from=blockVariable)? ',' (to=blockVariable)? ']';
+
+blockVariable 
+    : INT_LITERAL
+    | variableName
+    ;
+
+KEY_BLOCKS : B L O C K S;
+
+/*
+statement 
+    : query EOF
+    ;
+
+query
+    : blockFilter
     | transactionFilter
     | logEntryFilter 
     ;
@@ -140,3 +158,4 @@ KEY_LOG_ENTRIES : L O G ' ' E N T R I E S ;
 KEY_INDEXED : 'indexed';
 KEY_SKIP_INDEXED : '_indexed_';
 KEY_SKIP_DATA : '_';
+*/

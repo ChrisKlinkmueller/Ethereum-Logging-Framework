@@ -44,7 +44,7 @@ expressionStatement
     ; 
 
 pluginStatement
-    : action=( KEY_CONFIGURE | KEY_EXTRACT | KEY_CONFIGURE ) plugin=Identifier code=Code ';'
+    : action=( KEY_CONFIGURE | KEY_EXTRACT | KEY_CONFIGURE ) plugin=Identifier query=Query ';'
     ;
 
 methodStatement

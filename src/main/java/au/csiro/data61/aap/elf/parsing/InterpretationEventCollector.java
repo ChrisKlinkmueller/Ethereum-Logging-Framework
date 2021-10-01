@@ -31,7 +31,7 @@ public class InterpretationEventCollector extends BaseErrorListener {
         this.events.add(new InterpretationEvent(Type.ERROR, line, column, message, cause));
     }
 
-    void addEvent(InterpretationEvent event) {
+    public void addEvent(InterpretationEvent event) {
         checkNotNull(event);
         this.events.add(event);
     }

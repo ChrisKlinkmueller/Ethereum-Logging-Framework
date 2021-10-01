@@ -201,9 +201,9 @@ Identifier
     | '_' LetterOrDigit+
 	;
 
-Code : CodeSymbols+;
+Query : QuerySymbols+;
 
-fragment CodeSymbols
+fragment QuerySymbols
     :	[a-zA-Z0-9$_] // these are the "java letters or digits" below 0x7F
 	|	// covers all characters above 0x7F which are not a surrogate
 		~[\u0000-\u003A\u003C-\u007F\uD800-\uDBFF]
