@@ -14,7 +14,7 @@ The main features of the framework include:
 - Extraction of standard attributes (e.g., block hash, gas price, gas used, etc.) from all confirmed blocks and of application specific data including log entry parameters, input parameters for transactions, or smart contract states
 - Definition of arbitrary data filters and basic transformation operations
 - [XES Certified](https://www.tf-pm.org/news/ethereum-logging-framework-elf-0-2-1-has-been-xes-certified) by the IEEE Task Force on Process Mining as an export-only/producer tool 
-- A variety of target data formats including CSV, textual logs, and XES for which it is certified by the IEEE. 
+- Additional target data formats include CSV and textual logs
 - Two export modes: batch, i.e., extracting all data at once, vs. streaming, i.e., extracting data block by block, potentially endlessly
 - Generation of cost efficient Solidity code for logging from user defined queries. The generated code compresses log entry attributes before emitting a log entry and it can be manually integrated into custom smart contract code.
 
