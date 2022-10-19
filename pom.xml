@@ -22,7 +22,7 @@
     <junit.jupiter.version>5.7.0</junit.jupiter.version>
     <web3j.version>4.5.5</web3j.version>
     <logback-classic.version>1.2.3</logback-classic.version>
-    <jackson.version>2.10.5.1</jackson.version>
+    <jackson.version>2.13.4.1</jackson.version>
     <elf.skip.assemble>true</elf.skip.assemble>
   </properties>
 
