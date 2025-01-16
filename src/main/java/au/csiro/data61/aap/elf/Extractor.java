@@ -15,7 +15,7 @@ import au.csiro.data61.aap.elf.util.CompositeEthqlListener;
  */
 public class Extractor {
 
-    public void extractData(final String ethqlFilepath) throws EthqlProcessingException {
+    public void extractData(final String ethqlFilepath, boolean abortOnError) throws EthqlProcessingException {
         final ParseTree parseTree = Validator.createParseTree(ethqlFilepath, true);
 
         final CompositeEthqlListener<EthqlListener> rootListener = new CompositeEthqlListener<>();
@@ -32,11 +32,12 @@ public class Extractor {
         }
 
         final Program program = builder.getProgram();
-        this.executeProgram(program);
+        this.executeProgram(program, abortOnError);
     }
 
-    private void executeProgram(Program program) {
+    private void executeProgram(Program program, boolean abortOnError) {
         final ProgramState state = new ProgramState();
+        state.setAbortOnException(abortOnError);
         program.execute(state);
     }
 }

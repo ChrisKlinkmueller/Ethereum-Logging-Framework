@@ -12,6 +12,7 @@ public class ElfApp {
     private static final String CMD_GENERATE = "generate";
     private static final String CMD_EXTRACT = "extract";
     private static final String CMD_VALIDATE = "validate";
+    private static final String ABORT_EXTRACTION_MODE = "-abort";
     private static final String FULL_VALIDATION_MODE = "-full";
     private static final String ERROR_VALIDATION_MODE = "-errors";
 
@@ -39,7 +40,21 @@ public class ElfApp {
         if (command.equals(CMD_GENERATE)) {
             generate(filepath);
         } else if (command.equals(CMD_EXTRACT)) {
-            extract(filepath);
+            boolean abortOnError = false;
+            if (INDEX_MODE + 1 <= args.length) {
+                if (args[INDEX_MODE].equals(ABORT_EXTRACTION_MODE)) {
+                    abortOnError = true;
+                } else {
+                    final String message = String.format(
+                        "Invalid extraction mode. Must be '%s' or no argument, but was %s",
+                        ABORT_EXTRACTION_MODE,
+                        args[INDEX_MODE]
+                    );
+                    System.out.println(message);
+                    return;
+                }
+            }
+            extract(filepath, abortOnError);
         } else if (command.equals(CMD_VALIDATE)) {
             boolean errorsOnly = false;
             if (INDEX_MODE + 1 <= args.length) {
@@ -79,11 +94,11 @@ public class ElfApp {
         }
     }
 
-    private static void extract(String filepath) {
+    private static void extract(String filepath, boolean abortOnError) {
         final Extractor extractor = new Extractor();
 
         try {
-            extractor.extractData(filepath);
+            extractor.extractData(filepath, abortOnError);
         } catch (EthqlProcessingException ex) {
             ex.printStackTrace(System.err);
         }

@@ -37,6 +37,10 @@ public class ProgramState {
         return this.exceptionHandler;
     }
 
+    public void setAbortOnException(boolean abortOnException) {
+        exceptionHandler.setAbortOnException(abortOnException);
+    }
+
     private void setOutputFolder(String folderPath) throws ProgramException {
         final Path outputFolder = Path.of(folderPath);
         if (!outputFolder.toFile().exists()) {
