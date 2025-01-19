@@ -109,7 +109,7 @@ mvn test
 
 The compiled jar ```elf-cmd.jar``` can be executed from the command line in different modes:
 1. *Validator:*  ```java -jar elf-cmd.jar validate <PATH_TO_SCRIPT> (-errors|-full)?``` executes the validator on the specified script. There are two options for validation: whereas ```-errors``` only reports specification errors, the default option is ```-full``` and also includes warnings and infos. 
-2. *Extractor:*   ```java -jar elf-cmd.jar extractor <PATH_TO_SCRIPT>``` executes the extractor and retrieves the data as specified in the script.
+2. *Extractor:*   ```java -jar elf-cmd.jar extract <PATH_TO_SCRIPT>``` executes the extractor and retrieves the data as specified in the script.
 3. *Generator:* ```java -jar elf-cmd.jar generate <PATH_TO_SCRIPT>``` executes the generation of efficient logging code for the script.
 
 ## License
